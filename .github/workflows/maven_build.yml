@@ -5,7 +5,7 @@ name: Compile and test with Maven-JDK11
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   build:
