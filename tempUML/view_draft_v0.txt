@@ -1,0 +1,17 @@
+[Move| -boardX:int; -boardY:int; -column:int | getBoardPos(): List; getColumn(): List]
+
+[MoveBuilder| -pos1:int_arr; -pos2:int_arr; -pos3:int_arr; -column: int; | +addMove(Move move): void; +getMoves(): List;]
+[MoveBuilder]-.-[note: After using getMoves(), the client can reorder the moves]
+[MoveBuilder]->[ClientBoard]
+
+[UI|+playTurn(): void;]
+[UI]->[MoveBuilder]
+[UI]->[ClientBoard]
+[UI]->[ClientShelf]
+
+[GUI]-.->[UI]
+[CLI]-.->[UI]
+
+[ClientBoard|+getValidMoves(List moves): List;]
+[ClientBoard]-.-[note:getValidMoves must also consider the max number of tiles the user can inser in the shelf]
+[ClientShelf|+getHighestColumn(): int]
