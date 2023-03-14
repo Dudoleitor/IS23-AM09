@@ -55,4 +55,36 @@ class CommonGoal1Test {
 
         assertEquals(0,stack_state.size());
     }
+
+    @Test
+    void test_pop(){
+        CommonGoal1 tested_object = new CommonGoal1();
+        tested_object.populatePointsStack(4);
+        ArrayList<Integer> stack_state = tested_object.showPointsStack();
+
+        assertEquals(4,stack_state.size());
+        assertEquals(2,stack_state.get(0));
+        assertEquals(4,stack_state.get(1));
+        assertEquals(6,stack_state.get(2));
+        assertEquals(8,stack_state.get(3));
+
+        stack_state.clear();
+        assertEquals(8,tested_object.getPoints());
+
+        stack_state = tested_object.showPointsStack();
+
+        assertEquals(3,stack_state.size());
+        assertEquals(2,stack_state.get(0));
+        assertEquals(4,stack_state.get(1));
+        assertEquals(6,stack_state.get(2));
+
+        stack_state.clear();
+        assertEquals(6,tested_object.getPoints());
+
+        stack_state = tested_object.showPointsStack();
+
+        assertEquals(2,stack_state.size());
+        assertEquals(2,stack_state.get(0));
+        assertEquals(4,stack_state.get(1));
+    }
 }

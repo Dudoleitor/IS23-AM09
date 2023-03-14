@@ -34,6 +34,10 @@ public abstract class AbstractCommonGoal {
         }
     }
 
+    public int getPoints(){ //check condition?
+        return points.pop();
+    }
+
     public ArrayList<Integer> showPointsStack(){ //usefull in debugging
         return new ArrayList<>(points);
     }
