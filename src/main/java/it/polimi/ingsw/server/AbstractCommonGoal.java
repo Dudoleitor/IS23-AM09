@@ -5,13 +5,11 @@ import it.polimi.ingsw.shared.Shelf;
 import java.util.*;
 
 public abstract class AbstractCommonGoal {
-    private Stack<Integer> points;
+    protected Stack<Integer> points;
 
     public abstract boolean check(Shelf shelf);
 
-    public abstract int givePoints();
-
-    public void populatePointsStack(int number_of_players){
+    protected void populatePointsStack(int number_of_players){
         this.points = new Stack<>();
         switch (number_of_players){
             case 2:
@@ -30,15 +28,20 @@ public abstract class AbstractCommonGoal {
                 points.push(8);
                 break;
             default:
-                //return exception or do nothing?
+                //throw exception or do nothing?
         }
     }
 
-    public int getPoints(){ //check condition?
-        return points.pop();
+    public int givePoints(Shelf shelf){
+        if(check(shelf)){
+            return points.pop();
+        }
+        else{
+            return 0;
+        }
     }
 
-    public ArrayList<Integer> showPointsStack(){ //usefull in debugging
+    public ArrayList<Integer> showPointsStack(){ //useful in debugging
         return new ArrayList<>(points);
     }
 }
