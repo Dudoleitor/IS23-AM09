@@ -83,4 +83,12 @@ class CommonGoal1Test {
         assertEquals(2,stack_state.get(0));
         assertEquals(4,stack_state.get(1));
     }
+
+    @Test
+    void test_compatibility(){
+        CommonGoal1 common_goal1 = new CommonGoal1(4);
+        CommonGoal2 common_goal2 = new CommonGoal2(4);
+        Shelf shelf = new Shelf();
+        assertEquals(16,common_goal1.givePoints(shelf)+common_goal2.givePoints(shelf));
+    }
 }

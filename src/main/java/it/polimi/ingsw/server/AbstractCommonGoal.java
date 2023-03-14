@@ -7,9 +7,8 @@ import java.util.*;
 public abstract class AbstractCommonGoal {
     protected Stack<Integer> points;
 
-    public abstract boolean check(Shelf shelf);
-
-    protected void populatePointsStack(int number_of_players){
+    protected abstract boolean check(Shelf shelf);
+    public void populatePointsStack(int number_of_players){
         this.points = new Stack<>();
         switch (number_of_players){
             case 2:
@@ -28,7 +27,7 @@ public abstract class AbstractCommonGoal {
                 points.push(8);
                 break;
             default:
-                //throw exception or do nothing?
+                //return exception or do nothing?
         }
     }
 
