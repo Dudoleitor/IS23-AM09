@@ -6,16 +6,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class CommonGoalsHandler {
-    static final ArrayList<AbstractCommonGoal> all_goals = new ArrayList<>();
+    final ArrayList<AbstractCommonGoal> all_goals = new ArrayList<>();
     AbstractCommonGoal firstGoal;
     AbstractCommonGoal secondGoal;
     public int giveAllPoints(Shelf shelf){
         return firstGoal.givePoints(shelf) + secondGoal.givePoints(shelf);
     }
     public CommonGoalsHandler(int number_of_players){
-        if(all_goals.size() == 0){
-            initiate_all_goals(number_of_players);
-        }
+        //TODO refactor with clone constructors?
+        initiate_all_goals(number_of_players);
         int[] randomInts = pickTwoRandomNumbers();
         firstGoal = all_goals.get(randomInts[0]);
         secondGoal = all_goals.get(randomInts[1]);
