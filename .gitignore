@@ -1,4 +1,5 @@
 # Default ignored files
+/.idea/
 /shelf/
 /workspace.xml
 # Editor-based HTTP Client requests
@@ -7,6 +8,7 @@
 /dataSources/
 /dataSources.local.xml
 
+/target/
 # Compiled class file
 *.class
 # Log file
