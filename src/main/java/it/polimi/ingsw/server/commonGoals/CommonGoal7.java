@@ -1,11 +1,12 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.server.commonGoals;
 
+import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
 import java.util.Stack;
 
-public class CommonGoal12 extends AbstractCommonGoal{
-    public CommonGoal12(int number_of_players){
+public class CommonGoal7 extends AbstractCommonGoal {
+    public CommonGoal7(int number_of_players){
         points = new Stack<>();
         populatePointsStack(number_of_players);
     }

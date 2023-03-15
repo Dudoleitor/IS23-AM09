@@ -1,10 +1,11 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.server.commonGoals;
 
+import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
 import java.util.Stack;
 
-public class CommonGoal1 extends AbstractCommonGoal{
+public class CommonGoal1 extends AbstractCommonGoal {
     @Override
     public boolean check(Shelf shelf) {
         return true;
