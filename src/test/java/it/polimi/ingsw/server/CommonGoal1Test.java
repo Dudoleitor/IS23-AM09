@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.server.commonGoals.CommonGoal1;
+import it.polimi.ingsw.server.commonGoals.CommonGoal2;
 import it.polimi.ingsw.shared.Shelf;
 import org.junit.jupiter.api.Test;
 
