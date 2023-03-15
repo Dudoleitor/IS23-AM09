@@ -1,8 +1,8 @@
 package it.polimi.ingsw.shared;
 
 public class Shelf {
-    private final Tile tiles[][];
-    public Shelf(int rows, int columns) {
+    private final Tile[][] tiles; //I chose to consider matrix coordinate (0,0) as the top-left corner of the shelf
+    public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles
         tiles = new Tile[rows][columns];
         for (int i = 0; i<rows; i++){
             for (int j = 0; j<columns; j++){
@@ -14,7 +14,7 @@ public class Shelf {
         return tiles[pos.getRow()][pos.getColumn()];
     }
 
-    public int getHighestColumn(){
+    public int getHighestColumn(){ //gives back the number of free cells of the most empty column
         int max = 0;
         boolean max_found = false;
         int count;

@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 
 class CommonGoal1Test {
+    final int rows = 6;
+    final int columns = 5;
     @Test
     void test_2_players(){
         CommonGoal1 tested_object = new CommonGoal1(2);
@@ -58,7 +60,7 @@ class CommonGoal1Test {
     void test_pop(){
         CommonGoal1 tested_object = new CommonGoal1(4);
         ArrayList<Integer> stack_state = tested_object.showPointsStack();
-        Shelf useless_shelf = new Shelf();
+        Shelf useless_shelf = new Shelf(rows, columns);
 
         assertEquals(4,stack_state.size());
         assertEquals(2,stack_state.get(0));
@@ -90,7 +92,7 @@ class CommonGoal1Test {
     void test_compatibility(){
         CommonGoal1 common_goal1 = new CommonGoal1(4);
         CommonGoal2 common_goal2 = new CommonGoal2(4);
-        Shelf shelf = new Shelf();
+        Shelf shelf = new Shelf(rows, columns);
         assertEquals(16,common_goal1.givePoints(shelf)+common_goal2.givePoints(shelf));
     }
 }
