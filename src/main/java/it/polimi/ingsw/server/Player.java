@@ -27,7 +27,7 @@ public class Player {
     }
 
     public String getName() { return name; }
-    public Shelf getShelf() { return new Shelf(0,0); }  // TODO, waiting for copy-constructor
+    public Shelf getShelf() { return new Shelf(shelf); }
 
     public int checkPersonalGoal() {
         return goal.check(shelf);
