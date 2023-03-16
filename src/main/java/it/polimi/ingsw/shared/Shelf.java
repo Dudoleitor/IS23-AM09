@@ -15,8 +15,8 @@ public class Shelf {
             }
         }
     }
-    public Shelf(Shelf s){
-        if(s != null){
+    public Shelf(Shelf s) throws ShelfGenericException {
+        try{
             rows = s.getRows();
             columns = s.getColumns();
             tiles = new Tile[rows][columns];
@@ -25,17 +25,24 @@ public class Shelf {
                     tiles[i][j] = s.getTile(i,j);
                 }
             }
-        } else {
-            rows = 0;
-            columns = 0;
-            tiles = null;
+        } catch(NullPointerException e) {
+            throw new ShelfGenericException("Error while creating Shelf : input Shelf is null pointer");
         }
     }
-    public Tile getTile(Position pos){
-        return getTile(pos.getRow(), pos.getColumn());
+    public Tile getTile(Position pos) throws ShelfGenericException{
+        try {
+            return getTile(pos.getRow(), pos.getColumn());
+        } catch (NullPointerException e) {
+            throw new ShelfGenericException("Error while getting Tile in Shelf : Position object is null pointer");
+        }
     }
-    public Tile getTile(int row, int column){
-        return tiles[row][column];
+    public Tile getTile(int row, int column) throws ShelfGenericException {
+        try {
+            return tiles[row][column];
+        } catch (IndexOutOfBoundsException e){
+            throw new ShelfGenericException("Error while getting Tile in Shelf : Coordinates are beyond boundaries");
+        }
+
     }
 
     public int getHighestColumn(){ //gives back the number of free cells of the most empty column
@@ -61,7 +68,7 @@ public class Shelf {
         }
         return max;
     }
-    public void insertTile(Tile tile, int column){
+    public void insertTile(Tile tile, int column) throws ShelfGenericException {
         boolean is_empty = false;
         for(int i = tiles.length-1; !is_empty && i>=0; i--){
             if(tiles[i][column] == Tile.Empty){
@@ -69,7 +76,9 @@ public class Shelf {
                 is_empty = true;
             }
         }
-
+        if (!is_empty){
+            throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
+        }
     }
 
     public int getRows() {
