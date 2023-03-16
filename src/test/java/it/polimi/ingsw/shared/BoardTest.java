@@ -8,6 +8,9 @@ class BoardTest {
 
     Board board = new Board(9,9,2);
     Position pos1 = new Position(3,4);
+    Board board1 = new Board(9,9,3);
+    Board board2 = new Board(9,9,4);
+
 
     @Test
     void getTile() {
@@ -20,10 +23,13 @@ class BoardTest {
     }
 
     @Test
-    void initializeGoals() {
+    void pickTile1() {
+        assertEquals(Tile.Empty, board1.pickTile(pos1));
     }
 
     @Test
-    void getCommonGoals() {
+    void pickTile2() {
+        assertEquals(Tile.Empty, board2.pickTile(pos1));
     }
+
 }

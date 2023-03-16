@@ -221,8 +221,6 @@ public class Board {
                             boardTiles[7][i] = Tile.Invalid;
                             boardTiles[8][i] = Tile.Invalid;
                             break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + i);
                     }
                 }
 
@@ -308,8 +306,6 @@ public class Board {
                             boardTiles[7][i] = Tile.Invalid;
                             boardTiles[8][i] = Tile.Invalid;
                             break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + i);
                     }
                 }
 
