@@ -22,7 +22,7 @@ public class Shelf {
             tiles = new Tile[rows][columns];
             for(int i = 0; i<rows; i++){
                 for(int j = 0; j<columns; j++){
-                    tiles[i][j] = s.getTile(new Position(i,j));
+                    tiles[i][j] = s.getTile(i,j);
                 }
             }
         } else {
@@ -32,7 +32,10 @@ public class Shelf {
         }
     }
     public Tile getTile(Position pos){
-        return tiles[pos.getRow()][pos.getColumn()];
+        return getTile(pos.getRow(), pos.getColumn());
+    }
+    public Tile getTile(int row, int column){
+        return tiles[row][column];
     }
 
     public int getHighestColumn(){ //gives back the number of free cells of the most empty column
