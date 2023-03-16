@@ -1,4 +1,5 @@
 package it.polimi.ingsw.shared;
+import java.util.Arrays;
 
 public class Shelf {
     private final Tile[][] tiles; //I chose to consider matrix coordinate (0,0) as the top-left corner of the shelf
@@ -87,4 +88,38 @@ public class Shelf {
     public int getColumns() {
         return columns;
     }
+
+    public boolean equals(Shelf s) throws ShelfGenericException{
+        try {
+            boolean sameShelf = true;
+            for (int i = 0; sameShelf && i < rows; i++) {
+                for (int j = 0; sameShelf && j < columns; j++) {
+                    if (!tiles[i][j].equals(s.getTile(i, j))) {
+                        sameShelf = false;
+                    }
+                }
+            }
+            return sameShelf;
+        } catch (NullPointerException e){
+            throw new ShelfGenericException("Error while creating Shelf : input Shelf is null pointer");
+        }
+    }
+    @Override
+    public String toString(){
+        String s = "";
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                s = s.concat(tiles[i][j].toString() + " ");
+            }
+            s = s.concat("\n");
+        }
+        return s;
+    }
+
+    @Override
+    public int hashCode(){
+        return Arrays.deepHashCode(tiles); //deepHashCode is similar to HashCode but also applied to any sub-array of elements
+    }
+
+
 }

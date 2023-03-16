@@ -8,5 +8,30 @@ public enum Tile {
     Trophy,
     Plant,
     Empty,
-    Invalid
+    Invalid;
+
+    @Override
+    public String toString(){
+        switch(this) {
+            case Cat:
+                return "C";
+            case Book:
+                return "B";
+            case Game:
+                return "G";
+            case Frame:
+                return "F";
+            case Trophy:
+                return "T";
+            case Plant:
+                return "P";
+            case Empty:
+                return "E";
+            case Invalid:
+                return "I";
+            default:
+                return "-";
+        }
+    }
 }
+
