@@ -10,7 +10,10 @@ public class CommonGoal6 extends AbstractCommonGoal {
         points = new Stack<>();
         populatePointsStack(number_of_players);
     }
-
+    @Override
+    public int getID() {
+        return 6;
+    }
     @Override
     protected boolean check(Shelf shelf) {
         return true;

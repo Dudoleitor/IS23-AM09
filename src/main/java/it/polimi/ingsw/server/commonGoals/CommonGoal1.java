@@ -7,6 +7,11 @@ import java.util.Stack;
 
 public class CommonGoal1 extends AbstractCommonGoal {
     @Override
+    public int getID() {
+        return 1;
+    }
+
+    @Override
     public boolean check(Shelf shelf) {
         return true;
     }
