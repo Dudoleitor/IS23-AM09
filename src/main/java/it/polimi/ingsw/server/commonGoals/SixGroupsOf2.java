@@ -14,7 +14,7 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
     }
 
     @Override
-    public boolean check(Shelf shelf) { //WRONG
+    public boolean check(Shelf shelf) { //TODO fix
         int rows = shelf.getRows();
         int columns = shelf.getColumns();
         Position currentPosition;
@@ -24,7 +24,8 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
             for(int j = 0; j < columns; j++){
                 currentPosition = new Position(i,j);
                 for(Position neighbour : uncheckedNeighbours(currentPosition,rows,columns,alreadyChecked)){
-                    if(shelf.getTile(neighbour).equals(shelf.getTile(currentPosition))){
+                    if(alreadyChecked[currentPosition.getRow()][currentPosition.getColumn()] &&
+                            shelf.getTile(neighbour).equals(shelf.getTile(currentPosition))){
                         markPosition(alreadyChecked,currentPosition);
                         markPosition(alreadyChecked,neighbour);
                         groups_found++;
