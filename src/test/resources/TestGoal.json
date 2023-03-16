@@ -1,0 +1,38 @@
+{
+  "goals": {
+    "0": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 0
+      },
+      {
+        "tileName": "Book",
+        "posRow": 1,
+        "posCol": 0
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 0,
+        "posCol": 0
+      },
+      {
+        "tileName": "Game",
+        "posRow": 0,
+        "posCol": 2
+      },
+      {
+        "tileName": "Game",
+        "posRow": 2,
+        "posCol": 1
+      }
+    ]
+  },
+  "points": {
+    "1": 1,
+    "2": 3,
+    "3": 5,
+    "4": 8,
+    "5": 10
+  }
+}
