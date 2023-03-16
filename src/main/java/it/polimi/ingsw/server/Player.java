@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.Tile;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -25,26 +26,42 @@ public class Player {
         this.checkedCommonGoals = new ArrayList<>(checkedCommonGoals);
     }
 
-    public String getName() {return name;}
-    public Shelf getShelf() { return new Shelf(0,0); }  // TODO
+    public String getName() { return name; }
+    public Shelf getShelf() { return new Shelf(0,0); }  // TODO, waiting for copy-constructor
+
+    public int checkPersonalGoal() {
+        return goal.check(shelf);
+    }
+
+    public int getCommonGoalPoints() { return commonGoalPoints; }
 
     public List<Integer> getCheckedCommonGoals() {
         return new ArrayList<>(checkedCommonGoals);
     }
 
-    public void checkCommonGoal(List<AbstractCommonGoal> goals) {
+    public void checkCommonGoals(List<AbstractCommonGoal> goals) {
         for (AbstractCommonGoal goal : goals) {
-            if (goal.check(shelf) && !checkedCommonGoals.contains(Integer.valueOf(goal.getId()))) {
-
+            if (goal.check(shelf) &&
+                    !checkedCommonGoals.contains(goal.getID())) {
+                commonGoalPoints += goal.givePoints();
             }
         }
     }
+
+    public void insertTile(Tile tile, int column) {
+        shelf.insertTile(tile, column);
+    }
+
+    public boolean hasFinished() {  // TODO
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(name, player.getName());
+        return Objects.equals(name.toLowerCase(), player.getName().toLowerCase());
     }
 
     @Override
