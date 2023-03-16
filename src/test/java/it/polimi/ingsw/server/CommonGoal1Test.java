@@ -60,7 +60,6 @@ class CommonGoal1Test {
     void test_pop(){
         CommonGoal1 tested_object = new CommonGoal1(4);
         ArrayList<Integer> stack_state = tested_object.showPointsStack();
-        Shelf useless_shelf = new Shelf(rows, columns);
 
         assertEquals(4,stack_state.size());
         assertEquals(2,stack_state.get(0));
@@ -69,7 +68,7 @@ class CommonGoal1Test {
         assertEquals(8,stack_state.get(3));
 
         stack_state.clear();
-        assertEquals(8,tested_object.givePoints(useless_shelf));
+        assertEquals(8,tested_object.givePoints());
 
         stack_state = tested_object.showPointsStack();
 
@@ -79,7 +78,7 @@ class CommonGoal1Test {
         assertEquals(6,stack_state.get(2));
 
         stack_state.clear();
-        assertEquals(6,tested_object.givePoints(useless_shelf));
+        assertEquals(6,tested_object.givePoints());
 
         stack_state = tested_object.showPointsStack();
 
@@ -93,6 +92,6 @@ class CommonGoal1Test {
         CommonGoal1 common_goal1 = new CommonGoal1(4);
         CommonGoal2 common_goal2 = new CommonGoal2(4);
         Shelf shelf = new Shelf(rows, columns);
-        assertEquals(16,common_goal1.givePoints(shelf)+common_goal2.givePoints(shelf));
+        assertEquals(16,common_goal1.givePoints()+common_goal2.givePoints());
     }
 }

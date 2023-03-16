@@ -31,13 +31,8 @@ public abstract class AbstractCommonGoal {
         }
     }
 
-    public int givePoints(Shelf shelf){
-        if(check(shelf)){
-            return points.pop();
-        }
-        else{
-            return 0;
-        }
+    public int givePoints(){
+        return points.pop();
     }
 
     public ArrayList<Integer> showPointsStack(){ //useful in debugging
