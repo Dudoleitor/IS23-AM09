@@ -1,0 +1,30 @@
+{
+  "goals": {
+    "0": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 3
+      }
+    ],
+    "1": [
+      {
+        "tileName": "Book",
+        "posRow": 2,
+        "posCol": 3
+      }
+    ],
+    "2": [
+      {
+        "tileName": "Game",
+        "posRow": 2,
+        "posCol": 3
+      }
+    ]
+  },
+  "wrong": {
+    "1": 1,
+    "2": 2,
+    "3": 4
+  }
+}

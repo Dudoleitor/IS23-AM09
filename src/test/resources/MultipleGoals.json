@@ -1,0 +1,39 @@
+{
+  "goals": {
+    "0": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 0
+      }
+    ],
+    "1": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 0
+      }
+    ],
+    "2": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 0
+      }
+    ],
+    "3": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 0
+      }
+    ]
+  },
+  "points": {
+    "1": 1,
+    "2": 3,
+    "3": 5,
+    "4": 8,
+    "5": 10
+  }
+}
