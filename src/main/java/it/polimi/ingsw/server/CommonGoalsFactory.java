@@ -1,23 +1,21 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.commonGoals.*;
-import it.polimi.ingsw.shared.Shelf;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class CommonGoalsHandler {
-    ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
-    final int number_of_goals = 2;
-    public int giveAllPoints(Shelf shelf){
-        return active_goals.stream().mapToInt(x->x.givePoints(shelf)).sum();
-    }
+public class CommonGoalsFactory {
+    static final int number_of_goals = 12;
 
     int number_of_players;
-    public CommonGoalsHandler(int number_of_players){
+    public ArrayList<AbstractCommonGoal> create_goals(int number_of_players){
         this.number_of_players = number_of_players;
-        int[] randomIDs = pickTwoRandomNumbers(number_of_goals);
-        initiate_goals(randomIDs);
+        ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
+        for(int i : pickTwoRandomNumbers(number_of_goals)){
+            active_goals.add(create_goal_with_ID(i+1));
+        }
+        return active_goals;
     }
     private int[] pickTwoRandomNumbers(int max){
         int[] result = new int[2];
@@ -28,11 +26,6 @@ public class CommonGoalsHandler {
             result[1] = rand.nextInt(max);
         }
         return result;
-    }
-    private void initiate_goals(int[] pickedIDs){
-        for(int i : pickedIDs){
-            active_goals.add(create_goal_with_ID(i+1));
-        }
     }
 
     private AbstractCommonGoal create_goal_with_ID(int ID){
