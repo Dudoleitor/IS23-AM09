@@ -8,7 +8,6 @@ class BoardTest {
 
     Board board = new Board(9,9,2);
     Position pos1 = new Position(3,4);
-    //Position pos2 = new Position(0,2);
 
     @Test
     void getTile() {
