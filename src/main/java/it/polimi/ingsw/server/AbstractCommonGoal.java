@@ -7,6 +7,7 @@ import java.util.*;
 public abstract class AbstractCommonGoal {
     protected Stack<Integer> points;
 
+    public abstract int getID();
     protected abstract boolean check(Shelf shelf);
     public void populatePointsStack(int number_of_players){
         this.points = new Stack<>();

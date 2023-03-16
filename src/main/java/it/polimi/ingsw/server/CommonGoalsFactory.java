@@ -7,13 +7,10 @@ import java.util.Random;
 
 public class CommonGoalsFactory {
     static final int number_of_goals = 12;
-
-    int number_of_players;
-    public ArrayList<AbstractCommonGoal> create_goals(int number_of_players){
-        this.number_of_players = number_of_players;
+    public ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players){
         ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
         for(int i : pickTwoRandomNumbers(number_of_goals)){
-            active_goals.add(create_goal_with_ID(i+1));
+            active_goals.add(create_goal_with_ID(i+1,number_of_players));
         }
         return active_goals;
     }
@@ -28,7 +25,7 @@ public class CommonGoalsFactory {
         return result;
     }
 
-    private AbstractCommonGoal create_goal_with_ID(int ID){
+    public AbstractCommonGoal create_goal_with_ID(int ID, int number_of_players){
         AbstractCommonGoal newGoal;
         switch (ID){
             case(1):
