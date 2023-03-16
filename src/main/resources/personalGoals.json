@@ -1,0 +1,396 @@
+{
+  "points": {
+    "1": 1,
+    "2": 2,
+    "3": 4,
+    "4": 6,
+    "5": 9,
+    "6": 12
+  },
+  "goals": {
+    "0": [
+      {
+        "tileName": "Cat",
+        "posRow": 1,
+        "posCol": 4
+      },
+      {
+        "tileName": "Book",
+        "posRow": 2,
+        "posCol": 3
+      },
+      {
+        "tileName": "Game",
+        "posRow": 3,
+        "posCol": 1
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 0,
+        "posCol": 2
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 5,
+        "posCol": 2
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 0,
+        "posCol": 0
+      }
+    ],
+    "1": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 0
+      },
+      {
+        "tileName": "Book",
+        "posRow": 3,
+        "posCol": 4
+      },
+      {
+        "tileName": "Game",
+        "posRow": 2,
+        "posCol": 2
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 5,
+        "posCol": 4
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 4,
+        "posCol": 3
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 1,
+        "posCol": 1
+      }
+    ],
+    "2": [
+      {
+        "tileName": "Cat",
+        "posRow": 3,
+        "posCol": 1
+      },
+      {
+        "tileName": "Book",
+        "posRow": 5,
+        "posCol": 0
+      },
+      {
+        "tileName": "Game",
+        "posRow": 1,
+        "posCol": 3
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 1,
+        "posCol": 0
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 3,
+        "posCol": 4
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 2,
+        "posCol": 2
+      }
+    ],
+    "3": [
+      {
+        "tileName": "Cat",
+        "posRow": 4,
+        "posCol": 2
+      },
+      {
+        "tileName": "Book",
+        "posRow": 4,
+        "posCol": 1
+      },
+      {
+        "tileName": "Game",
+        "posRow": 0,
+        "posCol": 4
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 2,
+        "posCol": 2
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 2,
+        "posCol": 0
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 3,
+        "posCol": 3
+      }
+    ],
+    "4": [
+      {
+        "tileName": "Cat",
+        "posRow": 5,
+        "posCol": 3
+      },
+      {
+        "tileName": "Book",
+        "posRow": 3,
+        "posCol": 2
+      },
+      {
+        "tileName": "Game",
+        "posRow": 5,
+        "posCol": 0
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 3,
+        "posCol": 1
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 1,
+        "posCol": 1
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 4,
+        "posCol": 4
+      }
+    ],
+    "5": [
+      {
+        "tileName": "Cat",
+        "posRow": 0,
+        "posCol": 4
+      },
+      {
+        "tileName": "Book",
+        "posRow": 2,
+        "posCol": 3
+      },
+      {
+        "tileName": "Game",
+        "posRow": 4,
+        "posCol": 1
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 4,
+        "posCol": 3
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 0,
+        "posCol": 2
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 5,
+        "posCol": 0
+      }
+    ],
+    "6": [
+      {
+        "tileName": "Cat",
+        "posRow": 0,
+        "posCol": 0
+      },
+      {
+        "tileName": "Book",
+        "posRow": 5,
+        "posCol": 2
+      },
+      {
+        "tileName": "Game",
+        "posRow": 4,
+        "posCol": 4
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 1,
+        "posCol": 3
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 3,
+        "posCol": 0
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 2,
+        "posCol": 1
+      }
+    ],
+    "7": [
+      {
+        "tileName": "Cat",
+        "posRow": 1,
+        "posCol": 1
+      },
+      {
+        "tileName": "Book",
+        "posRow": 4,
+        "posCol": 3
+      },
+      {
+        "tileName": "Game",
+        "posRow": 5,
+        "posCol": 3
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 0,
+        "posCol": 4
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 2,
+        "posCol": 2
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 3,
+        "posCol": 0
+      }
+    ],
+    "8": [
+      {
+        "tileName": "Cat",
+        "posRow": 2,
+        "posCol": 2
+      },
+      {
+        "tileName": "Book",
+        "posRow": 3,
+        "posCol": 4
+      },
+      {
+        "tileName": "Game",
+        "posRow": 0,
+        "posCol": 2
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 5,
+        "posCol": 0
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 4,
+        "posCol": 1
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 4,
+        "posCol": 4
+      }
+    ],
+    "9": [
+      {
+        "tileName": "Cat",
+        "posRow": 3,
+        "posCol": 3
+      },
+      {
+        "tileName": "Book",
+        "posRow": 2,
+        "posCol": 0
+      },
+      {
+        "tileName": "Game",
+        "posRow": 1,
+        "posCol": 1
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 4,
+        "posCol": 1
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 0,
+        "posCol": 4
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 5,
+        "posCol": 3
+      }
+    ],
+    "10": [
+      {
+        "tileName": "Cat",
+        "posRow": 4,
+        "posCol": 4
+      },
+      {
+        "tileName": "Book",
+        "posRow": 1,
+        "posCol": 1
+      },
+      {
+        "tileName": "Game",
+        "posRow": 2,
+        "posCol": 0
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 3,
+        "posCol": 2
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 5,
+        "posCol": 3
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 0,
+        "posCol": 2
+      }
+    ],
+    "11": [
+      {
+        "tileName": "Cat",
+        "posRow": 5,
+        "posCol": 0
+      },
+      {
+        "tileName": "Book",
+        "posRow": 0,
+        "posCol": 2
+      },
+      {
+        "tileName": "Game",
+        "posRow": 4,
+        "posCol": 4
+      },
+      {
+        "tileName": "Frame",
+        "posRow": 2,
+        "posCol": 2
+      },
+      {
+        "tileName": "Trophy",
+        "posRow": 3,
+        "posCol": 3
+      },
+      {
+        "tileName": "Plant",
+        "posRow": 1,
+        "posCol": 1
+      }
+    ]
+  }
+}
