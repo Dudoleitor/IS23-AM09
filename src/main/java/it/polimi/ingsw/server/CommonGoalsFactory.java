@@ -29,13 +29,13 @@ public class CommonGoalsFactory {
         AbstractCommonGoal newGoal;
         switch (ID){
             case(1):
-                newGoal = new CommonGoal1(number_of_players);
+                newGoal = new SixGroupsOf2(number_of_players);
                 break;
             case(2):
                 newGoal = new CommonGoal2(number_of_players);
                 break;
             case(3):
-                newGoal = new CommonGoal3(number_of_players);
+                newGoal = new EqualsTilesInAllCorners(number_of_players);
                 break;
             case(4):
                 newGoal = new CommonGoal4(number_of_players);
