@@ -1,5 +1,13 @@
 package it.polimi.ingsw.shared;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+
 
 public class Shelf {
     private final Tile[][] tiles; //I chose to consider matrix coordinate (0,0) as the top-left corner of the shelf
@@ -28,6 +36,28 @@ public class Shelf {
             }
         } catch(NullPointerException e) {
             throw new ShelfGenericException("Error while creating Shelf : input Shelf is null pointer");
+        }
+    }
+    public Shelf(String jsonPath) throws ShelfGenericException{
+
+        JSONParser jsonParser = new JSONParser();
+        try{
+            Object obj = jsonParser.parse(new FileReader(jsonPath));
+            JSONObject obj_shelf = (JSONObject) ((JSONObject) obj).get("shelf");
+            rows = Math.toIntExact((long)(obj_shelf.get("rows")));
+            columns = Math.toIntExact((long)(obj_shelf.get("columns")));
+            tiles = new Tile[rows][columns];
+            JSONObject array_shelf = ((JSONObject)obj_shelf.get("matrix"));
+
+            for(int i = 0; i < rows; i++){
+                for(int j = 0; j < columns; j++){
+                    tiles[i][j] = Tile.valueOf((array_shelf.get(i*rows + j)).toString());
+                }
+            }
+        } catch (FileNotFoundException e){
+            throw new ShelfGenericException("Error while creating Shelf : json file not found");
+        } catch (ParseException | IOException | ClassCastException | NullPointerException e){
+            throw new ShelfGenericException("Error while creating Shelf : bad json parsing");
         }
     }
     public Tile getTile(Position pos) throws ShelfGenericException{

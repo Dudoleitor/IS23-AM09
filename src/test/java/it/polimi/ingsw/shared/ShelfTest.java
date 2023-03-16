@@ -27,5 +27,8 @@ public class ShelfTest {
             s.insertTile(Tile.valueOf(value),columns-1);
             assertEquals(s.getHighestColumn(), rows-i-1); //check getHighestColumn change in value as I fill last column
         }
+        //assert(s.equals(s));
+        System.out.println(s);
+        System.out.println(s.hashCode());
     }
 }
