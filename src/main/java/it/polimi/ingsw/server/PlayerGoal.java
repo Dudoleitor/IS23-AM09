@@ -164,6 +164,20 @@ public class PlayerGoal {
     }
 
     public int getGoalId() { return goalId; }
+
+    @Override
+    public String toString() {
+        return "PlayerGoal{" +
+                "positionList=" + positionList +
+                ", pointsMap=" + pointsMap +
+                ", goalId=" + goalId +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(positionList, pointsMap, goalId);
+    }
 }
 
 class GoalPosition {
