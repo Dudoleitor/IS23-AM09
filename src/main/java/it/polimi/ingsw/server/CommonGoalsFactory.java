@@ -41,13 +41,13 @@ public class CommonGoalsFactory {
                 newGoal = new CommonGoal4(number_of_players);
                 break;
             case(5):
-                newGoal = new CommonGoal5(number_of_players);
+                newGoal = new ThreeEqualColumns(number_of_players);
                 break;
             case(6):
-                newGoal = new CommonGoal6(number_of_players);
+                newGoal = new EightEqualTiles(number_of_players);
                 break;
             case(7):
-                newGoal = new CommonGoal7(number_of_players);
+                newGoal = new Ladders(number_of_players);
                 break;
             case(8):
                 newGoal = new CommonGoal8(number_of_players);

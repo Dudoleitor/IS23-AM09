@@ -19,7 +19,7 @@ public class EqualsTilesInAllCorners extends AbstractCommonGoal {
         return 3;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    protected boolean check(Shelf shelf) { //Untested
         Tile[] corners = getCorners(shelf);
         return Arrays.stream(corners).distinct().count() == 1;
     }
