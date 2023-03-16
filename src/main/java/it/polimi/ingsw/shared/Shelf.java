@@ -2,12 +2,33 @@ package it.polimi.ingsw.shared;
 
 public class Shelf {
     private final Tile[][] tiles; //I chose to consider matrix coordinate (0,0) as the top-left corner of the shelf
+    private final int rows;
+    private final int columns;
+
     public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles
+        this.rows = rows;
+        this.columns = columns;
         tiles = new Tile[rows][columns];
         for (int i = 0; i<rows; i++){
             for (int j = 0; j<columns; j++){
                 tiles[i][j] = Tile.Empty;
             }
+        }
+    }
+    public Shelf(Shelf s){
+        if(s != null){
+            rows = s.getRows();
+            columns = s.getColumns();
+            tiles = new Tile[rows][columns];
+            for(int i = 0; i<rows; i++){
+                for(int j = 0; j<columns; j++){
+                    tiles[i][j] = s.getTile(new Position(i,j));
+                }
+            }
+        } else {
+            rows = 0;
+            columns = 0;
+            tiles = null;
         }
     }
     public Tile getTile(Position pos){
@@ -48,4 +69,10 @@ public class Shelf {
 
     }
 
+    public int getRows() {
+        return rows;
+    }
+    public int getColumns() {
+        return columns;
+    }
 }
