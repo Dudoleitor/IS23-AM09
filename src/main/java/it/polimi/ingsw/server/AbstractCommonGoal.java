@@ -47,7 +47,7 @@ public abstract class AbstractCommonGoal {
     protected boolean notEmptyAndAllDifferent(ArrayList<Tile> tiles){
         return !tiles.contains(Tile.Empty) && tiles.stream().distinct().count() == tiles.size();
     }
-    protected ArrayList<Tile> allTilesInColum(Shelf shelf,int column){
+    protected ArrayList<Tile> allTilesInColumn(Shelf shelf, int column){
         ArrayList<Tile> tiles = new ArrayList<>();
         for(int row = 0; row < shelf.getRows();row++){
             tiles.add(shelf.getTile((new Position(row,column))));

@@ -18,7 +18,7 @@ public class ThreeColumnsWith3Types extends AbstractCommonGoal {
     protected boolean check(Shelf shelf) {
         int correctColumns = 0;
         for(int column = 0; column < shelf.getColumns(); column++){
-            if(maxThreeTypes(allTilesInColum(shelf,column))){
+            if(maxThreeTypes(allTilesInColumn(shelf,column))){
                 correctColumns++;
             }
         }

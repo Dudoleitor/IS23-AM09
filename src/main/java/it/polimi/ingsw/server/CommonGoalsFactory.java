@@ -33,7 +33,7 @@ public class CommonGoalsFactory {
                 newGoal = new SixGroupsOf2(number_of_players);
                 break;
             case(2):
-                newGoal = new CommonGoal2(number_of_players);
+                newGoal = new TwoSquares(number_of_players);
                 break;
             case(3):
                 newGoal = new EqualsTilesInAllCorners(number_of_players);
@@ -57,13 +57,13 @@ public class CommonGoalsFactory {
                 newGoal = new TwoAllDifferentLines(number_of_players);
                 break;
             case(10):
-                newGoal = new CommonGoal10(number_of_players);
+                newGoal = new FullLadder(number_of_players);
                 break;
             case(11):
-                newGoal = new CommonGoal11(number_of_players);
+                newGoal = new FourGroupsOfFour(number_of_players);
                 break;
             default:
-                newGoal = new CommonGoal12(number_of_players);
+                newGoal = new EqualX(number_of_players);
                 break;
         }
         return newGoal;
