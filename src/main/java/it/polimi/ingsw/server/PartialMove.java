@@ -10,11 +10,19 @@ public class PartialMove {
     public List<Position> getBoardPositions(){
         return new ArrayList<>(positions);
     }
-    public void addPosition(Position pos){
-        positions.add(pos);
+    public void addPosition(Position pos) throws PartialMoveException{
+        try{
+            positions.add(pos);
+        } catch(NullPointerException e) {
+            throw new PartialMoveException("Error while adding Position  : pos is null pointer");
+        }
     }
-    PartialMove(PartialMove to_clone){ //cloning constructor
-        positions = new ArrayList<>(to_clone.getBoardPositions());
+    PartialMove(PartialMove to_clone) throws PartialMoveException{ //cloning constructor
+        try {
+            positions = new ArrayList<>(to_clone.getBoardPositions());
+        } catch (NullPointerException e){
+            throw new PartialMoveException("Error while cloning PartialMove  : to_clone is null pointer");
+        }
     }
     PartialMove(){ //default constructor
         positions = new ArrayList<>();

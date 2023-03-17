@@ -15,7 +15,7 @@ public class Board {
     private ArrayList<AbstractCommonGoal> goals = new ArrayList<>();
 
 
-    public Board(int numRows, int numColumns, int numPlayers) {
+    public Board(int numRows, int numColumns, int numPlayers) throws BoardGenericException{
         boardTiles = new Tile[numRows][numColumns];
         switch(numPlayers){
 
@@ -121,8 +121,8 @@ public class Board {
                             boardTiles[6][i] = Tile.Invalid;
                             boardTiles[7][i] = Tile.Invalid;
                             boardTiles[8][i] = Tile.Invalid;
-                        //default:
-                            //throw new IllegalStateException("Unexpected value: " + i);
+                        default:
+                            throw new BoardGenericException("Error while generating Board: Invalid switch case");
                     }
                 }
 
@@ -221,6 +221,8 @@ public class Board {
                             boardTiles[7][i] = Tile.Invalid;
                             boardTiles[8][i] = Tile.Invalid;
                             break;
+                        default:
+                            throw new BoardGenericException("Error while generating Board: Invalid switch case");
                     }
                 }
 
@@ -306,17 +308,25 @@ public class Board {
                             boardTiles[7][i] = Tile.Invalid;
                             boardTiles[8][i] = Tile.Invalid;
                             break;
+                        default:
+                            throw new BoardGenericException("Error while generating Board: Invalid switch case");
                     }
                 }
 
+            default:
+                throw new BoardGenericException("Error while generating Board: Invalid num of players");
         }
 
     }
 
 
     //get tile in position pos
-    public Tile getTile(Position pos) {
-        return boardTiles[pos.getRow()][pos.getColumn()];
+    public Tile getTile(Position pos) throws BoardGenericException {
+        try {
+            return boardTiles[pos.getRow()][pos.getColumn()];
+        } catch (NullPointerException e){
+            throw new BoardGenericException("Error while getting Tile: pos is null pointer");
+        }
     }
 
     /* public void fill() {
@@ -325,11 +335,15 @@ public class Board {
 
     //Pick a tile from the board --> when you pick it,
     //it gets eliminated by the board
-    public Tile pickTile(Position pos) {
-        Tile selectedTile;
-        selectedTile = boardTiles[pos.getRow()][pos.getColumn()];
-        boardTiles[pos.getRow()][pos.getColumn()] = Tile.Empty;
-        return selectedTile;
+    public Tile pickTile(Position pos) throws BoardGenericException {
+        try {
+            Tile selectedTile;
+            selectedTile = boardTiles[pos.getRow()][pos.getColumn()];
+            boardTiles[pos.getRow()][pos.getColumn()] = Tile.Empty;
+            return selectedTile;
+        } catch (NullPointerException e){
+            throw new BoardGenericException("Error while picking tile: pos is null pointer ");
+        }
     }
 
     //get the two goals from CommonGoalsFactory

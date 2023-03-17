@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Move extends PartialMove {
     private int column;
-    public Move(PartialMove partial,int column) {
+    public Move(PartialMove partial,int column) throws PartialMoveException {
         super(partial);
         this.column = column;
     }

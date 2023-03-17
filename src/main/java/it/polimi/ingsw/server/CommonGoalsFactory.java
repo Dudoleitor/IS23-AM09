@@ -8,14 +8,17 @@ import java.util.Random;
 public class CommonGoalsFactory {
     static final int number_of_goals = 12;
 
-    public ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players){
+    public ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
         ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
         for(int i : pickTwoRandomNumbers(number_of_goals)){
             active_goals.add(create_goal_with_ID(i+1,number_of_players));
         }
         return active_goals;
     }
-    private int[] pickTwoRandomNumbers(int max){
+    private int[] pickTwoRandomNumbers(int max) throws CommonGoalsException{ //max must be positive
+        if(max < 0){
+            throw new CommonGoalsException("Error in pickTwoRandomNumbers : max must be positive");
+        }
         int[] result = new int[2];
         Random rand = new Random();
         result[0] = rand.nextInt(max);
