@@ -1,4 +1,5 @@
 package it.polimi.ingsw.shared;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -47,11 +48,12 @@ public class Shelf {
             rows = Math.toIntExact((long)(obj_shelf.get("rows")));
             columns = Math.toIntExact((long)(obj_shelf.get("columns")));
             tiles = new Tile[rows][columns];
-            JSONObject array_shelf = ((JSONObject)obj_shelf.get("matrix"));
+            JSONArray array_shelf = (JSONArray)obj_shelf.get("matrix");
 
             for(int i = 0; i < rows; i++){
+                JSONArray array_row = (JSONArray) array_shelf.get(i);
                 for(int j = 0; j < columns; j++){
-                    tiles[i][j] = Tile.valueOf((array_shelf.get(i*rows + j)).toString());
+                    tiles[i][j] = Tile.valueOf((array_row.get(j)).toString());
                 }
             }
         } catch (FileNotFoundException e){
@@ -119,20 +121,21 @@ public class Shelf {
         return columns;
     }
 
-    public boolean equals(Shelf s) throws ShelfGenericException{
-        try {
-            boolean sameShelf = true;
-            for (int i = 0; sameShelf && i < rows; i++) {
-                for (int j = 0; sameShelf && j < columns; j++) {
-                    if (!tiles[i][j].equals(s.getTile(i, j))) {
-                        sameShelf = false;
-                    }
+    public boolean equals(Object o) throws ShelfGenericException{
+        boolean sameShelf = true;
+        if(o == null || this.getClass() != o.getClass()){
+            return false;
+        } else if (this == o) {
+            return true;
+        }
+        for (int i = 0; sameShelf && i < rows; i++) {
+            for (int j = 0; sameShelf && j < columns; j++) {
+                if (!tiles[i][j].equals(((Shelf) o).getTile(i, j))) {
+                    sameShelf = false;
                 }
             }
-            return sameShelf;
-        } catch (NullPointerException e){
-            throw new ShelfGenericException("Error while creating Shelf : input Shelf is null pointer");
         }
+        return sameShelf;
     }
     @Override
     public String toString(){
