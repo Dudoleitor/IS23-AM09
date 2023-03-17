@@ -5,8 +5,8 @@ import it.polimi.ingsw.shared.Shelf;
 
 import java.util.Stack;
 
-public class CommonGoal9 extends AbstractCommonGoal {
-    public CommonGoal9(int number_of_players){
+public class TwoAllDifferentLines extends AbstractCommonGoal {
+    public TwoAllDifferentLines(int number_of_players){
         points = new Stack<>();
         populatePointsStack(number_of_players);
     }
@@ -16,6 +16,12 @@ public class CommonGoal9 extends AbstractCommonGoal {
     }
     @Override
     protected boolean check(Shelf shelf) {
-        return true;
+        int differentLines = 0;
+        for (int row = 0; row < shelf.getRows(); row++) {
+            if(notEmptyAndAllDifferent(allTilesInRow(shelf,row))){
+                differentLines++;
+            }
+        }
+        return differentLines >= 2;
     }
 }

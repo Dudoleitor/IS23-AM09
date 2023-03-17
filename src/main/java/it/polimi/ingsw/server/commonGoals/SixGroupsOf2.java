@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.commonGoals;
 import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -14,7 +15,7 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
     }
 
     @Override
-    public boolean check(Shelf shelf) { //TODO fix
+    public boolean check(Shelf shelf) { //TODO fix (?)
         int rows = shelf.getRows();
         int columns = shelf.getColumns();
         Position currentPosition;
@@ -24,8 +25,7 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
             for(int j = 0; j < columns; j++){
                 currentPosition = new Position(i,j);
                 for(Position neighbour : uncheckedNeighbours(currentPosition,rows,columns,alreadyChecked)){
-                    if(alreadyChecked[currentPosition.getRow()][currentPosition.getColumn()] &&
-                            shelf.getTile(neighbour).equals(shelf.getTile(currentPosition))){
+                    if(isCouple(shelf,currentPosition,neighbour,alreadyChecked)){
                         markPosition(alreadyChecked,currentPosition);
                         markPosition(alreadyChecked,neighbour);
                         groups_found++;
@@ -34,6 +34,12 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
             }
         }
         return groups_found >= 6;
+    }
+
+    private boolean isCouple(Shelf shelf, Position currentPosition, Position neighbour, boolean[][] alreadyChecked){
+        return !shelf.getTile(currentPosition).equals(Tile.Empty) &&
+                !alreadyChecked[currentPosition.getRow()][currentPosition.getColumn()] &&
+                shelf.getTile(neighbour).equals(shelf.getTile(currentPosition));
     }
     private ArrayList<Position> uncheckedNeighbours(Position pos, int rows, int columns, boolean[][]alreadyChecked){
         ArrayList<Position> neighbours = new ArrayList<>();

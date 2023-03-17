@@ -5,8 +5,8 @@ import it.polimi.ingsw.shared.Shelf;
 
 import java.util.Stack;
 
-public class CommonGoal4 extends AbstractCommonGoal {
-    public CommonGoal4(int number_of_players){
+public class ThreeColumnsWith3Types extends AbstractCommonGoal {
+    public ThreeColumnsWith3Types(int number_of_players){
         points = new Stack<>();
         populatePointsStack(number_of_players);
     }
@@ -16,6 +16,12 @@ public class CommonGoal4 extends AbstractCommonGoal {
     }
     @Override
     protected boolean check(Shelf shelf) {
-        return true;
+        int correctColumns = 0;
+        for(int row = 0; row < shelf.getRows(); row++){
+            if(maxThreeTypes(allTilesInColum(shelf,row))){
+                correctColumns++;
+            }
+        }
+        return correctColumns >= 4;
     }
 }

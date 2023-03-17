@@ -20,18 +20,18 @@ public class EqualsTilesInAllCorners extends AbstractCommonGoal {
     }
     @Override
     protected boolean check(Shelf shelf) { //Untested
-        Tile[] corners = getCorners(shelf);
-        return Arrays.stream(corners).distinct().count() == 1;
+        ArrayList<Tile> corners = getCorners(shelf);
+        return notEmptyAndEqual(corners);
     }
 
-    private Tile[] getCorners(Shelf shelf){
-        Tile[] corners = new Tile[4];
+    private ArrayList<Tile> getCorners(Shelf shelf){
+        ArrayList<Tile> corners = new ArrayList<>();
         int rows = shelf.getRows();
         int columns = shelf.getColumns();
-        corners[0] = shelf.getTile(new Position(0,0));
-        corners[1] = shelf.getTile(new Position(0,columns-1));
-        corners[2] = shelf.getTile(new Position(rows-1,0));
-        corners[3] = shelf.getTile(new Position(rows-1,columns-1));
+        corners.add(shelf.getTile(new Position(0,0)));
+        corners.add(shelf.getTile(new Position(0,columns-1)));
+        corners.add(shelf.getTile(new Position(rows-1,0)));
+        corners.add(shelf.getTile(new Position(rows-1,columns-1)));
         return corners;
     }
 }

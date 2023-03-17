@@ -39,10 +39,10 @@ public class CommonGoalsFactory {
                 newGoal = new EqualsTilesInAllCorners(number_of_players);
                 break;
             case(4):
-                newGoal = new CommonGoal4(number_of_players);
+                newGoal = new ThreeColumnsWith3Types(number_of_players);
                 break;
             case(5):
-                newGoal = new ThreeEqualColumns(number_of_players);
+                newGoal = new TwoAllDifferentColumns(number_of_players);
                 break;
             case(6):
                 newGoal = new EightEqualTiles(number_of_players);
@@ -51,10 +51,10 @@ public class CommonGoalsFactory {
                 newGoal = new Ladders(number_of_players);
                 break;
             case(8):
-                newGoal = new CommonGoal8(number_of_players);
+                newGoal = new FourLineWith3Types(number_of_players);
                 break;
             case(9):
-                newGoal = new CommonGoal9(number_of_players);
+                newGoal = new TwoAllDifferentLines(number_of_players);
                 break;
             case(10):
                 newGoal = new CommonGoal10(number_of_players);

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.Tile;
 
 import java.util.*;
 
@@ -38,5 +40,30 @@ public abstract class AbstractCommonGoal {
 
     public ArrayList<Integer> showPointsStack(){ //useful in debugging
         return new ArrayList<>(points);
+    }
+    protected boolean notEmptyAndEqual(ArrayList<Tile> tiles){
+        return tiles.stream().distinct().count() == 1 && !tiles.contains(Tile.Empty);
+    }
+    protected boolean notEmptyAndAllDifferent(ArrayList<Tile> tiles){
+        return !tiles.contains(Tile.Empty) && tiles.stream().distinct().count() == tiles.size();
+    }
+    protected ArrayList<Tile> allTilesInColum(Shelf shelf,int column){
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for(int row = 0; row < shelf.getRows();row++){
+            tiles.add(shelf.getTile((new Position(row,column))));
+        }
+        return tiles;
+    }
+    protected  ArrayList<Tile> allTilesInRow(Shelf shelf, int row){
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for(int column = 0; column < shelf.getColumns();column++){
+            tiles.add(shelf.getTile((new Position(row,column))));
+        }
+        return tiles;
+    }
+    protected boolean maxThreeTypes(ArrayList<Tile> tiles){
+        return tiles.size() > 0 &&
+                !tiles.contains(Tile.Empty) &&
+                tiles.stream().distinct().count() <= 3;
     }
 }
