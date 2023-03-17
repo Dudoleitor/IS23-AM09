@@ -44,16 +44,23 @@ public class Shelf {
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
+            JSONArray array_row;
             JSONObject obj_shelf = (JSONObject) ((JSONObject) obj).get("shelf");
+
             rows = Math.toIntExact((long)(obj_shelf.get("rows")));
             columns = Math.toIntExact((long)(obj_shelf.get("columns")));
             tiles = new Tile[rows][columns];
-            JSONArray array_shelf = (JSONArray)obj_shelf.get("matrix");
+            Tile t;
 
+            JSONArray array_shelf = (JSONArray)obj_shelf.get("matrix");
             for(int i = 0; i < rows; i++){
-                JSONArray array_row = (JSONArray) array_shelf.get(i);
+                array_row = (JSONArray) array_shelf.get(i);
                 for(int j = 0; j < columns; j++){
-                    tiles[i][j] = Tile.valueOf((array_row.get(j)).toString());
+                    t = Tile.valueOf((array_row.get(j)).toString());
+                    if(t.equals(Tile.Invalid)){
+                        throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
+                    }
+                    tiles[i][j] = t;
                 }
             }
         } catch (FileNotFoundException e){
@@ -103,6 +110,11 @@ public class Shelf {
     }
     public void insertTile(Tile tile, int column) throws ShelfGenericException {
         boolean is_empty = false;
+        if(tile.equals(Tile.Empty)){
+            return;
+        } else if (tile.equals(Tile.Invalid)){
+            throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
+        }
         for(int i = tiles.length-1; !is_empty && i>=0; i--){
             if(tiles[i][column] == Tile.Empty){
                 tiles[i][column] = tile;
