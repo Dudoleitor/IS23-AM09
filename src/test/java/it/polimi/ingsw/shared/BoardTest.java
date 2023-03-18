@@ -20,10 +20,10 @@ class BoardTest {
 
     @Test
     void getTile2(){
-        String jsonPath = "src/test/resources/boardTest.json";
+        String jsonPath = "src/test/resources/boardTestInsert.json";
         Board jsonBoard = new Board(jsonPath, 9, 9);
-
-        assertEquals(Tile.Empty, jsonBoard.getTile(pos1));
+        System.out.println(jsonBoard);
+        assert (jsonBoard.getTile(pos1).equals(Tile.Empty));
 
     }
 

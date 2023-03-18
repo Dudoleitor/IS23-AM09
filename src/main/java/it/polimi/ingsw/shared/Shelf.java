@@ -45,6 +45,7 @@ public class Shelf {
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
+            JSONArray shelf_line;
             JSONObject obj_shelf = (JSONObject) ((JSONObject) obj).get("shelf");
 
             rows = Math.toIntExact((long)(obj_shelf.get("rows")));
@@ -54,8 +55,9 @@ public class Shelf {
 
             JSONArray array_shelf = (JSONArray)obj_shelf.get("matrix");
             for(int i = 0; i < rows; i++){
+                shelf_line = (JSONArray)array_shelf.get(i);
                 for(int j = 0; j < columns; j++){
-                    t = Tile.valueOf((array_shelf.get(i*rows+j)).toString());
+                    t = Tile.valueOf((shelf_line.get(j)).toString());
                     if(t.equals(Tile.Invalid)){
                         throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
                     }

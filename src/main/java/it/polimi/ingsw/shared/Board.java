@@ -2,6 +2,7 @@ package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.server.CommonGoalsFactory;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -325,15 +326,17 @@ public class Board {
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
+            JSONArray board_line;
             JSONObject obj_board = (JSONObject) ((JSONObject) obj).get("board");
             //numRows = Math.toIntExact((long)(obj_board.get("numRows")));
             //numColumns = Math.toIntExact((long)(obj_board.get("numColumns")));
             boardTiles = new Tile[numRows][numColumns];
-            JSONObject array_board = ((JSONObject)obj_board.get("matrix"));
+            JSONArray array_board = (JSONArray)obj_board.get("matrix");
 
             for(int i = 0; i < numRows; i++){
+                board_line = (JSONArray) array_board.get(i);
                 for(int j = 0; j < numColumns; j++){
-                    if(array_board.get(i*numRows + j) == "1"){
+                    if(board_line.get(j).toString().equals("1")){
                         boardTiles[i][j] = Tile.Empty;
                     } else {
                         boardTiles[i][j] = Tile.Invalid;
@@ -383,7 +386,7 @@ public class Board {
     @Override
     public int hashCode() {
         int result = Objects.hash(tilesToDraw, numPlayers, goalsFactory, goals);
-        result = 31 * result + Arrays.hashCode(boardTiles);
+        result = 31 * result + Arrays.deepHashCode(boardTiles);
         return result;
     }
 
