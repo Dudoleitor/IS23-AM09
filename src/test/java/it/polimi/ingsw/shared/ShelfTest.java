@@ -52,7 +52,55 @@ public class ShelfTest {
         assert(s1.equals(s2)); //check they are the same
     }
     @Test
-    void ShelfJsonInit(){
+    void checkAdiacentTest(){
+        Shelf s = new Shelf(4,4);
+        s.insertTile(Tile.Cat,0);
+        s.insertTile(Tile.Cat,0);
+        s.insertTile(Tile.Book,0);
+        s.insertTile(Tile.Cat,0);
 
+        s.insertTile(Tile.Trophy,1);
+        s.insertTile(Tile.Cat,1);
+        s.insertTile(Tile.Cat,1);
+        s.insertTile(Tile.Cat,1);
+
+        s.insertTile(Tile.Trophy,2);
+        s.insertTile(Tile.Trophy,2);
+        s.insertTile(Tile.Trophy,2);
+        s.insertTile(Tile.Book,2);
+
+        s.insertTile(Tile.Trophy,3);
+        s.insertTile(Tile.Book,3);
+        s.insertTile(Tile.Book,3);
+        s.insertTile(Tile.Book,3);
+
+        System.out.println(s);
+        int res = s.checkAdiacent();
+        assertEquals(16, res);
+
+        s = new Shelf(4,4);
+        s.insertTile(Tile.Trophy,0);
+        s.insertTile(Tile.Book,0);
+        s.insertTile(Tile.Empty,0);
+        s.insertTile(Tile.Empty,0);
+
+        s.insertTile(Tile.Trophy,1);
+        s.insertTile(Tile.Book,1);
+        s.insertTile(Tile.Cat,1);
+        s.insertTile(Tile.Empty,1);
+
+        s.insertTile(Tile.Trophy,2);
+        s.insertTile(Tile.Book,2);
+        s.insertTile(Tile.Trophy,2);
+        s.insertTile(Tile.Empty,2);
+
+        s.insertTile(Tile.Trophy,3);
+        s.insertTile(Tile.Book,3);
+        s.insertTile(Tile.Trophy,3);
+        s.insertTile(Tile.Empty,3);
+
+        System.out.println(s);
+        res = s.checkAdiacent();
+        assertEquals(6, res);
     }
 }

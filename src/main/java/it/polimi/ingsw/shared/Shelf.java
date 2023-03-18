@@ -15,6 +15,7 @@ public class Shelf {
     private final int rows;
     private final int columns;
 
+
     public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles
         this.rows = rows;
         this.columns = columns;
@@ -124,6 +125,49 @@ public class Shelf {
         if (!is_empty){
             throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
         }
+    }
+
+    public int checkAdiacent(){
+        int count;
+        int points = 0;
+
+        boolean[][] visited = new boolean[rows][columns];
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                if (!visited[i][j]) {
+                    count = exploreAdiacents(visited, i, j);
+                    if(count >= 6)
+                        points = points+8;
+                    else if (count == 5)
+                        points = points+5;
+                    else if (count == 4)
+                        points = points+3;
+                    else if (count == 3)
+                        points = points+2;
+                }
+            }
+        }
+        return points;
+    }
+    private int exploreAdiacents(boolean[][] visited, int i, int j){
+        visited[i][j] = true;
+        int count = 0;
+        if(tiles[i][j].equals(Tile.Empty) || tiles[i][j].equals(Tile.Invalid))
+            return 0;
+        if( i>0 && !visited[i-1][j] && tiles[i][j].equals(tiles[i-1][j])){
+            count = count + exploreAdiacents(visited, i-1, j);
+        }
+        if( i<rows-1 && !visited[i+1][j] && tiles[i][j].equals(tiles[i+1][j])){
+            count = count + exploreAdiacents(visited, i+1, j);
+        }
+        if( j>0 && !visited[i][j-1] && tiles[i][j].equals(tiles[i][j-1])){
+            count = count + exploreAdiacents(visited, i, j-1);
+        }
+        if( j<columns-1 && !visited[i][j+1] && tiles[i][j].equals(tiles[i][j+1])){
+            count = count + exploreAdiacents(visited, i, j+1);
+        }
+        return count+1;
+
     }
 
     public int getRows() {
