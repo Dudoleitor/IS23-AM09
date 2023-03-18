@@ -103,4 +103,32 @@ public class ShelfTest {
         res = s.checkAdiacent();
         assertEquals(6, res);
     }
+    @Test
+    public void ShelfJsonTester(){
+        String jsonPath = "src/test/resources/ShelfBuilderJson.json";
+        Shelf s = new Shelf(jsonPath);
+        Shelf s1 = new Shelf(4, 4);
+        s1.insertTile(Tile.Trophy, 0);
+        s1.insertTile(Tile.Cat, 0);
+        s1.insertTile(Tile.Trophy, 0);
+        s1.insertTile(Tile.Cat, 0);
+
+        s1.insertTile(Tile.Cat, 1);
+        s1.insertTile(Tile.Cat, 1);
+        s1.insertTile(Tile.Cat, 1);
+        s1.insertTile(Tile.Cat, 1);
+
+        s1.insertTile(Tile.Book, 2);
+        s1.insertTile(Tile.Cat, 2);
+        s1.insertTile(Tile.Cat, 2);
+        s1.insertTile(Tile.Empty, 2);
+
+        s1.insertTile(Tile.Cat, 3);
+        s1.insertTile(Tile.Cat, 3);
+        s1.insertTile(Tile.Book, 3);
+        s1.insertTile(Tile.Book, 3);
+
+
+        assert(s.equals(s1));
+    }
 }
