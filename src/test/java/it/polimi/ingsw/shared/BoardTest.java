@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
 
-    Board board = new Board(9,9,2);
+    Board board = new Board(9,9,3);
     Position pos1 = new Position(3,4);
     Position pos2 = new Position(1, 2);
     Board board1 = new Board(9,9,3);
@@ -16,6 +16,15 @@ class BoardTest {
     @Test
     void getTile() {
         assertEquals(Tile.Empty,board.getTile(pos1));
+    }
+
+    @Test
+    void getTile2(){
+        String jsonPath = "src/test/resources/boardTest.json";
+        Board jsonBoard = new Board(jsonPath, 9, 9);
+
+        assertEquals(Tile.Empty, jsonBoard.getTile(pos1));
+
     }
 
     @Test
