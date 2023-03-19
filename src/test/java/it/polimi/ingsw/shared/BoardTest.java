@@ -41,4 +41,15 @@ class BoardTest {
         assertEquals(Tile.Invalid, board2.pickTile(pos2));
     }
 
+    @Test
+    void boardFiller(){
+        String jsonPath = "src/test/resources/boardTestInsert.json";
+        Board b = new Board(jsonPath);
+        System.out.println(b);
+        b.fill();
+        System.out.println(b);
+
+
+    }
+
 }

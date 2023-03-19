@@ -9,10 +9,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 
 public class Board {
@@ -22,7 +19,7 @@ public class Board {
     private int numPlayers;
     private int numRows;
     private int numColumns;
-    private CommonGoalsFactory goalsFactory = new CommonGoalsFactory();
+    private final CommonGoalsFactory goalsFactory = new CommonGoalsFactory();
     private ArrayList<AbstractCommonGoal> goals = new ArrayList<>();
 
 
@@ -32,8 +29,10 @@ public class Board {
         this.numColumns = numColumns;
         this.numRows = numRows;
 
+
         //0 is the uppest row
         //numRow is the lowest row
+
 
         if (numPlayers == 2) {
             for (int i = 0; i < numColumns; i++) {
@@ -320,6 +319,13 @@ public class Board {
 
     public Board(String jsonPath) throws BoardGenericException{
 
+        //TEST tilesToDraw initializer to test fill()
+        tilesToDraw = new ArrayList<>();
+        for(int i = 0; i < 100; i++){
+            tilesToDraw.add(Tile.Cat);
+        }
+        //TEST END
+
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
@@ -345,7 +351,7 @@ public class Board {
         }
     }
 
-    @Override
+
 /*public String toString() {
     return "Board{" +
             "boardTiles=" + Arrays.toString(boardTiles) +
@@ -355,7 +361,32 @@ public class Board {
             ", goals=" + goals +
             '}';
 }*/
+    public void fill() throws OutOfTilesException{
+        Tile t;
+        for(int i = 0; i<numRows; i++){
+            for(int j = 0; j<numColumns; j++){
+                t = boardTiles[i][j];
+                if (!t.equals(Tile.Invalid) && !t.equals(Tile.Empty)) {
+                    tilesToDraw.add(t);
+                }
+            }
+        }
+        Collections.shuffle(tilesToDraw);
+        for(int i = 0; i<numRows; i++){
+            for(int j = 0; j<numColumns; j++){
+                if(!boardTiles[i][j].equals(Tile.Invalid)) {
+                    if(tilesToDraw.size() > 0) {
+                        boardTiles[i][j] = tilesToDraw.remove(0);
+                    }else{
+                        throw new OutOfTilesException("No more tiles left in the deck");
+                    }
+                }
 
+            }
+        }
+
+    }
+    @Override
     public String toString(){
         String s = "";
         for(int i = 0; i < numRows; i++){
