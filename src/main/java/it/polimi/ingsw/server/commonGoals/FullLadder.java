@@ -24,16 +24,22 @@ public class FullLadder extends AbstractCommonGoal {
         return isLadder(heights);
     }
     private boolean isLadder(int[] heights){
-        boolean result = true;
         if(heights.length == 1){
             return true;
         }
-        int previous = heights[0];
+        boolean ascending = true;
+        int expected = heights[0]+1;
         for(int i = 1; i < heights.length; i++){
-            result = result && heights[i] == previous+1;
-            previous = heights[i];
+            ascending = ascending && heights[i] == expected;
+            expected++;
         }
-        return result;
+        boolean descending = true;
+        expected = heights[0]-1;
+        for(int i = 1; i < heights.length; i++){
+            descending = descending && heights[i] == expected;
+            expected--;
+        }
+        return ascending || descending;
     }
     private int columnHeigth(Shelf shelf, int column){
         return (int) allTilesInColumn(shelf,column).stream()

@@ -33,13 +33,14 @@ public class Ladders extends AbstractCommonGoal {
         int rows = shelf.getRows();
         int columns = shelf.getColumns();
         ArrayList<ArrayList<Tile>> ladders = new ArrayList<>();
-        ArrayList<Tile> currentLadder;
+        ArrayList<Tile> currentLadder = new ArrayList<>();
         for(int initialrow = 0; initialrow < 2; initialrow++){ //value 2 is hardcoded
-            currentLadder = new ArrayList<>();
+            currentLadder.clear();
             for(int i = 0; i < Math.min(rows,columns); i++){
                 currentLadder.add(shelf.getTile(new Position(initialrow+i,i)));
             }
             ladders.add(new ArrayList<>(currentLadder));
+            currentLadder.clear();
             for(int i = 0; i < Math.min(rows,columns); i++){
                 currentLadder.add(shelf.getTile(new Position(initialrow+i,columns-1-i)));
             }

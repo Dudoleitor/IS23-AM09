@@ -15,4 +15,25 @@ class FullLadderTest {
         assertTrue(to_test.getID() == 10);
         assertFalse(to_test.check(emptyShelf));
     }
+    @Test
+    void testTrueDescending() {
+        Shelf trueShelf = new Shelf("src/test/resources/TestShelf_1_FullLadder.json");
+        AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(10, 2);
+        assertTrue(to_test.getID() == 10);
+        assertTrue(to_test.check(trueShelf));
+    }
+    @Test
+    void testTrueAscending() {
+        Shelf trueShelf = new Shelf("src/test/resources/TestShelf_3_FullLadder.json");
+        AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(10, 2);
+        assertTrue(to_test.getID() == 10);
+        assertTrue(to_test.check(trueShelf));
+    }
+    @Test
+    void testFalse(){
+        Shelf falseShelf = new Shelf("src/test/resources/TestShelf_2_FullLadder.json");
+        AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(10,2);
+        assertTrue(to_test.getID() == 10);
+        assertFalse(to_test.check(falseShelf));
+    }
 }

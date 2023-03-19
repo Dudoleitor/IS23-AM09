@@ -1,0 +1,14 @@
+{
+  "shelf": {
+    "rows": 6,
+    "columns": 5,
+    "matrix": [
+      ["Empty", "Empty", "Empty", "Empty", "Book"],
+      ["Empty", "Cat",   "Empty", "Book",  "Cat"],
+      ["Book",  "Cat",   "Book",  "Book",  "Cat"],
+      ["Cat",   "Book",  "Book",  "Cat",   "Cat"],
+      ["Book",  "Cat",   "Cat",   "Book",  "Cat"],
+      ["Cat",   "Book",  "Book",  "Cat",   "Book"]
+    ]
+  }
+}
