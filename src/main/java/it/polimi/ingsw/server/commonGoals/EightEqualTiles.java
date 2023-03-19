@@ -23,9 +23,6 @@ public class EightEqualTiles extends AbstractCommonGoal {
     public boolean check(Shelf shelf) {
         Tile currentTile;
         HashMap<Tile,Integer> counters = new HashMap<>();
-        //ArrayList<Tile> tiles = (ArrayList<Tile>) Arrays.asList(Tile.values());
-        //tiles.remove(Tile.Empty);
-        //tiles.remove(Tile.Invalid);
         for(Tile tile : Tile.values()){
             counters.put(tile,0);
         }

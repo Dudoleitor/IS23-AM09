@@ -22,6 +22,6 @@ public class ThreeColumnsWith3Types extends AbstractCommonGoal {
                 correctColumns++;
             }
         }
-        return correctColumns >= 4;
+        return correctColumns >= 3;
     }
 }
