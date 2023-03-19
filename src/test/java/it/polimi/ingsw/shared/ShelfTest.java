@@ -128,7 +128,6 @@ public class ShelfTest {
         s1.insertTile(Tile.Book, 3);
         s1.insertTile(Tile.Book, 3);
 
-
         assert(s.equals(s1));
     }
 }

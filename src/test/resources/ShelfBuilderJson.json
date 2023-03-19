@@ -3,10 +3,10 @@
     "rows": 4,
     "columns": 4,
     "matrix": [
-      ["Cat",    "Cat", "Empty", "Book"],
-      ["Trophy", "Cat", "Cat",   "Book"],
-      ["Cat",    "Cat", "Cat",   "Cat"],
-      ["Trophy", "Cat", "Book",  "Cat"]
+      ["C","C","E","B"],
+      ["T","C","C","B"],
+      ["C","C","C","C"],
+      ["T","C","B","C"]
     ]
   }
 }

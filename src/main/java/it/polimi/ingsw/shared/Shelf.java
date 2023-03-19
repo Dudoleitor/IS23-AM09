@@ -57,7 +57,7 @@ public class Shelf {
             for(int i = 0; i < rows; i++){
                 shelf_line = (JSONArray)array_shelf.get(i);
                 for(int j = 0; j < columns; j++){
-                    t = Tile.valueOf((shelf_line.get(j)).toString());
+                    t = Tile.valueOfLabel((String) shelf_line.get(j));
                     if(t.equals(Tile.Invalid)){
                         throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
                     }
