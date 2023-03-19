@@ -19,7 +19,7 @@ public class Ladders extends AbstractCommonGoal {
         return 7;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) {
         ArrayList<ArrayList<Tile>> ladders = generateLadders(shelf);
         for(ArrayList<Tile> ladder : ladders){
             if(notEmptyAndEqual(ladder)){

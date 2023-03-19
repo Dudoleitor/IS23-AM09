@@ -15,7 +15,7 @@ public class TwoAllDifferentLines extends AbstractCommonGoal {
         return 9;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) {
         int differentLines = 0;
         for (int row = 0; row < shelf.getRows(); row++) {
             if(notEmptyAndAllDifferent(allTilesInRow(shelf,row))){

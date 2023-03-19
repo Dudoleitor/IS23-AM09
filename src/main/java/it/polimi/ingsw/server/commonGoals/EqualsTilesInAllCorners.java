@@ -19,7 +19,7 @@ public class EqualsTilesInAllCorners extends AbstractCommonGoal {
         return 3;
     }
     @Override
-    protected boolean check(Shelf shelf) { //Untested
+    public boolean check(Shelf shelf) { //Untested
         ArrayList<Tile> corners = getCorners(shelf);
         return notEmptyAndEqual(corners);
     }

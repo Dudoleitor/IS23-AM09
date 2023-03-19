@@ -15,7 +15,8 @@ public class EqualX extends AbstractCommonGoal {
         return 12;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    //TODO implement check
+    public boolean check(Shelf shelf) {
         return true;
     }
 }

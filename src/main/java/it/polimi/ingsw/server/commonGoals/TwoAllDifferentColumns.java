@@ -15,7 +15,7 @@ public class TwoAllDifferentColumns extends AbstractCommonGoal {
         return 5;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) {
         int differentColumns = 0;
         for (int column = 0; column < shelf.getColumns(); column++) {
             if(notEmptyAndAllDifferent(allTilesInColumn(shelf,column))){

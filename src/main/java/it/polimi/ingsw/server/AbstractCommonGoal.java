@@ -4,13 +4,14 @@ import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public abstract class AbstractCommonGoal {
     protected Stack<Integer> points;
 
     public abstract int getID();
-    protected abstract boolean check(Shelf shelf);
+    public abstract boolean check(Shelf shelf);
     public void populatePointsStack(int number_of_players) throws CommonGoalsException{
         this.points = new Stack<>();
         switch (number_of_players){
@@ -78,11 +79,11 @@ public abstract class AbstractCommonGoal {
             throw new CommonGoalsException("Error while checking AllTilesInRow : shelf is null pointer");
         }
     }
-    protected boolean maxThreeTypes(ArrayList<Tile> tiles) throws CommonGoalsException {
+    protected boolean maxNTypes(ArrayList<Tile> tiles, int n) throws CommonGoalsException {
         try {
             return tiles.size() > 0 &&
                     !tiles.contains(Tile.Empty) &&
-                    tiles.stream().distinct().count() <= 3;
+                    tiles.stream().distinct().count() <= n;
 
         } catch (NullPointerException e){
             throw new CommonGoalsException("Error while checking maxThreeTypes : tiles is null pointer");

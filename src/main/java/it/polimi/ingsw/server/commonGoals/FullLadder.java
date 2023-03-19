@@ -16,7 +16,7 @@ public class FullLadder extends AbstractCommonGoal {
         return 10;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) {
         int[] heights = new int[shelf.getColumns()];
         for(int column = 0; column < shelf.getColumns(); column++){
             heights[column] = columnHeigth(shelf,column);
@@ -31,7 +31,7 @@ public class FullLadder extends AbstractCommonGoal {
         int previous = heights[0];
         for(int i = 1; i < heights.length; i++){
             result = result && heights[i] == previous+1;
-            previous++;
+            previous = heights[i];
         }
         return result;
     }

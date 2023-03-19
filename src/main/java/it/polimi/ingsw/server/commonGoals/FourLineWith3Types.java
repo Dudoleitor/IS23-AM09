@@ -17,10 +17,10 @@ public class FourLineWith3Types extends AbstractCommonGoal {
         return 8;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) {
         int correctRows = 0;
         for(int row = 0; row < shelf.getRows(); row++){
-            if(maxThreeTypes(allTilesInRow(shelf,row))){
+            if(maxNTypes(allTilesInRow(shelf,row),3)){
                 correctRows++;
             }
         }

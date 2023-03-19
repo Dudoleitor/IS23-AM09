@@ -15,7 +15,8 @@ public class FourGroupsOfFour extends AbstractCommonGoal {
         return 11;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    //TODO implement check
+    public boolean check(Shelf shelf) {
         return true;
     }
 }

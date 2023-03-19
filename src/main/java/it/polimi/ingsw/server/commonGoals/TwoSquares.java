@@ -15,6 +15,7 @@ public class TwoSquares extends AbstractCommonGoal {
         populatePointsStack(number_of_players);
     }
     @Override
+    //TODO implement check
     public boolean check(Shelf shelf) {
         return true;
     }
