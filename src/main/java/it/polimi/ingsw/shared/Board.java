@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class Board {
 
-    private Tile boardTiles[][];
+    private Tile[][] boardTiles;
     private List<Tile> tilesToDraw;
     private int numPlayers;
     private int numRows;
@@ -318,30 +318,22 @@ public class Board {
     }
 
 
-    public Board(String jsonPath, int numRows, int numColumns) throws BoardGenericException{
-
-        this.numRows = numRows;
-        this.numColumns = numColumns;
+    public Board(String jsonPath) throws BoardGenericException{
 
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
             JSONArray board_line;
             JSONObject obj_board = (JSONObject) ((JSONObject) obj).get("board");
-            //numRows = Math.toIntExact((long)(obj_board.get("numRows")));
-            //numColumns = Math.toIntExact((long)(obj_board.get("numColumns")));
+            numRows = Math.toIntExact((long)(obj_board.get("numRows")));
+            numColumns = Math.toIntExact((long)(obj_board.get("numColumns")));
             boardTiles = new Tile[numRows][numColumns];
             JSONArray array_board = (JSONArray)obj_board.get("matrix");
 
             for(int i = 0; i < numRows; i++){
                 board_line = (JSONArray) array_board.get(i);
                 for(int j = 0; j < numColumns; j++){
-                    if(board_line.get(j).toString().equals("1")){
-                        boardTiles[i][j] = Tile.Empty;
-                    } else {
-                        boardTiles[i][j] = Tile.Invalid;
-                    }
-                    //boardTiles[i][j] = Tile.valueOf((array_board.get(i*numRows + j)).toString());
+                    boardTiles[i][j] = Tile.valueOfLabel((String) board_line.get(j));
                 }
             }
         } catch (FileNotFoundException e){
