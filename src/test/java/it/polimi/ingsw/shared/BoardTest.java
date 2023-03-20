@@ -22,8 +22,6 @@ class BoardTest {
     void getTile2(){
         String jsonPath = "src/test/resources/boardTestInsert.json";
         Board jsonBoard = new Board(jsonPath);
-        System.out.println(jsonBoard);
-
     }
 
     @Test
@@ -45,11 +43,6 @@ class BoardTest {
     void boardFiller(){
         String jsonPath = "src/test/resources/boardTestInsert.json";
         Board b = new Board(jsonPath);
-        System.out.println(b);
         b.fill();
-        System.out.println(b);
-
-
     }
-
 }
