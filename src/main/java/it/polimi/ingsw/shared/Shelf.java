@@ -45,19 +45,19 @@ public class Shelf {
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
-            JSONArray shelf_line;
-            JSONObject obj_shelf = (JSONObject) ((JSONObject) obj).get("shelf");
+            JSONArray shelfLine;
+            JSONObject objShelf = (JSONObject) ((JSONObject) obj).get("shelf");
 
-            rows = Math.toIntExact((long)(obj_shelf.get("rows")));
-            columns = Math.toIntExact((long)(obj_shelf.get("columns")));
+            rows = Math.toIntExact((long)(objShelf.get("rows")));
+            columns = Math.toIntExact((long)(objShelf.get("columns")));
             tiles = new Tile[rows][columns];
             Tile t;
 
-            JSONArray array_shelf = (JSONArray)obj_shelf.get("matrix");
+            JSONArray array_shelf = (JSONArray)objShelf.get("matrix");
             for(int i = 0; i < rows; i++){
-                shelf_line = (JSONArray)array_shelf.get(i);
+                shelfLine = (JSONArray)array_shelf.get(i);
                 for(int j = 0; j < columns; j++){
-                    t = Tile.valueOfLabel((String) shelf_line.get(j));
+                    t = Tile.valueOfLabel((String) shelfLine.get(j));
                     if(t.equals(Tile.Invalid)){
                         throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
                     }
@@ -88,21 +88,21 @@ public class Shelf {
 
     public int getHighestColumn(){ //gives back the number of free cells of the most empty column
         int max = 0;
-        boolean max_found = false;
+        boolean maxFound = false;
         int count;
-        boolean not_empty;
+        boolean notEmpty;
 
-        for(int j = 0; !max_found && j < tiles[0].length; j++){
+        for(int j = 0; !maxFound && j < tiles[0].length; j++){
             count = 0;
-            not_empty = false;
-            for(int i = 0; !max_found && !not_empty && i < tiles.length; i++){
+            notEmpty = false;
+            for(int i = 0; !maxFound && !notEmpty && i < tiles.length; i++){
                 if(tiles[i][j] == Tile.Empty){
                     count++;
                 } else {
-                    not_empty = true;
+                    notEmpty = true;
                 }
                 if(count == tiles.length)
-                    max_found = true;
+                    maxFound = true;
             }
             if(count > max)
                 max = count;
@@ -110,19 +110,19 @@ public class Shelf {
         return max;
     }
     public void insertTile(Tile tile, int column) throws ShelfGenericException {
-        boolean is_empty = false;
+        boolean isEmpty = false;
         if(tile.equals(Tile.Empty)){
             return;
         } else if (tile.equals(Tile.Invalid)){
             throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
         }
-        for(int i = tiles.length-1; !is_empty && i>=0; i--){
+        for(int i = tiles.length-1; !isEmpty && i>=0; i--){
             if(tiles[i][column] == Tile.Empty){
                 tiles[i][column] = tile;
-                is_empty = true;
+                isEmpty = true;
             }
         }
-        if (!is_empty){
+        if (!isEmpty){
             throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
         }
     }
@@ -184,6 +184,8 @@ public class Shelf {
         } else if (this == o) {
             return true;
         }
+        if(rows != ((Shelf) o).getRows() || columns != ((Shelf) o).getColumns())
+            return false;
         for (int i = 0; sameShelf && i < rows; i++) {
             for (int j = 0; sameShelf && j < columns; j++) {
                 if (!tiles[i][j].equals(((Shelf) o).getTile(i, j))) {

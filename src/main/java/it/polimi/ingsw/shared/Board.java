@@ -319,27 +319,26 @@ public class Board {
 
     public Board(String jsonPath) throws BoardGenericException{
 
-        //TEST tilesToDraw initializer to test fill()
-        tilesToDraw = new ArrayList<>();
-        for(int i = 0; i < 100; i++){
-            tilesToDraw.add(Tile.Cat);
-        }
-        //TEST END
 
         JSONParser jsonParser = new JSONParser();
         try{
+            tilesToDraw = new ArrayList<>();
             Object obj = jsonParser.parse(new FileReader(jsonPath));
-            JSONArray board_line;
-            JSONObject obj_board = (JSONObject) ((JSONObject) obj).get("board");
-            numRows = Math.toIntExact((long)(obj_board.get("numRows")));
-            numColumns = Math.toIntExact((long)(obj_board.get("numColumns")));
+            JSONArray boardLine;
+            JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board");
+            numRows = Math.toIntExact((long)(objBoard.get("numRows")));
+            numColumns = Math.toIntExact((long)(objBoard.get("numColumns")));
             boardTiles = new Tile[numRows][numColumns];
-            JSONArray array_board = (JSONArray)obj_board.get("matrix");
+            JSONArray arrayDeck = (JSONArray)objBoard.get("deck");
+            JSONArray arrayBoard = (JSONArray)objBoard.get("matrix");
 
+            for (Object o : arrayDeck) {
+                tilesToDraw.add(Tile.valueOfLabel((String) o));
+            }
             for(int i = 0; i < numRows; i++){
-                board_line = (JSONArray) array_board.get(i);
+                boardLine = (JSONArray) arrayBoard.get(i);
                 for(int j = 0; j < numColumns; j++){
-                    boardTiles[i][j] = Tile.valueOfLabel((String) board_line.get(j));
+                    boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j));
                 }
             }
         } catch (FileNotFoundException e){
@@ -403,7 +402,26 @@ public class Board {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return numPlayers == board.numPlayers && Arrays.equals(boardTiles, board.boardTiles) && tilesToDraw.equals(board.tilesToDraw) && goalsFactory.equals(board.goalsFactory) && goals.equals(board.goals);
+        boolean same = true;
+
+        if(numRows != board.getNumRows() || numColumns != board.getNumColumns() || numPlayers != getNumPlayers())
+            same = false;
+        for(int i = 0; same && i<numRows; i++){
+            for(int j = 0; same && j<numColumns; j++){
+                if(!boardTiles[i][j].equals(board.getTile(i,j))){
+                    same = false;
+                }
+            }
+        }
+        List<AbstractCommonGoal> Bgoals = board.getCommonGoals();
+        if(goals.size() != Bgoals.size())
+            same = false;
+        for(int i = 0;same && i<goals.size(); i++){
+            if(!goals.get(i).equals(Bgoals.get(i)))
+                same = false;
+        }
+        return same;
+
     }
 
     @Override
@@ -413,11 +431,29 @@ public class Board {
         return result;
     }
 
+    public int getNumPlayers() {
+        return numPlayers;
+    }
 
+    public int getNumRows() {
+        return numRows;
+    }
+
+    public int getNumColumns() {
+        return numColumns;
+    }
 
     //get tile in position pos
-    public Tile getTile(Position pos) {
-        return boardTiles[pos.getRow()][pos.getColumn()];
+    public Tile getTile(Position pos) throws BoardGenericException{
+        return getTile(pos.getRow(), pos.getColumn());
+    }
+
+    public Tile getTile(int i, int j) throws BoardGenericException{
+        try {
+            return boardTiles[i][j];
+        } catch (IndexOutOfBoundsException e){
+            throw new BoardGenericException("Error while getting tile from Board : illegal coordinates");
+        }
     }
 
     /* public void fill() {
