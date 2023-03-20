@@ -17,7 +17,7 @@ class EightEqualTilesTest {
     }
     @Test
     void trueTest(){
-        Shelf trueShelf = new Shelf("src/test/resources/TestShellf_1_8equalsTiles.json");
+        Shelf trueShelf = new Shelf("src/test/resources/TestShelf_1_8equalsTiles.json");
         AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);
         assertTrue(to_test.check(trueShelf));
