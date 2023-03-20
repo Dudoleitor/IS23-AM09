@@ -42,7 +42,7 @@ public class FullLadder extends AbstractCommonGoal {
         return ascending || descending;
     }
     private int columnHeigth(Shelf shelf, int column){
-        return (int) allTilesInColumn(shelf,column).stream()
+        return (int) shelf.allTilesInColumn(column).stream()
                 .filter(x->!x.equals(Tile.Empty)).count();
     }
 }

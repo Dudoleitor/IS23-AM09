@@ -20,7 +20,7 @@ public class FourLineWith3Types extends AbstractCommonGoal {
     public boolean check(Shelf shelf) {
         int correctRows = 0;
         for(int row = 0; row < shelf.getRows(); row++){
-            if(maxNTypes(allTilesInRow(shelf,row),3)){
+            if(maxNTypes(shelf.allTilesInRow(row),3)){
                 correctRows++;
             }
         }

@@ -18,7 +18,7 @@ public class TwoAllDifferentColumns extends AbstractCommonGoal {
     public boolean check(Shelf shelf) {
         int differentColumns = 0;
         for (int column = 0; column < shelf.getColumns(); column++) {
-            if(notEmptyAndAllDifferent(allTilesInColumn(shelf,column))){
+            if(notEmptyAndAllDifferent(shelf.allTilesInColumn(column))){
                 differentColumns++;
             }
         }

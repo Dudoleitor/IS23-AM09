@@ -1,4 +1,5 @@
 package it.polimi.ingsw.shared;
+import it.polimi.ingsw.server.CommonGoalsException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -7,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -176,7 +178,6 @@ public class Shelf {
     public int getColumns() {
         return columns;
     }
-
     public boolean equals(Object o) throws ShelfGenericException{
         boolean sameShelf = true;
         if(o == null || this.getClass() != o.getClass()){
@@ -211,6 +212,40 @@ public class Shelf {
     public int hashCode(){
         return Arrays.deepHashCode(tiles); //deepHashCode is similar to HashCode but also applied to any sub-array of elements
     }
+    /**
+     * Returns all the Tiles in a specific column of the shelf
+     * @param column a column of the shelf
+     * @return an ArrayList containing all the Tiles in the selected column of the shelf
+     */
+    public ArrayList<Tile> allTilesInColumn(int column){
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int row = 0; row < getRows(); row++) {
+                tiles.add(getTile(row, column));
+            }
+            return tiles;
+    }
 
+    /**
+     * Returns all the Tiles in a specific row of the shelf
+     * @param row a row of the shelf
+     * @return an ArrayList containing all the Tiles in the selected row of the shelf
+     */
+    public  ArrayList<Tile> allTilesInRow(int row){
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int column = 0; column < getColumns(); column++) {
+                tiles.add(getTile(row, column));
+            }
+            return tiles;
+    }
 
+    public ArrayList<Tile> getCorners(){
+        ArrayList<Tile> corners = new ArrayList<>();
+        int rows = getRows();
+        int columns = getColumns();
+        corners.add(getTile(0,0));
+        corners.add(getTile(0,columns-1));
+        corners.add(getTile(rows-1,0));
+        corners.add(getTile(rows-1,columns-1));
+        return corners;
+    }
 }

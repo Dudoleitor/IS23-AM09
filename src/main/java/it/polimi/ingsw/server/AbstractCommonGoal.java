@@ -100,44 +100,6 @@ public abstract class AbstractCommonGoal {
     }
 
     /**
-     * Returns all the Tiles in a specific column of the shelf
-     * @param shelf a player's Shelf
-     * @param column a column of the shelf
-     * @return an ArrayList containing all the Tiles in the selected column of the shelf
-     * @throws CommonGoalsException
-     */
-    protected ArrayList<Tile> allTilesInColumn(Shelf shelf, int column) throws CommonGoalsException{
-        try {
-            ArrayList<Tile> tiles = new ArrayList<>();
-            for (int row = 0; row < shelf.getRows(); row++) {
-                tiles.add(shelf.getTile(row, column));
-            }
-            return tiles;
-        } catch (NullPointerException e){
-            throw new CommonGoalsException("Error while checking AllTilesInColumn : shelf is null pointer");
-        }
-    }
-
-    /**
-     * Returns all the Tiles in a specific row of the shelf
-     * @param shelf a player's Shelf
-     * @param row a row of the shelf
-     * @return an ArrayList containing all the Tiles in the selected row of the shelf
-     * @throws CommonGoalsException
-     */
-    protected  ArrayList<Tile> allTilesInRow(Shelf shelf, int row) throws CommonGoalsException{
-        try {
-            ArrayList<Tile> tiles = new ArrayList<>();
-            for (int column = 0; column < shelf.getColumns(); column++) {
-                tiles.add(shelf.getTile(row, column));
-            }
-            return tiles;
-        } catch (NullPointerException e){
-            throw new CommonGoalsException("Error while checking AllTilesInRow : shelf is null pointer");
-        }
-    }
-
-    /**
      * Checks if some Tiles have maximum n types of Tiles and do not contain Empty Tiles
      * @param tiles an ArrayList of Tiles
      * @param n the maximum number of accepted types of Tiles in tiles

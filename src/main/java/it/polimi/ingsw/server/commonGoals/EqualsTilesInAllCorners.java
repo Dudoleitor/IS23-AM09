@@ -20,18 +20,7 @@ public class EqualsTilesInAllCorners extends AbstractCommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) { //Untested
-        ArrayList<Tile> corners = getCorners(shelf);
+        ArrayList<Tile> corners = shelf.getCorners();
         return notEmptyAndEqual(corners);
-    }
-
-    private ArrayList<Tile> getCorners(Shelf shelf){
-        ArrayList<Tile> corners = new ArrayList<>();
-        int rows = shelf.getRows();
-        int columns = shelf.getColumns();
-        corners.add(shelf.getTile(new Position(0,0)));
-        corners.add(shelf.getTile(new Position(0,columns-1)));
-        corners.add(shelf.getTile(new Position(rows-1,0)));
-        corners.add(shelf.getTile(new Position(rows-1,columns-1)));
-        return corners;
     }
 }
