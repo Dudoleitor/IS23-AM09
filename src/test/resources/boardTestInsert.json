@@ -1,5 +1,6 @@
 {
   "board": {
+    "numPlayers" : 4,
     "numRows": 9,
     "numColumns": 9,
     "matrix": [
