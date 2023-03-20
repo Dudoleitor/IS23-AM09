@@ -64,7 +64,7 @@ public class ShelfTest {
         s.insertTile(Tile.Book,3);
         s.insertTile(Tile.Book,3);
 
-        int res = s.checkAdiacent();
+        int res = s.countAdjacentPoints();
         assertEquals(16, res);
 
         s = new Shelf(4,4);
@@ -88,7 +88,7 @@ public class ShelfTest {
         s.insertTile(Tile.Trophy,3);
         s.insertTile(Tile.Empty,3);
 
-        res = s.checkAdiacent();
+        res = s.countAdjacentPoints();
         assertEquals(6, res);
     }
     @Test

@@ -129,7 +129,7 @@ public class Shelf {
         }
     }
 
-    public int checkAdiacent(){
+    public int countAdjacentPoints(){
         int count;
         int points = 0;
 
@@ -137,7 +137,7 @@ public class Shelf {
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++){
                 if (!visited[i][j]) {
-                    count = exploreAdiacents(visited, i, j);
+                    count = exploreAdjacents(visited, i, j);
                     if(count >= 6)
                         points = points+8;
                     else if (count == 5)
@@ -151,22 +151,22 @@ public class Shelf {
         }
         return points;
     }
-    private int exploreAdiacents(boolean[][] visited, int i, int j){
+    private int exploreAdjacents(boolean[][] visited, int i, int j){
         visited[i][j] = true;
         int count = 0;
         if(tiles[i][j].equals(Tile.Empty) || tiles[i][j].equals(Tile.Invalid))
             return 0;
         if( i>0 && !visited[i-1][j] && tiles[i][j].equals(tiles[i-1][j])){
-            count = count + exploreAdiacents(visited, i-1, j);
+            count = count + exploreAdjacents(visited, i-1, j);
         }
         if( i<rows-1 && !visited[i+1][j] && tiles[i][j].equals(tiles[i+1][j])){
-            count = count + exploreAdiacents(visited, i+1, j);
+            count = count + exploreAdjacents(visited, i+1, j);
         }
         if( j>0 && !visited[i][j-1] && tiles[i][j].equals(tiles[i][j-1])){
-            count = count + exploreAdiacents(visited, i, j-1);
+            count = count + exploreAdjacents(visited, i, j-1);
         }
         if( j<columns-1 && !visited[i][j+1] && tiles[i][j].equals(tiles[i][j+1])){
-            count = count + exploreAdiacents(visited, i, j+1);
+            count = count + exploreAdjacents(visited, i, j+1);
         }
         return count+1;
 
