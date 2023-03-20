@@ -1,4 +1,6 @@
 package it.polimi.ingsw.shared;
+import it.polimi.ingsw.server.CommonGoalsException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -6,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -13,6 +16,7 @@ public class Shelf {
     private final Tile[][] tiles; //I chose to consider matrix coordinate (0,0) as the top-left corner of the shelf
     private final int rows;
     private final int columns;
+
 
     public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles
         this.rows = rows;
@@ -43,15 +47,23 @@ public class Shelf {
         JSONParser jsonParser = new JSONParser();
         try{
             Object obj = jsonParser.parse(new FileReader(jsonPath));
-            JSONObject obj_shelf = (JSONObject) ((JSONObject) obj).get("shelf");
-            rows = Math.toIntExact((long)(obj_shelf.get("rows")));
-            columns = Math.toIntExact((long)(obj_shelf.get("columns")));
-            tiles = new Tile[rows][columns];
-            JSONObject array_shelf = ((JSONObject)obj_shelf.get("matrix"));
+            JSONArray shelfLine;
+            JSONObject objShelf = (JSONObject) ((JSONObject) obj).get("shelf");
 
+            rows = Math.toIntExact((long)(objShelf.get("rows")));
+            columns = Math.toIntExact((long)(objShelf.get("columns")));
+            tiles = new Tile[rows][columns];
+            Tile t;
+
+            JSONArray array_shelf = (JSONArray)objShelf.get("matrix");
             for(int i = 0; i < rows; i++){
+                shelfLine = (JSONArray)array_shelf.get(i);
                 for(int j = 0; j < columns; j++){
-                    tiles[i][j] = Tile.valueOf((array_shelf.get(i*rows + j)).toString());
+                    t = Tile.valueOfLabel((String) shelfLine.get(j));
+                    if(t.equals(Tile.Invalid)){
+                        throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
+                    }
+                    tiles[i][j] = t;
                 }
             }
         } catch (FileNotFoundException e){
@@ -78,21 +90,21 @@ public class Shelf {
 
     public int getHighestColumn(){ //gives back the number of free cells of the most empty column
         int max = 0;
-        boolean max_found = false;
+        boolean maxFound = false;
         int count;
-        boolean not_empty;
+        boolean notEmpty;
 
-        for(int j = 0; !max_found && j < tiles[0].length; j++){
+        for(int j = 0; !maxFound && j < tiles[0].length; j++){
             count = 0;
-            not_empty = false;
-            for(int i = 0; !max_found && !not_empty && i < tiles.length; i++){
+            notEmpty = false;
+            for(int i = 0; !maxFound && !notEmpty && i < tiles.length; i++){
                 if(tiles[i][j] == Tile.Empty){
                     count++;
                 } else {
-                    not_empty = true;
+                    notEmpty = true;
                 }
                 if(count == tiles.length)
-                    max_found = true;
+                    maxFound = true;
             }
             if(count > max)
                 max = count;
@@ -100,16 +112,64 @@ public class Shelf {
         return max;
     }
     public void insertTile(Tile tile, int column) throws ShelfGenericException {
-        boolean is_empty = false;
-        for(int i = tiles.length-1; !is_empty && i>=0; i--){
+        boolean isEmpty = false;
+        if(tile.equals(Tile.Empty)){
+            return;
+        } else if (tile.equals(Tile.Invalid)){
+            throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
+        }
+        for(int i = tiles.length-1; !isEmpty && i>=0; i--){
             if(tiles[i][column] == Tile.Empty){
                 tiles[i][column] = tile;
-                is_empty = true;
+                isEmpty = true;
             }
         }
-        if (!is_empty){
+        if (!isEmpty){
             throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
         }
+    }
+
+    public int checkAdiacent(){
+        int count;
+        int points = 0;
+
+        boolean[][] visited = new boolean[rows][columns];
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                if (!visited[i][j]) {
+                    count = exploreAdiacents(visited, i, j);
+                    if(count >= 6)
+                        points = points+8;
+                    else if (count == 5)
+                        points = points+5;
+                    else if (count == 4)
+                        points = points+3;
+                    else if (count == 3)
+                        points = points+2;
+                }
+            }
+        }
+        return points;
+    }
+    private int exploreAdiacents(boolean[][] visited, int i, int j){
+        visited[i][j] = true;
+        int count = 0;
+        if(tiles[i][j].equals(Tile.Empty) || tiles[i][j].equals(Tile.Invalid))
+            return 0;
+        if( i>0 && !visited[i-1][j] && tiles[i][j].equals(tiles[i-1][j])){
+            count = count + exploreAdiacents(visited, i-1, j);
+        }
+        if( i<rows-1 && !visited[i+1][j] && tiles[i][j].equals(tiles[i+1][j])){
+            count = count + exploreAdiacents(visited, i+1, j);
+        }
+        if( j>0 && !visited[i][j-1] && tiles[i][j].equals(tiles[i][j-1])){
+            count = count + exploreAdiacents(visited, i, j-1);
+        }
+        if( j<columns-1 && !visited[i][j+1] && tiles[i][j].equals(tiles[i][j+1])){
+            count = count + exploreAdiacents(visited, i, j+1);
+        }
+        return count+1;
+
     }
 
     public int getRows() {
@@ -118,21 +178,23 @@ public class Shelf {
     public int getColumns() {
         return columns;
     }
-
-    public boolean equals(Shelf s) throws ShelfGenericException{
-        try {
-            boolean sameShelf = true;
-            for (int i = 0; sameShelf && i < rows; i++) {
-                for (int j = 0; sameShelf && j < columns; j++) {
-                    if (!tiles[i][j].equals(s.getTile(i, j))) {
-                        sameShelf = false;
-                    }
+    public boolean equals(Object o) throws ShelfGenericException{
+        boolean sameShelf = true;
+        if(o == null || this.getClass() != o.getClass()){
+            return false;
+        } else if (this == o) {
+            return true;
+        }
+        if(rows != ((Shelf) o).getRows() || columns != ((Shelf) o).getColumns())
+            return false;
+        for (int i = 0; sameShelf && i < rows; i++) {
+            for (int j = 0; sameShelf && j < columns; j++) {
+                if (!tiles[i][j].equals(((Shelf) o).getTile(i, j))) {
+                    sameShelf = false;
                 }
             }
-            return sameShelf;
-        } catch (NullPointerException e){
-            throw new ShelfGenericException("Error while creating Shelf : input Shelf is null pointer");
         }
+        return sameShelf;
     }
     @Override
     public String toString(){
@@ -150,6 +212,40 @@ public class Shelf {
     public int hashCode(){
         return Arrays.deepHashCode(tiles); //deepHashCode is similar to HashCode but also applied to any sub-array of elements
     }
+    /**
+     * Returns all the Tiles in a specific column of the shelf
+     * @param column a column of the shelf
+     * @return an ArrayList containing all the Tiles in the selected column of the shelf
+     */
+    public ArrayList<Tile> allTilesInColumn(int column){
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int row = 0; row < getRows(); row++) {
+                tiles.add(getTile(row, column));
+            }
+            return tiles;
+    }
 
+    /**
+     * Returns all the Tiles in a specific row of the shelf
+     * @param row a row of the shelf
+     * @return an ArrayList containing all the Tiles in the selected row of the shelf
+     */
+    public  ArrayList<Tile> allTilesInRow(int row){
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int column = 0; column < getColumns(); column++) {
+                tiles.add(getTile(row, column));
+            }
+            return tiles;
+    }
 
+    public ArrayList<Tile> getCorners(){
+        ArrayList<Tile> corners = new ArrayList<>();
+        int rows = getRows();
+        int columns = getColumns();
+        corners.add(getTile(0,0));
+        corners.add(getTile(0,columns-1));
+        corners.add(getTile(rows-1,0));
+        corners.add(getTile(rows-1,columns-1));
+        return corners;
+    }
 }

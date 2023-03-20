@@ -8,14 +8,17 @@ import java.util.Random;
 public class CommonGoalsFactory {
     static final int number_of_goals = 12;
 
-    public ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players){
+    public ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
         ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
         for(int i : pickTwoRandomNumbers(number_of_goals)){
             active_goals.add(create_goal_with_ID(i+1,number_of_players));
         }
         return active_goals;
     }
-    private int[] pickTwoRandomNumbers(int max){
+    private int[] pickTwoRandomNumbers(int max) throws CommonGoalsException{ //max must be positive
+        if(max < 0){
+            throw new CommonGoalsException("Error in pickTwoRandomNumbers : max must be positive");
+        }
         int[] result = new int[2];
         Random rand = new Random();
         result[0] = rand.nextInt(max);
@@ -33,16 +36,16 @@ public class CommonGoalsFactory {
                 newGoal = new SixGroupsOf2(number_of_players);
                 break;
             case(2):
-                newGoal = new CommonGoal2(number_of_players);
+                newGoal = new TwoSquares(number_of_players);
                 break;
             case(3):
                 newGoal = new EqualsTilesInAllCorners(number_of_players);
                 break;
             case(4):
-                newGoal = new CommonGoal4(number_of_players);
+                newGoal = new ThreeColumnsWith3Types(number_of_players);
                 break;
             case(5):
-                newGoal = new ThreeEqualColumns(number_of_players);
+                newGoal = new TwoAllDifferentColumns(number_of_players);
                 break;
             case(6):
                 newGoal = new EightEqualTiles(number_of_players);
@@ -51,19 +54,19 @@ public class CommonGoalsFactory {
                 newGoal = new Ladders(number_of_players);
                 break;
             case(8):
-                newGoal = new CommonGoal8(number_of_players);
+                newGoal = new FourLineWith3Types(number_of_players);
                 break;
             case(9):
-                newGoal = new CommonGoal9(number_of_players);
+                newGoal = new TwoAllDifferentLines(number_of_players);
                 break;
             case(10):
-                newGoal = new CommonGoal10(number_of_players);
+                newGoal = new FullLadder(number_of_players);
                 break;
             case(11):
-                newGoal = new CommonGoal11(number_of_players);
+                newGoal = new FourGroupsOfFour(number_of_players);
                 break;
             default:
-                newGoal = new CommonGoal12(number_of_players);
+                newGoal = new EqualX(number_of_players);
                 break;
         }
         return newGoal;

@@ -20,19 +20,16 @@ public class EightEqualTiles extends AbstractCommonGoal {
         return 6;
     }
     @Override
-    protected boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) {
         Tile currentTile;
         HashMap<Tile,Integer> counters = new HashMap<>();
-        ArrayList<Tile> tiles = (ArrayList<Tile>) Arrays.asList(Tile.values());
-        tiles.remove(Tile.Empty);
-        tiles.remove(Tile.Invalid);
-        for(Tile tile : tiles){
+        for(Tile tile : Tile.values()){
             counters.put(tile,0);
         }
         for(int row = 0; row < shelf.getRows(); row++){
             for(int column = 0; column < shelf.getColumns(); column++){
                 currentTile = shelf.getTile(new Position(row,column));
-                if(!currentTile.equals(Tile.Empty)){
+                if(!currentTile.equals(Tile.Empty) && !currentTile.equals(Tile.Invalid)){
                     incrementCounter(counters,currentTile);
                 }
             }

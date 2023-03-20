@@ -1,37 +1,31 @@
 package it.polimi.ingsw.shared;
 
 public enum Tile {
-    Cat,
-    Book,
-    Game,
-    Frame,
-    Trophy,
-    Plant,
-    Empty,
-    Invalid;
+    Cat("C"),
+    Book("B"),
+    Game("G"),
+    Frame("F"),
+    Trophy("T"),
+    Plant("P"),
+    Empty("E"),
+    Invalid("I");
+
+    public final String label;
+    Tile(String s){
+        label = s;
+    }
+    public static Tile valueOfLabel(String label) { //gets a label and returns a Tile
+        for (Tile e : values()) {
+            if (e.label.equals(label)) {
+                return e;
+            }
+        }
+        return null; //maybe a throw exception instead
+    }
 
     @Override
     public String toString(){
-        switch(this) {
-            case Cat:
-                return "C";
-            case Book:
-                return "B";
-            case Game:
-                return "G";
-            case Frame:
-                return "F";
-            case Trophy:
-                return "T";
-            case Plant:
-                return "P";
-            case Empty:
-                return "E";
-            case Invalid:
-                return "I";
-            default:
-                return "-";
-        }
+        return this.label;
     }
 }
 
