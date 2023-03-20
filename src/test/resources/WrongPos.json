@@ -20,13 +20,13 @@
     "1": [
       {
         "tileName": "Book",
-        "posRow": "a",
+        "posRow": 0,
         "posCol": 3
       },
       {
         "tileName": "Cat",
         "posRow": 2,
-        "posCol": 3
+        "posCol": "a"
       },
       {
         "tileName": "Game",
@@ -47,7 +47,7 @@
       },
       {
         "tileName": "Plant",
-        "posRow": 2,
+        "posRow": "a",
         "posCol": 3
       }
     ]

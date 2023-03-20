@@ -27,8 +27,6 @@ public class ShelfTest {
             s.insertTile(Tile.valueOf(value), columns - 1);
             assertEquals(s.getHighestColumn(), rows - i - 1); //check getHighestColumn change in value as I fill last column
         }
-        System.out.println(s);
-        System.out.println(s.hashCode());
     }
     @Test
     void shelf_equals_test(){
@@ -39,16 +37,8 @@ public class ShelfTest {
             s2.insertTile(Tile.valueOf("Cat"), j);
         }
         s1.insertTile(Tile.valueOf("Book"), 0);
-        System.out.println("s1_1:");
-        System.out.println(s1);
-        System.out.println("s2_1:");
-        System.out.println(s2);
         assert(!s1.equals(s2)); //check they are different
         s2.insertTile(Tile.valueOf("Book"), 0);
-        System.out.println("s1_2:");
-        System.out.println(s1);
-        System.out.println("s2_2:");
-        System.out.println(s2);
         assert(s1.equals(s2)); //check they are the same
     }
     @Test
@@ -74,7 +64,6 @@ public class ShelfTest {
         s.insertTile(Tile.Book,3);
         s.insertTile(Tile.Book,3);
 
-        System.out.println(s);
         int res = s.checkAdiacent();
         assertEquals(16, res);
 
@@ -99,7 +88,6 @@ public class ShelfTest {
         s.insertTile(Tile.Trophy,3);
         s.insertTile(Tile.Empty,3);
 
-        System.out.println(s);
         res = s.checkAdiacent();
         assertEquals(6, res);
     }
