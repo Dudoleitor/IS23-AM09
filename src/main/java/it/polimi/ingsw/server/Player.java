@@ -62,6 +62,16 @@ public class Player {
     }
 
     /**
+     * To check how many points the player currently has achieved by
+     * placing tiles of the same type in adjacent positions.
+     * @return integer.
+     */
+    public int getAdjacentPoints() {
+        return 0;  // TODO, waiting for countAdjacentPoints on shelf
+        // return shelf.countAdjacentPoints();
+    }
+
+    /**
      * To check how many points the player currently has achieved with the common goals.
      * @return integer, the value is stored in the player.
      */

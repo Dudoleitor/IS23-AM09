@@ -129,6 +129,16 @@ public class PlayerTest {
         assertEquals(20, testpl.getCheckedCommonGoals().get(1));
         assertEquals(4, commonGoal2.givePoints());
     }
+
+    @Test
+    void AdjacentPointsTest() {
+        String jsonPath = "src/test/resources/TestGoal.json";
+        String name = "fridgeieri";
+        ServerShelf shelf = new ServerShelf(3, 3);
+        PlayerGoal playerGoal = new PlayerGoal(jsonPath);
+        Player testpl = new Player(name, shelf, playerGoal);
+        // TODO waiting for countAdjacentPoints on shelf
+    }
 }
 
 class CommonGoalTest extends AbstractCommonGoal {
