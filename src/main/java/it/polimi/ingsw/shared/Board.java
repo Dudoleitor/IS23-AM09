@@ -21,305 +21,51 @@ public class Board {
     private int numColumns;
     private final CommonGoalsFactory goalsFactory = new CommonGoalsFactory();
     private ArrayList<AbstractCommonGoal> goals = new ArrayList<>();
+    private final String JSONBoardInit = "src/test/resources/BoardInit.json";
+    private final int numOfTileType = 22;
 
 
-    public Board(int numRows, int numColumns, int numPlayers) throws BoardGenericException {
-        boardTiles = new Tile[numRows][numColumns];
-        this.numPlayers = numPlayers;
-        this.numColumns = numColumns;
-        this.numRows = numRows;
+    public Board(int numPlayers) throws BoardGenericException {
+        JSONParser jsonParser= new JSONParser();
+        try{
+            tilesToDraw = new ArrayList<>();
+            this.numPlayers = numPlayers;
+            Object obj = jsonParser.parse(new FileReader(JSONBoardInit));
+            JSONArray boardLine;
+            JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board");
+            numRows = Math.toIntExact((long)(objBoard.get("numRows")));
+            numColumns = Math.toIntExact((long)(objBoard.get("numColumns")));
+            boardTiles = new Tile[numRows][numColumns];
+            JSONArray arrayBoard = (JSONArray)((JSONObject)objBoard.get("players")).get(String.valueOf(numPlayers));
 
-
-        //0 is the uppest row
-        //numRow is the lowest row
-
-
-        if (numPlayers == 2) {
-            for (int i = 0; i < numColumns; i++) {
-                //switch (i) {
-                if (i == 0) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Invalid;
-                    boardTiles[4][i] = Tile.Invalid;
-                    boardTiles[5][i] = Tile.Invalid;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 1) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Invalid;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 2) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 3) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Empty;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 4) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Empty;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Empty;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 5) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Empty;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 6) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 7) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Invalid;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if (i == 8) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Invalid;
-                    boardTiles[4][i] = Tile.Invalid;
-                    boardTiles[5][i] = Tile.Invalid;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else {
-                    throw new BoardGenericException("Error while generating Board: Invalid switch case");
+            for (Tile t : Tile.values()){
+                if(!t.equals(Tile.Empty) && !t.equals(Tile.Invalid)) {
+                    for (int i = 0; i < numOfTileType; i++) {
+                        tilesToDraw.add(t);
+                    }
                 }
             }
-        } else if (numPlayers == 3) {
+            Collections.shuffle(tilesToDraw);
 
-            for (int i = 0; i < numColumns; i++) {
-
-                    if(i == 0) {
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Invalid;
-                        boardTiles[2][i] = Tile.Invalid;
-                        boardTiles[3][i] = Tile.Invalid;
-                        boardTiles[4][i] = Tile.Invalid;
-                        boardTiles[5][i] = Tile.Empty;
-                        boardTiles[6][i] = Tile.Invalid;
-                        boardTiles[7][i] = Tile.Invalid;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else if(i == 2 || i == 6) {
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Invalid;
-                        boardTiles[2][i] = Tile.Empty;
-                        boardTiles[3][i] = Tile.Empty;
-                        boardTiles[4][i] = Tile.Empty;
-                        boardTiles[5][i] = Tile.Empty;
-                        boardTiles[6][i] = Tile.Empty;
-                        boardTiles[7][i] = Tile.Invalid;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else if(i == 1) {
-
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Invalid;
-                        boardTiles[2][i] = Tile.Invalid;
-                        boardTiles[3][i] = Tile.Invalid;
-
-                        boardTiles[4][i] = Tile.Empty;
-                        boardTiles[5][i] = Tile.Empty;
-
-                        boardTiles[6][i] = Tile.Invalid;
-                        boardTiles[7][i] = Tile.Invalid;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else if(i == 3) {
-
-                        boardTiles[0][i] = Tile.Empty;
-                        boardTiles[1][i] = Tile.Empty;
-                        boardTiles[2][i] = Tile.Empty;
-                        boardTiles[3][i] = Tile.Empty;
-                        boardTiles[4][i] = Tile.Empty;
-                        boardTiles[5][i] = Tile.Empty;
-                        boardTiles[6][i] = Tile.Empty;
-                        boardTiles[7][i] = Tile.Invalid;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else if(i == 4) {
-
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Empty;
-                        boardTiles[2][i] = Tile.Empty;
-                        boardTiles[3][i] = Tile.Empty;
-                        boardTiles[4][i] = Tile.Empty;
-                        boardTiles[5][i] = Tile.Empty;
-                        boardTiles[6][i] = Tile.Empty;
-                        boardTiles[7][i] = Tile.Empty;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else if(i == 5) {
-
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Invalid;
-                        boardTiles[2][i] = Tile.Empty;
-                        boardTiles[3][i] = Tile.Empty;
-                        boardTiles[4][i] = Tile.Empty;
-                        boardTiles[5][i] = Tile.Empty;
-                        boardTiles[6][i] = Tile.Empty;
-                        boardTiles[7][i] = Tile.Empty;
-                        boardTiles[8][i] = Tile.Empty;
-                    } else if(i == 7) {
-
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Invalid;
-                        boardTiles[2][i] = Tile.Invalid;
-                        boardTiles[3][i] = Tile.Empty;
-                        boardTiles[4][i] = Tile.Empty;
-                        boardTiles[5][i] = Tile.Invalid;
-                        boardTiles[6][i] = Tile.Invalid;
-                        boardTiles[7][i] = Tile.Invalid;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else if(i == 8) {
-
-                        boardTiles[0][i] = Tile.Invalid;
-                        boardTiles[1][i] = Tile.Invalid;
-                        boardTiles[2][i] = Tile.Invalid;
-                        boardTiles[3][i] = Tile.Empty;
-                        boardTiles[4][i] = Tile.Invalid;
-                        boardTiles[5][i] = Tile.Invalid;
-                        boardTiles[6][i] = Tile.Invalid;
-                        boardTiles[7][i] = Tile.Invalid;
-                        boardTiles[8][i] = Tile.Invalid;
-                    } else {
-                        throw new BoardGenericException("Error while generating Board: Invalid switch case");
+            for(int i = 0; i < numRows; i++){
+                boardLine = (JSONArray) arrayBoard.get(i);
+                for(int j = 0; j < numColumns; j++){
+                    boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j));
                 }
             }
 
-        } else if (numPlayers == 4) {
-
-            for (int i = 0; i < numColumns; i++) {
-                if(i == 0) {
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Invalid;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if(i == 2 || i == 6) {
-
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if(i == 1 || i == 7) {
-
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if(i == 3) {
-
-                    boardTiles[0][i] = Tile.Empty;
-                    boardTiles[1][i] = Tile.Empty;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Empty;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else if(i == 4) {
-
-                    boardTiles[0][i] = Tile.Empty;
-                    boardTiles[1][i] = Tile.Empty;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Empty;
-                    boardTiles[8][i] = Tile.Empty;
-                } else if(i == 5) {
-
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Empty;
-                    boardTiles[2][i] = Tile.Empty;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Empty;
-                    boardTiles[6][i] = Tile.Empty;
-                    boardTiles[7][i] = Tile.Empty;
-                    boardTiles[8][i] = Tile.Empty;
-                } else if(i == 8) {
-
-                    boardTiles[0][i] = Tile.Invalid;
-                    boardTiles[1][i] = Tile.Invalid;
-                    boardTiles[2][i] = Tile.Invalid;
-                    boardTiles[3][i] = Tile.Empty;
-                    boardTiles[4][i] = Tile.Empty;
-                    boardTiles[5][i] = Tile.Invalid;
-                    boardTiles[6][i] = Tile.Invalid;
-                    boardTiles[7][i] = Tile.Invalid;
-                    boardTiles[8][i] = Tile.Invalid;
-                } else {
-                        throw new BoardGenericException("Error while generating Board: Invalid switch case");
-                }
-            }
-        } else {
-            throw new BoardGenericException("Error while generating Board: Invalid num of players");
+        } catch (FileNotFoundException e){
+            throw new BoardGenericException("Error while creating Board : json file not found");
+        } catch (IOException | ClassCastException | NullPointerException e){
+            throw new BoardGenericException("Error while creating Board : bad json parsing");
+        } catch (org.json.simple.parser.ParseException e) {
+            e.printStackTrace();
         }
+
     }
 
 
     public Board(String jsonPath) throws BoardGenericException{
-
-
         JSONParser jsonParser = new JSONParser();
         try{
             tilesToDraw = new ArrayList<>();
