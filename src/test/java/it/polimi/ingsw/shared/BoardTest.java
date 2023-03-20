@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
 
-    Board board = new Board(9,9,3);
+    Board board = new Board(3);
     Position pos1 = new Position(3,4);
     Position pos2 = new Position(1, 2);
-    Board board1 = new Board(9,9,3);
-    Board board2 = new Board(9,9,4);
+    Board board1 = new Board(3);
+    Board board2 = new Board(4);
 
 
     @Test
@@ -45,4 +45,5 @@ class BoardTest {
         Board b = new Board(jsonPath);
         b.fill();
     }
+
 }
