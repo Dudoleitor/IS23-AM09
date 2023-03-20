@@ -26,6 +26,7 @@ public class PlayerTest {
         // TODO waiting for methods in ServerShelf
         // assertEquals((Shelf) shelf, testpl.getShelf());
         assertFalse(testpl.hasFinished());
+        assertEquals(0, testpl.getAdjacentPoints());
         assertEquals(0, testpl.getCommonGoalPoints());
         assertEquals(0, testpl.checkPersonalGoal());
         assertTrue(testpl.getCheckedCommonGoals().isEmpty());
@@ -134,10 +135,26 @@ public class PlayerTest {
     void AdjacentPointsTest() {
         String jsonPath = "src/test/resources/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        ServerShelf shelf = new ServerShelf(4, 3);
         PlayerGoal playerGoal = new PlayerGoal(jsonPath);
         Player testpl = new Player(name, shelf, playerGoal);
-        // TODO waiting for countAdjacentPoints on shelf
+
+        testpl.insertTile(Tile.Cat, 0);
+        testpl.insertTile(Tile.Cat, 0);
+        testpl.insertTile(Tile.Cat, 1);
+        assertEquals(2, testpl.getAdjacentPoints());
+
+        testpl.insertTile(Tile.Cat, 1);
+        assertEquals(3, testpl.getAdjacentPoints());
+
+        testpl.insertTile(Tile.Cat, 2);
+        assertEquals(5, testpl.getAdjacentPoints());
+
+        testpl.insertTile(Tile.Cat, 1);
+        assertEquals(8, testpl.getAdjacentPoints());
+
+        testpl.insertTile(Tile.Cat, 1);
+        assertEquals(8, testpl.getAdjacentPoints());
     }
 }
 

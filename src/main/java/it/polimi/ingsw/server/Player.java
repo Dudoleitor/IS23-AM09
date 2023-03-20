@@ -67,8 +67,7 @@ public class Player {
      * @return integer.
      */
     public int getAdjacentPoints() {
-        return 0;  // TODO, waiting for countAdjacentPoints on shelf
-        // return shelf.countAdjacentPoints();
+        return shelf.countAdjacentPoints();
     }
 
     /**
