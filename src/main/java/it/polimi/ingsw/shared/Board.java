@@ -19,15 +19,17 @@ public class Board {
     private int numPlayers;
     private int numRows;
     private int numColumns;
-    private final CommonGoalsFactory goalsFactory = new CommonGoalsFactory();
-    private ArrayList<AbstractCommonGoal> goals = new ArrayList<>();
-    private final String JSONBoardInit = "src/test/resources/BoardInit.json";
+    private CommonGoalsFactory goalsFactory;
+    private ArrayList<AbstractCommonGoal> goals;
+    private final String JSONBoardInit = "src/main/resources/BoardInit.json";
     private final int numOfTileType = 22;
 
 
     public Board(int numPlayers) throws BoardGenericException {
         JSONParser jsonParser= new JSONParser();
         try{
+            goalsFactory = new CommonGoalsFactory();
+            goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
             this.numPlayers = numPlayers;
             Object obj = jsonParser.parse(new FileReader(JSONBoardInit));
@@ -47,9 +49,9 @@ public class Board {
             }
             Collections.shuffle(tilesToDraw);
 
-            for(int i = 0; i < numRows; i++){
+            for(int i = 0; i < arrayBoard.size(); i++){
                 boardLine = (JSONArray) arrayBoard.get(i);
-                for(int j = 0; j < numColumns; j++){
+                for(int j = 0; j < boardLine.size(); j++){
                     boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j));
                 }
             }
@@ -68,6 +70,8 @@ public class Board {
     public Board(String jsonPath) throws BoardGenericException{
         JSONParser jsonParser = new JSONParser();
         try{
+            goalsFactory = new CommonGoalsFactory();
+            goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
             Object obj = jsonParser.parse(new FileReader(jsonPath));
             JSONArray boardLine;
@@ -81,9 +85,9 @@ public class Board {
             for (Object o : arrayDeck) {
                 tilesToDraw.add(Tile.valueOfLabel((String) o));
             }
-            for(int i = 0; i < numRows; i++){
+            for(int i = 0; i < arrayBoard.size(); i++){
                 boardLine = (JSONArray) arrayBoard.get(i);
-                for(int j = 0; j < numColumns; j++){
+                for(int j = 0; j < boardLine.size(); j++){
                     boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j));
                 }
             }
@@ -202,9 +206,6 @@ public class Board {
         }
     }
 
-    /* public void fill() {
-
-    } */
 
     //Pick a tile from the board --> when you pick it,
     //it gets eliminated by the board

@@ -117,16 +117,16 @@ public class Shelf {
             return;
         } else if (tile.equals(Tile.Invalid)){
             throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
+        } else if (!tiles[0][column].equals(Tile.Empty)) {
+            throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
         }
-        for(int i = tiles.length-1; !isEmpty && i>=0; i--){
-            if(tiles[i][column] == Tile.Empty){
+        for (int i = tiles.length - 1; !isEmpty && i >= 0; i--) {
+            if (tiles[i][column] == Tile.Empty) {
                 tiles[i][column] = tile;
                 isEmpty = true;
             }
         }
-        if (!isEmpty){
-            throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
-        }
+
     }
 
     public int countAdjacentPoints(){

@@ -20,7 +20,7 @@ public enum Tile {
                 return e;
             }
         }
-        return null; //maybe a throw exception instead
+        throw new TileGenericException("Tile label not found");
     }
 
     @Override
