@@ -16,7 +16,7 @@ public class PlayerTest {
 
     @Test
     void creationTest(){
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
@@ -35,7 +35,7 @@ public class PlayerTest {
 
     @Test
     void personalGoalTest() {
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
@@ -49,7 +49,7 @@ public class PlayerTest {
 
     @Test
     void hasFinishedTest1() {
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
@@ -75,7 +75,7 @@ public class PlayerTest {
 
     @Test
     void hasFinishedTest2() {
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
@@ -101,7 +101,7 @@ public class PlayerTest {
 
     @Test
     void CommonGoalTest() {
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
         PlayerGoal playerGoal = new PlayerGoal(jsonPath);
@@ -133,7 +133,7 @@ public class PlayerTest {
 
     @Test
     void AdjacentPointsTest() {
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(4, 3);
         PlayerGoal playerGoal = new PlayerGoal(jsonPath);

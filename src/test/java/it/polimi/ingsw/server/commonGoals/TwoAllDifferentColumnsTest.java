@@ -17,14 +17,14 @@ class TwoAllDifferentColumnsTest {
     }
     @Test
     void testTrue() {
-        Shelf trueShelf = new Shelf("src/test/resources/TestShelf_1_TwoAllDifferentColumns.json");
+        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_TwoAllDifferentColumns.json");
         AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(5, 2);
         assertTrue(to_test.getID() == 5);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse(){
-        Shelf falseShelf = new Shelf("src/test/resources/TestShelf_2_TwoAllDifferentColumns.json");
+        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentColumns.json");
         AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(5,2);
         assertTrue(to_test.getID() == 5);
         assertFalse(to_test.check(falseShelf));

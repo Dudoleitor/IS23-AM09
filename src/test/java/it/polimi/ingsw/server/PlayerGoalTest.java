@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerGoalTest {
 
+    String basePath = "src/test/resources/PlayerGoalTests/";
     @Test
     void FileNotFoundTest() {
         String jsonPath = "ghost.json";
@@ -15,24 +16,24 @@ public class PlayerGoalTest {
     }
     @Test
     void EmptyJsonTest(){
-        String jsonPath = "src/test/resources/EmptyJsonTest.json";
+        String jsonPath = basePath + "EmptyJsonTest.json";
         Exception e = assertThrows(PlayerGoalLoadingException.class, () -> new PlayerGoal(jsonPath));
         assertEquals("Error while parsing json", e.getMessage());
     }
      @Test
     void RandomFileTest() {
-         String jsonPath = "src/test/resources/RandomFileTest.json";
+         String jsonPath = basePath + "RandomFileTest.json";
          Exception e = assertThrows(PlayerGoalLoadingException.class, () -> new PlayerGoal(jsonPath));
          assertEquals("Error while parsing json", e.getMessage());
      }
 
      @Test
     void WrongMainObjects() {
-         String jsonPath1 = "src/test/resources/WrongMainObjects1.json";
+         String jsonPath1 = basePath + "WrongMainObjects1.json";
          Exception e = assertThrows(PlayerGoalLoadingException.class, () -> new PlayerGoal(jsonPath1));
          assertEquals("Error while parsing json: goals not found", e.getMessage());
 
-         String jsonPath2 = "src/test/resources/WrongMainObjects2.json";
+         String jsonPath2 = basePath + "WrongMainObjects2.json";
          e = assertThrows(PlayerGoalLoadingException.class, () -> new PlayerGoal(jsonPath2));
          assertEquals("Error while parsing json: points not found", e.getMessage());
 
@@ -40,21 +41,21 @@ public class PlayerGoalTest {
 
      @Test
     void WrongTile() {
-         String jsonPath = "src/test/resources/WrongTile.json";
+         String jsonPath = basePath + "WrongTile.json";
          Exception e = assertThrows(PlayerGoalLoadingException.class, () -> new PlayerGoal(jsonPath));
          assertEquals("Error while parsing json: wrong position attributes", e.getMessage());
      }
 
     @Test
     void WrongPos() {
-        String jsonPath = "src/test/resources/WrongPos.json";
+        String jsonPath = basePath + "WrongPos.json";
         Exception e = assertThrows(PlayerGoalLoadingException.class, () -> new PlayerGoal(jsonPath));
         assertEquals("Error while parsing json: wrong position attributes", e.getMessage());
     }
 
     @Test
     void MultipleGoals() {  // Testing if the goals is randomly chosen correctly
-        String jsonPath = "src/test/resources/MultipleGoals.json";
+        String jsonPath = basePath + "MultipleGoals.json";
 
         PlayerGoal goal = new PlayerGoal(jsonPath);
         assertTrue(goal.getGoalId() >= 0);
@@ -70,7 +71,7 @@ public class PlayerGoalTest {
     }
     @Test
     void TestGoal() {  // Inserting tiles one at a time and checking behaviour
-        String jsonPath = "src/test/resources/TestGoal.json";
+        String jsonPath = basePath + "TestGoal.json";
         Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
 
