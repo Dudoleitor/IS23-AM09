@@ -58,37 +58,17 @@ public class Shelf {
      * generate Shelf by JSON file
      * @param jsonPath is the file path to the JSON file
      * @throws ShelfGenericException when JSON file can't be found or bad JSON parsing is done
+     * @throws FileNotFoundException when JSON file can't be found
+     * @throws ParseException when parsing problems occurs
+     * @throws IOException when there are problems accessing file
      */
-    public Shelf(String jsonPath) throws ShelfGenericException{
+    public Shelf(String jsonPath) throws ShelfGenericException , FileNotFoundException, ParseException, IOException{
 
-        try{
-            JSONParser jsonParser = new JSONParser(); //initialize JSON parser
-            Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-
-            JSONObject objShelf = (JSONObject) ((JSONObject) obj).get("shelf"); //acquire shelf object
-            rows = Math.toIntExact((long)(objShelf.get("rows")));
-            columns = Math.toIntExact((long)(objShelf.get("columns")));
-            tiles = new Tile[rows][columns];
-
-            JSONArray array_shelf = (JSONArray)objShelf.get("matrix"); //matrix is the copy of the shelf
-            JSONArray shelfLine;
-
-            Tile t;
-            for(int i = 0; i < rows; i++){ //copy entire matrix to shelf
-                shelfLine = (JSONArray)array_shelf.get(i); //acquire line of matrix
-                for(int j = 0; j < columns; j++){
-                    t = Tile.valueOfLabel((String) shelfLine.get(j));
-                    if(t.equals(Tile.Invalid)){ //check whether Tile is Invalid
-                        throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
-                    }
-                    tiles[i][j] = t;
-                }
-            }
-        } catch (FileNotFoundException e){
-            throw new ShelfGenericException("Error while creating Shelf : json file not found");
-        } catch (ParseException | IOException | ClassCastException | NullPointerException e){
-            throw new ShelfGenericException("Error while creating Shelf : bad json parsing");
-        }
+        this((JSONObject) //call constructor Shelf(JSONObject)
+                ((JSONObject) (new JSONParser()) //initialize parser
+                        .parse(new FileReader(jsonPath)) //acquire JSONObject from file
+                )
+                        .get("shelf")); //get shelf JSONObject
     }
 
     /**
