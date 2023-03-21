@@ -3,8 +3,10 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public abstract class AbstractCommonGoal {
@@ -16,7 +18,7 @@ public abstract class AbstractCommonGoal {
         points = new Stack<>();
         populatePointsStack(number_of_players);
     }
-    protected AbstractCommonGoal(ArrayList<Integer> stackState){
+    protected AbstractCommonGoal(List<Integer> stackState){
         points = new Stack<>();
         for(Integer i : stackState){
             points.push(i);
@@ -40,7 +42,6 @@ public abstract class AbstractCommonGoal {
      * @param number_of_players the number of players
      * @throws CommonGoalsException if number_of_players is smaller than 2 or bigger than 4
      */
-    //TODO load from JSON
     private void populatePointsStack(int number_of_players) throws CommonGoalsException{
         this.points = new Stack<>();
         switch (number_of_players){

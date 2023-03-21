@@ -5,13 +5,14 @@ import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class FourLineWith3Types extends AbstractCommonGoal {
     public FourLineWith3Types(int number_of_players){
         super(number_of_players);
     }
-    public FourLineWith3Types(ArrayList<Integer> stackState){
+    public FourLineWith3Types(List<Integer> stackState){
         super(stackState);
     }
     @Override

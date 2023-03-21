@@ -5,16 +5,13 @@ import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Stack;
+import java.util.*;
 
 public class EightEqualTiles extends AbstractCommonGoal {
     public EightEqualTiles(int number_of_players){
         super(number_of_players);
     }
-    public EightEqualTiles(ArrayList<Integer> stackState){
+    public EightEqualTiles(List<Integer> stackState){
         super(stackState);
     }
     @Override

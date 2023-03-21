@@ -7,13 +7,14 @@ import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 public class Ladders extends AbstractCommonGoal {
     public Ladders(int number_of_players){
         super(number_of_players);
     }
-    public Ladders(ArrayList<Integer> stackState){
+    public Ladders(List<Integer> stackState){
         super(stackState);
     }
     @Override
