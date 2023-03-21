@@ -1,21 +1,39 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.commonGoals.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class CommonGoalsFactory {
     static final int number_of_goals = 12;
 
-    public ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
+    /**
+     * Generates two distinct common goals for the match
+     * @param number_of_players the number of players
+     * @return an Arraylist containig the two randomly selected goals
+     * @throws CommonGoalsException
+     */
+    public static ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
         ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
         for(int i : pickTwoRandomNumbers(number_of_goals)){
             active_goals.add(create_goal_with_ID(i+1,number_of_players));
         }
         return active_goals;
     }
-    private int[] pickTwoRandomNumbers(int max) throws CommonGoalsException{ //max must be positive
+
+    /**
+     * Picks two random numbers to generate the goals
+     * @param max the maximum accepted random number to generate
+     * @return an Array containing the two randomly selected integers
+     * @throws CommonGoalsException
+     */
+    static int[] pickTwoRandomNumbers(int max) throws CommonGoalsException{ //max must be positive
         if(max < 0){
             throw new CommonGoalsException("Error in pickTwoRandomNumbers : max must be positive");
         }
@@ -29,6 +47,12 @@ public class CommonGoalsFactory {
         return result;
     }
 
+    /**
+     * Creates a common goal from the id and the number of players
+     * @param ID of the common goal
+     * @param number_of_players
+     * @return the generated commongoal
+     */
     public static AbstractCommonGoal create_goal_with_ID(int ID, int number_of_players){
         AbstractCommonGoal newGoal;
         switch (ID){
@@ -71,7 +95,14 @@ public class CommonGoalsFactory {
         }
         return newGoal;
     }
-    public static AbstractCommonGoal create_goal_with_ID(int ID,ArrayList<Integer> stackState){
+
+    /**
+     * Creates a common goal from the id and a list of integer
+     * @param ID of the common goal
+     * @param stackState a list of integers to populate the stack
+     * @return the generated common goal
+     */
+    public static AbstractCommonGoal create_goal_with_ID(int ID,List<Integer> stackState){
         AbstractCommonGoal newGoal;
         switch (ID){
             case(1):
@@ -112,5 +143,17 @@ public class CommonGoalsFactory {
                 break;
         }
         return newGoal;
+    }
+
+    /**
+     * Loads a common goal from a JSON object
+     * @param jsonObject the serialized object
+     * @return the generated common goal
+     */
+    public static AbstractCommonGoal create_from_json(JSONObject jsonObject){
+        int id = Math.toIntExact((Long) jsonObject.get("id"));
+        JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
+        List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long)x)).collect(Collectors.toList());
+        return create_goal_with_ID(id,stackState);
     }
 }

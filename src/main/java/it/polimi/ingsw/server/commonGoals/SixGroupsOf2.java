@@ -6,6 +6,7 @@ import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class SixGroupsOf2 extends AbstractCommonGoal {
@@ -77,7 +78,7 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
     public SixGroupsOf2(int number_of_players){
         super(number_of_players);
     }
-    public SixGroupsOf2(ArrayList<Integer> stackState){
+    public SixGroupsOf2(List<Integer> stackState){
         super(stackState);
     }
 }
