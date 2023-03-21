@@ -7,6 +7,7 @@ import java.util.List;
 
 public class PartialMove {
     protected List<Position> positions;
+    private final int maxNumMoves = 3;
     public List<Position> getBoardPositions(){
         return new ArrayList<>(positions);
     }
@@ -26,5 +27,9 @@ public class PartialMove {
     }
     PartialMove(){ //default constructor
         positions = new ArrayList<>();
+    }
+
+    public int getMaxNumMoves() {
+        return maxNumMoves;
     }
 }

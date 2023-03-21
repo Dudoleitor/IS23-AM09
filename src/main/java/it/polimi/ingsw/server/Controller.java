@@ -1,0 +1,130 @@
+package it.polimi.ingsw.server;
+
+import it.polimi.ingsw.shared.*;
+import java.util.*;
+
+public class Controller {
+
+    private Board board;
+    private List<AbstractCommonGoal> commonGoals;
+    private List<Player> players;
+
+    public Controller(List<String> namePlayers, int shelfRows, int shelfColumns) {
+        board = new Board(players.size());
+        commonGoals = board.getCommonGoals();
+        players = new ArrayList<>();
+        for(String s : namePlayers){
+            players.add(new Player(s, new ServerShelf(shelfRows,shelfColumns), new PlayerGoal("JSON PATH"))); // TODO add real JSON path
+        }
+
+    }
+
+    //TODO
+    public Board getBoard() {
+        return board;
+    }
+
+    public List<AbstractCommonGoal> getCommonGoals() {
+        return commonGoals;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public String getCurrentPlayer() {
+        return "String";
+    }
+
+    /**
+     * @return the list of the Shelf objects of each player
+     */
+    public List<Shelf> getShelves() {
+        List<Shelf> shelves = new ArrayList<>();
+        for(Player p : players) {
+            shelves.add(p.getShelf());
+        }
+        return shelves;
+    }
+
+    public void moveTiles(Player player, Move move) throws ControllerGenericException {
+
+        if(!player.getName().equals(getCurrentPlayer())) {
+            throw new ControllerGenericException("Player is not the current player");
+        }
+
+        Shelf playerShelf = player.getShelf();
+
+        if(move.getBoardPositions().size() >
+            playerShelf.allTilesInColumn(move.getColumn()).stream().filter(x -> x.equals(Tile.Empty)).count()
+        ) {
+            throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
+        }
+        if(checkValidMove(move))
+           throw new InvalidMoveException("Tiles selection is not allowed");
+
+        List<Position> positions = move.getBoardPositions();
+        for(Position p : positions){
+            Tile t = board.pickTile(p);
+            playerShelf.insertTile(t, move.getColumn());
+        }
+    }
+
+    private boolean checkValidMove(Move move) {
+
+        List<Position> positions = move.getBoardPositions();
+
+        if(positions.size() > move.getMaxNumMoves())
+            return false;
+
+        for(int i = 0; i < positions.size() - 1; i++) {
+            for(int j = i + 1; j < positions.size(); j++) {
+                if(positions.get(i).equals(positions.get(j))) {
+                    return false;
+                }
+            }
+        }
+
+        for(Position p : positions) {
+            if(!hasFreeSide(p))
+                return false;
+        }
+
+        if(positions.size() == 1)
+            return true;
+
+
+        int row = positions.get(0).getRow();
+        int column = positions.get(0).getColumn();
+
+        if(positions.get(1).getRow() == row) {
+            for(int i = 2; i < positions.size(); i++) {
+                if(positions.get(i).getRow() != row)
+                    return false;
+            }
+        } else if(positions.get(1).getColumn() == column) {
+            for (int i = 2; i < positions.size(); i++) {
+                if (positions.get(i).getColumn() != column)
+                    return false;
+            }
+
+        }
+
+        return true;
+
+    }
+
+    private boolean hasFreeSide(Position pos) {
+        if(pos.getRow() == 0 || pos.getColumn() == 0 || pos.getRow() == board.getNumRows() - 1 || pos.getColumn() == board.getNumColumns() - 1)
+            return true;
+
+        if(board.getTile(pos.getRow() + 1, pos.getColumn()).equals(Tile.Empty) || board.getTile(pos.getRow() + 1, pos.getColumn()).equals(Tile.Invalid)
+                || board.getTile(pos.getRow() - 1, pos.getColumn()).equals(Tile.Empty) || board.getTile(pos.getRow() - 1, pos.getColumn()).equals(Tile.Invalid)
+                || board.getTile(pos.getRow(), pos.getColumn() + 1).equals(Tile.Empty) || board.getTile(pos.getRow(), pos.getColumn() + 1).equals(Tile.Invalid)
+                || board.getTile(pos.getRow(), pos.getColumn() - 1).equals(Tile.Empty) || board.getTile(pos.getRow(), pos.getColumn() - 1).equals(Tile.Invalid)
+        ) return true;
+
+        return false;
+    }
+
+}

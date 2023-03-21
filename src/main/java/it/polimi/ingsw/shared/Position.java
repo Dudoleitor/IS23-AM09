@@ -28,4 +28,19 @@ public class Position {
     public int getColumn() {
         return column;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this)
+            return true;
+
+        if(o.getClass() != this.getClass())
+            return false;
+
+        Position p = (Position) o;
+        if(p.getRow() == getRow() && p.getColumn() == getColumn())
+            return true;
+
+        return false;
+    }
 }
