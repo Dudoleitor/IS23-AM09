@@ -3,7 +3,11 @@ package it.polimi.ingsw.server.commonGoals;
 import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.shared.Shelf;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,21 +20,21 @@ class FullLadderTest {
         assertFalse(to_test.check(emptyShelf));
     }
     @Test
-    void testTrueDescending() {
+    void testTrueDescending()throws FileNotFoundException, ParseException, IOException {
         Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_FullLadder.json");
         AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(10, 2);
         assertTrue(to_test.getID() == 10);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
-    void testTrueAscending() {
+    void testTrueAscending() throws FileNotFoundException, ParseException, IOException{
         Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_3_FullLadder.json");
         AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(10, 2);
         assertTrue(to_test.getID() == 10);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
-    void testFalse(){
+    void testFalse()throws FileNotFoundException, ParseException, IOException{
         Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_FullLadder.json");
         AbstractCommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(10,2);
         assertTrue(to_test.getID() == 10);
