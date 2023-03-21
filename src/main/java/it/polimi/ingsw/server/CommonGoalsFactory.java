@@ -39,7 +39,7 @@ public class CommonGoalsFactory {
                 newGoal = new TwoSquares(number_of_players);
                 break;
             case(3):
-                newGoal = new EqualsTilesInAllCorners(number_of_players);
+                newGoal = new EqualTilesInAllCorners(number_of_players);
                 break;
             case(4):
                 newGoal = new ThreeColumnsWith3Types(number_of_players);
@@ -67,6 +67,48 @@ public class CommonGoalsFactory {
                 break;
             default:
                 newGoal = new EqualX(number_of_players);
+                break;
+        }
+        return newGoal;
+    }
+    public static AbstractCommonGoal create_goal_with_ID(int ID,ArrayList<Integer> stackState){
+        AbstractCommonGoal newGoal;
+        switch (ID){
+            case(1):
+                newGoal = new SixGroupsOf2(stackState);
+                break;
+            case(2):
+                newGoal = new TwoSquares(stackState);
+                break;
+            case(3):
+                newGoal = new EqualTilesInAllCorners(stackState);
+                break;
+            case(4):
+                newGoal = new ThreeColumnsWith3Types(stackState);
+                break;
+            case(5):
+                newGoal = new TwoAllDifferentColumns(stackState);
+                break;
+            case(6):
+                newGoal = new EightEqualTiles(stackState);
+                break;
+            case(7):
+                newGoal = new Ladders(stackState);
+                break;
+            case(8):
+                newGoal = new FourLineWith3Types(stackState);
+                break;
+            case(9):
+                newGoal = new TwoAllDifferentLines(stackState);
+                break;
+            case(10):
+                newGoal = new FullLadder(stackState);
+                break;
+            case(11):
+                newGoal = new FourGroupsOfFour(stackState);
+                break;
+            default:
+                newGoal = new EqualX(stackState);
                 break;
         }
         return newGoal;

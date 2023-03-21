@@ -9,8 +9,10 @@ import java.util.Stack;
 
 public class EqualX extends AbstractCommonGoal {
     public EqualX(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public EqualX(ArrayList<Integer> stackState){
+        super(stackState);
     }
     @Override
     public int getID() {

@@ -162,9 +162,8 @@ class CommonGoalTest extends AbstractCommonGoal {
     private boolean achieved = false;
     private final int id;
     public CommonGoalTest(int id) {
+        super(2);
         this.id = id;
-        points = new Stack<>();
-        populatePointsStack(2);
     }
     @Override
     public int getID() {return id;}

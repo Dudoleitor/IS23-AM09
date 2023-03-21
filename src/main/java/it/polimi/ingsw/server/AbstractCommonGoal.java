@@ -12,7 +12,16 @@ public abstract class AbstractCommonGoal {
      * A Stack of points where players pop from when they complete CommonGoals
      */
     protected Stack<Integer> points;
-
+    protected AbstractCommonGoal(int number_of_players){
+        points = new Stack<>();
+        populatePointsStack(number_of_players);
+    }
+    protected AbstractCommonGoal(ArrayList<Integer> stackState){
+        points = new Stack<>();
+        for(Integer i : stackState){
+            points.push(i);
+        }
+    }
     /**
      * Returns the ID of the CommonGoal
      * @return CommonGoal ID (1-12)
@@ -31,7 +40,8 @@ public abstract class AbstractCommonGoal {
      * @param number_of_players the number of players
      * @throws CommonGoalsException if number_of_players is smaller than 2 or bigger than 4
      */
-    public void populatePointsStack(int number_of_players) throws CommonGoalsException{
+    //TODO load from JSON
+    private void populatePointsStack(int number_of_players) throws CommonGoalsException{
         this.points = new Stack<>();
         switch (number_of_players){
             case 2:

@@ -12,8 +12,10 @@ import java.util.Stack;
 
 public class EightEqualTiles extends AbstractCommonGoal {
     public EightEqualTiles(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public EightEqualTiles(ArrayList<Integer> stackState){
+        super(stackState);
     }
     @Override
     public int getID() {

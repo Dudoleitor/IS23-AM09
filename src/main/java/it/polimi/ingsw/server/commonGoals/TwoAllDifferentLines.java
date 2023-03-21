@@ -3,12 +3,15 @@ package it.polimi.ingsw.server.commonGoals;
 import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class TwoAllDifferentLines extends AbstractCommonGoal {
     public TwoAllDifferentLines(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public TwoAllDifferentLines(ArrayList<Integer> stackState){
+        super(stackState);
     }
     @Override
     public int getID() {

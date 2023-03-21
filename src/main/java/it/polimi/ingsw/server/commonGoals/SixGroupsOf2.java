@@ -75,7 +75,9 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
         alreadyChecked[position.getRow()][position.getColumn()] = true;
     }
     public SixGroupsOf2(int number_of_players){
-        points = new Stack<Integer>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public SixGroupsOf2(ArrayList<Integer> stackState){
+        super(stackState);
     }
 }

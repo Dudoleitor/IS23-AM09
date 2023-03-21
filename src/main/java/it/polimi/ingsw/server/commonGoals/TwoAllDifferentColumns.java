@@ -3,13 +3,16 @@ package it.polimi.ingsw.server.commonGoals;
 import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class TwoAllDifferentColumns extends AbstractCommonGoal {
     public TwoAllDifferentColumns(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
-    }
+            super(number_of_players);
+        }
+    public TwoAllDifferentColumns(ArrayList<Integer> stackState){
+            super(stackState);
+        }
     @Override
     public int getID() {
         return 5;

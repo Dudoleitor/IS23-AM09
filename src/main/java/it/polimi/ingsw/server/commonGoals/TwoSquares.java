@@ -13,8 +13,10 @@ public class TwoSquares extends AbstractCommonGoal {
         return 2;
     }
     public TwoSquares(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public TwoSquares(ArrayList<Integer> stackState){
+        super(stackState);
     }
     @Override
     public boolean check(Shelf shelf) {

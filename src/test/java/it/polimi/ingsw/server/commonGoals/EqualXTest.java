@@ -5,6 +5,9 @@ import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.shared.Shelf;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.stream.IntStream;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EqualXTest {

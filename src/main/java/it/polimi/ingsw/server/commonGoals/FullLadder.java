@@ -4,12 +4,15 @@ import it.polimi.ingsw.server.AbstractCommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class FullLadder extends AbstractCommonGoal {
     public FullLadder(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public FullLadder(ArrayList<Integer> stackState){
+        super(stackState);
     }
     @Override
     public int getID() {

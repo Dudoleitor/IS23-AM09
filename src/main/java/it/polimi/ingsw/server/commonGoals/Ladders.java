@@ -11,8 +11,10 @@ import java.util.Stack;
 
 public class Ladders extends AbstractCommonGoal {
     public Ladders(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
+        super(number_of_players);
+    }
+    public Ladders(ArrayList<Integer> stackState){
+        super(stackState);
     }
     @Override
     public int getID() {
