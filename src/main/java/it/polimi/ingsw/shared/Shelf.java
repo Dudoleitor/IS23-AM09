@@ -92,6 +92,31 @@ public class Shelf {
     }
 
     /**
+     * Loads a Shelf from Json Object
+     * @param jsonShelf
+     * @throws ShelfGenericException
+     */
+    public Shelf(JSONObject jsonShelf) throws ShelfGenericException {
+        rows = Math.toIntExact((long) (jsonShelf.get("rows")));
+        columns = Math.toIntExact((long) (jsonShelf.get("columns")));
+        tiles = new Tile[rows][columns];
+
+        JSONArray array_shelf = (JSONArray) jsonShelf.get("matrix"); //matrix is the copy of the shelf
+        JSONArray shelfLine;
+
+        Tile t;
+        for (int i = 0; i < rows; i++) { //copy entire matrix to shelf
+            shelfLine = (JSONArray) array_shelf.get(i); //acquire line of matrix
+            for (int j = 0; j < columns; j++) {
+                t = Tile.valueOfLabel((String) shelfLine.get(j));
+                if (t.equals(Tile.Invalid)) { //check whether Tile is Invalid
+                    throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
+                }
+                tiles[i][j] = t;
+            }
+        }
+    }
+    /**
      * Get tile in position pos
      * @param pos is the position object
      * @return Tile in position pos
@@ -286,7 +311,7 @@ public class Shelf {
         return Arrays.deepHashCode(tiles); //deepHashCode is similar to HashCode but also applied to any sub-array of elements
     }
     /**
-     * Returns all the Tiles in a specific column of the shelf
+     * Get all the Tiles in a specific column of the shelf
      * @param column a column of the shelf
      * @return an ArrayList containing all the Tiles in the selected column of the shelf
      */
@@ -299,7 +324,7 @@ public class Shelf {
     }
 
     /**
-     * Returns all the Tiles in a specific row of the shelf
+     * Get all the Tiles in a specific row of the shelf
      * @param row a row of the shelf
      * @return an ArrayList containing all the Tiles in the selected row of the shelf
      */
@@ -311,6 +336,10 @@ public class Shelf {
             return tiles;
     }
 
+    /**
+     * Get all the Tiles in a specific row of the shelf
+     * @return all the Tiles in a specific row of the shelf
+     */
     public ArrayList<Tile> getCorners(){
         ArrayList<Tile> corners = new ArrayList<>();
         int rows = getRows();

@@ -1,6 +1,13 @@
 package it.polimi.ingsw.shared;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
+
+import java.io.FileReader;
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -117,5 +124,22 @@ public class ShelfTest {
         s1.insertTile(Tile.Book, 3);
 
         assert(s.equals(s1));
+    }
+    @Test
+    void JsonObjectTest(){
+        JSONParser jsonParser = new JSONParser(); //initialize JSON parser
+        Object obj = null; //acquire JSON object file
+        try {
+            obj = jsonParser.parse(new FileReader("src/test/resources/ShelfBuilderJson.json"));
+        } catch (IOException e) {
+            fail();
+        } catch (ParseException e) {
+            fail();
+        }
+        JSONObject objShelf = (JSONObject) ((JSONObject) obj).get("shelf"); //acquire shelf object
+        Shelf shelf = new Shelf(objShelf);
+        assertEquals(4,shelf.getRows());
+        assertEquals(4,shelf.getColumns());
+        assertEquals(shelf.getTile(0,0),Tile.Cat);
     }
 }
