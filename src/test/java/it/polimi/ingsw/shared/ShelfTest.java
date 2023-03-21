@@ -101,7 +101,7 @@ public class ShelfTest {
     }
     @Test
     public void ShelfJsonTester() throws FileNotFoundException, ParseException, IOException{
-        String jsonPath = "src/test/resources/ShelfTests/ShelfBuilderJson.json";
+        String jsonPath = "src/test/resources/ShelfTests/ShelfInsert.json";
         Shelf s = new Shelf(jsonPath);
         Shelf s1 = new Shelf(4, 4);
         s1.insertTile(Tile.Trophy, 0);
@@ -131,7 +131,7 @@ public class ShelfTest {
         JSONParser jsonParser = new JSONParser(); //initialize JSON parser
         Object obj = null; //acquire JSON object file
         try {
-            obj = jsonParser.parse(new FileReader("src/test/resources/ShelfTests/ShelfBuilderJson.json"));
+            obj = jsonParser.parse(new FileReader("src/test/resources/ShelfTests/ShelfInsert.json"));
         } catch (IOException e) {
             fail();
         } catch (ParseException e) {
