@@ -19,10 +19,7 @@ public class Board {
     private int numPlayers;
     private int numRows;
     private int numColumns;
-    private CommonGoalsFactory goalsFactory;
     private ArrayList<AbstractCommonGoal> goals;
-    private final String JSONBoardInit = "src/main/resources/BoardInit.json";
-    private final int numOfTileType = 22;
 
     /**
      * Constructor used to initialize board from default setup
@@ -31,8 +28,10 @@ public class Board {
      */
     public Board(int numPlayers) throws BoardGenericException {
         try{
-            goalsFactory = new CommonGoalsFactory();
-            goals = new ArrayList<>();
+            String JSONBoardInit = "src/main/resources/BoardInit.json";
+            int numOfTileType = 22;
+
+            goals = CommonGoalsFactory.createTwoGoals(numPlayers);
             tilesToDraw = new ArrayList<>();
             this.numPlayers = numPlayers;
 
@@ -80,7 +79,6 @@ public class Board {
      */
     public Board(String jsonPath) throws BoardGenericException{
         try{
-            goalsFactory = new CommonGoalsFactory();
             goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
 
@@ -92,7 +90,12 @@ public class Board {
             numRows = Math.toIntExact((long)(objBoard.get("numRows")));
             numColumns = Math.toIntExact((long)(objBoard.get("numColumns")));
             boardTiles = new Tile[numRows][numColumns];
-
+            /* TODO discuss with others about the acquisition of CommonGoals from JSON
+            JSONArray goalJson = (JSONArray)objBoard.get("goals");
+            for(Object o: goalJson) {
+                goals.add(CommonGoalsFactory.create_from_json((JSONObject) o));
+            }
+            */
             JSONArray arrayBoard = (JSONArray)objBoard.get("matrix"); //matrix is the copy of the board
             JSONArray arrayDeck = (JSONArray)objBoard.get("deck"); //deck is the copy of tilesToDraw
             JSONArray boardLine;
@@ -197,10 +200,19 @@ public class Board {
         if(goals.size() != Bgoals.size())
             same = false;
         for(int i = 0;same && i<goals.size(); i++){ //check if they have same commonGoals()
-            if(!goals.get(i).equals(Bgoals.get(i)))
+            if (!goals.get(i).equals(Bgoals.get(i))) {
                 same = false;
+            }
         }
-        //TODO check if they have a different permutation of tilesToDraw
+        List<Tile> t1 = new ArrayList<>(tilesToDraw); //copy tileToDraw
+        List<Tile> t2 = new ArrayList<>(board.getTilesToDraw());
+
+        t1.sort(Comparator.comparing(Tile::toString)); //sort t1 list
+        t2.sort(Comparator.comparing(Tile::toString));//sort t2 list
+
+        if(!t1.equals(t2)) //check if the two lists contains the same elements in the same order
+            same = false;
+
         return same;
 
     }
@@ -211,7 +223,7 @@ public class Board {
      */
     @Override
     public int hashCode() {
-        int result = Objects.hash(tilesToDraw, numPlayers, goalsFactory, goals);
+        int result = Objects.hash(tilesToDraw, numPlayers, goals);
         result = 31 * result + Arrays.deepHashCode(boardTiles);
         return result;
     }
@@ -291,7 +303,7 @@ public class Board {
      * Initialize the goals from CommonGoalsFactory
      */
     public void initializeGoals() {
-        goals = goalsFactory.createTwoGoals(numPlayers);
+        goals = CommonGoalsFactory.createTwoGoals(numPlayers);
     }
 
     /**
@@ -299,11 +311,11 @@ public class Board {
      * @return CommonGoals array copy
      */
     public List<AbstractCommonGoal> getCommonGoals() {
-        List<AbstractCommonGoal> matchGoals = new ArrayList<>();
-        for(int i = 0; i < goals.size(); i++) {
-            matchGoals.add(goals.get(i));
-        }
-        return matchGoals;
+        return new ArrayList<>(goals);
+    }
+
+    public List<Tile> getTilesToDraw() {
+        return new ArrayList<>(tilesToDraw);
     }
 
     //complete when PartialMove is implemented

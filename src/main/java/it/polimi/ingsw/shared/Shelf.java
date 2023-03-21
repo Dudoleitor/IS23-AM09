@@ -1,5 +1,4 @@
 package it.polimi.ingsw.shared;
-import it.polimi.ingsw.server.CommonGoalsException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -73,8 +72,8 @@ public class Shelf {
 
     /**
      * Loads a Shelf from Json Object
-     * @param jsonShelf
-     * @throws ShelfGenericException
+     * @param jsonShelf is the JSONObject containing the parameters necessary to build the Shelf object
+     * @throws ShelfGenericException when a problem in the creation of shelf occurs
      */
     public Shelf(JSONObject jsonShelf) throws ShelfGenericException {
         rows = Math.toIntExact((long) (jsonShelf.get("rows")));
