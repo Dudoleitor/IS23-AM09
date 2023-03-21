@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.*;
+
 import java.util.*;
 
 public class Controller {
@@ -10,30 +11,55 @@ public class Controller {
     private List<Player> players;
     private int turn;
 
-    public Controller(List<String> namePlayers, int shelfRows, int shelfColumns) {
-        board = new Board(players.size());
-        commonGoals = board.getCommonGoals();
-        players = new ArrayList<>();
-        turn = 2; //TODO
-        for(String s : namePlayers){
-            players.add(new Player(s, new ServerShelf(shelfRows,shelfColumns), new PlayerGoal("JSON PATH"))); // TODO add real JSON path
+    /**
+     * Constructor used to initialize the controller
+     * @param namePlayers is a List of the (unique) names of the players
+     * @param shelfRows is an int representing the number of rows in the self
+     * @param shelfColumns is an int representing the number of columns in the self
+     * @param jsonPath is the previous generated json we get the playerGoal from
+     * @throws ControllerGenericException when parsing error occurs
+     */
+    public Controller(List<String> namePlayers, int shelfRows, int shelfColumns, String jsonPath) throws ControllerGenericException {
+        try {
+            players = new ArrayList<>();
+            turn = 0;
+            for (String s : namePlayers) {
+                players.add(new Player(s, new ServerShelf(shelfRows, shelfColumns), new PlayerGoal(jsonPath)));
+            }
+            board = new Board(players.size());
+            commonGoals = board.getCommonGoals();
+        } catch (ClassCastException | NullPointerException e) {
+            throw new ControllerGenericException("Error while creating the Controller : bad json parsing");
         }
 
     }
 
-    //TODO
+    /**
+     * @return the board
+     */
     public Board getBoard() {
         return board;
     }
 
+    /**
+     * @return the commonGoals we instantiated in the constructor
+     */
     public List<AbstractCommonGoal> getCommonGoals() {
         return commonGoals;
     }
 
+    /**
+     * @return the players of the match
+     */
     public List<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * turn is the actual turn of the match, every turn has an increment of 1, and we calculate (turn + 1) mod the size of players array
+     * in order to get the actual player
+     * @return the current player
+     */
     public String getCurrentPlayer() {
         return getPlayers().get((turn + 1) % (getPlayers().size())).getName();
     }
@@ -77,6 +103,14 @@ public class Controller {
             Tile t = board.pickTile(p);
             playerShelf.insertTile(t, move.getColumn());
         }
+        incrementTurn();
+    }
+
+    /**
+     * increment the private variable turn
+     */
+    private void incrementTurn() {
+        turn += 1;
     }
 
     /**
@@ -125,9 +159,7 @@ public class Controller {
             }
 
         }
-
         return true;
-
     }
 
     /**
