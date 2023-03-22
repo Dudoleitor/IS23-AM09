@@ -10,7 +10,7 @@ public class Controller {
     private final int shelfColumns = 5;
 
     private final Board board;
-    private final List<AbstractCommonGoal> commonGoals;
+    private final List<CommonGoal> commonGoals;
     private final List<Player> players;
     private int turn;
 
@@ -45,7 +45,7 @@ public class Controller {
     /**
      * @return the commonGoals we instantiated in the constructor
      */
-    public List<AbstractCommonGoal> getCommonGoals() {
+    public List<CommonGoal> getCommonGoals() {
         return commonGoals;
     }
 

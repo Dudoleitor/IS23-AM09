@@ -1,16 +1,13 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EqualTilesInAllCorners extends AbstractCommonGoal {
-    public EqualTilesInAllCorners(int number_of_players){
-        super(number_of_players);
-    }
+public class EqualTilesInAllCorners extends CommonGoal {
     public EqualTilesInAllCorners(List<Integer> stackState){
         super(stackState);
     }

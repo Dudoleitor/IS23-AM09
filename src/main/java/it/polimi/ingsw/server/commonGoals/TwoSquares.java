@@ -1,20 +1,16 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
-public class TwoSquares extends AbstractCommonGoal {
+public class TwoSquares extends CommonGoal {
     @Override
     public int getID() {
         return 2;
-    }
-    public TwoSquares(int number_of_players){
-        super(number_of_players);
     }
     public TwoSquares(List<Integer> stackState){
         super(stackState);

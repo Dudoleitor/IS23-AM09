@@ -3,7 +3,6 @@ package it.polimi.ingsw.server;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileReader;
@@ -21,14 +20,6 @@ class CommonGoalsFactoryTest {
         }
     }
     @Test
-    void testCreationWithArray(){
-        ArrayList<Integer> stackState = new ArrayList<>();
-        IntStream.range(1,10).forEach(x->stackState.add(x));
-        AbstractCommonGoal goal = CommonGoalsFactory.create_goal_with_ID(1,stackState);
-        assertEquals(1,goal.getID());
-        assertEquals(9,goal.givePoints());
-    }
-    @Test
     void LoadFromJson() {
         JSONParser jsonParser = new JSONParser(); //initialize JSON parser
         Object obj;
@@ -40,7 +31,32 @@ class CommonGoalsFactoryTest {
             throw new RuntimeException(e);
         }
         JSONObject objGoal = (JSONObject) ((JSONObject) obj).get("CommonGoal");
-        AbstractCommonGoal goal = CommonGoalsFactory.create_from_json(objGoal);
+        CommonGoal goal = CommonGoalsFactory.create_from_json(objGoal);
         assertEquals(6,goal.givePoints());
+    }
+    @Test
+    void createWithNumberOfPlayers(){
+        CommonGoal test = CommonGoalsFactory.create_goal_with_ID(2,2);
+        assertEquals(8,test.givePoints());
+        assertEquals(4,test.givePoints());
+        assertEquals(0,test.givePoints());
+
+        test = CommonGoalsFactory.create_goal_with_ID(2,3);
+        assertEquals(8,test.givePoints());
+        assertEquals(6,test.givePoints());
+        assertEquals(4,test.givePoints());
+        assertEquals(0,test.givePoints());
+
+        test = CommonGoalsFactory.create_goal_with_ID(2,4);
+        assertEquals(8,test.givePoints());
+        assertEquals(6,test.givePoints());
+        assertEquals(4,test.givePoints());
+        assertEquals(2,test.givePoints());
+        assertEquals(0,test.givePoints());
+    }
+    @Test
+    void invalidNumberOfPlayersException(){
+        assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,0));
+        assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,5));
     }
 }

@@ -90,8 +90,8 @@ public class Player {
      * previously achieved, pops points from the goal and saves them.
      * @param goals list of AbstractCommonGoals to be checked.
      */
-    public void checkCommonGoals(List<AbstractCommonGoal> goals) {
-        for (AbstractCommonGoal goal : goals) {
+    public void checkCommonGoals(List<CommonGoal> goals) {
+        for (CommonGoal goal : goals) {
             if (goal.check(shelf) &&
                     !checkedCommonGoals.contains(goal.getID())) {
                 commonGoalPoints += goal.givePoints();

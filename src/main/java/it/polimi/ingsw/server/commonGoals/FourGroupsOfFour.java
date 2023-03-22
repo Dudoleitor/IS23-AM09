@@ -1,16 +1,11 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
-public class FourGroupsOfFour extends AbstractCommonGoal {
-    public FourGroupsOfFour(int number_of_players){
-        super(number_of_players);
-    }
+public class FourGroupsOfFour extends CommonGoal {
     public FourGroupsOfFour(List<Integer> stackState){
         super(stackState);
     }

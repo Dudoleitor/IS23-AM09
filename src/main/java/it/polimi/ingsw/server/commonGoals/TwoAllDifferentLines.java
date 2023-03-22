@@ -1,16 +1,11 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
-public class TwoAllDifferentLines extends AbstractCommonGoal {
-    public TwoAllDifferentLines(int number_of_players){
-        super(number_of_players);
-    }
+public class TwoAllDifferentLines extends CommonGoal {
     public TwoAllDifferentLines(List<Integer> stackState){
         super(stackState);
     }

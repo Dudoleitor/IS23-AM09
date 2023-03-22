@@ -1,24 +1,18 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public abstract class AbstractCommonGoal {
+public abstract class CommonGoal {
     /**
      * A Stack of points where players pop from when they complete CommonGoals
      */
     protected Stack<Integer> points;
-    protected AbstractCommonGoal(int number_of_players){
-        points = new Stack<>();
-        populatePointsStack(number_of_players);
-    }
-    protected AbstractCommonGoal(List<Integer> stackState){
+    protected CommonGoal(List<Integer> stackState){
         points = new Stack<>();
         for(Integer i : stackState){
             points.push(i);
@@ -38,39 +32,16 @@ public abstract class AbstractCommonGoal {
     public abstract boolean check(Shelf shelf);
 
     /**
-     * populate the point stacks of the Common Goal accordingly to the number of players (2-4)
-     * @param number_of_players the number of players
-     * @throws CommonGoalsException if number_of_players is smaller than 2 or bigger than 4
-     */
-    private void populatePointsStack(int number_of_players) throws CommonGoalsException{
-        this.points = new Stack<>();
-        switch (number_of_players){
-            case 2:
-                points.push(4);
-                points.push(8);
-                break;
-            case 3:
-                points.push(4);
-                points.push(6);
-                points.push(8);
-                break;
-            case 4:
-                points.push(2);
-                points.push(4);
-                points.push(6);
-                points.push(8);
-                break;
-            default:
-                throw new CommonGoalsException("Error while Populating PointsStack : Illegal num of players");
-        }
-    }
-
-    /**
      * Pops points from PointStack
      * @return the points popped from the Stack
      */
     public int givePoints(){
-        return points.pop();
+        if(points.size() > 0){
+            return points.pop();
+        }
+        else{
+            return 0;
+        }
     }
 
     /**

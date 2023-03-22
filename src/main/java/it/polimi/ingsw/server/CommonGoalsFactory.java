@@ -3,10 +3,13 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.server.commonGoals.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -19,8 +22,8 @@ public class CommonGoalsFactory {
      * @return an Arraylist containig the two randomly selected goals
      * @throws CommonGoalsException
      */
-    public static ArrayList<AbstractCommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
-        ArrayList<AbstractCommonGoal> active_goals = new ArrayList<>();
+    public static ArrayList<CommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
+        ArrayList<CommonGoal> active_goals = new ArrayList<>();
         for(int i : pickTwoRandomNumbers(number_of_goals)){
             active_goals.add(create_goal_with_ID(i+1,number_of_players));
         }
@@ -49,51 +52,39 @@ public class CommonGoalsFactory {
 
     /**
      * Creates a common goal from the id and the number of players
-     * @param ID of the common goal
+     * @param id of the common goal
      * @param number_of_players
      * @return the generated commongoal
      */
-    public static AbstractCommonGoal create_goal_with_ID(int ID, int number_of_players){
-        AbstractCommonGoal newGoal;
-        switch (ID){
-            case(1):
-                newGoal = new SixGroupsOf2(number_of_players);
-                break;
-            case(2):
-                newGoal = new TwoSquares(number_of_players);
-                break;
-            case(3):
-                newGoal = new EqualTilesInAllCorners(number_of_players);
-                break;
-            case(4):
-                newGoal = new ThreeColumnsWith3Types(number_of_players);
-                break;
-            case(5):
-                newGoal = new TwoAllDifferentColumns(number_of_players);
-                break;
-            case(6):
-                newGoal = new EightEqualTiles(number_of_players);
-                break;
-            case(7):
-                newGoal = new Ladders(number_of_players);
-                break;
-            case(8):
-                newGoal = new FourLineWith3Types(number_of_players);
-                break;
-            case(9):
-                newGoal = new TwoAllDifferentLines(number_of_players);
-                break;
-            case(10):
-                newGoal = new FullLadder(number_of_players);
-                break;
-            case(11):
-                newGoal = new FourGroupsOfFour(number_of_players);
-                break;
-            default:
-                newGoal = new EqualX(number_of_players);
-                break;
+    public static CommonGoal create_goal_with_ID(int id, int number_of_players) {
+        Object obj = null;
+        try {
+            JSONParser jsonParser = new JSONParser(); //initialize parser
+            switch (number_of_players) {
+                case (2):
+                    obj = jsonParser.parse(new FileReader("src/main/resources/Two_Players_CommonGoal.json")); //acquire JSON object file
+                    break;
+                case (3):
+                    obj = jsonParser.parse(new FileReader("src/main/resources/Three_Players_CommonGoal.json")); //acquire JSON object file
+                    break;
+                case (4):
+                    obj = jsonParser.parse(new FileReader("src/main/resources/Four_Players_CommonGoal.json")); //acquire JSON object file
+                    break;
+                default:
+                    throw new CommonGoalsException("Error while creating CommonGoal: Invalid number of Players");
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new CommonGoalsException("Error while creating CommonGoal : json file not found");
+        } catch (IOException | ClassCastException | NullPointerException e) {
+            throw new CommonGoalsException("Error while creating CommonGoal : bad json parsing");
+        } catch (org.json.simple.parser.ParseException e) {
+            e.printStackTrace();
         }
-        return newGoal;
+        JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get("CommonGoal"); //acquire board object
+        JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
+        List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long) x)).collect(Collectors.toList());
+        return create_goal_with_ID(id, stackState);
     }
 
     /**
@@ -102,8 +93,8 @@ public class CommonGoalsFactory {
      * @param stackState a list of integers to populate the stack
      * @return the generated common goal
      */
-    public static AbstractCommonGoal create_goal_with_ID(int ID,List<Integer> stackState){
-        AbstractCommonGoal newGoal;
+    private static CommonGoal create_goal_with_ID(int ID, List<Integer> stackState){
+        CommonGoal newGoal;
         switch (ID){
             case(1):
                 newGoal = new SixGroupsOf2(stackState);
@@ -150,7 +141,7 @@ public class CommonGoalsFactory {
      * @param jsonObject the serialized object
      * @return the generated common goal
      */
-    public static AbstractCommonGoal create_from_json(JSONObject jsonObject){
+    public static CommonGoal create_from_json(JSONObject jsonObject){
         int id = Math.toIntExact((Long) jsonObject.get("id"));
         JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
         List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long)x)).collect(Collectors.toList());

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -105,9 +104,16 @@ public class PlayerTest {
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
         PlayerGoal playerGoal = new PlayerGoal(jsonPath);
-        List<AbstractCommonGoal> commonGoalsList = new ArrayList<>();
-        CommonGoalTest commonGoal1 = new CommonGoalTest(10);
-        CommonGoalTest commonGoal2 = new CommonGoalTest(20);
+        List<CommonGoal> commonGoalsList = new ArrayList<>();
+
+        ArrayList<Integer> stackState = new ArrayList<>();
+        stackState.add(4);
+        stackState.add(8);
+
+        CommonGoalTest commonGoal1 = new CommonGoalTest(stackState);
+        commonGoal1.setId(10);
+        CommonGoalTest commonGoal2 = new CommonGoalTest(stackState);
+        commonGoal2.setId(20);
         commonGoalsList.add(commonGoal1);
         commonGoalsList.add(commonGoal2);
         Player testpl = new Player(name, shelf, playerGoal);
@@ -158,11 +164,13 @@ public class PlayerTest {
     }
 }
 
-class CommonGoalTest extends AbstractCommonGoal {
+class CommonGoalTest extends CommonGoal {
     private boolean achieved = false;
-    private final int id;
-    public CommonGoalTest(int id) {
-        super(2);
+    private int id;
+    public CommonGoalTest(ArrayList<Integer> stackState) {
+        super(stackState);
+    }
+    public void setId(int id){
         this.id = id;
     }
     @Override

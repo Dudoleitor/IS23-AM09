@@ -1,6 +1,6 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,7 +19,7 @@ public class Board {
     private int numPlayers;
     private int numRows;
     private int numColumns;
-    private ArrayList<AbstractCommonGoal> goals;
+    private ArrayList<CommonGoal> goals;
 
     /**
      * Constructor used to initialize board from default setup
@@ -196,7 +196,7 @@ public class Board {
                 }
             }
         }
-        List<AbstractCommonGoal> Bgoals = board.getCommonGoals();
+        List<CommonGoal> Bgoals = board.getCommonGoals();
         if(goals.size() != Bgoals.size())
             same = false;
         for(int i = 0;same && i<goals.size(); i++){ //check if they have same commonGoals()
@@ -310,7 +310,7 @@ public class Board {
      * get the CommonGoals
      * @return CommonGoals array copy
      */
-    public List<AbstractCommonGoal> getCommonGoals() {
+    public List<CommonGoal> getCommonGoals() {
         return new ArrayList<>(goals);
     }
 

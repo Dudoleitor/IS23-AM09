@@ -1,15 +1,14 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
-public class SixGroupsOf2 extends AbstractCommonGoal {
+public class SixGroupsOf2 extends CommonGoal {
     @Override
     public int getID() {
         return 1;
@@ -74,9 +73,6 @@ public class SixGroupsOf2 extends AbstractCommonGoal {
     }
     private void markPosition(boolean[][] alreadyChecked, Position position){
         alreadyChecked[position.getRow()][position.getColumn()] = true;
-    }
-    public SixGroupsOf2(int number_of_players){
-        super(number_of_players);
     }
     public SixGroupsOf2(List<Integer> stackState){
         super(stackState);

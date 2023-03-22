@@ -1,16 +1,13 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.AbstractCommonGoal;
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.*;
 
-public class EightEqualTiles extends AbstractCommonGoal {
-    public EightEqualTiles(int number_of_players){
-        super(number_of_players);
-    }
+public class EightEqualTiles extends CommonGoal {
     public EightEqualTiles(List<Integer> stackState){
         super(stackState);
     }
