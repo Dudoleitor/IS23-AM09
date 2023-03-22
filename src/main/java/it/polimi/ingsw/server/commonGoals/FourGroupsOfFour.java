@@ -20,10 +20,10 @@ public class FourGroupsOfFour extends CommonGoal {
         int columns = shelf.getColumns();
         boolean[][] alreadyChecked = new boolean[rows][columns];
         int groups_found = 0;
+        //count all groups with more than 2 tiles
         for(int row = 0; row < rows; row++){
             for(int column = 0; column < columns; column++){
-                if(!shelf.getTile(row,column).equals(Tile.Empty) &&
-                        islandSize(shelf,row,column,alreadyChecked,shelf.getTile(row,column)) >=4){
+                if(validIslandSize(shelf,row,column,alreadyChecked) >=4){
                     groups_found++;
                 }
             }

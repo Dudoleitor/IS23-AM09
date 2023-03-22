@@ -18,7 +18,9 @@ public class Ladders extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
+        //generate ladders
         ArrayList<ArrayList<Tile>> ladders = generateLadders(shelf);
+        //check if at least one is composed of all equal tiles
         for(ArrayList<Tile> ladder : ladders){
             if(notEmptyAndEqual(ladder)){
                 return true;
@@ -32,15 +34,15 @@ public class Ladders extends CommonGoal {
         int columns = shelf.getColumns();
         ArrayList<ArrayList<Tile>> ladders = new ArrayList<>();
         ArrayList<Tile> currentLadder = new ArrayList<>();
-        for(int initialrow = 0; initialrow < 2; initialrow++){ //value 2 is hardcoded
+        for(int initial_row = 0; initial_row < 2; initial_row++){ //value 2 is hardcoded
             currentLadder.clear();
             for(int i = 0; i < Math.min(rows,columns); i++){
-                currentLadder.add(shelf.getTile(new Position(initialrow+i,i)));
+                currentLadder.add(shelf.getTile(new Position(initial_row+i,i)));
             }
             ladders.add(new ArrayList<>(currentLadder));
             currentLadder.clear();
             for(int i = 0; i < Math.min(rows,columns); i++){
-                currentLadder.add(shelf.getTile(new Position(initialrow+i,columns-1-i)));
+                currentLadder.add(shelf.getTile(new Position(initial_row+i,columns-1-i)));
             }
             ladders.add(new ArrayList<>(currentLadder));
         }

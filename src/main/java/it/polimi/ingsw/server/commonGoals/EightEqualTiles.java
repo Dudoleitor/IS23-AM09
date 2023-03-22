@@ -18,14 +18,16 @@ public class EightEqualTiles extends CommonGoal {
     @Override
     public boolean check(Shelf shelf) {
         Tile currentTile;
+        //initialize counters for all tyoe of Tiles
         HashMap<Tile,Integer> counters = new HashMap<>();
         for(Tile tile : Tile.values()){
             counters.put(tile,0);
         }
+        //count all tiles in different counters
         for(int row = 0; row < shelf.getRows(); row++){
             for(int column = 0; column < shelf.getColumns(); column++){
                 currentTile = shelf.getTile(new Position(row,column));
-                if(!currentTile.equals(Tile.Empty) && !currentTile.equals(Tile.Invalid)){
+                if(notEmpty(currentTile)){
                     incrementCounter(counters,currentTile);
                 }
             }

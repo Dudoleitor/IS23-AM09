@@ -129,9 +129,11 @@ public class CommonGoalsFactory {
             case(11):
                 newGoal = new FourGroupsOfFour(stackState);
                 break;
-            default:
+            case(12):
                 newGoal = new EqualX(stackState);
                 break;
+            default:
+                throw new CommonGoalsException("Error while creating CommonGoal: Invalid Id");
         }
         return newGoal;
     }

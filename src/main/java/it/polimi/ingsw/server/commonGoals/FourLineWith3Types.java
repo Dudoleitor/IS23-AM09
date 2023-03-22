@@ -16,6 +16,7 @@ public class FourLineWith3Types extends CommonGoal {
     @Override
     public boolean check(Shelf shelf) {
         int correctRows = 0;
+        //count the rows that follow the requirements
         for(int row = 0; row < shelf.getRows(); row++){
             if(maxNTypes(shelf.allTilesInRow(row),3)){
                 correctRows++;

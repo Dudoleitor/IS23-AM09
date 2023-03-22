@@ -21,11 +21,10 @@ public class TwoSquares extends CommonGoal {
         int rows = shelf.getRows();
         int equalSquaresCounter = 0;
         boolean[][] alreadyUsed = new boolean[rows][columns];
+        //count all perfect squares (no overlap or adjacency)
         for(int row = 0; row < rows-1; row++){
             for(int column = 0; column < columns-1; column++){
-                if( isAvailable(alreadyUsed,row,column) &&
-                        notEmptyAndEqual(get2x2Square(shelf,row,column)) &&
-                        4 == islandSize(shelf,row,column,alreadyUsed,shelf.getTile(row,column))){
+                if(isPerfectSquare(shelf, alreadyUsed, row, column)){
                     markSquareAsUsed(alreadyUsed,row,column);
                     equalSquaresCounter++;
                 }
@@ -51,5 +50,9 @@ public class TwoSquares extends CommonGoal {
         alreadyUsed[row+1][column] = true;
         alreadyUsed[row][column+1] = true;
         alreadyUsed[row+1][column+1] = true;
+    }
+
+    private boolean isPerfectSquare(Shelf shelf, boolean[][] alreadyUsed, int row, int column){
+        return isAvailable(alreadyUsed,row,column) && notEmptyAndEqual(get2x2Square(shelf,row,column)) && 4 == validIslandSize(shelf,row,column,alreadyUsed);
     }
 }

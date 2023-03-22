@@ -19,9 +19,11 @@ public class EqualX extends CommonGoal {
     public boolean check(Shelf shelf) {
         int columns = shelf.getColumns();
         int rows = shelf.getRows();
+        //Shelf too small to complete goal
         if(columns < 3 || rows < 3){
             return false;
         }
+        //Look for an "x" shape of tiles that are equal and not Empty
         for(int row = 0; row < rows-2; row++){
             for(int column = 0; column < columns -2; column++){
                 if(notEmptyAndEqual(getXShape(shelf,row,column))){

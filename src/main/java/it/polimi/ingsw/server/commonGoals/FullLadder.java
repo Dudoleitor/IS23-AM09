@@ -16,10 +16,12 @@ public class FullLadder extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
+        //get all heights in order
         int[] heights = new int[shelf.getColumns()];
         for(int column = 0; column < shelf.getColumns(); column++){
             heights[column] = columnHeigth(shelf,column);
         }
+        //check if they form a ladder
         return isLadder(heights);
     }
     private boolean isLadder(int[] heights){

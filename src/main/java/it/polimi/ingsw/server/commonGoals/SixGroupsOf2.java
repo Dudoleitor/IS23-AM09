@@ -22,8 +22,7 @@ public class SixGroupsOf2 extends CommonGoal {
         int groups_found = 0;
         for(int row = 0; row < rows; row++){
             for(int column = 0; column < columns; column++){
-                    if(!shelf.getTile(row,column).equals(Tile.Empty) &&
-                            islandSize(shelf,row,column,alreadyChecked,shelf.getTile(row,column)) >=2){
+                    if(validIslandSize(shelf,row,column,alreadyChecked) >=2){
                         groups_found++;
                     }
                 }

@@ -99,7 +99,7 @@ public abstract class CommonGoal {
         }
     }
 
-    protected int islandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
+    private int islandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
         if(invalidPosition(shelf,row,column) || alreadyChecked[row][column] == true){
             return 0;
         }
@@ -116,10 +116,33 @@ public abstract class CommonGoal {
         }
     }
 
-    private boolean invalidPosition(Shelf shelf, int row, int column){
+    /**
+     * Returns the size of the "island" of Tiles with the same color in which the selected tile is in.
+     * If the Tile is Empty or Invalid it returns 0. Visited Tiles are marked on alreadyChecked
+     *@param shelf the player's shelf
+     *@param row the row of the selected tile
+     *@param column the column of the selected tile
+     *@param alreadyChecked a matrix of booleans that keeps track of the visited Tiles
+     *@return the size of the island
+     */
+    protected int validIslandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked){
+        if(notEmpty(shelf.getTile(row, column))){
+            Tile islandType = shelf.getTile(row, column);
+            return islandSize(shelf,row,column,alreadyChecked,islandType);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    protected boolean invalidPosition(Shelf shelf, int row, int column){
         if(row < 0 || row >= shelf.getRows() || column < 0 || column >= shelf.getColumns()){
             return true;
         }
         return false;
+    }
+
+    protected boolean notEmpty(Tile tile){
+        return !tile.equals(Tile.Empty) && !tile.equals(Tile.Invalid);
     }
 }

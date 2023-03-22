@@ -16,8 +16,7 @@ public class EqualTilesInAllCorners extends CommonGoal {
         return 3;
     }
     @Override
-    public boolean check(Shelf shelf) { //Untested
-        ArrayList<Tile> corners = shelf.getCorners();
-        return notEmptyAndEqual(corners);
+    public boolean check(Shelf shelf) {
+        return notEmptyAndEqual(shelf.getCorners());
     }
 }

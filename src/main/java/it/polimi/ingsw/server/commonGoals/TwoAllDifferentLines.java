@@ -15,6 +15,7 @@ public class TwoAllDifferentLines extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
+        //count the rows that follow the requirements
         int differentLines = 0;
         for (int row = 0; row < shelf.getRows(); row++) {
             if(notEmptyAndAllDifferent(shelf.allTilesInRow(row))){

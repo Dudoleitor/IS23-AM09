@@ -15,6 +15,7 @@ public class ThreeColumnsWith3Types extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
+        //count the columns that follow the requirements
         int correctColumns = 0;
         for(int column = 0; column < shelf.getColumns(); column++){
             if(maxNTypes(shelf.allTilesInColumn(column),3)){
