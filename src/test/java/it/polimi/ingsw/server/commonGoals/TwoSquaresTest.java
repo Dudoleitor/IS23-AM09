@@ -33,10 +33,11 @@ class TwoSquaresTest {
         assertTrue(to_test.getID() == 2);
         assertFalse(to_test.check(falseShelf));
     }
-    void knownBug()throws FileNotFoundException, ParseException, IOException{
-        Shelf falseShelf = new Shelf("src/test/resources/TestShelf_3_2Squares.json");
+    @Test
+    void testFalse2()throws FileNotFoundException, ParseException, IOException{
+        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_3_2Squares.json");
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(2,2);
         assertTrue(to_test.getID() == 2);
-        assertTrue(to_test.check(falseShelf));
+        assertFalse(to_test.check(falseShelf));
     }
 }

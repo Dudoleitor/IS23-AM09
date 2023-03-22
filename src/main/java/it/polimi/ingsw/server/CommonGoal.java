@@ -98,4 +98,28 @@ public abstract class CommonGoal {
             throw new CommonGoalsException("Error while checking maxThreeTypes : tiles is null pointer");
         }
     }
+
+    protected int islandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
+        if(invalidPosition(shelf,row,column) || alreadyChecked[row][column] == true){
+            return 0;
+        }
+        else{
+            if(shelf.getTile(row,column).equals(type)){
+                alreadyChecked[row][column] = true;
+                return  1 +
+                        islandSize(shelf,row-1,column,alreadyChecked,type) +
+                        islandSize(shelf,row+1,column,alreadyChecked,type) +
+                        islandSize(shelf,row,column-1,alreadyChecked,type) +
+                        islandSize(shelf,row,column+1,alreadyChecked,type);
+            }
+            else return 0;
+        }
+    }
+
+    private boolean invalidPosition(Shelf shelf, int row, int column){
+        if(row < 0 || row >= shelf.getRows() || column < 0 || column >= shelf.getColumns()){
+            return true;
+        }
+        return false;
+    }
 }

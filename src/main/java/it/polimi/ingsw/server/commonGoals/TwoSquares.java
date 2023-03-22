@@ -24,7 +24,8 @@ public class TwoSquares extends CommonGoal {
         for(int row = 0; row < rows-1; row++){
             for(int column = 0; column < columns-1; column++){
                 if( isAvailable(alreadyUsed,row,column) &&
-                        notEmptyAndEqual(get2x2Square(shelf,row,column))){
+                        notEmptyAndEqual(get2x2Square(shelf,row,column)) &&
+                        4 == islandSize(shelf,row,column,alreadyUsed,shelf.getTile(row,column))){
                     markSquareAsUsed(alreadyUsed,row,column);
                     equalSquaresCounter++;
                 }
