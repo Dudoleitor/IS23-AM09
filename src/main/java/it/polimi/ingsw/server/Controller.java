@@ -4,22 +4,23 @@ import it.polimi.ingsw.shared.*;
 
 import java.util.*;
 
-public class Controller {
 
-    private Board board;
-    private List<AbstractCommonGoal> commonGoals;
-    private List<Player> players;
+public class Controller {
+    private final int shelfRows = 6;
+    private final int shelfColumns = 5;
+
+    private final Board board;
+    private final List<AbstractCommonGoal> commonGoals;
+    private final List<Player> players;
     private int turn;
 
     /**
      * Constructor used to initialize the controller
      * @param namePlayers is a List of the (unique) names of the players
-     * @param shelfRows is an int representing the number of rows in the self
-     * @param shelfColumns is an int representing the number of columns in the self
      * @param jsonPath is the previous generated json we get the playerGoal from
      * @throws ControllerGenericException when parsing error occurs
      */
-    public Controller(List<String> namePlayers, int shelfRows, int shelfColumns, String jsonPath) throws ControllerGenericException {
+    public Controller(List<String> namePlayers, String jsonPath) throws ControllerGenericException {
         try {
             players = new ArrayList<>();
             turn = 0;
