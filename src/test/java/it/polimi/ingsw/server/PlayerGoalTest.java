@@ -2,7 +2,14 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.Tile;
 import it.polimi.ingsw.shared.Shelf;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
+
+import java.io.FileReader;
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerGoalTest {
@@ -69,6 +76,17 @@ public class PlayerGoalTest {
         assertTrue(goal.getGoalId() >= 0);
         assertTrue(goal.getGoalId() < 4);
     }
+
+    @Test
+    void creationFromJsonObjTest() throws IOException, ParseException {
+        String jsonPath = basePath + "TestGoal.json";
+        JSONParser jsonParser = new JSONParser();
+        JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+        PlayerGoal goal = new PlayerGoal(obj, 0);
+
+        assertEquals(0, goal.getGoalId());
+    }
+
     @Test
     void TestGoal() {  // Inserting tiles one at a time and checking behaviour
         String jsonPath = basePath + "TestGoal.json";

@@ -7,9 +7,7 @@ import it.polimi.ingsw.shared.Tile;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -24,7 +22,7 @@ import org.json.simple.parser.ParseException;
  */
 public class PlayerGoal {
     private final List<GoalPosition> positionList;
-    private final JSONObject pointsMap;
+    private final Map<Integer, Integer> pointsMap;
     private final int goalId;
 
     /**
@@ -37,23 +35,13 @@ public class PlayerGoal {
         this.goalId = goalId;
         JSONParser jsonParser = new JSONParser();
         try {
-            Object obj = jsonParser.parse(new FileReader(jsonPath));
-            this.pointsMap = (JSONObject) ((JSONObject) obj).get("points");
-            if (pointsMap == null) {
-                throw new PlayerGoalLoadingException("Error while parsing json: points not found");}
+            JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+            if (obj == null) {
+                throw new PlayerGoalLoadingException("Error while parsing json");
+            }
 
-            JSONObject goals = (JSONObject) ((JSONObject) obj).get("goals");
-            if (goals == null) {
-                throw new PlayerGoalLoadingException("Error while parsing json: goals not found");}
-
-            JSONArray goal = (JSONArray) goals.get(String.valueOf(goalId));
-            if (goal == null) {
-                throw new PlayerGoalLoadingException("Error while parsing json: goal by id not found");}
-
-            this.positionList = (List<GoalPosition>) goal
-                    .stream()
-                    .map(g -> parsePosition((JSONObject) g))
-                    .collect(Collectors.toList());
+            this.positionList = buildPositionList(obj, goalId);
+            this.pointsMap = buildPointsMap(obj);
 
         } catch (FileNotFoundException e) {
             throw new PlayerGoalLoadingException("Error while loading json: file not found");
@@ -71,31 +59,92 @@ public class PlayerGoal {
         JSONParser jsonParser = new JSONParser();
         Random rand = new Random();
         try {
-            Object obj = jsonParser.parse(new FileReader(jsonPath));
-            this.pointsMap = (JSONObject) ((JSONObject) obj).get("points");
-            if (pointsMap == null) {
-                throw new PlayerGoalLoadingException("Error while parsing json: points not found");}
+            JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
 
-            JSONObject goals = (JSONObject) ((JSONObject) obj).get("goals");
+            JSONObject goals = (JSONObject) (obj).get("goals");
             if (goals == null) {
                 throw new PlayerGoalLoadingException("Error while parsing json: goals not found");}
 
             goalId = rand.nextInt(goals.size());  // Choosing a random objective
 
-            JSONArray goal = (JSONArray) goals.get(String.valueOf(goalId));
-            if (goal == null) {
-                throw new PlayerGoalLoadingException("Error while parsing json: goal by id not found");}
-
-            this.positionList = (List<GoalPosition>) goal
-                    .stream()
-                    .map(g -> parsePosition((JSONObject) g))
-                    .collect(Collectors.toList());
+            this.positionList = buildPositionList(obj, goalId);
+            this.pointsMap = buildPointsMap(obj);
 
         } catch (FileNotFoundException e) {
             throw new PlayerGoalLoadingException("Error while loading json: file not found");
         } catch (ParseException | IOException | ClassCastException e) {
             throw new PlayerGoalLoadingException("Error while parsing json");
         }
+
+    }
+
+    /**
+     * This constructor is used when the goalId needs to be chosen randomly
+     * @param jsonObject object from which to extract the info, this
+     *                   object must have a goals field and a points field.
+     * @throws PlayerGoalLoadingException when a parsing error happens
+     */
+    public PlayerGoal(JSONObject jsonObject, int goalId) throws PlayerGoalLoadingException {
+        this.goalId = goalId;
+            if (jsonObject == null) {
+                throw new PlayerGoalLoadingException("Error while parsing json");
+            }
+
+            this.positionList = buildPositionList(jsonObject, goalId);
+            this.pointsMap = buildPointsMap(jsonObject);
+    }
+
+    /**
+     * This function builds an integer-integer map from a json object to
+     * map the amount of tiles in the correct position to the points
+     * achieved by the player.
+     * @param objFromFile json object, must have a "points" field
+     * @return Map<Interger, Integer> with the mapping
+     * @throws PlayerGoalLoadingException when a parsing error happens
+     */
+    private Map<Integer, Integer> buildPointsMap(JSONObject objFromFile) throws PlayerGoalLoadingException {
+        try {
+            JSONObject jsonMap = (JSONObject) objFromFile.get("points");
+
+            if (jsonMap==null) {
+                throw new PlayerGoalLoadingException("Error while parsing json: points not found");
+            }
+
+            Map<String, Long> stringLongMap = new HashMap<>(jsonMap);
+
+            Map<Integer, Integer> result = new HashMap();
+
+            // Mapping from <String, Long> to <Integer, Integer>
+            for (Map.Entry<String, Long> entry : stringLongMap.entrySet()) {
+                result.put(Integer.parseInt(entry.getKey()), Math.toIntExact(entry.getValue()));
+            }
+
+            return result;
+        } catch (NullPointerException | ClassCastException e) {
+            throw new PlayerGoalLoadingException("Error while parsing json: points not found");
+        }
+    }
+
+    /**
+     * This function builds the single goal of the player from the json file.
+     * @param objFromFile json object with all goals, must have a goals field
+     * @param goalId id chosen by the caller
+     * @return player's goal
+     * @throws PlayerGoalLoadingException when a parsing error happens.
+     */
+    private List<GoalPosition> buildPositionList(JSONObject objFromFile, int goalId) throws PlayerGoalLoadingException {
+        JSONObject goals = (JSONObject) objFromFile.get("goals");
+        if (goals == null) {
+            throw new PlayerGoalLoadingException("Error while parsing json: goals not found");}
+
+        JSONArray goal = (JSONArray) goals.get(String.valueOf(goalId));
+        if (goal == null) {
+            throw new PlayerGoalLoadingException("Error while parsing json: goal by id not found");}
+
+        return (List<GoalPosition>) goal
+                .stream()
+                .map(g -> parsePosition((JSONObject) g))
+                .collect(Collectors.toList());
 
     }
 
@@ -141,7 +190,7 @@ public class PlayerGoal {
         if (c==0) return 0;
         try {
             return Math.toIntExact(
-                    (Long) pointsMap.get(String.valueOf(c))
+                    pointsMap.get(c)
             );
         } catch (Exception e) {
             throw new PlayerGoalLoadingException("Error while parsing json: wrong point map");
