@@ -25,7 +25,7 @@ public class CommonGoalsFactory {
     public static ArrayList<CommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
         ArrayList<CommonGoal> active_goals = new ArrayList<>();
         for(int i : pickTwoRandomNumbers(number_of_goals)){
-            active_goals.add(create_goal_with_ID(i+1,number_of_players));
+            active_goals.add(create_goal_with_ID(i,number_of_players));
         }
         return active_goals;
     }
@@ -42,10 +42,10 @@ public class CommonGoalsFactory {
         }
         int[] result = new int[2];
         Random rand = new Random();
-        result[0] = rand.nextInt(max);
+        result[0] = rand.nextInt(max) + 1;
         result[1] = result[0];
         while(result[1] == result[0]){
-            result[1] = rand.nextInt(max);
+            result[1] = rand.nextInt(max) + 1;
         }
         return result;
     }
@@ -57,34 +57,22 @@ public class CommonGoalsFactory {
      * @return the generated commongoal
      */
     public static CommonGoal create_goal_with_ID(int id, int number_of_players) {
-        Object obj = null;
-        try {
-            JSONParser jsonParser = new JSONParser(); //initialize parser
+        JSONObject jsonObject;
             switch (number_of_players) {
                 case (2):
-                    obj = jsonParser.parse(new FileReader("src/main/resources/Two_Players_CommonGoal.json")); //acquire JSON object file
+                    jsonObject = pathToJsonObject("src/main/resources/Two_Players_CommonGoal.json"); //acquire JSON object file
                     break;
                 case (3):
-                    obj = jsonParser.parse(new FileReader("src/main/resources/Three_Players_CommonGoal.json")); //acquire JSON object file
+                    jsonObject = pathToJsonObject("src/main/resources/Three_Players_CommonGoal.json"); //acquire JSON object file
                     break;
                 case (4):
-                    obj = jsonParser.parse(new FileReader("src/main/resources/Four_Players_CommonGoal.json")); //acquire JSON object file
+                    jsonObject = pathToJsonObject("src/main/resources/Four_Players_CommonGoal.json"); //acquire JSON object file
                     break;
                 default:
                     throw new CommonGoalsException("Error while creating CommonGoal: Invalid number of Players");
             }
-
-        } catch (FileNotFoundException e) {
-            throw new CommonGoalsException("Error while creating CommonGoal : json file not found");
-        } catch (IOException | ClassCastException | NullPointerException e) {
-            throw new CommonGoalsException("Error while creating CommonGoal : bad json parsing");
-        } catch (org.json.simple.parser.ParseException e) {
-            e.printStackTrace();
-        }
-        JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get("CommonGoal"); //acquire board object
-        JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
-        List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long) x)).collect(Collectors.toList());
-        return create_goal_with_ID(id, stackState);
+        jsonObject.put("id", Long.valueOf(id));
+        return create_from_json(jsonObject);
     }
 
     /**
@@ -148,5 +136,21 @@ public class CommonGoalsFactory {
         JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
         List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long)x)).collect(Collectors.toList());
         return create_goal_with_ID(id,stackState);
+    }
+
+    private static JSONObject pathToJsonObject(String jsonPath){
+        Object obj = null;
+        try {
+            JSONParser jsonParser = new JSONParser(); //initialize parser
+            obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
+        } catch (FileNotFoundException e) {
+            throw new CommonGoalsException("Error while creating CommonGoal : json file not found");
+        } catch (IOException | ClassCastException | NullPointerException e) {
+            throw new CommonGoalsException("Error while creating CommonGoal : bad json parsing");
+        } catch (org.json.simple.parser.ParseException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get("CommonGoal"); //get CommonGoal
+        return jsonObject;
     }
 }
