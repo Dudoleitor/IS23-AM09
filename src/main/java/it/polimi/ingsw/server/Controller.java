@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.*;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -31,6 +33,10 @@ public class Controller {
             commonGoals = board.getCommonGoals();
         } catch (ClassCastException | NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad json parsing");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
 
     }

@@ -5,6 +5,7 @@ import it.polimi.ingsw.server.CommonGoalsFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,31 +22,35 @@ public class Board {
     private int numColumns;
     private ArrayList<CommonGoal> goals;
 
+    //Static methods that constructors use
+    private static String boardPathForNumberOfPlayers(int number_of_players){
+        switch(number_of_players){
+            case(2):
+                return "src/main/resources/BoardInit2players.json";
+            case(3):
+                return "src/main/resources/BoardInit3players.json";
+            case(4):
+                return "src/main/resources/BoardInit4players.json";
+            default:
+                throw new BoardGenericException("Error while creating Board : invalid number of players");
+        }
+    }
+    private static JSONObject pathToJsonObject(String jsonPath) throws IOException, ParseException {
+        JSONParser jsonParser = new JSONParser(); //initialize parser
+        Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
+        JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
+        return objBoard;
+    }
+
+    //Constructors
     /**
      * Constructor used to initialize board from default setup
      * @param numPlayers is the number of players of the game
      * @throws BoardGenericException when parsing errors occurs
      */
-    public Board(int numPlayers) throws BoardGenericException {
-        try{
-            String JSONBoardInit = "src/main/resources/BoardInit.json";
+    public Board(int numPlayers) throws BoardGenericException, IOException, ParseException {
+            this(boardPathForNumberOfPlayers(numPlayers));
             int numOfTileType = 22;
-
-            goals = CommonGoalsFactory.createTwoGoals(numPlayers);
-            tilesToDraw = new ArrayList<>();
-            this.numPlayers = numPlayers;
-
-            JSONParser jsonParser= new JSONParser(); //initialize parser
-            Object obj = jsonParser.parse(new FileReader(JSONBoardInit)); //acquire JSON object file
-
-            JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board");
-            numRows = Math.toIntExact((long)(objBoard.get("numRows")));
-            numColumns = Math.toIntExact((long)(objBoard.get("numColumns")));
-            boardTiles = new Tile[numRows][numColumns];
-
-            JSONArray arrayBoard = (JSONArray)((JSONObject)objBoard.get("players")).get(String.valueOf(numPlayers)); //acquire object "players" and then the matrix corresponding to number of players integer
-            JSONArray boardLine;
-
             for (Tile t : Tile.values()){ //t assumes every Tile enum possible value and add to tilesToDraw if they aren't empty or invalid
                 if(!t.equals(Tile.Empty) && !t.equals(Tile.Invalid)) {
                     for (int i = 0; i < numOfTileType; i++) {
@@ -54,48 +59,28 @@ public class Board {
                 }
             }
             Collections.shuffle(tilesToDraw); //mix tiles
-
-            for(int i = 0; i < arrayBoard.size(); i++){ //copy entire matrix to board
-                boardLine = (JSONArray) arrayBoard.get(i); //acquire line of matrix
-                for(int j = 0; j < boardLine.size(); j++){
-                    boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j)); //get label and copy Tile value in the matrix
-                }
-            }
-
-        } catch (FileNotFoundException e){
-            throw new BoardGenericException("Error while creating Board : json file not found");
-        } catch (IOException | ClassCastException | NullPointerException e){
-            throw new BoardGenericException("Error while creating Board : bad json parsing");
-        } catch (org.json.simple.parser.ParseException e) {
-            e.printStackTrace();
-        }
-
     }
-
     /**
      * Constructor used to initialize board from previously generated JSON
      * @param jsonPath is the path where is located JSON file
      * @throws BoardGenericException when parsing error occurs
      */
-    public Board(String jsonPath) throws BoardGenericException{
+    public Board(String jsonPath) throws BoardGenericException, IOException, ParseException {
+        this(pathToJsonObject(jsonPath));
+    }
+
+    /**
+     * Constructor used to initialize board from previously generated JSON
+     * @param objBoard is a board object that serializes the board
+     */
+    public Board(JSONObject objBoard){
         try{
             goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
-
-            JSONParser jsonParser = new JSONParser(); //initialize parser
-            Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-
-            JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
             numPlayers = Math.toIntExact((long)(objBoard.get("numPlayers")));
             numRows = Math.toIntExact((long)(objBoard.get("numRows")));
             numColumns = Math.toIntExact((long)(objBoard.get("numColumns")));
             boardTiles = new Tile[numRows][numColumns];
-            /* TODO discuss with others about the acquisition of CommonGoals from JSON
-            JSONArray goalJson = (JSONArray)objBoard.get("goals");
-            for(Object o: goalJson) {
-                goals.add(CommonGoalsFactory.create_from_json((JSONObject) o));
-            }
-            */
             JSONArray arrayBoard = (JSONArray)objBoard.get("matrix"); //matrix is the copy of the board
             JSONArray arrayDeck = (JSONArray)objBoard.get("deck"); //deck is the copy of tilesToDraw
             JSONArray boardLine;
@@ -109,15 +94,10 @@ public class Board {
                     boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j));
                 }
             }
-        } catch (FileNotFoundException e){
-            throw new BoardGenericException("Error while creating Board : json file not found");
-        } catch (IOException | ClassCastException | NullPointerException e){
+        } catch (ClassCastException | NullPointerException e){
             throw new BoardGenericException("Error while creating Board : bad json parsing");
-        } catch (org.json.simple.parser.ParseException e) {
-            e.printStackTrace();
         }
     }
-
 
 /*public String toString() {
     return "Board{" +
@@ -304,6 +284,13 @@ public class Board {
      */
     public void initializeGoals() {
         goals = CommonGoalsFactory.createTwoGoals(numPlayers);
+    }
+
+    public void initializeGoals(List<JSONObject> commonGoals){
+        goals = new ArrayList<>();
+        for(JSONObject jsonObject : commonGoals){
+            goals.add(CommonGoalsFactory.create_from_json(jsonObject));
+        }
     }
 
     /**

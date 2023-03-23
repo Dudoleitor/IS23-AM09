@@ -1,16 +1,47 @@
 package it.polimi.ingsw.shared;
 
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
-
-    Board board = new Board(3);
     Position pos1 = new Position(3,4);
     Position pos2 = new Position(1, 2);
-    Board board1 = new Board(3);
-    Board board2 = new Board(4);
+    Board board;
+
+    {
+        try {
+            board = new Board(3);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    Board board1;
+    {
+        try {
+            board1 = new Board(3);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    Board board2;
+    {
+        try {
+            board2 = new Board(4);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     @Test
@@ -21,7 +52,15 @@ class BoardTest {
     @Test
     void getTile2(){
         String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
-        Board jsonBoard = new Board(jsonPath);
+        try {
+            Board jsonBoard = new Board(jsonPath);
+        } catch (IOException e) {
+            fail();
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            fail();
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -41,9 +80,18 @@ class BoardTest {
 
     @Test
     void boardFiller(){
-        String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
-        Board b = new Board(jsonPath);
-        b.fill();
+        try{
+            String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
+            Board b = new Board(jsonPath);
+            b.fill();
+        }
+        catch (IOException e) {
+            fail();
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            fail();
+            throw new RuntimeException(e);
+        }
     }
 
 }
