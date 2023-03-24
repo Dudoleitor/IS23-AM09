@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
