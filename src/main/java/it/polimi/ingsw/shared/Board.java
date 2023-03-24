@@ -2,6 +2,7 @@ package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsFactory;
+import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -337,10 +338,60 @@ public class Board {
         return new ArrayList<>(tilesToDraw);
     }
 
-    //complete when PartialMove is implemented
-    /*public List<PartialMove> getValidMoves(List<PartialMove> moves) {
 
-    }*/
+    /**
+     * @param partialMove is the move that the player is building
+     * @return the possible positions that the player can add to the move
+     */
+    public List<Position> getValidPositions(PartialMove partialMove) {
+        List<Position> positions = new ArrayList<>();
+
+        //extreme case when partialMove has no positions inside
+        if(partialMove.getBoardPositions().size() == 0) {
+            for(int i = 0; i < getNumRows(); i++) {
+                for(int j = 0; j < getNumColumns(); j++) {
+                    if(hasFreeSide(i, j) == true) {
+                        if(!getTile(i, j).equals(Tile.Invalid) && !getTile(i, j).equals(Tile.Empty))
+                            positions.add(new Position(i, j));
+                    }
+                }
+            }
+        }
+
+        //if the move is complete --> it has maxNumMoves positions inside
+        if(partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) {
+            return positions;
+        }
+
+        /*if(partialMove.getBoardPositions().size() >= 1 && partialMove.getBoardPositions().size() < partialMove.getMaxNumMoves()){
+
+        }*/
+
+        return positions;
+    }
+
+
+    /**
+     * @param row is the given row
+     * @param column is the given column
+     * @return true if position has at least one free adjacent side
+     */
+    private boolean hasFreeSide(int row, int column) {
+        if(row == 0 || column == 0 || row == getNumRows() - 1 || column == getNumColumns() - 1)
+            //check the extreme cases where pos has at least one free side for sure
+            return true;
+
+        //check if pos in the board has one adjacent empty (or invalid) cell
+        if(getTile(row + 1, column).equals(Tile.Empty) || getTile(row + 1, column).equals(Tile.Invalid)
+                || getTile(row - 1, column).equals(Tile.Empty) || getTile(row - 1, column).equals(Tile.Invalid)
+                || getTile(row, column + 1).equals(Tile.Empty) || getTile(row, column + 1).equals(Tile.Invalid)
+                || getTile(row, column - 1).equals(Tile.Empty) || getTile(row, column - 1).equals(Tile.Invalid)
+        ) return true;
+
+        return false;
+    }
+
+
 
 
 
