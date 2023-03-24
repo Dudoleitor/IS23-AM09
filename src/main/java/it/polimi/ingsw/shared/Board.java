@@ -7,7 +7,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -22,7 +21,37 @@ public class Board {
     private int numColumns;
     private ArrayList<CommonGoal> goals;
 
-    //Static methods that constructors use
+    //Constructors
+    /**
+     * Constructor used to initialize board from default setup
+     * @param numPlayers is the number of players of the game
+     * @throws BoardGenericException when parsing errors occurs
+     */
+    public Board(int numPlayers) throws BoardGenericException, IOException, ParseException {
+            this(pathToJsonObject(boardPathForNumberOfPlayers(numPlayers)));
+            tilesToDraw =  createShuffledDeck(22);
+            initializeGoals(); //generate two randomly picked goals
+    }
+
+    private List<Tile> createShuffledDeck(int numOfTileType){
+        ArrayList<Tile> deck = new ArrayList<>();
+        for (Tile t : Tile.values()){ //t assumes every Tile enum possible value and add to tilesToDraw if they aren't empty or invalid
+            if(!t.equals(Tile.Empty) && !t.equals(Tile.Invalid)) {
+                for (int i = 0; i < numOfTileType; i++) {
+                    deck.add(t);
+                }
+            }
+        }
+        Collections.shuffle(deck); //mix tiles
+        return deck;
+    }
+    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals){
+        this(objBoard);
+        if(objCommonGoals.size() >= 0){ //skipped in testing only
+            initializeGoals(objCommonGoals);
+        }
+    }
+
     private static String boardPathForNumberOfPlayers(int number_of_players){
         switch(number_of_players){
             case(2):
@@ -35,45 +64,19 @@ public class Board {
                 throw new BoardGenericException("Error while creating Board : invalid number of players");
         }
     }
-    private static JSONObject pathToJsonObject(String jsonPath) throws IOException, ParseException {
+
+    public static JSONObject pathToJsonObject(String jsonPath) throws IOException, ParseException {
         JSONParser jsonParser = new JSONParser(); //initialize parser
         Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
         JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
         return objBoard;
     }
 
-    //Constructors
-    /**
-     * Constructor used to initialize board from default setup
-     * @param numPlayers is the number of players of the game
-     * @throws BoardGenericException when parsing errors occurs
-     */
-    public Board(int numPlayers) throws BoardGenericException, IOException, ParseException {
-            this(boardPathForNumberOfPlayers(numPlayers));
-            int numOfTileType = 22;
-            for (Tile t : Tile.values()){ //t assumes every Tile enum possible value and add to tilesToDraw if they aren't empty or invalid
-                if(!t.equals(Tile.Empty) && !t.equals(Tile.Invalid)) {
-                    for (int i = 0; i < numOfTileType; i++) {
-                        tilesToDraw.add(t);
-                    }
-                }
-            }
-            Collections.shuffle(tilesToDraw); //mix tiles
-    }
-    /**
-     * Constructor used to initialize board from previously generated JSON
-     * @param jsonPath is the path where is located JSON file
-     * @throws BoardGenericException when parsing error occurs
-     */
-    public Board(String jsonPath) throws BoardGenericException, IOException, ParseException {
-        this(pathToJsonObject(jsonPath));
-    }
-
     /**
      * Constructor used to initialize board from previously generated JSON
      * @param objBoard is a board object that serializes the board
      */
-    public Board(JSONObject objBoard){
+    private Board(JSONObject objBoard){
         try{
             goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
@@ -98,6 +101,7 @@ public class Board {
             throw new BoardGenericException("Error while creating Board : bad json parsing");
         }
     }
+
 
 /*public String toString() {
     return "Board{" +
@@ -258,7 +262,6 @@ public class Board {
         }
     }
 
-
     /**
      * Pick a tile from the board removing it from the board
      * @param pos is the position object
@@ -280,13 +283,17 @@ public class Board {
 
 
     /**
-     * Initialize the goals from CommonGoalsFactory
+     * Initialize two random goals from CommonGoalsFactory
      */
-    public void initializeGoals() {
+    private void initializeGoals() {
         goals = CommonGoalsFactory.createTwoGoals(numPlayers);
     }
 
-    public void initializeGoals(List<JSONObject> commonGoals){
+    /**
+     * Initialize the common goals passed as json objects
+     * @param commonGoals a List of serialized common goals
+     */
+    private void initializeGoals(List<JSONObject> commonGoals){
         goals = new ArrayList<>();
         for(JSONObject jsonObject : commonGoals){
             goals.add(CommonGoalsFactory.create_from_json(jsonObject));

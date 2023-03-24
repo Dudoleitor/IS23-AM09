@@ -4,6 +4,7 @@ import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +54,7 @@ class BoardTest {
     void getTile2(){
         String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
         try {
-            Board jsonBoard = new Board(jsonPath);
+            Board jsonBoard = new Board(Board.pathToJsonObject(jsonPath),new ArrayList<>());
         } catch (IOException e) {
             fail();
             throw new RuntimeException(e);
@@ -82,7 +83,7 @@ class BoardTest {
     void boardFiller(){
         try{
             String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
-            Board b = new Board(jsonPath);
+            Board b = new Board(Board.pathToJsonObject(jsonPath),new ArrayList<>());
             b.fill();
         }
         catch (IOException e) {
