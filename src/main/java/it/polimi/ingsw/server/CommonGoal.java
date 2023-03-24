@@ -12,6 +12,11 @@ public abstract class CommonGoal {
      * A Stack of points where players pop from when they complete CommonGoals
      */
     protected Stack<Integer> points;
+
+    /**
+     * Construcor that initializes a CommonGoal with a pre-determined stack State
+     * @param stackState a List of integers that will form the stack state
+     */
     protected CommonGoal(List<Integer> stackState){
         points = new Stack<>();
         for(Integer i : stackState){
@@ -99,7 +104,7 @@ public abstract class CommonGoal {
         }
     }
 
-    private int islandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
+    private int recursiveIslandVisit(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
         if(shelf.isOutOfBounds(row,column) || alreadyChecked[row][column] == true){
             return 0;
         }
@@ -107,10 +112,10 @@ public abstract class CommonGoal {
             if(shelf.getTile(row,column).equals(type)){
                 alreadyChecked[row][column] = true;
                 return  1 +
-                        islandSize(shelf,row-1,column,alreadyChecked,type) +
-                        islandSize(shelf,row+1,column,alreadyChecked,type) +
-                        islandSize(shelf,row,column-1,alreadyChecked,type) +
-                        islandSize(shelf,row,column+1,alreadyChecked,type);
+                        recursiveIslandVisit(shelf,row-1,column,alreadyChecked,type) +
+                        recursiveIslandVisit(shelf,row+1,column,alreadyChecked,type) +
+                        recursiveIslandVisit(shelf,row,column-1,alreadyChecked,type) +
+                        recursiveIslandVisit(shelf,row,column+1,alreadyChecked,type);
             }
             else return 0;
         }
@@ -128,7 +133,7 @@ public abstract class CommonGoal {
     protected int validIslandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked){
         if(shelf.isValidTile(row, column)){
             Tile islandType = shelf.getTile(row, column);
-            return islandSize(shelf,row,column,alreadyChecked,islandType);
+            return recursiveIslandVisit(shelf,row,column,alreadyChecked,islandType);
         }
         else{
             return 0;

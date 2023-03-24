@@ -34,12 +34,18 @@ public class Ladders extends CommonGoal {
         int columns = shelf.getColumns();
         ArrayList<ArrayList<Tile>> ladders = new ArrayList<>();
         ArrayList<Tile> currentLadder = new ArrayList<>();
+
+        //collect tiles in ascending ladders
         for(int initial_row = 0; initial_row < 2; initial_row++){ //value 2 is hardcoded
             currentLadder.clear();
             for(int i = 0; i < Math.min(rows,columns); i++){
                 currentLadder.add(shelf.getTile(new Position(initial_row+i,i)));
             }
             ladders.add(new ArrayList<>(currentLadder));
+        }
+
+        //collect tiles in descending ladders
+        for(int initial_row = 0; initial_row < 2; initial_row++){ //value 2 is hardcoded
             currentLadder.clear();
             for(int i = 0; i < Math.min(rows,columns); i++){
                 currentLadder.add(shelf.getTile(new Position(initial_row+i,columns-1-i)));

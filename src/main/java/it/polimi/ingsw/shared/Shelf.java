@@ -149,7 +149,6 @@ public class Shelf {
         } catch (IndexOutOfBoundsException e){
             throw new ShelfGenericException("Error while getting Tile in Shelf : Coordinates are beyond boundaries");
         }
-
     }
 
     /**

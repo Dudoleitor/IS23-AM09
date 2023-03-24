@@ -59,4 +59,9 @@ class CommonGoalsFactoryTest {
         assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,0));
         assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,5));
     }
+
+    @Test
+    void exceptionInRandomNumbers(){
+        assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.pickTwoRandomNumbers(-1));
+    }
 }

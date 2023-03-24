@@ -4,7 +4,11 @@ import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class FullLadder extends CommonGoal {
     public FullLadder(List<Integer> stackState){
@@ -28,12 +32,15 @@ public class FullLadder extends CommonGoal {
         if(heights.length == 1){
             return true;
         }
+        //check if heights form an ascending ladder
         boolean ascending = true;
         int expected = heights[0]+1;
         for(int i = 1; i < heights.length; i++){
             ascending = ascending && heights[i] == expected;
             expected++;
         }
+
+        //check if heights form a descending ladder
         boolean descending = true;
         expected = heights[0]-1;
         for(int i = 1; i < heights.length; i++){

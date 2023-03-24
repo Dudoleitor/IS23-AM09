@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.shared.Shelf;
 import org.json.simple.parser.ParseException;
@@ -8,10 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EightEqualTilesTest {
+class EightEqualTilesTest{
     @Test
     void testEmptyShelf(){
         Shelf emptyShelf = new Shelf(6,5);
@@ -32,5 +36,17 @@ class EightEqualTilesTest {
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);
         assertFalse(to_test.check(falseShelf));
+    }
+
+    //TESTING OF ABSTRACT CLASSES METHODS
+    @Test
+    void showPointsStackTest(){
+        ArrayList<Integer> stackState = new ArrayList<>();
+        stackState.add(10);
+        stackState.add(20);
+        stackState.add(30);
+        stackState.add(40);
+        CommonGoal t = new EightEqualTiles(stackState);
+        assertEquals(stackState,t.showPointsStack());
     }
 }

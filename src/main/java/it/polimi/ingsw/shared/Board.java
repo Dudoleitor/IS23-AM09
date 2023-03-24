@@ -387,7 +387,6 @@ public class Board {
                 || getTile(row, column + 1).equals(Tile.Empty) || getTile(row, column + 1).equals(Tile.Invalid)
                 || getTile(row, column - 1).equals(Tile.Empty) || getTile(row, column - 1).equals(Tile.Invalid)
         ) return true;
-
         return false;
     }
 

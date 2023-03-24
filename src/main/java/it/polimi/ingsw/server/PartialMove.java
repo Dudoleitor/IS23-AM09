@@ -12,11 +12,10 @@ public class PartialMove {
         return new ArrayList<>(positions);
     }
     public void addPosition(Position pos) throws PartialMoveException{
-        try{
-            positions.add(pos);
-        } catch(NullPointerException e) {
-            throw new PartialMoveException("Error while adding Position  : pos is null pointer");
+        if(pos == null){
+            throw new PartialMoveException("Error while adding position : Pointer was Null");
         }
+        positions.add(pos);
     }
     PartialMove(PartialMove to_clone) throws PartialMoveException{ //cloning constructor
         try {

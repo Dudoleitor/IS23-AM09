@@ -36,4 +36,18 @@ class PartialMoveTest {
 
         assertTrue(clone.getBoardPositions().containsAll(pm.getBoardPositions()));
     }
+
+    @Test
+    void nullPointerExceptionTest(){
+        PartialMove pm = new PartialMove();
+        assertThrows(PartialMoveException.class, () -> pm.addPosition(null));
+        assertThrows(PartialMoveException.class, () -> new PartialMove(null));
+
+    }
+
+    @Test
+    void correctConstantTest(){
+        PartialMove pm = new PartialMove();
+        assertEquals(3,pm.getMaxNumMoves());
+    }
 }

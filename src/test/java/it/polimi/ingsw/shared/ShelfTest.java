@@ -143,4 +143,17 @@ public class ShelfTest {
         assertEquals(4,shelf.getColumns());
         assertEquals(shelf.getTile(0,0),Tile.Cat);
     }
+
+    @Test
+    void indexOutOfBoundsTest(){
+        Shelf shelf = new Shelf(5,6);
+        assertThrows(ShelfGenericException.class,() -> shelf.getTile(-1,0));
+    }
+
+    @Test
+    void gettersTest(){
+        Shelf shelf = new Shelf(5,6);
+        assertEquals(6,shelf.getColumns());
+        assertEquals(5,shelf.getRows());
+    }
 }
