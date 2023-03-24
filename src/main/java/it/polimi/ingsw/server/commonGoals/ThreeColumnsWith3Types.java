@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class ThreeColumnsWith3Types extends CommonGoal {
     public ThreeColumnsWith3Types(List<Integer> stackState){
@@ -15,13 +16,9 @@ public class ThreeColumnsWith3Types extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
-        //count the columns that follow the requirements
-        int correctColumns = 0;
-        for(int column = 0; column < shelf.getColumns(); column++){
-            if(maxNTypes(shelf.allTilesInColumn(column),3)){
-                correctColumns++;
-            }
-        }
-        return correctColumns >= 3;
+        Long result = IntStream.range(0,shelf.getColumns())
+                .filter(column -> maxNTypes(shelf.allTilesInColumn(column),3))
+                .count();
+        return Math.toIntExact(result) >= 3;
     }
 }

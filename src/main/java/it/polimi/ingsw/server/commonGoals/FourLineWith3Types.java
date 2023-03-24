@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class FourLineWith3Types extends CommonGoal {
     public FourLineWith3Types(List<Integer> stackState){
@@ -15,13 +16,9 @@ public class FourLineWith3Types extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
-        int correctRows = 0;
-        //count the rows that follow the requirements
-        for(int row = 0; row < shelf.getRows(); row++){
-            if(maxNTypes(shelf.allTilesInRow(row),3)){
-                correctRows++;
-            }
-        }
-        return correctRows >= 4;
+        Long result = IntStream.range(0,shelf.getRows())
+                .filter(row -> maxNTypes(shelf.allTilesInRow(row),3))
+                .count();
+        return Math.toIntExact(result) >= 4;
     }
 }

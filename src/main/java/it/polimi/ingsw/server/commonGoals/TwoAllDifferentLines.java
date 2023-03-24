@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class TwoAllDifferentLines extends CommonGoal {
     public TwoAllDifferentLines(List<Integer> stackState){
@@ -15,13 +16,9 @@ public class TwoAllDifferentLines extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
-        //count the rows that follow the requirements
-        int differentLines = 0;
-        for (int row = 0; row < shelf.getRows(); row++) {
-            if(notEmptyAndAllDifferent(shelf.allTilesInRow(row))){
-                differentLines++;
-            }
-        }
-        return differentLines >= 2;
+        Long result = IntStream.range(0,shelf.getRows())
+                .filter(row -> notEmptyAndAllDifferent(shelf.allTilesInRow(row)))
+                .count();
+        return Math.toIntExact(result) >= 2;
     }
 }

@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class TwoAllDifferentColumns extends CommonGoal {
     public TwoAllDifferentColumns(List<Integer> stackState){
@@ -15,13 +16,9 @@ public class TwoAllDifferentColumns extends CommonGoal {
     }
     @Override
     public boolean check(Shelf shelf) {
-        //count the columns that follow the requirements
-        int differentColumns = 0;
-        for (int column = 0; column < shelf.getColumns(); column++) {
-            if(notEmptyAndAllDifferent(shelf.allTilesInColumn(column))){
-                differentColumns++;
-            }
-        }
-        return differentColumns >= 2;
+        Long result = IntStream.range(0,shelf.getColumns())
+                .filter(column -> notEmptyAndAllDifferent(shelf.allTilesInColumn(column)))
+                .count();
+        return Math.toIntExact(result) >= 2;
     }
 }
