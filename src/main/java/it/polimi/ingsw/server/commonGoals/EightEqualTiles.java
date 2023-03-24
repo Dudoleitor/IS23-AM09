@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
-import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
 
@@ -26,8 +25,8 @@ public class EightEqualTiles extends CommonGoal {
         //count all tiles in different counters
         for(int row = 0; row < shelf.getRows(); row++){
             for(int column = 0; column < shelf.getColumns(); column++){
-                currentTile = shelf.getTile(new Position(row,column));
-                if(notEmpty(currentTile)){
+                currentTile = shelf.getTile(row,column);
+                if(shelf.isValidTile(row,column)){
                     incrementCounter(counters,currentTile);
                 }
             }

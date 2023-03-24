@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.stream.LongStream;
 
 
 public class Shelf {
@@ -62,12 +64,15 @@ public class Shelf {
      * @throws IOException when there are problems accessing file
      */
     public Shelf(String jsonPath) throws ShelfGenericException , FileNotFoundException, ParseException, IOException{
+        this(pathToJSONObject(jsonPath)); //get shelf JSONObject
+    }
 
-        this((JSONObject) //call constructor Shelf(JSONObject)
-                ((JSONObject) (new JSONParser()) //initialize parser
-                        .parse(new FileReader(jsonPath)) //acquire JSONObject from file
-                )
-                        .get("shelf")); //get shelf JSONObject
+    private static JSONObject pathToJSONObject(String jsonPath) throws IOException, ParseException {
+        JSONObject result;
+        JSONParser jsonParser = new JSONParser();
+        FileReader reader = new FileReader(jsonPath);
+        result = (JSONObject) jsonParser.parse(reader);
+        return (JSONObject) result.get("shelf");
     }
 
     /**
@@ -94,11 +99,11 @@ public class Shelf {
                 tiles[i][j] = t;
             }
         }
-        if(!checkValidShelf()){
+        if(!isValid()){
             throw new ShelfGenericException("Error while creating Shelf : bad configuration of tiles");
         }
     }
-    private boolean checkValidShelf(){
+    private boolean isValid(){
         boolean valid = true;
         boolean notEmptyFound;
 
@@ -151,27 +156,18 @@ public class Shelf {
      * @return the max number of Empty tiles in a single column
      */
     public int getHighestColumn(){
-        int max = 0;
-        boolean maxFound = false;
-        int count;
-        boolean notEmpty;
+        LongStream allColumns = LongStream.range(0,columns);
+        Function<Long,Long> countEmptyTiles = x ->
+                allTilesInColumn(Math.toIntExact(x))
+                .stream()
+                .filter(tile -> tile.equals(Tile.Empty))
+                .count();
 
-        for(int j = 0; !maxFound && j < tiles[0].length; j++){
-            count = 0;
-            notEmpty = false;
-            for(int i = 0; !maxFound && !notEmpty && i < tiles.length; i++){ //count Empty tiles in a single column
-                if(tiles[i][j] == Tile.Empty){
-                    count++;
-                } else {
-                    notEmpty = true; //notify that there are no empty cells left
-                }
-                if(count == tiles.length) //if column is completely empty then max possible value has been found
-                    maxFound = true;
-            }
-            if(count > max)
-                max = count;
-        }
-        return max;
+        Long result = allColumns
+                .map(column -> countEmptyTiles.apply(column) )
+                .max()
+                .orElse(0);
+        return Math.toIntExact(result);
     }
 
     /**
@@ -232,26 +228,48 @@ public class Shelf {
      * @return the number of adjacent tiles of same type
      */
     private int exploreAdjacents(boolean[][] visited, int i, int j){
-        visited[i][j] = true;
         int count = 0;
-        if(tiles[i][j].equals(Tile.Empty) || tiles[i][j].equals(Tile.Invalid)) // check if current tile is valid for point count
+        if(!isValidTile(i,j) || visited[i][j]) // check if current tile is valid for point count
             return 0;
-        if( i>0 && !visited[i-1][j] && tiles[i][j].equals(tiles[i-1][j])){ //check if Tile on left side is same type
+        visited[i][j] = true;
+        if( !isOutOfBounds(i-1,j) && tiles[i][j].equals(tiles[i-1][j])){ //check if Tile on left side is same type
             count = count + exploreAdjacents(visited, i-1, j);
         }
-        if( i<rows-1 && !visited[i+1][j] && tiles[i][j].equals(tiles[i+1][j])){ //check if Tile on right side is same type
+        if( !isOutOfBounds(i+1,j) && tiles[i][j].equals(tiles[i+1][j])){ //check if Tile on right side is same type
             count = count + exploreAdjacents(visited, i+1, j);
         }
-        if( j>0 && !visited[i][j-1] && tiles[i][j].equals(tiles[i][j-1])){ //check if Tile on upper side is same type
+        if( !isOutOfBounds(i,j-1) && tiles[i][j].equals(tiles[i][j-1])){ //check if Tile on upper side is same type
             count = count + exploreAdjacents(visited, i, j-1);
         }
-        if( j<columns-1 && !visited[i][j+1] && tiles[i][j].equals(tiles[i][j+1])){ //check if the Tile below is same type
+        if( !isOutOfBounds(i,j+1) && tiles[i][j].equals(tiles[i][j+1])){ //check if the Tile below is same type
             count = count + exploreAdjacents(visited, i, j+1);
         }
         return count+1;
 
     }
 
+    /**
+     * Tells if the coordinates are compatible with the shelf
+     * @param row
+     * @param column
+     * @return True if the coordinates are valid
+     */
+    public boolean isOutOfBounds(int row, int column){
+        if(row < 0 || row >= getRows() || column < 0 || column >= getColumns()){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Tells if the position is Empty or Invalid
+     * @param row
+     * @param column
+     * @return TRUE if the Tile is Empty or Invalid
+     */
+    public boolean isValidTile(int row, int column){
+        Tile tile = getTile(row,column);
+        return !tile.equals(Tile.Empty) && !tile.equals(Tile.Invalid);
+    }
     /**
      * @return rows attribute
      */
@@ -352,4 +370,5 @@ public class Shelf {
         corners.add(getTile(rows-1,columns-1));
         return corners;
     }
+
 }

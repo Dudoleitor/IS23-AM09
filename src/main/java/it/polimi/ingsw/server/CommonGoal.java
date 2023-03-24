@@ -2,7 +2,6 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.Tile;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +100,7 @@ public abstract class CommonGoal {
     }
 
     private int islandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
-        if(invalidPosition(shelf,row,column) || alreadyChecked[row][column] == true){
+        if(shelf.isOutOfBounds(row,column) || alreadyChecked[row][column] == true){
             return 0;
         }
         else{
@@ -127,7 +126,7 @@ public abstract class CommonGoal {
      *@return the size of the island
      */
     protected int validIslandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked){
-        if(notEmpty(shelf.getTile(row, column))){
+        if(shelf.isValidTile(row, column)){
             Tile islandType = shelf.getTile(row, column);
             return islandSize(shelf,row,column,alreadyChecked,islandType);
         }
@@ -136,14 +135,4 @@ public abstract class CommonGoal {
         }
     }
 
-    protected boolean invalidPosition(Shelf shelf, int row, int column){
-        if(row < 0 || row >= shelf.getRows() || column < 0 || column >= shelf.getColumns()){
-            return true;
-        }
-        return false;
-    }
-
-    protected boolean notEmpty(Tile tile){
-        return !tile.equals(Tile.Empty) && !tile.equals(Tile.Invalid);
-    }
 }
