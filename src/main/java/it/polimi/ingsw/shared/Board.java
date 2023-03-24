@@ -47,7 +47,7 @@ public class Board {
     }
     public Board(JSONObject objBoard, List<JSONObject> objCommonGoals){
         this(objBoard);
-        if(objCommonGoals.size() >= 0){ //skipped in testing only
+        if(objCommonGoals != null){ //skipped in testing only
             initializeGoals(objCommonGoals);
         }
     }
@@ -97,11 +97,36 @@ public class Board {
                     boardTiles[i][j] = Tile.valueOfLabel((String) boardLine.get(j));
                 }
             }
+            if(!checkValidBoard()){
+                throw new BoardGenericException("Error while creating board : board is not a valid configuration for given num player");
+            }
         } catch (ClassCastException | NullPointerException e){
             throw new BoardGenericException("Error while creating Board : bad json parsing");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
+    private boolean checkValidBoard() throws IOException, ParseException {
+        boolean valid = true;
+        JSONArray boardLine;
+        JSONObject objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
+        JSONArray arrayBoard = (JSONArray)objBoard.get("matrix");
 
+        Tile t;
+
+        for(int i = 0; valid && i < arrayBoard.size(); i++){ //copy entire matrix to board
+            boardLine = (JSONArray) arrayBoard.get(i); //acquire line of matrix
+            for(int j = 0; valid && j < boardLine.size(); j++){
+                t = Tile.valueOfLabel((String) boardLine.get(j));
+                if( !(boardTiles[i][j].equals(t)) && (boardTiles[i][j].equals(Tile.Invalid) || t.equals(Tile.Invalid))){ //check if boards has invalid tiles in same position and nowhere else
+                    valid = false;
+                }
+            }
+        }
+        return valid;
+    }
 
 /*public String toString() {
     return "Board{" +

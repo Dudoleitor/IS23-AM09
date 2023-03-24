@@ -94,7 +94,30 @@ public class Shelf {
                 tiles[i][j] = t;
             }
         }
+        if(!checkValidShelf()){
+            throw new ShelfGenericException("Error while creating Shelf : bad configuration of tiles");
+        }
     }
+    private boolean checkValidShelf(){
+        boolean valid = true;
+        boolean notEmptyFound;
+
+        for(int j = 0; valid && j < columns; j++){
+            notEmptyFound = false;
+            for( int i = 0; valid && i < rows; i++){ //check if there are empty tiles between valid tiles
+                if(tiles[i][j].equals(Tile.Empty)){
+                    if(notEmptyFound)
+                        valid = false;
+                } else if (tiles[i][j].equals(Tile.Invalid)) {
+                    valid = false;
+                } else {
+                    notEmptyFound = true;
+                }
+            }
+        }
+        return valid;
+    }
+
     /**
      * Get tile in position pos
      * @param pos is the position object
