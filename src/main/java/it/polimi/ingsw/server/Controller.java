@@ -37,6 +37,8 @@ public class Controller {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (BoardGenericException e) {
+            throw new ControllerGenericException("Problem while creating controller");
         }
 
     }
@@ -91,28 +93,31 @@ public class Controller {
      */
     public void moveTiles(Player player, Move move) throws ControllerGenericException {
 
-        if(!player.getName().equals(getCurrentPlayer())) { //if player is not the current player we throw an exception
-            throw new ControllerGenericException("Player is not the current player");
-        }
+        try {
+            if (!player.getName().equals(getCurrentPlayer())) { //if player is not the current player we throw an exception
+                throw new ControllerGenericException("Player is not the current player");
+            }
 
-        Shelf playerShelf = player.getShelf();
+            Shelf playerShelf = player.getShelf();
 
-        if(move.getBoardPositions().size() >
-            playerShelf.allTilesInColumn(move.getColumn()).stream().filter(x -> x.equals(Tile.Empty)).count()
-        ) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
-            throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
-        }
-        if(checkValidMove(move))
-           throw new InvalidMoveException("Tiles selection is not allowed");
+            if (move.getBoardPositions().size() >
+                    playerShelf.allTilesInColumn(move.getColumn()).stream().filter(x -> x.equals(Tile.Empty)).count()
+            ) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
+                throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
+            }
+            if (checkValidMove(move))
+                throw new InvalidMoveException("Tiles selection is not allowed");
 
-        List<Position> positions = move.getBoardPositions();
-        for(Position p : positions){ //for all the positions we insert the tile in the playerShelf
-            Tile t = board.pickTile(p);
-            playerShelf.insertTile(t, move.getColumn());
+            List<Position> positions = move.getBoardPositions();
+            for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
+                Tile t = board.pickTile(p);
+                playerShelf.insertTile(t, move.getColumn());
+            }
+            incrementTurn();
+        } catch (BoardGenericException e){
+            throw new InvalidMoveException("Error while moving tile");
         }
-        incrementTurn();
     }
-
     /**
      * increment the private variable turn
      */
@@ -127,53 +132,56 @@ public class Controller {
      */
     private boolean checkValidMove(Move move) {
 
-        List<Position> positions = move.getBoardPositions();
+        try {
+            List<Position> positions = move.getBoardPositions();
 
-        if(positions.size() > move.getMaxNumMoves()) //if the number of coordinates is greater than the maximum possible
-            //then we return false
-            return false;
+            if (positions.size() > move.getMaxNumMoves()) //if the number of coordinates is greater than the maximum possible
+                //then we return false
+                return false;
 
-        for(int i = 0; i < positions.size() - 1; i++) {
-            for(int j = i + 1; j < positions.size(); j++) {
-                if(positions.get(i).equals(positions.get(j))) { //if coordinates from different positions are equals we return false
-                    return false;
+            for (int i = 0; i < positions.size() - 1; i++) {
+                for (int j = i + 1; j < positions.size(); j++) {
+                    if (positions.get(i).equals(positions.get(j))) { //if coordinates from different positions are equals we return false
+                        return false;
+                    }
                 }
             }
-        }
 
-        for(Position p : positions) {
-            if(!hasFreeSide(p))
-                return false;
-        }
+            for (Position p : positions) {
+                if (!hasFreeSide(p))
+                    return false;
+            }
 
-        if(positions.size() == 1) //if we pick just one tile then we return true
+            if (positions.size() == 1) //if we pick just one tile then we return true
+                return true;
+
+
+            int row = positions.get(0).getRow();
+            int column = positions.get(0).getColumn();
+
+            //check if selected tiles are on the same row or in the same column
+            if (positions.get(1).getRow() == row) {
+                for (int i = 2; i < positions.size(); i++) {
+                    if (positions.get(i).getRow() != row)
+                        return false;
+                }
+            } else if (positions.get(1).getColumn() == column) {
+                for (int i = 2; i < positions.size(); i++) {
+                    if (positions.get(i).getColumn() != column)
+                        return false;
+                }
+
+            }
             return true;
-
-
-        int row = positions.get(0).getRow();
-        int column = positions.get(0).getColumn();
-
-        //check if selected tiles are on the same row or in the same column
-        if(positions.get(1).getRow() == row) {
-            for(int i = 2; i < positions.size(); i++) {
-                if(positions.get(i).getRow() != row)
-                    return false;
-            }
-        } else if(positions.get(1).getColumn() == column) {
-            for (int i = 2; i < positions.size(); i++) {
-                if (positions.get(i).getColumn() != column)
-                    return false;
-            }
-
+        } catch (BoardGenericException e){
+            return false;
         }
-        return true;
     }
-
     /**
      * @param pos is the given position
      * @return true if position has at least one free adjacent side
      */
-    private boolean hasFreeSide(Position pos) {
+    private boolean hasFreeSide(Position pos) throws BoardGenericException {
         if(pos.getRow() == 0 || pos.getColumn() == 0 || pos.getRow() == board.getNumRows() - 1 || pos.getColumn() == board.getNumColumns() - 1)
             //check the extreme cases where pos has at least one free side for sure
             return true;

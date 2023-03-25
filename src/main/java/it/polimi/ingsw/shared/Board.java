@@ -46,14 +46,14 @@ public class Board {
         Collections.shuffle(deck); //mix tiles
         return deck;
     }
-    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals){
+    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws BoardGenericException {
         this(objBoard);
         if(objCommonGoals != null){ //skipped in testing only
             initializeGoals(objCommonGoals);
         }
     }
 
-    private static String boardPathForNumberOfPlayers(int number_of_players){
+    private static String boardPathForNumberOfPlayers(int number_of_players) throws BoardGenericException{
         switch(number_of_players){
             case(2):
                 return "src/main/resources/BoardInit2players.json";
@@ -77,7 +77,7 @@ public class Board {
      * Constructor used to initialize board from previously generated JSON
      * @param objBoard is a board object that serializes the board
      */
-    private Board(JSONObject objBoard){
+    private Board(JSONObject objBoard) throws BoardGenericException{
         try{
             goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
@@ -109,7 +109,7 @@ public class Board {
             throw new RuntimeException(e);
         }
     }
-    private boolean checkValidBoard() throws IOException, ParseException {
+    private boolean checkValidBoard() throws IOException, ParseException, BoardGenericException {
         boolean valid = true;
         JSONArray boardLine;
         JSONObject objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
@@ -193,40 +193,43 @@ public class Board {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true; //if it's same object
-        if (o == null || getClass() != o.getClass()) return false; //if they are of different classes
-        Board board = (Board) o;
-        if(numRows != board.getNumRows() || numColumns != board.getNumColumns() || numPlayers != getNumPlayers()) //if they have different sizes or num of players
-            return false;
-        boolean same = true;
-        for(int i = 0; same && i<numRows; i++){ //check they have same tiles in board
-            for(int j = 0; same && j<numColumns; j++){
-                if(!boardTiles[i][j].equals(board.getTile(i,j))){
+        try {
+            if (this == o) return true; //if it's same object
+            if (o == null || getClass() != o.getClass()) return false; //if they are of different classes
+            Board board = (Board) o;
+            if (numRows != board.getNumRows() || numColumns != board.getNumColumns() || numPlayers != getNumPlayers()) //if they have different sizes or num of players
+                return false;
+            boolean same = true;
+            for (int i = 0; same && i < numRows; i++) { //check they have same tiles in board
+                for (int j = 0; same && j < numColumns; j++) {
+                    if (!boardTiles[i][j].equals(board.getTile(i, j))) {
+                        same = false;
+                    }
+                }
+            }
+            List<CommonGoal> Bgoals = board.getCommonGoals();
+            if (goals.size() != Bgoals.size())
+                same = false;
+            for (int i = 0; same && i < goals.size(); i++) { //check if they have same commonGoals()
+                if (!goals.get(i).equals(Bgoals.get(i))) {
                     same = false;
                 }
             }
-        }
-        List<CommonGoal> Bgoals = board.getCommonGoals();
-        if(goals.size() != Bgoals.size())
-            same = false;
-        for(int i = 0;same && i<goals.size(); i++){ //check if they have same commonGoals()
-            if (!goals.get(i).equals(Bgoals.get(i))) {
+            List<Tile> t1 = new ArrayList<>(tilesToDraw); //copy tileToDraw
+            List<Tile> t2 = new ArrayList<>(board.getTilesToDraw());
+
+            t1.sort(Comparator.comparing(Tile::toString)); //sort t1 list
+            t2.sort(Comparator.comparing(Tile::toString));//sort t2 list
+
+            if (!t1.equals(t2)) //check if the two lists contains the same elements in the same order
                 same = false;
-            }
+
+            return same;
+
+        } catch (BoardGenericException e){
+            throw new RuntimeException(e);
         }
-        List<Tile> t1 = new ArrayList<>(tilesToDraw); //copy tileToDraw
-        List<Tile> t2 = new ArrayList<>(board.getTilesToDraw());
-
-        t1.sort(Comparator.comparing(Tile::toString)); //sort t1 list
-        t2.sort(Comparator.comparing(Tile::toString));//sort t2 list
-
-        if(!t1.equals(t2)) //check if the two lists contains the same elements in the same order
-            same = false;
-
-        return same;
-
     }
-
     /**
      * generate hashcode from private attributes of board class
      * @return calculated hashcode
@@ -343,7 +346,7 @@ public class Board {
      * @param partialMove is the move that the player is building
      * @return the possible positions that the player can add to the move
      */
-    public List<Position> getValidPositions(PartialMove partialMove) {
+    public List<Position> getValidPositions(PartialMove partialMove) throws BoardGenericException {
         List<Position> positions = new ArrayList<>();
 
         //extreme case when partialMove has no positions inside
@@ -376,7 +379,7 @@ public class Board {
      * @param column is the given column
      * @return true if position has at least one free adjacent side
      */
-    private boolean hasFreeSide(int row, int column) {
+    private boolean hasFreeSide(int row, int column) throws BoardGenericException {
         if(row == 0 || column == 0 || row == getNumRows() - 1 || column == getNumColumns() - 1)
             //check the extreme cases where pos has at least one free side for sure
             return true;

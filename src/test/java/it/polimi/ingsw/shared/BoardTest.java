@@ -20,6 +20,8 @@ class BoardTest {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
         }
     }
     Board board1;
@@ -29,6 +31,8 @@ class BoardTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {
+            throw new RuntimeException(e);
+        } catch (BoardGenericException e) {
             throw new RuntimeException(e);
         }
     }
@@ -41,12 +45,14 @@ class BoardTest {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
         }
     }
 
 
     @Test
-    void getTile() {
+    void getTile() throws BoardGenericException {
         assertEquals(Tile.Empty,board.getTile(pos1));
     }
 
@@ -61,21 +67,23 @@ class BoardTest {
         } catch (ParseException e) {
             fail();
             throw new RuntimeException(e);
+        } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Test
-    void pickTile() {
+    void pickTile() throws BoardGenericException {
         assertEquals(Tile.Empty, board.pickTile(pos1));
     }
 
     @Test
-    void pickTile1() {
+    void pickTile1() throws BoardGenericException {
         assertEquals(Tile.Empty, board1.pickTile(pos1));
     }
 
     @Test
-    void pickTile2() {
+    void pickTile2() throws BoardGenericException {
         assertEquals(Tile.Invalid, board2.pickTile(pos2));
     }
 
@@ -91,6 +99,8 @@ class BoardTest {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             fail();
+            throw new RuntimeException(e);
+        } catch (BoardGenericException e) {
             throw new RuntimeException(e);
         }
     }
