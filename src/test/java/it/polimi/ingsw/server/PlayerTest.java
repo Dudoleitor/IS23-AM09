@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PlayerTest {
 
     @Test
-    void creationTest(){
+    void creationTest() throws ShelfGenericException, PlayerGoalLoadingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -33,7 +33,7 @@ public class PlayerTest {
     }
 
     @Test
-    void personalGoalTest() {
+    void personalGoalTest() throws ShelfGenericException, PlayerGoalLoadingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -47,7 +47,7 @@ public class PlayerTest {
     }
 
     @Test
-    void hasFinishedTest1() {
+    void hasFinishedTest1() throws ShelfGenericException, PlayerGoalLoadingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -73,7 +73,7 @@ public class PlayerTest {
     }
 
     @Test
-    void hasFinishedTest2() {
+    void hasFinishedTest2() throws ShelfGenericException, PlayerGoalLoadingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -99,7 +99,7 @@ public class PlayerTest {
     }
 
     @Test
-    void CommonGoalTest() {
+    void CommonGoalTest() throws PlayerGoalLoadingException, CommonGoalsException, ShelfGenericException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -138,7 +138,7 @@ public class PlayerTest {
     }
 
     @Test
-    void AdjacentPointsTest() {
+    void AdjacentPointsTest() throws ShelfGenericException, PlayerGoalLoadingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(4, 3);

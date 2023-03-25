@@ -1,4 +1,5 @@
 package it.polimi.ingsw.server;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 import it.polimi.ingsw.shared.Shelf;
 
@@ -61,7 +62,7 @@ public class PlayerGoalTest {
     }
 
     @Test
-    void MultipleGoals() {  // Testing if the goals is randomly chosen correctly
+    void MultipleGoals() throws PlayerGoalLoadingException {  // Testing if the goals is randomly chosen correctly
         String jsonPath = basePath + "MultipleGoals.json";
 
         PlayerGoal goal = new PlayerGoal(jsonPath);
@@ -78,7 +79,7 @@ public class PlayerGoalTest {
     }
 
     @Test
-    void creationFromJsonObjTest() throws IOException, ParseException {
+    void creationFromJsonObjTest() throws IOException, ParseException, PlayerGoalLoadingException {
         String jsonPath = basePath + "TestGoal.json";
         JSONParser jsonParser = new JSONParser();
         JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
@@ -88,7 +89,7 @@ public class PlayerGoalTest {
     }
 
     @Test
-    void TestGoal() {  // Inserting tiles one at a time and checking behaviour
+    void TestGoal() throws ShelfGenericException, PlayerGoalLoadingException {  // Inserting tiles one at a time and checking behaviour
         String jsonPath = basePath + "TestGoal.json";
         Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);

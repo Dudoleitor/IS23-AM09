@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ public class EqualX extends CommonGoal {
         return 12;
     }
     @Override
-    public boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) throws CommonGoalsException, ShelfGenericException {
         int columns = shelf.getColumns();
         int rows = shelf.getRows();
         //Shelf too small to complete goal
@@ -33,7 +35,7 @@ public class EqualX extends CommonGoal {
         }
         return false;
     }
-    ArrayList<Tile> getXShape(Shelf shelf, int row, int column){
+    ArrayList<Tile> getXShape(Shelf shelf, int row, int column) throws ShelfGenericException {
         ArrayList<Tile> tiles = new ArrayList<>();
         tiles.add(shelf.getTile(row,column));
         tiles.add(shelf.getTile(row+1,column+1));

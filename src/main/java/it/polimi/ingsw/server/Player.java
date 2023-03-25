@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.List;
@@ -50,14 +51,14 @@ public class Player {
     /**
      * @return copy of the shelf.
      */
-    public Shelf getShelf() { return new ServerShelf(shelf); }
+    public Shelf getShelf() throws ShelfGenericException { return new ServerShelf(shelf); }
 
     /**
      * To check how many points the player currently has achieved with the personal goal.
      * Note: this method is pure and runs the check when called.
      * @return integer.
      */
-    public int checkPersonalGoal() {
+    public int checkPersonalGoal() throws PlayerGoalLoadingException {
         return goal.check(shelf);
     }
 
@@ -66,7 +67,7 @@ public class Player {
      * placing tiles of the same type in adjacent positions.
      * @return integer.
      */
-    public int getAdjacentPoints() {
+    public int getAdjacentPoints() throws ShelfGenericException {
         return shelf.countAdjacentPoints();
     }
 
@@ -90,7 +91,7 @@ public class Player {
      * previously achieved, pops points from the goal and saves them.
      * @param goals list of AbstractCommonGoals to be checked.
      */
-    public void checkCommonGoals(List<CommonGoal> goals) {
+    public void checkCommonGoals(List<CommonGoal> goals) throws CommonGoalsException, ShelfGenericException {
         for (CommonGoal goal : goals) {
             if (goal.check(shelf) &&
                     !checkedCommonGoals.contains(goal.getID())) {
@@ -105,7 +106,7 @@ public class Player {
      * @param tile Tile enum,
      * @param column int.
      */
-    public void insertTile(Tile tile, int column) {
+    public void insertTile(Tile tile, int column) throws ShelfGenericException {
         shelf.insertTile(tile, column);
     }
 
@@ -114,7 +115,7 @@ public class Player {
      * the player has completed the shelf.
      * @return true/false.
      */
-    public boolean hasFinished() {
+    public boolean hasFinished() throws ShelfGenericException {
         return shelf.getHighestColumn() == 0;
     }
 

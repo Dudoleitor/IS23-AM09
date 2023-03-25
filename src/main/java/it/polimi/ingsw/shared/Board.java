@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
@@ -28,7 +29,7 @@ public class Board {
      * @param numPlayers is the number of players of the game
      * @throws BoardGenericException when parsing errors occurs
      */
-    public Board(int numPlayers) throws BoardGenericException, IOException, ParseException {
+    public Board(int numPlayers) throws BoardGenericException, IOException, ParseException, CommonGoalsException {
             this(pathToJsonObject(boardPathForNumberOfPlayers(numPlayers)));
             tilesToDraw =  createShuffledDeck(22);
             initializeGoals(); //generate two randomly picked goals
@@ -46,7 +47,7 @@ public class Board {
         Collections.shuffle(deck); //mix tiles
         return deck;
     }
-    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws BoardGenericException {
+    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws BoardGenericException, CommonGoalsException {
         this(objBoard);
         if(objCommonGoals != null){ //skipped in testing only
             initializeGoals(objCommonGoals);
@@ -107,9 +108,11 @@ public class Board {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (TileGenericException e) {
+            throw new RuntimeException(e);
         }
     }
-    private boolean checkValidBoard() throws IOException, ParseException, BoardGenericException {
+    private boolean checkValidBoard() throws IOException, ParseException, BoardGenericException, TileGenericException {
         boolean valid = true;
         JSONArray boardLine;
         JSONObject objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
@@ -314,7 +317,7 @@ public class Board {
     /**
      * Initialize two random goals from CommonGoalsFactory
      */
-    private void initializeGoals() {
+    private void initializeGoals() throws CommonGoalsException {
         goals = CommonGoalsFactory.createTwoGoals(numPlayers);
     }
 
@@ -322,7 +325,7 @@ public class Board {
      * Initialize the common goals passed as json objects
      * @param commonGoals a List of serialized common goals
      */
-    private void initializeGoals(List<JSONObject> commonGoals){
+    private void initializeGoals(List<JSONObject> commonGoals) throws CommonGoalsException {
         goals = new ArrayList<>();
         for(JSONObject jsonObject : commonGoals){
             goals.add(CommonGoalsFactory.create_from_json(jsonObject));

@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ public class TwoSquares extends CommonGoal {
         super(stackState);
     }
     @Override
-    public boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) throws CommonGoalsException, ShelfGenericException {
         int columns = shelf.getColumns();
         int rows = shelf.getRows();
         int equalSquaresCounter = 0;
@@ -32,7 +34,7 @@ public class TwoSquares extends CommonGoal {
         }
         return equalSquaresCounter >= 2;
     }
-    private ArrayList<Tile> get2x2Square(Shelf shelf,int row, int column){
+    private ArrayList<Tile> get2x2Square(Shelf shelf,int row, int column) throws ShelfGenericException {
         ArrayList<Tile> tiles = new ArrayList<>();
         tiles.add(shelf.getTile(row,column));
         tiles.add(shelf.getTile(row+1,column));
@@ -52,7 +54,7 @@ public class TwoSquares extends CommonGoal {
         alreadyUsed[row+1][column+1] = true;
     }
 
-    private boolean isPerfectSquare(Shelf shelf, boolean[][] alreadyUsed, int row, int column){
+    private boolean isPerfectSquare(Shelf shelf, boolean[][] alreadyUsed, int row, int column) throws CommonGoalsException, ShelfGenericException {
         return isAvailable(alreadyUsed,row,column) && notEmptyAndEqual(get2x2Square(shelf,row,column)) && 4 == validIslandSize(shelf,row,column,alreadyUsed);
     }
 }

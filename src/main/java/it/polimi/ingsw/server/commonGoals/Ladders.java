@@ -1,8 +1,10 @@
 package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public class Ladders extends CommonGoal {
         return 7;
     }
     @Override
-    public boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) throws CommonGoalsException, ShelfGenericException {
         //generate ladders
         ArrayList<ArrayList<Tile>> ladders = generateLadders(shelf);
         //check if at least one is composed of all equal tiles
@@ -29,7 +31,7 @@ public class Ladders extends CommonGoal {
         return false;
     }
 
-    private ArrayList<ArrayList<Tile>> generateLadders(Shelf shelf){
+    private ArrayList<ArrayList<Tile>> generateLadders(Shelf shelf) throws ShelfGenericException {
         int rows = shelf.getRows();
         int columns = shelf.getColumns();
         ArrayList<ArrayList<Tile>> ladders = new ArrayList<>();

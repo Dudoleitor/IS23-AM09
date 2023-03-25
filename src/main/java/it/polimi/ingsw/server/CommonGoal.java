@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public abstract class CommonGoal {
      * @param shelf the shelf of one of the players
      * @return TRUE if the condition of the CommonGoal is verified
      */
-    public abstract boolean check(Shelf shelf);
+    public abstract boolean check(Shelf shelf) throws ShelfGenericException, CommonGoalsException;
 
     /**
      * Pops points from PointStack
@@ -104,7 +105,7 @@ public abstract class CommonGoal {
         }
     }
 
-    private int recursiveIslandVisit(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type){
+    private int recursiveIslandVisit(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type) throws ShelfGenericException {
         if(shelf.isOutOfBounds(row,column) || alreadyChecked[row][column] == true){
             return 0;
         }
@@ -130,7 +131,7 @@ public abstract class CommonGoal {
      *@param alreadyChecked a matrix of booleans that keeps track of the visited Tiles
      *@return the size of the island
      */
-    protected int validIslandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked){
+    protected int validIslandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked) throws ShelfGenericException {
         if(shelf.isValidTile(row, column)){
             Tile islandType = shelf.getTile(row, column);
             return recursiveIslandVisit(shelf,row,column,alreadyChecked,islandType);

@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 
 public class ServerBoard extends Board {
-    public ServerBoard(int numPlayers) throws IOException, ParseException, BoardGenericException {
+    public ServerBoard(int numPlayers) throws IOException, ParseException, BoardGenericException, CommonGoalsException {
         super(numPlayers);
     }
 }

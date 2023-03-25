@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class FullLadder extends CommonGoal {
         return 10;
     }
     @Override
-    public boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) throws ShelfGenericException {
         //get all heights in order
         int[] heights = new int[shelf.getColumns()];
         for(int column = 0; column < shelf.getColumns(); column++){
@@ -49,7 +50,7 @@ public class FullLadder extends CommonGoal {
         }
         return ascending || descending;
     }
-    private int columnHeigth(Shelf shelf, int column){
+    private int columnHeigth(Shelf shelf, int column) throws ShelfGenericException {
         return (int) shelf.allTilesInColumn(column).stream()
                 .filter(x->!x.equals(Tile.Empty)).count();
     }

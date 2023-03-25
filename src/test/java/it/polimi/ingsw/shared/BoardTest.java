@@ -1,5 +1,6 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.server.CommonGoalsException;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,8 @@ class BoardTest {
             throw new RuntimeException(e);
         } catch (BoardGenericException e) {
             throw new RuntimeException(e);
+        } catch (CommonGoalsException e) {
+            throw new RuntimeException(e);
         }
     }
     Board board1;
@@ -33,6 +36,8 @@ class BoardTest {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
+        } catch (CommonGoalsException e) {
             throw new RuntimeException(e);
         }
     }
@@ -46,6 +51,8 @@ class BoardTest {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
+        } catch (CommonGoalsException e) {
             throw new RuntimeException(e);
         }
     }
@@ -68,6 +75,8 @@ class BoardTest {
             fail();
             throw new RuntimeException(e);
         } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
+        } catch (CommonGoalsException e) {
             throw new RuntimeException(e);
         }
     }
@@ -101,6 +110,10 @@ class BoardTest {
             fail();
             throw new RuntimeException(e);
         } catch (BoardGenericException e) {
+            throw new RuntimeException(e);
+        } catch (OutOfTilesException e) {
+            throw new RuntimeException(e);
+        } catch (CommonGoalsException e) {
             throw new RuntimeException(e);
         }
     }

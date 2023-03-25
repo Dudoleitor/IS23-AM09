@@ -17,7 +17,7 @@ public class ShelfTest {
     final int columns = 5;
     final String value = "Cat";
     @Test
-    void insert_test() {
+    void insert_test() throws ShelfGenericException {
         Shelf s = new Shelf(rows, columns);
         for (int i = 0; i < rows; i++) { // check it initializes the object correctly
             for (int j = 0; j < columns; j++) {
@@ -37,7 +37,7 @@ public class ShelfTest {
         }
     }
     @Test
-    void shelf_equals_test(){
+    void shelf_equals_test() throws ShelfGenericException {
         Shelf s1 = new Shelf(rows, columns);
         Shelf s2 = new Shelf(rows, columns);
         for(int j = 0; j< columns-1; j++){
@@ -50,7 +50,7 @@ public class ShelfTest {
         assert(s1.equals(s2)); //check they are the same
     }
     @Test
-    void checkAdiacentTest(){
+    void checkAdiacentTest() throws ShelfGenericException {
         Shelf s = new Shelf(4,4);
         s.insertTile(Tile.Cat,0);
         s.insertTile(Tile.Cat,0);
@@ -100,7 +100,7 @@ public class ShelfTest {
         assertEquals(6, res);
     }
     @Test
-    public void ShelfJsonTester() throws FileNotFoundException, ParseException, IOException{
+    public void ShelfJsonTester() throws FileNotFoundException, ParseException, IOException, ShelfGenericException, TileGenericException {
         String jsonPath = "src/test/resources/ShelfTests/ShelfInsert.json";
         Shelf s = new Shelf(jsonPath);
         Shelf s1 = new Shelf(4, 4);
@@ -127,7 +127,7 @@ public class ShelfTest {
         assert(s.equals(s1));
     }
     @Test
-    void JsonObjectTest(){
+    void JsonObjectTest() throws ShelfGenericException, TileGenericException {
         JSONParser jsonParser = new JSONParser(); //initialize JSON parser
         Object obj = null; //acquire JSON object file
         try {

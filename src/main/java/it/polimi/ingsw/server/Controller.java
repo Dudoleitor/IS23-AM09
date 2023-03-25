@@ -39,6 +39,10 @@ public class Controller {
             throw new RuntimeException(e);
         } catch (BoardGenericException e) {
             throw new ControllerGenericException("Problem while creating controller");
+        } catch (CommonGoalsException e) {
+            throw new ControllerGenericException(e.getMessage());
+        } catch (PlayerGoalLoadingException e) {
+            throw new ControllerGenericException(e.getMessage());
         }
 
     }
@@ -76,7 +80,7 @@ public class Controller {
     /**
      * @return the list of the Shelf objects of each player
      */
-    public List<Shelf> getShelves() {
+    public List<Shelf> getShelves() throws ShelfGenericException {
         List<Shelf> shelves = new ArrayList<>();
         for(Player p : players) {
             shelves.add(p.getShelf());
@@ -91,7 +95,7 @@ public class Controller {
      * @throws ControllerGenericException if the selected tile is not allowed, if the player is not the current player
      * or if the shelf hasn't enough empty cells
      */
-    public void moveTiles(Player player, Move move) throws ControllerGenericException {
+    public void moveTiles(Player player, Move move) throws ControllerGenericException, InvalidMoveException {
 
         try {
             if (!player.getName().equals(getCurrentPlayer())) { //if player is not the current player we throw an exception
@@ -116,6 +120,10 @@ public class Controller {
             incrementTurn();
         } catch (BoardGenericException e){
             throw new InvalidMoveException("Error while moving tile");
+        } catch (ShelfGenericException e) {
+            throw new ControllerGenericException(e.getMessage());
+        } catch (InvalidMoveException e) {
+            throw new ControllerGenericException("Error invalid move");
         }
     }
     /**

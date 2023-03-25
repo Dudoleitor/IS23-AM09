@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class EightEqualTiles extends CommonGoal {
         return 6;
     }
     @Override
-    public boolean check(Shelf shelf) {
+    public boolean check(Shelf shelf) throws ShelfGenericException {
         Tile currentTile;
         //initialize counters for all tyoe of Tiles
         HashMap<Tile,Integer> counters = new HashMap<>();

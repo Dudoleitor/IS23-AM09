@@ -56,7 +56,7 @@ public class CommonGoalsFactory {
      * @param number_of_players
      * @return the generated commongoal
      */
-    public static CommonGoal create_goal_with_ID(int id, int number_of_players) {
+    public static CommonGoal create_goal_with_ID(int id, int number_of_players) throws CommonGoalsException {
         JSONObject jsonObject;
             switch (number_of_players) {
                 case (2):
@@ -81,7 +81,7 @@ public class CommonGoalsFactory {
      * @param stackState a list of integers to populate the stack
      * @return the generated common goal
      */
-    private static CommonGoal create_goal_with_ID(int ID, List<Integer> stackState){
+    private static CommonGoal create_goal_with_ID(int ID, List<Integer> stackState) throws CommonGoalsException {
         CommonGoal newGoal;
         switch (ID){
             case(1):
@@ -131,14 +131,14 @@ public class CommonGoalsFactory {
      * @param jsonObject the serialized object
      * @return the generated common goal
      */
-    public static CommonGoal create_from_json(JSONObject jsonObject){
+    public static CommonGoal create_from_json(JSONObject jsonObject) throws CommonGoalsException {
         int id = Math.toIntExact((Long) jsonObject.get("id"));
         JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
         List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long)x)).collect(Collectors.toList());
         return create_goal_with_ID(id,stackState);
     }
 
-    private static JSONObject pathToJsonObject(String jsonPath){
+    private static JSONObject pathToJsonObject(String jsonPath) throws CommonGoalsException {
         Object obj = null;
         try {
             JSONParser jsonParser = new JSONParser(); //initialize parser

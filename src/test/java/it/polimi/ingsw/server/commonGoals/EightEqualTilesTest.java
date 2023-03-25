@@ -4,6 +4,8 @@ import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
+import it.polimi.ingsw.shared.TileGenericException;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
@@ -17,21 +19,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EightEqualTilesTest{
     @Test
-    void testEmptyShelf(){
+    void testEmptyShelf() throws CommonGoalsException, ShelfGenericException {
         Shelf emptyShelf = new Shelf(6,5);
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);
         assertFalse(to_test.check(emptyShelf));
     }
     @Test
-    void trueTest()throws FileNotFoundException, ParseException, IOException {
+    void trueTest() throws FileNotFoundException, ParseException, IOException, ShelfGenericException, TileGenericException, CommonGoalsException {
         Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_8equalsTiles.json");
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
-    void falseTest()throws FileNotFoundException, ParseException, IOException{
+    void falseTest() throws FileNotFoundException, ParseException, IOException, ShelfGenericException, TileGenericException, CommonGoalsException {
         Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_8equalsTiles.json");
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);

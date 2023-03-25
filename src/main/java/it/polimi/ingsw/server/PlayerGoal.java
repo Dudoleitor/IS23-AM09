@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 
 import java.io.FileNotFoundException;
@@ -140,12 +141,20 @@ public class PlayerGoal {
         JSONArray goal = (JSONArray) goals.get(String.valueOf(goalId));
         if (goal == null) {
             throw new PlayerGoalLoadingException("Error while parsing json: goal by id not found");}
-
-        return (List<GoalPosition>) goal
-                .stream()
-                .map(g -> parsePosition((JSONObject) g))
-                .collect(Collectors.toList());
-
+        try {
+            return (List<GoalPosition>) goal
+                    .stream()
+                    .map(g -> {
+                        try {
+                            return parsePosition((JSONObject) g);
+                        } catch (PlayerGoalLoadingException e) {
+                            throw new RuntimeException(e.getMessage());
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }catch (RuntimeException e){
+            throw new PlayerGoalLoadingException(e.getMessage());
+        }
     }
 
     /**
@@ -173,7 +182,7 @@ public class PlayerGoal {
      * @param pos GoalPosition to be checked
      * @return true/false
      */
-    private boolean checkSinglePosition(Shelf shelf, GoalPosition pos) {
+    private boolean checkSinglePosition(Shelf shelf, GoalPosition pos) throws ShelfGenericException {
         return pos.getTile()
                 .equals(
                         shelf.getTile(pos.getPos())
@@ -205,13 +214,22 @@ public class PlayerGoal {
      * @throws PlayerGoalLoadingException when a parsing error happens
      */
     public int check(Shelf shelf) throws PlayerGoalLoadingException {
-        int count = positionList
-                .stream()
-                .mapToInt( p -> checkSinglePosition(shelf, p) ? 1 : 0)
-                .sum();
+        try {
+            int count = positionList
+                    .stream()
+                    .mapToInt(p -> {
+                        try {
+                            return checkSinglePosition(shelf, p) ? 1 : 0;
+                        } catch (ShelfGenericException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .sum();
             return countToPoints(count);
+        }catch (RuntimeException e){
+            throw new PlayerGoalLoadingException(e.getMessage());
+        }
     }
-
     public int getGoalId() { return goalId; }
 
     @Override
