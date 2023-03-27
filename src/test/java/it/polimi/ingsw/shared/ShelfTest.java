@@ -5,7 +5,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -100,7 +99,7 @@ public class ShelfTest {
         assertEquals(6, res);
     }
     @Test
-    public void ShelfJsonTester() throws FileNotFoundException, ParseException, IOException, ShelfGenericException, TileGenericException {
+    public void ShelfJsonTester() throws ParseException, IOException, ShelfGenericException, TileGenericException {
         String jsonPath = "src/test/resources/ShelfTests/ShelfInsert.json";
         Shelf s = new Shelf(jsonPath);
         Shelf s1 = new Shelf(4, 4);
@@ -132,9 +131,7 @@ public class ShelfTest {
         Object obj = null; //acquire JSON object file
         try {
             obj = jsonParser.parse(new FileReader("src/test/resources/ShelfTests/ShelfInsert.json"));
-        } catch (IOException e) {
-            fail();
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             fail();
         }
         JSONObject objShelf = (JSONObject) ((JSONObject) obj).get("shelf"); //acquire shelf object
@@ -155,5 +152,16 @@ public class ShelfTest {
         Shelf shelf = new Shelf(5,6);
         assertEquals(6,shelf.getColumns());
         assertEquals(5,shelf.getRows());
+    }
+
+    @Test
+    void toJsonTest() throws IOException, ParseException, TileGenericException, ShelfGenericException {
+        String jsonPath = "src/test/resources/CommonGoalTests/TestShelf_1_2Squares.json";
+        JSONObject jsonShelf = Shelf.pathToJSONObject(jsonPath);
+        Shelf shelf = new Shelf(jsonPath);
+
+        assertEquals(jsonShelf.toJSONString(), shelf.toJson().toJSONString());
+
+
     }
 }

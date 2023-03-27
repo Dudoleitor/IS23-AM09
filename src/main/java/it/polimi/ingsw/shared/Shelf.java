@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.LongStream;
 
@@ -56,7 +57,7 @@ public class Shelf {
     }
 
     /**
-     * generate Shelf by JSON file
+     * Generates Shelf by JSON file
      * @param jsonPath is the file path to the JSON file
      * @throws ShelfGenericException when JSON file can't be found or bad JSON parsing is done
      * @throws FileNotFoundException when JSON file can't be found
@@ -67,7 +68,15 @@ public class Shelf {
         this(pathToJSONObject(jsonPath)); //get shelf JSONObject
     }
 
-    private static JSONObject pathToJSONObject(String jsonPath) throws IOException, ParseException {
+    /**
+     * This static method returns the JSONObject from a json file,
+     * it uses the "shelf" attribute.
+     * @param jsonPath path to the json file
+     * @return JSONObject with the content
+     * @throws IOException when an IO error happens
+     * @throws ParseException when a parsing error happens
+     */
+    public static JSONObject pathToJSONObject(String jsonPath) throws IOException, ParseException {
         JSONObject result;
         JSONParser jsonParser = new JSONParser();
         FileReader reader = new FileReader(jsonPath);
@@ -81,8 +90,8 @@ public class Shelf {
      * @throws ShelfGenericException when a problem in the creation of shelf occurs
      */
     public Shelf(JSONObject jsonShelf) throws ShelfGenericException, TileGenericException {
-        rows = Math.toIntExact((long) (jsonShelf.get("rows")));
-        columns = Math.toIntExact((long) (jsonShelf.get("columns")));
+        rows = Math.toIntExact((long) (jsonShelf.get("numRows")));
+        columns = Math.toIntExact((long) (jsonShelf.get("numColumns")));
         tiles = new Tile[rows][columns];
 
         JSONArray array_shelf = (JSONArray) jsonShelf.get("matrix"); //matrix is the copy of the shelf
@@ -384,4 +393,34 @@ public class Shelf {
         return corners;
     }
 
+    /**
+     * This method is used to save the status of the shelf with a json object.
+     * @return JSONObject with status.
+     */
+    public JSONObject toJson() {
+        JSONObject shelfJson = new JSONObject();  // Object to return
+
+        // Saving final parameters
+        shelfJson.put("numRows", rows);
+        shelfJson.put("numColumns", columns);
+
+        // Looping to save the matrix
+        JSONArray shelfMatrix = new JSONArray();
+        JSONArray shelfRowJson;  // Single row
+        List<String> shelfRow;
+        for (int row = 0; row < rows; row++) {  // Iterating over the rows
+            shelfRowJson = new JSONArray();  // Will be added into the JSON matrix
+            shelfRow = new ArrayList<>();  // To convert from [] -> collection
+
+            for (int col = 0; col < columns; col++) {  // Iterating over the columns
+                shelfRow.add(tiles[row][col].toString());
+            }
+            shelfRowJson.addAll(shelfRow);  // Converting from List to JSONArray
+            shelfMatrix.add(shelfRowJson);
+        }
+
+        shelfJson.put("matrix", shelfMatrix);
+
+        return shelfJson;
+    }
 }
