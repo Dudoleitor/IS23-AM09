@@ -28,10 +28,11 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: html
           message: |
-            ${{ github.actor }} pushed commits.
-            Commit message: ${{ github.event.commits[0].message }}
-
+            Hey billoni
+            ${{ github.actor }} pushed commits, it's all right!
+            <i>Commit message: ${{ github.event.commits[0].message }}</i>
   notifyFailure:
     runs-on: [self-hosted]
     needs:
@@ -43,7 +44,9 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: html
           message: |
+            Billoni, we got a problem!
             ${{ github.actor }} pushed commits.
-            WARNING: Tests failure! @everyone
-            Commit message: ${{ github.event.commits[0].message }}
+            <b>WARNING @everyone: Tests failed</b>
+            <i>Commit message: ${{ github.event.commits[0].message }}</i>
