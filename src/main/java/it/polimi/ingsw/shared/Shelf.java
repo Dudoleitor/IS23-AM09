@@ -118,7 +118,7 @@ public class Shelf {
 
         for(int j = 0; valid && j < columns; j++){
             notEmptyFound = false;
-            for( int i = 0; valid && i < rows; i++){ //check if there are empty tiles between valid tiles
+            for( int i = 0; valid && i < rows; i++){ //check if there are empty tiles between valid tiles ineach column
                 if(tiles[i][j].equals(Tile.Empty)){
                     if(notEmptyFound)
                         valid = false;

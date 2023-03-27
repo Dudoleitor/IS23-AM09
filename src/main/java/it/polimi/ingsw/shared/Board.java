@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class Board {
@@ -152,15 +153,10 @@ public class Board {
      * @throws OutOfTilesException whenever tilesToDraw deck is empty, so no more tiles can be drawn
      */
     public void fill() throws OutOfTilesException{
-        Tile t;
-        for(int i = 0; i<numRows; i++){ //add each valid and non-empty tile left on the board to tilesToDraw deck
-            for(int j = 0; j<numColumns; j++){
-                t = boardTiles[i][j];
-                if (!t.equals(Tile.Invalid) && !t.equals(Tile.Empty)) {
-                    tilesToDraw.add(t);
-                }
-            }
-        }
+        Arrays.stream(boardTiles).flatMap(Arrays::stream) //create stream from matrix
+                .filter(x -> !x.equals(Tile.Invalid) && !x.equals(Tile.Empty)) //preserve any valid tile
+                .forEach(x -> tilesToDraw.add(x));
+
         Collections.shuffle(tilesToDraw); //mix deck
 
         for(int i = 0; i<numRows; i++){ //draw tiles from tilesToDraw deck and use them to fill the board in valid cells
@@ -359,16 +355,22 @@ public class Board {
 
         //extreme case when partialMove has no positions inside
         if(partialMove.getBoardPositions().size() == 0) {
-            for(int i = 0; i < getNumRows(); i++) {
-                for(int j = 0; j < getNumColumns(); j++) {
-                    if(hasFreeSide(i, j)) {
-                        if(!getTile(i, j).equals(Tile.Invalid) && !getTile(i, j).equals(Tile.Empty))
-                            positions.add(new Position(i, j));
-                    }
-                }
+            try {
+                IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
+                        IntStream.range(0, getNumColumns()) // create stream of j
+                                .filter(j -> { //filter not valid positions
+                                    try {
+                                        return hasFreeSide(i, j) && !getTile(i, j).equals(Tile.Empty) && !getTile(i, j).equals(Tile.Invalid);
+                                    } catch (BoardGenericException e) {
+                                        throw new BoardRuntimeException(e.getMessage());
+                                    }
+                                })
+                                .forEach(j -> positions.add(new Position(i, j)))
+                );
+            } catch (BoardRuntimeException e){
+                throw new BoardGenericException(e.getMessage());
             }
         }
-
         //if the move is complete --> it has maxNumMoves positions inside
         if(partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) {
             return positions;

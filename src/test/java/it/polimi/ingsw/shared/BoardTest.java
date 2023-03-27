@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoalsException;
+import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -141,3 +142,4 @@ class BoardTest {
         assertEquals(jsonBoard.toJSONString(), board.toJson().toJSONString());
     }
 }
+
