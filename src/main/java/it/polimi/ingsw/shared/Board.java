@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Board {
@@ -54,7 +55,7 @@ public class Board {
         }
     }
 
-    private static String boardPathForNumberOfPlayers(int number_of_players) throws BoardGenericException{
+    public static String boardPathForNumberOfPlayers(int number_of_players) throws BoardGenericException{
         switch(number_of_players){
             case(2):
                 return "src/main/resources/BoardInit2players.json";
@@ -396,7 +397,36 @@ public class Board {
         return false;
     }
 
+    public JSONObject toJson() {
+        JSONObject boardJson = new JSONObject();
+        boardJson.put("numPlayers", numPlayers);
+        boardJson.put("numRows", numRows);
+        boardJson.put("numColumns", numColumns);
 
+        JSONArray boardMatrix = new JSONArray();
+        JSONArray boardRowJson;
+        List<String> boardRow;
+        for (int row = 0; row < numRows; row++) {
+            boardRowJson = new JSONArray();
+            boardRow = new ArrayList<>();
+
+            for (int col = 0; col < numColumns; col++) {
+                boardRow.add(boardTiles[row][col].toString());
+            }
+            boardRowJson.addAll(boardRow);
+            boardMatrix.add(boardRowJson);
+        }
+
+        boardJson.put("matrix", boardMatrix);
+
+        JSONArray boardDeck = new JSONArray();
+        boardDeck.addAll(tilesToDraw
+                .stream()
+                .map(t -> t.toString())
+                .collect(Collectors.toList()));
+        boardJson.put("deck", boardDeck);
+        return boardJson;
+    }
 
 
 

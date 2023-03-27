@@ -1,6 +1,8 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoalsException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
@@ -118,4 +120,24 @@ class BoardTest {
         }
     }
 
+    @Test
+    void toJsonTest1() throws CommonGoalsException, IOException, ParseException, BoardGenericException {
+        String jsonPath = Board.boardPathForNumberOfPlayers(2);
+        JSONObject jsonBoardExpected = Board.pathToJsonObject(jsonPath);
+        Board board = new Board(2);
+
+        JSONObject jsonBoardToTest = board.toJson();
+        jsonBoardExpected.remove("deck");  // Ignoring deck as it's randomly generated
+        jsonBoardToTest.remove("deck");
+
+        assertEquals(jsonBoardExpected.toJSONString(), jsonBoardToTest.toJSONString());
+    }
+    @Test
+    void toJsonTest2() throws CommonGoalsException, IOException, ParseException, BoardGenericException {
+        String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
+        JSONObject jsonBoard = Board.pathToJsonObject(jsonPath);
+        Board board = new Board(jsonBoard, new ArrayList<>());
+
+        assertEquals(jsonBoard.toJSONString(), board.toJson().toJSONString());
+    }
 }
