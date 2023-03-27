@@ -24,7 +24,7 @@ public class PartialMove {
             throw new PartialMoveException("Error while cloning PartialMove  : to_clone is null pointer");
         }
     }
-    PartialMove(){ //default constructor
+    public PartialMove(){ //default constructor
         positions = new ArrayList<>();
     }
 
