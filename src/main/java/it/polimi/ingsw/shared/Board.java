@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -68,6 +69,14 @@ public class Board {
         }
     }
 
+    /**
+     * This static method returns the JSONObject from a json file,
+     * it uses the "board" attribute.
+     * @param jsonPath path to the json file
+     * @return JSONObject with the content
+     * @throws IOException when an IO error happens
+     * @throws ParseException when a parsing error happens
+     */
     public static JSONObject pathToJsonObject(String jsonPath) throws IOException, ParseException {
         JSONParser jsonParser = new JSONParser(); //initialize parser
         Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
