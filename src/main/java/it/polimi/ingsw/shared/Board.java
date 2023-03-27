@@ -78,12 +78,15 @@ public class Board {
      * @throws IOException when an IO error happens
      * @throws ParseException when a parsing error happens
      */
-    public static JSONObject pathToJsonObject(String jsonPath) throws IOException, ParseException {
-        JSONParser jsonParser = new JSONParser(); //initialize parser
-        Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-        return (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
+    public static JSONObject pathToJsonObject(String jsonPath) throws BoardGenericException {
+        try {
+            JSONParser jsonParser = new JSONParser(); //initialize parser
+            Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
+            return (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
+        } catch (IOException | ParseException e){
+            throw new BoardGenericException("Error while generating Board from Json : file was not found");
+        }
     }
-
     /**
      * Constructor used to initialize board from previously generated JSON
      * @param objBoard is a board object that serializes the board
@@ -112,9 +115,9 @@ public class Board {
             if(!checkValidBoard()){
                 throw new BoardGenericException("Error while creating board : board is not a valid configuration for given num player");
             }
-        } catch (ClassCastException | NullPointerException e){
+        } catch (ClassCastException | NullPointerException | ParseException e){
             throw new BoardGenericException("Error while creating Board : bad json parsing");
-        } catch (IOException | ParseException | TileGenericException  e) {
+        } catch (IOException | TileGenericException  e) {
             throw new RuntimeException(e);
         }
     }
@@ -165,7 +168,7 @@ public class Board {
                     if(tilesToDraw.size() > 0) { //check if there are tiles left in the deck
                         boardTiles[i][j] = tilesToDraw.remove(0);
                     }else{
-                        throw new OutOfTilesException("No more tiles left in the deck");
+                        throw new OutOfTilesException("The END is near : No more tiles left in the deck");
                     }
                 }
 
@@ -203,22 +206,18 @@ public class Board {
             Board board = (Board) o;
             if (numRows != board.getNumRows() || numColumns != board.getNumColumns() || numPlayers != getNumPlayers()) //if they have different sizes or num of players
                 return false;
-            boolean same = true;
-            for (int i = 0; same && i < numRows; i++) { //check they have same tiles in board
-                for (int j = 0; same && j < numColumns; j++) {
+            for (int i = 0; i < numRows; i++) { //check they have same tiles in board
+                for (int j = 0; j < numColumns; j++) {
                     if (!boardTiles[i][j].equals(board.getTile(i, j))) {
-                        same = false;
+                        return false;
                     }
                 }
             }
+            /* TODO waiting for commonGoal.toJson() to implement this part
             List<CommonGoal> Bgoals = board.getCommonGoals();
-            if (goals.size() != Bgoals.size())
-                same = false;
-            for (int i = 0; same && i < goals.size(); i++) { //check if they have same commonGoals()
-                if (!goals.get(i).equals(Bgoals.get(i))) {
-                    same = false;
-                }
-            }
+            if (goals.size() != Bgoals.size() || !goals.containsAll(Bgoals))
+                return false;
+            */
             List<Tile> t1 = new ArrayList<>(tilesToDraw); //copy tileToDraw
             List<Tile> t2 = new ArrayList<>(board.getTilesToDraw());
 
@@ -226,9 +225,9 @@ public class Board {
             t2.sort(Comparator.comparing(Tile::toString));//sort t2 list
 
             if (!t1.equals(t2)) //check if the two lists contains the same elements in the same order
-                same = false;
+                return false;
 
-            return same;
+            return true;
 
         } catch (BoardGenericException e){
             throw new RuntimeException(e);
@@ -276,7 +275,7 @@ public class Board {
         try {
             return getTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e){
-            throw new BoardGenericException("Error while picking tile: pos is null pointer");
+            throw new BoardGenericException("Error while getting tile: pos is null pointer");
         }
     }
 
@@ -294,6 +293,25 @@ public class Board {
             throw new BoardGenericException("Error while getting tile from Board : illegal coordinates");
         }
     }
+    /**
+     * Pick a tile from the board removing it from the board
+     * @param i is the x coord
+     * @param j is the y coord
+     * @return Tile in position pos
+     * @throws BoardGenericException when picking position is out of bound or pos is NullPointer
+     */
+    public Tile pickTile(int i, int j) throws BoardGenericException { //maybe add pick tile by coordinates
+        try {
+            Tile selectedTile;
+            selectedTile = boardTiles[i][j];
+            if(selectedTile.equals(Tile.Invalid))
+                throw new BoardGenericException("Error while picking Tile : Chosen one is Invalid type");
+            boardTiles[i][j] = Tile.Empty;
+            return selectedTile;
+        } catch (IndexOutOfBoundsException e){
+            throw new BoardGenericException("Error while picking tile from Board : illegal coordinates");
+        }
+    }
 
     /**
      * Pick a tile from the board removing it from the board
@@ -303,14 +321,9 @@ public class Board {
      */
     public Tile pickTile(Position pos) throws BoardGenericException { //maybe add pick tile by coordinates
         try {
-            Tile selectedTile;
-            selectedTile = boardTiles[pos.getRow()][pos.getColumn()];
-            boardTiles[pos.getRow()][pos.getColumn()] = Tile.Empty;
-            return selectedTile;
+            return pickTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e){
             throw new BoardGenericException("Error while picking tile: pos is null pointer");
-        } catch (IndexOutOfBoundsException e){
-            throw new BoardGenericException("Error while getting tile from Board : illegal coordinates");
         }
     }
 
