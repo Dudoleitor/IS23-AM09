@@ -387,7 +387,7 @@ public class Board {
      * @param column is the given column
      * @return true if position has at least one free adjacent side
      */
-    private boolean hasFreeSide(int row, int column) throws BoardGenericException {
+    public boolean hasFreeSide(int row, int column) throws BoardGenericException {
         if(row == 0 || column == 0 || row == getNumRows() - 1 || column == getNumColumns() - 1)
             //check the extreme cases where pos has at least one free side for sure
             return true;
@@ -399,6 +399,10 @@ public class Board {
                 || getTile(row, column - 1).equals(Tile.Empty) || getTile(row, column - 1).equals(Tile.Invalid)
         ) return true;
         return false;
+    }
+
+    public boolean hasFreeSide(Position position) throws BoardGenericException {
+        return hasFreeSide(position.getRow(),position.getColumn());
     }
 
     /**

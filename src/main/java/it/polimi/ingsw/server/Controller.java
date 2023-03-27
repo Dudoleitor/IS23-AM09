@@ -143,65 +143,30 @@ public class Controller {
         try {
             List<Position> positions = move.getBoardPositions();
 
-            if (positions.size() > move.getMaxNumMoves()) //if the number of coordinates is greater than the maximum possible
-                //then we return false
+            //the number of coordinates is greater than the maximum possible ==> false
+            if (positions.size() > move.getMaxNumMoves())
                 return false;
 
-            for (int i = 0; i < positions.size() - 1; i++) {
-                for (int j = i + 1; j < positions.size(); j++) {
-                    if (positions.get(i).equals(positions.get(j))) { //if coordinates from different positions are equals we return false
-                        return false;
-                    }
-                }
+            //duplicate positions are present ==> false
+            if(Position.duplicates(positions)){
+                return false;
             }
 
+            //Position with no free side ==> false
             for (Position p : positions) {
-                if (!hasFreeSide(p))
+                if (!board.hasFreeSide(p))
                     return false;
             }
 
-            if (positions.size() == 1) //if we pick just one tile then we return true
+            //One tile is always correct if it has a free side ==> true
+            if (positions.size() == 1)
                 return true;
 
+            //check if the positions are correctly aligned
+            return Position.areAligned(positions);
 
-            int row = positions.get(0).getRow();
-            int column = positions.get(0).getColumn();
-
-            //check if selected tiles are on the same row or in the same column
-            if (positions.get(1).getRow() == row) {
-                for (int i = 2; i < positions.size(); i++) {
-                    if (positions.get(i).getRow() != row)
-                        return false;
-                }
-            } else if (positions.get(1).getColumn() == column) {
-                for (int i = 2; i < positions.size(); i++) {
-                    if (positions.get(i).getColumn() != column)
-                        return false;
-                }
-
-            }
-            return true;
         } catch (BoardGenericException e){
             return false;
         }
     }
-    /**
-     * @param pos is the given position
-     * @return true if position has at least one free adjacent side
-     */
-    private boolean hasFreeSide(Position pos) throws BoardGenericException {
-        if(pos.getRow() == 0 || pos.getColumn() == 0 || pos.getRow() == board.getNumRows() - 1 || pos.getColumn() == board.getNumColumns() - 1)
-            //check the extreme cases where pos has at least one free side for sure
-            return true;
-
-        //check if pos in the board has one adjacent empty (or invalid) cell
-        if(board.getTile(pos.getRow() + 1, pos.getColumn()).equals(Tile.Empty) || board.getTile(pos.getRow() + 1, pos.getColumn()).equals(Tile.Invalid)
-                || board.getTile(pos.getRow() - 1, pos.getColumn()).equals(Tile.Empty) || board.getTile(pos.getRow() - 1, pos.getColumn()).equals(Tile.Invalid)
-                || board.getTile(pos.getRow(), pos.getColumn() + 1).equals(Tile.Empty) || board.getTile(pos.getRow(), pos.getColumn() + 1).equals(Tile.Invalid)
-                || board.getTile(pos.getRow(), pos.getColumn() - 1).equals(Tile.Empty) || board.getTile(pos.getRow(), pos.getColumn() - 1).equals(Tile.Invalid)
-        ) return true;
-
-        return false;
-    }
-
 }
