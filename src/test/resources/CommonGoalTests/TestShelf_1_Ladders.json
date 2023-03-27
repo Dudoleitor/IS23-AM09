@@ -1,7 +1,7 @@
 {
   "shelf": {
-    "rows": 6,
-    "columns": 5,
+    "numRows": 6,
+    "numColumns": 5,
     "matrix": [
       ["C","B","E","E","E"],
       ["C","B","E","E","E"],
