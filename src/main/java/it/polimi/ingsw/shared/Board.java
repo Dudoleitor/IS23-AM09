@@ -155,7 +155,7 @@ public class Board {
     public void fill() throws OutOfTilesException{
         Arrays.stream(boardTiles).flatMap(Arrays::stream) //create stream from matrix
                 .filter(x -> !x.equals(Tile.Invalid) && !x.equals(Tile.Empty)) //preserve any valid tile
-                .forEach(x -> tilesToDraw.add(x));
+                .forEach(tilesToDraw::add);
 
         Collections.shuffle(tilesToDraw); //mix deck
 

@@ -43,6 +43,9 @@ public class Shelf {
      */
     public Shelf(Shelf s) throws ShelfGenericException {
         try{
+            if(!s.isValid()){
+                throw new ShelfGenericException("Error while creating Shelf : input Shelf is not valid");
+            }
             rows = s.getRows();
             columns = s.getColumns();
             tiles = new Tile[rows][columns];
@@ -76,12 +79,17 @@ public class Shelf {
      * @throws IOException when an IO error happens
      * @throws ParseException when a parsing error happens
      */
-    public static JSONObject pathToJSONObject(String jsonPath) throws IOException, ParseException {
-        JSONObject result;
-        JSONParser jsonParser = new JSONParser();
-        FileReader reader = new FileReader(jsonPath);
-        result = (JSONObject) jsonParser.parse(reader);
-        return (JSONObject) result.get("shelf");
+    public static JSONObject pathToJSONObject(String jsonPath) throws IOException, ParseException, ShelfGenericException {
+        try {
+            JSONObject result;
+            JSONParser jsonParser = new JSONParser();
+            FileReader reader = new FileReader(jsonPath);
+            result = (JSONObject) jsonParser.parse(reader);
+            return (JSONObject) result.get("shelf");
+        } catch (FileNotFoundException e){
+            throw new ShelfGenericException("Error while generating Shelf from JSON : file not found");
+        }
+
     }
 
     /**
@@ -109,7 +117,7 @@ public class Shelf {
             }
         }
         if(!isValid()){
-            throw new ShelfGenericException("Error while creating Shelf : bad configuration of tiles");
+            throw new ShelfGenericException("Error while creating Shelf : bad tiles configuration");
         }
     }
     private boolean isValid(){
