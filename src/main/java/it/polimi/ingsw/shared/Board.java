@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 
 public class Board {
 
-    private Tile[][] boardTiles;
+    private final Tile[][] boardTiles;
     private List<Tile> tilesToDraw;
-    private int numPlayers;
-    private int numRows;
-    private int numColumns;
+    private final int numPlayers;
+    private final int numRows;
+    private final int numColumns;
     private ArrayList<CommonGoal> goals;
 
     //Constructors
@@ -71,8 +71,7 @@ public class Board {
     public static JSONObject pathToJsonObject(String jsonPath) throws IOException, ParseException {
         JSONParser jsonParser = new JSONParser(); //initialize parser
         Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-        JSONObject objBoard = (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
-        return objBoard;
+        return (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
     }
 
     /**
@@ -105,11 +104,7 @@ public class Board {
             }
         } catch (ClassCastException | NullPointerException e){
             throw new BoardGenericException("Error while creating Board : bad json parsing");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        } catch (TileGenericException e) {
+        } catch (IOException | ParseException | TileGenericException  e) {
             throw new RuntimeException(e);
         }
     }
@@ -357,7 +352,7 @@ public class Board {
         if(partialMove.getBoardPositions().size() == 0) {
             for(int i = 0; i < getNumRows(); i++) {
                 for(int j = 0; j < getNumColumns(); j++) {
-                    if(hasFreeSide(i, j) == true) {
+                    if(hasFreeSide(i, j)) {
                         if(!getTile(i, j).equals(Tile.Invalid) && !getTile(i, j).equals(Tile.Empty))
                             positions.add(new Position(i, j));
                     }
@@ -397,32 +392,40 @@ public class Board {
         return false;
     }
 
+    /**
+     * This method is used to save the status of the board with a json object.
+     * @return JSONObject with status.
+     */
     public JSONObject toJson() {
-        JSONObject boardJson = new JSONObject();
+        JSONObject boardJson = new JSONObject();  // Object to return
+
+        // Saving final parameters
         boardJson.put("numPlayers", numPlayers);
         boardJson.put("numRows", numRows);
         boardJson.put("numColumns", numColumns);
 
+        // Looping to save the matrix
         JSONArray boardMatrix = new JSONArray();
-        JSONArray boardRowJson;
+        JSONArray boardRowJson;  // Single row
         List<String> boardRow;
-        for (int row = 0; row < numRows; row++) {
-            boardRowJson = new JSONArray();
-            boardRow = new ArrayList<>();
+        for (int row = 0; row < numRows; row++) {  // Iterating over the rows
+            boardRowJson = new JSONArray();  // Will be added into the JSON matrix
+            boardRow = new ArrayList<>();  // To convert from [] -> collection
 
-            for (int col = 0; col < numColumns; col++) {
+            for (int col = 0; col < numColumns; col++) {  // Iterating over the columns
                 boardRow.add(boardTiles[row][col].toString());
             }
-            boardRowJson.addAll(boardRow);
+            boardRowJson.addAll(boardRow);  // Converting from List to JSONArray
             boardMatrix.add(boardRowJson);
         }
 
         boardJson.put("matrix", boardMatrix);
 
         JSONArray boardDeck = new JSONArray();
+        // Converting from List to JSONArray
         boardDeck.addAll(tilesToDraw
                 .stream()
-                .map(t -> t.toString())
+                .map(Tile::toString)
                 .collect(Collectors.toList()));
         boardJson.put("deck", boardDeck);
         return boardJson;
