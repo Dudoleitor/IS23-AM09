@@ -10,27 +10,26 @@ import java.util.*;
 public class Controller {
     private final int shelfRows = 6;
     private final int shelfColumns = 5;
+    private final String jsonPathForPlayerGoals = "src/main/resources/personalGoals.json";
 
     private final Board board;
-    private final List<CommonGoal> commonGoals;
     private final List<Player> players;
     private int turn;
 
     /**
      * Constructor used to initialize the controller
      * @param namePlayers is a List of the (unique) names of the players
-     * @param jsonPath is the previous generated json we get the playerGoal from
      * @throws ControllerGenericException when parsing error occurs
      */
-    public Controller(List<String> namePlayers, String jsonPath) throws ControllerGenericException {
+    public Controller(List<String> namePlayers) throws ControllerGenericException {
         try {
             players = new ArrayList<>();
             turn = 0;
             for (String s : namePlayers) {
-                players.add(new Player(s, new ServerShelf(shelfRows, shelfColumns), new PlayerGoal(jsonPath)));
+                players.add(new Player(s, new ServerShelf(shelfRows, shelfColumns),
+                        new PlayerGoal(jsonPathForPlayerGoals)));
             }
             board = new Board(players.size());
-            commonGoals = board.getCommonGoals();
         } catch (ClassCastException | NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad json parsing");
         } catch (IOException e) {
@@ -58,7 +57,7 @@ public class Controller {
      * @return the commonGoals we instantiated in the constructor
      */
     public List<CommonGoal> getCommonGoals() {
-        return commonGoals;
+        return board.getCommonGoals();
     }
 
     /**
@@ -139,7 +138,6 @@ public class Controller {
      * @return true if the move is valid
      */
     private boolean checkValidMove(Move move) {
-
         try {
             List<Position> positions = move.getBoardPositions();
 
