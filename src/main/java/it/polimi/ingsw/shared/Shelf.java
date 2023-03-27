@@ -170,7 +170,7 @@ public class Shelf {
             };
 
             Long result = allColumns
-                    .map(column -> countEmptyTiles.apply(column))
+                    .map(countEmptyTiles::apply)
                     .max()
                     .orElse(0);
             return Math.toIntExact(result);
@@ -259,8 +259,8 @@ public class Shelf {
 
     /**
      * Tells if the coordinates are compatible with the shelf
-     * @param row
-     * @param column
+     * @param row integer
+     * @param column integer
      * @return True if the coordinates are valid
      */
     public boolean isOutOfBounds(int row, int column){
@@ -271,8 +271,8 @@ public class Shelf {
     }
     /**
      * Tells if the position is Empty or Invalid
-     * @param row
-     * @param column
+     * @param row integer
+     * @param column integer
      * @return TRUE if the Tile is Empty or Invalid
      */
     public boolean isValidTile(int row, int column) throws ShelfGenericException {
