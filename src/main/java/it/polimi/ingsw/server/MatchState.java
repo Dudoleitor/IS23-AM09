@@ -11,7 +11,7 @@ public class MatchState {
     private List<JSONObject> commonGoals;
     private Map<String,JSONObject> Shelves;
     private List<JSONObject> players;
-    private String currentPlayer;
+    int turn;
     public MatchState(Controller controller){
         this.board = controller.getBoard().toJson();
 
@@ -31,11 +31,15 @@ public class MatchState {
                 throw new RuntimeException(e);
             }
         }
-        currentPlayer = controller.getCurrentPlayer();
+        turn = controller.getTurn();
     }
 
-    public JSONObject getBoard(){
+    public JSONObject getBoardJson(){
         return board;
+    }
+
+    public List<JSONObject> getAllPlayersJson(){
+        return players;
     }
 
     public List<JSONObject> getAllCommonGoalsJson(){
@@ -51,5 +55,9 @@ public class MatchState {
         else{ //TODO handle properly
             throw new ControllerGenericException("");
         }
+    }
+
+    public int getTurn(){
+        return turn;
     }
 }

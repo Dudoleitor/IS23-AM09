@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.*;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -25,8 +26,8 @@ public class Controller {
         try {
             players = new ArrayList<>();
             turn = 0;
-            for (String s : namePlayers) {
-                players.add(new Player(s, new ServerShelf(shelfRows, shelfColumns),
+            for (String name : namePlayers) {
+                players.add(new Player(name, new ServerShelf(shelfRows, shelfColumns),
                         new PlayerGoal(jsonPathForPlayerGoals)));
             }
             board = new Board(players.size());
@@ -37,6 +38,24 @@ public class Controller {
         } catch (PlayerGoalLoadingException e) {
             throw new ControllerGenericException(e.getMessage());
         } catch (ShelfGenericException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
+     * Load a whole match at a saved state
+     * @param state a MatchState than contains the state of a saved mathc
+     */
+    public Controller(MatchState state){
+        try {
+            turn = state.getTurn();
+            board = new Board(state.getBoardJson(),state.getAllCommonGoalsJson());
+            players = new ArrayList<>();
+            for(JSONObject playerJson : state.getAllPlayersJson()){
+                //players.add(new Player(playerJson,state.getPlayerShelfJson()));
+            }
+        } catch (BoardGenericException e) {
             throw new RuntimeException(e);
         }
 
@@ -70,6 +89,13 @@ public class Controller {
      */
     public String getCurrentPlayer() {
         return getPlayers().get((turn + 1) % (getPlayers().size())).getName();
+    }
+
+    /**
+     * @return the current turn
+     */
+    public int getTurn(){
+        return turn;
     }
 
     /**
