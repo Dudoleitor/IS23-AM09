@@ -1,5 +1,6 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,23 +21,24 @@ class BoardTest {
         Board t1 = new Board(2);
         Board t2 = new Board(3);
         Board b1 = new Board(4);
-        Board b2 = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardTestPlayerIni.json"), null);
+        List<CommonGoal> cList = b1.getCommonGoals();
+        List <JSONObject> jList = cList.stream().map(CommonGoal::toJson).collect(Collectors.toList());
+        Board b2 = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardTestPlayerIni.json"), jList);
         assertEquals(b1,b2);
 
         Exception e1 = assertThrows(BoardGenericException.class, () -> new Board(-1));
-        assertEquals(e1.getMessage(), "Error while creating Board : invalid number of players");
+        assertEquals("Error while creating Board : invalid number of players", e1.getMessage());
         Exception e2 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/WrongPath.json"), null));
-        assertEquals(e2.getMessage(), "Error while generating Board from Json : file was not found");
+        assertEquals("Error while generating Board from Json : file was not found", e2.getMessage());
         Exception e3 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadConfiguration.json"),null));
-        assertEquals(e3.getMessage(), "Error while creating board : board is not a valid configuration for given num player");
+        assertEquals("Error while creating board : board is not a valid configuration for given num player", e3.getMessage());
         Exception e4 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile.json"),null));
-        assertEquals(e4.getMessage(), "Error while creating Board : bad json parsing");
+        assertEquals("Error while creating Board : bad json parsing", e4.getMessage());
     }
     @Test
     void testFill() throws CommonGoalsException, BoardGenericException, IOException, ParseException, OutOfTilesException {
         Board b1 = new Board(4);
         Board b2 = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"), null);
-
         b1.fill();
         boolean noEmptyFound = true;
         for(int i = 0; noEmptyFound && i < b1.getNumRows(); i++){
@@ -48,7 +51,7 @@ class BoardTest {
         assertTrue(noEmptyFound);
 
         Exception e = assertThrows(OutOfTilesException.class, () -> b2.fill());
-        assertEquals(e.getMessage(), "The END is near : No more tiles left in the deck");
+        assertEquals("The END is near : No more tiles left in the deck", e.getMessage());
     }
 
     @Test
@@ -64,19 +67,19 @@ class BoardTest {
 
         assertEquals(Tile.Trophy, b.getTile(new Position(4,0)));
         Exception e1 = assertThrows(BoardGenericException.class, () -> b.getTile(new Position(-1, 0)));
-        assertEquals(e1.getMessage(), "Error while getting tile from Board : illegal coordinates");
+        assertEquals("Error while getting tile from Board : illegal coordinates", e1.getMessage());
         Exception e2 = assertThrows(BoardGenericException.class, () -> b.getTile(null));
-        assertEquals(e2.getMessage(), "Error while getting tile: pos is null pointer");
+        assertEquals("Error while getting tile: pos is null pointer", e2.getMessage());
 
         Tile t = b.pickTile(4,0);
         assertEquals(Tile.Trophy, t);
         assertEquals(Tile.Empty, b.getTile(new Position(4,0)));
         Exception e3 = assertThrows(BoardGenericException.class, () -> b.pickTile(new Position(-1, 0)));
-        assertEquals(e3.getMessage(), "Error while picking tile from Board : illegal coordinates");
+        assertEquals("Error while picking tile from Board : illegal coordinates", e3.getMessage());
         Exception e4 = assertThrows(BoardGenericException.class, () -> b.pickTile(null));
-        assertEquals(e4.getMessage(), "Error while picking tile: pos is null pointer");
+        assertEquals("Error while picking tile: pos is null pointer", e4.getMessage());
         Exception e5 = assertThrows(BoardGenericException.class, () -> b.pickTile(new Position(0,0)));
-        assertEquals(e5.getMessage(), "Error while picking Tile : Chosen one is Invalid type");
+        assertEquals("Error while picking Tile : Chosen one is Invalid type", e5.getMessage());
     }
     @Test
     void getValidPositionsTest() throws BoardGenericException, CommonGoalsException {

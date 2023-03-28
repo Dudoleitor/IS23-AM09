@@ -3,6 +3,8 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +141,35 @@ public abstract class CommonGoal {
         else{
             return 0;
         }
+    }
+
+    /**
+     * This method is used to save the status of the shelf with a json object.
+     * @return JSONObject with status.
+     */
+    public JSONObject toJson() {
+        JSONObject commonGoalJson = new JSONObject();  // Object to return
+        JSONArray goalStack = new JSONArray(); //points pile
+
+        for(long point : showPointsStack()){
+            goalStack.add(point);
+        }
+        commonGoalJson.put("id", (long)getID());
+        commonGoalJson.put("stack", goalStack);
+
+        return commonGoalJson;
+    }
+    @Override
+    public boolean equals(Object o){ //check they have same ID
+        if(o == null)
+            return false;
+        else if (o == this)
+            return true;
+
+        CommonGoal c = (CommonGoal) o;
+        if(c.getID() != this.getID())
+            return false;
+        return true;
     }
 
 }

@@ -213,11 +213,10 @@ public class Board {
                     }
                 }
             }
-            /* TODO waiting for commonGoal.toJson() to implement this part
             List<CommonGoal> Bgoals = board.getCommonGoals();
             if (goals.size() != Bgoals.size() || !goals.containsAll(Bgoals))
                 return false;
-            */
+
             List<Tile> t1 = new ArrayList<>(tilesToDraw); //copy tileToDraw
             List<Tile> t2 = new ArrayList<>(board.getTilesToDraw());
 
