@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsException;
+import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
@@ -55,6 +56,8 @@ public class TwoSquares extends CommonGoal {
     }
 
     private boolean isPerfectSquare(Shelf shelf, boolean[][] alreadyUsed, int row, int column) throws CommonGoalsException, ShelfGenericException {
-        return isAvailable(alreadyUsed,row,column) && notEmptyAndEqual(get2x2Square(shelf,row,column)) && 4 == validIslandSize(shelf,row,column,alreadyUsed);
+        return isAvailable(alreadyUsed,row,column) &&
+                notEmptyAndEqual(get2x2Square(shelf,row,column)) &&
+                4 == validIslandSize(shelf,new Position(row,column),alreadyUsed);
     }
 }

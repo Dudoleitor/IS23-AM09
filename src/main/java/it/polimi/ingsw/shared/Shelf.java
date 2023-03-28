@@ -296,6 +296,10 @@ public class Shelf {
         Tile tile = getTile(row,column);
         return !tile.equals(Tile.Empty) && !tile.equals(Tile.Invalid);
     }
+
+    public boolean isValidTile(Position position) throws ShelfGenericException {
+        return isValidTile(position.getRow(),position.getColumn());
+    }
     /**
      * @return rows attribute
      */
