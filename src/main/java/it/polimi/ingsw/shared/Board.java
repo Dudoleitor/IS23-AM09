@@ -373,7 +373,7 @@ public class Board {
                         IntStream.range(0, getNumColumns()) // create stream of j
                                 .filter(j -> { //filter not valid positions
                                     try {
-                                        return hasFreeSide(i, j) && !getTile(i, j).equals(Tile.Empty) && !getTile(i, j).equals(Tile.Invalid);
+                                        return hasFreeSide(i, j);
                                     } catch (BoardGenericException e) {
                                         throw new BoardRuntimeException(e.getMessage());
                                     }
@@ -406,8 +406,17 @@ public class Board {
         Position p = new Position(row, column);
         return hasFreeSide(p);
     }
-
+    /**
+     * @param position is the given row
+     * @return true if position has at least one free adjacent side
+     */
     public boolean hasFreeSide(Position position) throws BoardGenericException {
+        if(isOutOfBounds(position.getRow(), position.getColumn()))
+            throw new BoardGenericException("Error while checking hasFreeSide on board : Index Out Of Bounds");
+
+        if(isNotValid(position))
+            return false;
+
         if(position.getRow() == 0 ||
                 position.getColumn() == 0 ||
                 position.getRow() == getNumRows() - 1 ||
@@ -415,15 +424,32 @@ public class Board {
             //check the extreme cases where pos has at least one free side for sure
             return true;
 
-        //check if pos in the board has one adjacent empty (or invalid) cell
-        Function<Position,Boolean> isFree = (pos) -> {
-            try {
-                return getTile(pos).equals(Tile.Empty) || getTile(pos).equals(Tile.Invalid);
-            } catch (BoardGenericException e) {
-                return false;
-            }
-        };
-        return position.neighbours().stream().anyMatch(pos -> isFree.apply(pos));
+        return position.neighbours().stream().anyMatch(pos -> isNotValid(pos));
+    }
+
+    //check if pos in the board has one adjacent empty (or invalid) cell
+    private boolean isNotValid (Position pos){
+        try {
+            return getTile(pos).equals(Tile.Empty) || getTile(pos).equals(Tile.Invalid);
+        } catch (BoardGenericException e) {
+            return false;
+        }
+    };
+
+    /**
+     * Tells if the coordinates are compatible with the board
+     * @param row integer
+     * @param column integer
+     * @return True if the coordinates are valid
+     */
+    public boolean isOutOfBounds(int row, int column){
+        if(     row < 0 ||
+                row >= getNumRows() ||
+                column < 0 ||
+                column >= getNumColumns()){
+            return true;
+        }
+        return false;
     }
 
     /**

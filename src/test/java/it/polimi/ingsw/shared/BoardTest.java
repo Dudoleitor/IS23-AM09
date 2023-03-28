@@ -82,6 +82,17 @@ class BoardTest {
         assertEquals("Error while picking Tile : Chosen one is Invalid type", e5.getMessage());
     }
     @Test
+    void freeSideTest() throws BoardGenericException, CommonGoalsException {
+        Board b = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json"), null);
+        assertTrue(b.hasFreeSide(4,0));
+        assertTrue(b.hasFreeSide(3,1));
+        assertFalse(b.hasFreeSide(4,1));
+        assertFalse(b.hasFreeSide(0,0));
+        assertFalse(b.hasFreeSide(2,4));
+        Exception e = assertThrows(BoardGenericException.class, () -> b.hasFreeSide(0,-1));
+        assertEquals("Error while checking hasFreeSide on board : Index Out Of Bounds", e.getMessage());
+    }
+    @Test
     void getValidPositionsTest() throws BoardGenericException, CommonGoalsException {
         Board b = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json"), null);
         assertTrue(b.hasFreeSide(4,0));
