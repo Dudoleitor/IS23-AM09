@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
@@ -107,36 +108,35 @@ public abstract class CommonGoal {
         }
     }
 
-    private int recursiveIslandVisit(Shelf shelf, int row, int column, boolean[][] alreadyChecked, Tile type) throws ShelfGenericException {
+    private int recursiveIslandVisit(Shelf shelf, Position position, boolean[][] alreadyChecked, Tile type) throws ShelfGenericException {
+        int row = position.getRow();
+        int column = position.getColumn();
+        int result = 0;
         if(shelf.isOutOfBounds(row,column) || alreadyChecked[row][column] == true){
             return 0;
         }
-        else{
-            if(shelf.getTile(row,column).equals(type)){
+        else if(shelf.getTile(row,column).equals(type)){
                 alreadyChecked[row][column] = true;
-                return  1 +
-                        recursiveIslandVisit(shelf,row-1,column,alreadyChecked,type) +
-                        recursiveIslandVisit(shelf,row+1,column,alreadyChecked,type) +
-                        recursiveIslandVisit(shelf,row,column-1,alreadyChecked,type) +
-                        recursiveIslandVisit(shelf,row,column+1,alreadyChecked,type);
-            }
-            else return 0;
+                result = 1;
+                for(Position neighbour : position.neighbours()){
+                    result += recursiveIslandVisit(shelf,neighbour,alreadyChecked,type);
+                }
         }
+        return result;
     }
 
     /**
      * Returns the size of the "island" of Tiles with the same color in which the selected tile is in.
      * If the Tile is Empty or Invalid it returns 0. Visited Tiles are marked on alreadyChecked
      *@param shelf the player's shelf
-     *@param row the row of the selected tile
-     *@param column the column of the selected tile
+     *@param position is the position of the Tile
      *@param alreadyChecked a matrix of booleans that keeps track of the visited Tiles
      *@return the size of the island
      */
-    protected int validIslandSize(Shelf shelf, int row, int column, boolean[][] alreadyChecked) throws ShelfGenericException {
-        if(shelf.isValidTile(row, column)){
-            Tile islandType = shelf.getTile(row, column);
-            return recursiveIslandVisit(shelf,row,column,alreadyChecked,islandType);
+    protected int validIslandSize(Shelf shelf, Position position, boolean[][] alreadyChecked) throws ShelfGenericException {
+        if(shelf.isValidTile(position)){
+            Tile islandType = shelf.getTile(position);
+            return recursiveIslandVisit(shelf,position,alreadyChecked,islandType);
         }
         else{
             return 0;

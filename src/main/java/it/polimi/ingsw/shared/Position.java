@@ -1,5 +1,6 @@
 package it.polimi.ingsw.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -101,5 +102,14 @@ public class Position {
     public static boolean duplicates(List<Position> positions){
         int distinctPositions = Math.toIntExact(positions.stream().distinct().count());
         return distinctPositions != positions.size();
+    }
+
+    public List<Position> neighbours(){
+        List<Position> neighbours = new ArrayList<>();
+        neighbours.add(new Position(getRow()-1,getColumn()));
+        neighbours.add(new Position(getRow(),getColumn()-1));
+        neighbours.add(new Position(getRow()+1,getColumn()));
+        neighbours.add(new Position(getRow(),getColumn()+1));
+        return neighbours;
     }
 }

@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -402,21 +403,27 @@ public class Board {
      * @return true if position has at least one free adjacent side
      */
     public boolean hasFreeSide(int row, int column) throws BoardGenericException {
-        if(row == 0 || column == 0 || row == getNumRows() - 1 || column == getNumColumns() - 1)
+        Position p = new Position(row, column);
+        return hasFreeSide(p);
+    }
+
+    public boolean hasFreeSide(Position position) throws BoardGenericException {
+        if(position.getRow() == 0 ||
+                position.getColumn() == 0 ||
+                position.getRow() == getNumRows() - 1 ||
+                position.getColumn() == getNumColumns() - 1)
             //check the extreme cases where pos has at least one free side for sure
             return true;
 
         //check if pos in the board has one adjacent empty (or invalid) cell
-        if(getTile(row + 1, column).equals(Tile.Empty) || getTile(row + 1, column).equals(Tile.Invalid)
-                || getTile(row - 1, column).equals(Tile.Empty) || getTile(row - 1, column).equals(Tile.Invalid)
-                || getTile(row, column + 1).equals(Tile.Empty) || getTile(row, column + 1).equals(Tile.Invalid)
-                || getTile(row, column - 1).equals(Tile.Empty) || getTile(row, column - 1).equals(Tile.Invalid)
-        ) return true;
-        return false;
-    }
-
-    public boolean hasFreeSide(Position position) throws BoardGenericException {
-        return hasFreeSide(position.getRow(),position.getColumn());
+        Function<Position,Boolean> isFree = (pos) -> {
+            try {
+                return getTile(pos).equals(Tile.Empty) || getTile(pos).equals(Tile.Invalid);
+            } catch (BoardGenericException e) {
+                return false;
+            }
+        };
+        return position.neighbours().stream().anyMatch(pos -> isFree.apply(pos));
     }
 
     /**
