@@ -25,7 +25,10 @@ public class Shelf {
      * @param rows is num of rows
      * @param columns is num of columns
      */
-    public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles
+    public Shelf(int rows, int columns) throws ShelfGenericException { //initialize a shelf with Empty tiles
+        if(rows <= 0 || columns <= 0){
+            throw new ShelfGenericException("Error while generating shelf : dimensions are no valid numbers");
+        }
         this.rows = rows;
         this.columns = columns;
         tiles = new Tile[rows][columns];
@@ -67,7 +70,7 @@ public class Shelf {
      * @throws ParseException when parsing problems occurs
      * @throws IOException when there are problems accessing file
      */
-    public Shelf(String jsonPath) throws ShelfGenericException, FileNotFoundException, ParseException, IOException, TileGenericException {
+    public Shelf(String jsonPath) throws ShelfGenericException{
         this(pathToJSONObject(jsonPath)); //get shelf JSONObject
     }
 
@@ -79,17 +82,16 @@ public class Shelf {
      * @throws IOException when an IO error happens
      * @throws ParseException when a parsing error happens
      */
-    public static JSONObject pathToJSONObject(String jsonPath) throws IOException, ParseException, ShelfGenericException {
+    public static JSONObject pathToJSONObject(String jsonPath) throws ShelfGenericException {
         try {
             JSONObject result;
             JSONParser jsonParser = new JSONParser();
             FileReader reader = new FileReader(jsonPath);
             result = (JSONObject) jsonParser.parse(reader);
             return (JSONObject) result.get("shelf");
-        } catch (FileNotFoundException e){
+        } catch (IOException | ParseException e) {
             throw new ShelfGenericException("Error while generating Shelf from JSON : file not found");
         }
-
     }
 
     /**
@@ -97,7 +99,7 @@ public class Shelf {
      * @param jsonShelf is the JSONObject containing the parameters necessary to build the Shelf object
      * @throws ShelfGenericException when a problem in the creation of shelf occurs
      */
-    public Shelf(JSONObject jsonShelf) throws ShelfGenericException, TileGenericException {
+    public Shelf(JSONObject jsonShelf) throws ShelfGenericException {
         rows = Math.toIntExact((long) (jsonShelf.get("numRows")));
         columns = Math.toIntExact((long) (jsonShelf.get("numColumns")));
         tiles = new Tile[rows][columns];
@@ -106,18 +108,22 @@ public class Shelf {
         JSONArray shelfLine;
 
         Tile t;
-        for (int i = 0; i < rows; i++) { //copy entire matrix to shelf
-            shelfLine = (JSONArray) array_shelf.get(i); //acquire line of matrix
-            for (int j = 0; j < columns; j++) {
-                t = Tile.valueOfLabel((String) shelfLine.get(j));
-                if (t.equals(Tile.Invalid)) { //check whether Tile is Invalid
-                    throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
+        try {
+            for (int i = 0; i < rows; i++) { //copy entire matrix to shelf
+                shelfLine = (JSONArray) array_shelf.get(i); //acquire line of matrix
+                for (int j = 0; j < columns; j++) {
+                    t = Tile.valueOfLabel((String) shelfLine.get(j));
+                    if (t.equals(Tile.Invalid)) { //check whether Tile is Invalid
+                        throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
+                    }
+                    tiles[i][j] = t;
                 }
-                tiles[i][j] = t;
             }
-        }
-        if(!isValid()){
-            throw new ShelfGenericException("Error while creating Shelf : bad tiles configuration");
+            if (!isValid()) {
+                throw new ShelfGenericException("Error while creating Shelf : bad tiles configuration");
+            }
+        } catch (TileGenericException e) {
+            throw new ShelfGenericException("Error while creating Shelf : Tile type not found");
         }
     }
     private boolean isValid(){

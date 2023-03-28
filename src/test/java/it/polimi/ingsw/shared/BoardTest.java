@@ -2,6 +2,7 @@ package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsException;
+import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
     @Test
-    void boardConstructor() throws CommonGoalsException, IOException, ParseException, BoardGenericException {
+    void boardConstructor() throws CommonGoalsException, BoardGenericException {
         Board t1 = new Board(2);
         Board t2 = new Board(3);
         Board b1 = new Board(4);
@@ -34,6 +35,11 @@ class BoardTest {
         assertEquals("Error while creating board : board is not a valid configuration for given num player", e3.getMessage());
         Exception e4 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile.json"),null));
         assertEquals("Error while creating Board : bad json parsing", e4.getMessage());
+        List<JSONObject> l = new ArrayList<>();
+
+        l.add(CommonGoalsFactory.pathToJsonObject("src/test/resources/BoardTests/BoardBadGoals.json"));
+        Exception e5 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"),l ));
+        assertEquals("Error while creating board : common goal exception" , e5.getMessage());
     }
     @Test
     void testFill() throws CommonGoalsException, BoardGenericException, IOException, ParseException, OutOfTilesException {

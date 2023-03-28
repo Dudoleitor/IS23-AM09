@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.commonGoals.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -132,25 +133,24 @@ public class CommonGoalsFactory {
      * @return the generated common goal
      */
     public static CommonGoal create_from_json(JSONObject jsonObject) throws CommonGoalsException {
-        int id = Math.toIntExact((Long) jsonObject.get("id"));
-        JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
-        List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long)x)).collect(Collectors.toList());
-        return create_goal_with_ID(id,stackState);
+        try {
+            int id = Math.toIntExact((Long) jsonObject.get("id"));
+            JSONArray stackFromJson = (JSONArray) jsonObject.get("stack");
+            List<Integer> stackState = (List<Integer>) stackFromJson.stream().map(x -> Math.toIntExact((Long) x)).collect(Collectors.toList());
+            return create_goal_with_ID(id, stackState);
+        } catch (ClassCastException | NullPointerException e) {
+            throw new CommonGoalsException("Error while creating CommonGoal : bad json parsing");
+        }
     }
-
-    private static JSONObject pathToJsonObject(String jsonPath) throws CommonGoalsException {
+    public static JSONObject pathToJsonObject(String jsonPath) throws CommonGoalsException {
         Object obj = null;
         try {
             JSONParser jsonParser = new JSONParser(); //initialize parser
             obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-        } catch (FileNotFoundException e) {
-            throw new CommonGoalsException("Error while creating CommonGoal : json file not found");
-        } catch (IOException | ClassCastException | NullPointerException e) {
+            JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get("CommonGoal"); //get CommonGoal
+            return jsonObject;
+        } catch (IOException | ClassCastException | NullPointerException | ParseException e) {
             throw new CommonGoalsException("Error while creating CommonGoal : bad json parsing");
-        } catch (org.json.simple.parser.ParseException e) {
-            e.printStackTrace();
         }
-        JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get("CommonGoal"); //get CommonGoal
-        return jsonObject;
     }
 }

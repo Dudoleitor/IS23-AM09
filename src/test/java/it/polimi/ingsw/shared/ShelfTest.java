@@ -19,13 +19,17 @@ public class ShelfTest {
     final int columns = 5;
     final String value = "Cat";
     @Test
-    void generateShelf() throws TileGenericException, ParseException, IOException, ShelfGenericException {
+    void generateShelf() throws ShelfGenericException {
+        Exception e0 = assertThrows(ShelfGenericException.class,() -> new Shelf(0,5));
+        assertEquals("Error while generating shelf : dimensions are no valid numbers", e0.getMessage());
         Exception e1 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/ShelfBadJson1.json"));
         assertEquals("Error while creating Shelf : bad tiles configuration", e1.getMessage());
         Exception e2 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/ShelfBadJson2.json"));
         assertEquals("Error while generating Shelf from JSON : Tile is Invalid type", e2.getMessage());
         Exception e3 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/notExists.json"));
         assertEquals("Error while generating Shelf from JSON : file not found", e3.getMessage());
+        Exception e4 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/ShelfBadJson3.json"));
+        assertEquals("Error while creating Shelf : Tile type not found", e4.getMessage());
 
         Shelf s = new Shelf("src/test/resources/ShelfTests/ShelfInsert.json");
         Shelf s1 = new Shelf(4, 4);
@@ -164,7 +168,7 @@ public class ShelfTest {
         assertFalse(s.isValidTile(0,2));
     }
     @Test
-    void indexOutOfBoundsTest(){
+    void indexOutOfBoundsTest() throws ShelfGenericException {
         Shelf shelf = new Shelf(5,6);
         assertThrows(ShelfGenericException.class,() -> shelf.getTile(-1,0));
     }
@@ -202,7 +206,7 @@ public class ShelfTest {
         assertEquals(t , l);
     }
     @Test
-    void gettersTest(){
+    void gettersTest() throws ShelfGenericException {
         Shelf shelf = new Shelf(5,6);
         assertEquals(6,shelf.getColumns());
         assertEquals(5,shelf.getRows());

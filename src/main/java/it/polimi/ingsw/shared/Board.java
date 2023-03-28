@@ -33,7 +33,7 @@ public class Board {
      * @param numPlayers is the number of players of the game
      * @throws BoardGenericException when parsing errors occurs
      */
-    public Board(int numPlayers) throws BoardGenericException, IOException, ParseException, CommonGoalsException {
+    public Board(int numPlayers) throws BoardGenericException{
             this(pathToJsonObject(boardPathForNumberOfPlayers(numPlayers)));
             tilesToDraw =  createShuffledDeck(22);
             initializeGoals(); //generate two randomly picked goals
@@ -51,7 +51,7 @@ public class Board {
         Collections.shuffle(deck); //mix tiles
         return deck;
     }
-    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws BoardGenericException, CommonGoalsException {
+    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws BoardGenericException {
         this(objBoard);
         if(objCommonGoals != null){ //skipped in testing only
             initializeGoals(objCommonGoals);
@@ -76,8 +76,6 @@ public class Board {
      * it uses the "board" attribute.
      * @param jsonPath path to the json file
      * @return JSONObject with the content
-     * @throws IOException when an IO error happens
-     * @throws ParseException when a parsing error happens
      */
     public static JSONObject pathToJsonObject(String jsonPath) throws BoardGenericException {
         try {
@@ -116,32 +114,32 @@ public class Board {
             if(!checkValidBoard()){
                 throw new BoardGenericException("Error while creating board : board is not a valid configuration for given num player");
             }
-        } catch (ClassCastException | NullPointerException | ParseException e){
+        } catch (ClassCastException | NullPointerException | TileGenericException e){
             throw new BoardGenericException("Error while creating Board : bad json parsing");
-        } catch (IOException | TileGenericException  e) {
-            throw new RuntimeException(e);
         }
     }
-    private boolean checkValidBoard() throws IOException, ParseException, BoardGenericException, TileGenericException {
+    private boolean checkValidBoard() throws BoardGenericException {
         boolean valid = true;
         JSONArray boardLine;
         JSONObject objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
-        JSONArray arrayBoard = (JSONArray)objBoard.get("matrix");
+        JSONArray arrayBoard = (JSONArray) objBoard.get("matrix");
 
         Tile t;
-
-        for(int i = 0; valid && i < arrayBoard.size(); i++){ //copy entire matrix to board
-            boardLine = (JSONArray) arrayBoard.get(i); //acquire line of matrix
-            for(int j = 0; valid && j < boardLine.size(); j++){
-                t = Tile.valueOfLabel((String) boardLine.get(j));
-                if( !(boardTiles[i][j].equals(t)) && (boardTiles[i][j].equals(Tile.Invalid) || t.equals(Tile.Invalid))){ //check if boards has invalid tiles in same position and nowhere else
-                    valid = false;
+        try {
+            for (int i = 0; valid && i < arrayBoard.size(); i++) { //copy entire matrix to board
+                boardLine = (JSONArray) arrayBoard.get(i); //acquire line of matrix
+                for (int j = 0; valid && j < boardLine.size(); j++) {
+                    t = Tile.valueOfLabel((String) boardLine.get(j));
+                    if (!(boardTiles[i][j].equals(t)) && (boardTiles[i][j].equals(Tile.Invalid) || t.equals(Tile.Invalid))) { //check if boards has invalid tiles in same position and nowhere else
+                        valid = false;
+                    }
                 }
             }
+            return valid;
+        } catch (TileGenericException e){
+            return false;
         }
-        return valid;
     }
-
 /*public String toString() {
     return "Board{" +
             "boardTiles=" + Arrays.toString(boardTiles) +
@@ -230,7 +228,7 @@ public class Board {
             return true;
 
         } catch (BoardGenericException e){
-            throw new RuntimeException(e);
+            return false;
         }
     }
     /**
@@ -331,21 +329,28 @@ public class Board {
     /**
      * Initialize two random goals from CommonGoalsFactory
      */
-    private void initializeGoals() throws CommonGoalsException {
-        goals = CommonGoalsFactory.createTwoGoals(numPlayers);
+    private void initializeGoals() throws BoardGenericException {
+        try {
+            goals = CommonGoalsFactory.createTwoGoals(numPlayers);
+        } catch (CommonGoalsException e){
+            throw new BoardGenericException("Error while creating board : common goal exception");
+        }
     }
 
     /**
      * Initialize the common goals passed as json objects
      * @param commonGoals a List of serialized common goals
      */
-    private void initializeGoals(List<JSONObject> commonGoals) throws CommonGoalsException {
+    private void initializeGoals(List<JSONObject> commonGoals) throws BoardGenericException {
         goals = new ArrayList<>();
-        for(JSONObject jsonObject : commonGoals){
-            goals.add(CommonGoalsFactory.create_from_json(jsonObject));
+        try {
+            for (JSONObject jsonObject : commonGoals) {
+                goals.add(CommonGoalsFactory.create_from_json(jsonObject));
+            }
+        } catch (CommonGoalsException e){
+            throw new BoardGenericException("Error while creating board : common goal exception");
         }
     }
-
     /**
      * get the CommonGoals
      * @return CommonGoals array copy
@@ -432,7 +437,7 @@ public class Board {
         try {
             return getTile(pos).equals(Tile.Empty) || getTile(pos).equals(Tile.Invalid);
         } catch (BoardGenericException e) {
-            return false;
+            return true;
         }
     };
 

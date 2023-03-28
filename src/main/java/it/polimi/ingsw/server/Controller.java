@@ -32,16 +32,12 @@ public class Controller {
             board = new Board(players.size());
         } catch (ClassCastException | NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad json parsing");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
         } catch (BoardGenericException e) {
             throw new ControllerGenericException("Problem while creating controller");
-        } catch (CommonGoalsException e) {
-            throw new ControllerGenericException(e.getMessage());
         } catch (PlayerGoalLoadingException e) {
             throw new ControllerGenericException(e.getMessage());
+        } catch (ShelfGenericException e) {
+            throw new RuntimeException(e);
         }
 
     }
