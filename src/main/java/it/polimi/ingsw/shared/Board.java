@@ -185,7 +185,7 @@ public class Board {
         String s = "";
         for(int i = 0; i < numRows; i++){
             for(int j = 0; j < numColumns; j++){
-                s = s.concat(boardTiles[i][j].toString() + " ");
+                s = s.concat(boardTiles[i][j].toColorFulString() + " ");
             }
             s = s.concat("\n");
         }

@@ -41,6 +41,10 @@ public enum Tile {
      */
     @Override
     public String toString(){
+        return this.label;
+    }
+
+    public String toColorFulString(){
         return this.color + this.label + Colors.ANSI_RESET;
     }
 }

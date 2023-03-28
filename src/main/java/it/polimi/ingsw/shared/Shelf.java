@@ -355,7 +355,7 @@ public class Shelf {
         String s = "";
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++){
-                s = s.concat(tiles[i][j].toString() + " ");
+                s = s.concat(tiles[i][j].toColorFulString() + " ");
             }
             s = s.concat("\n");
         }
