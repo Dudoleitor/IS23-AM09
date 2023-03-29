@@ -78,8 +78,6 @@ public enum CommonGoalStrategy {
                 return notEmptyAndEqual(shelf.getCorners());
             } catch (CommonGoalsException e) {
                 throw new RuntimeException(e); //TODO handle better
-            } catch (ShelfGenericException e) {
-                throw new RuntimeException(e); //TODO handle better
             }
         };
         static Predicate<Shelf> equalX = (shelf) -> {
@@ -131,8 +129,6 @@ public enum CommonGoalStrategy {
                             return maxNTypes(shelf.allTilesInRow(row), 3);
                         } catch (CommonGoalsException e) {
                             throw new CommonGoalRuntimeException(e.getMessage());
-                        } catch (ShelfGenericException e) {
-                            throw new ShelfRuntimeException(e.getMessage());
                         }
                     })
                     .count();
@@ -195,8 +191,6 @@ public enum CommonGoalStrategy {
                             return maxNTypes(shelf.allTilesInColumn(column), 3);
                         } catch (CommonGoalsException e) {
                             throw new CommonGoalRuntimeException(e.getMessage());
-                        } catch (ShelfGenericException e) {
-                            throw new ShelfRuntimeException(e.getMessage());
                         }
                     })
                     .count();
@@ -209,8 +203,6 @@ public enum CommonGoalStrategy {
                             return notEmptyAndAllDifferent(shelf.allTilesInColumn(column));
                         } catch (CommonGoalsException e) {
                             throw new CommonGoalRuntimeException(e.getMessage());
-                        } catch (ShelfGenericException e) {
-                            throw new ShelfRuntimeException(e.getMessage());
                         }
                     })
                     .count();
@@ -223,8 +215,6 @@ public enum CommonGoalStrategy {
                             return notEmptyAndAllDifferent(shelf.allTilesInRow(row));
                         } catch (CommonGoalsException e) {
                             throw new CommonGoalRuntimeException(e.toString());
-                        } catch (ShelfGenericException e) {
-                            throw new ShelfRuntimeException(e.toString());
                         }
                     })
                     .count();

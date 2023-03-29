@@ -35,6 +35,20 @@ public enum Tile {
         }
         throw new TileGenericException("Tile label not found");
     }
+    /**
+     * @param t is the tile to check validity to
+     * @return true if t type does eists
+     */
+    public static boolean existsValue(Tile t){
+        if(t == null){
+            return false;
+        }
+        for (Tile e : values()){
+            if (e.equals(t))
+                return true;
+        }
+        return false;
+    }
 
     /**
      * @return label corresponding to Tile type
