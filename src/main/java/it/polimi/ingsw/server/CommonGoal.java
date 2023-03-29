@@ -1,9 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Shelf;
-import it.polimi.ingsw.shared.ShelfGenericException;
-import it.polimi.ingsw.shared.Tile;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -11,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
-import java.util.stream.*;
 
 public class CommonGoal {
     //VARIABLES
@@ -49,7 +45,7 @@ public class CommonGoal {
      * @param shelf the shelf of one of the players
      * @return TRUE if the condition of the CommonGoal is verified
      */
-    public boolean check(Shelf shelf) throws ShelfGenericException, CommonGoalsException{
+    public boolean check(Shelf shelf){
         return check.test(shelf);
     }
 

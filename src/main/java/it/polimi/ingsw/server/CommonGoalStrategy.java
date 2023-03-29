@@ -43,16 +43,12 @@ public enum CommonGoalStrategy {
         return Arrays.stream(values()).
                 filter(x -> x.getId() == id).
                 findFirst().
-                orElseThrow(); //TODO handle better
+                orElseThrow();
     }
 
     private static class Predicates {
         static Predicate<Shelf> equalTilesInAllCorners = (shelf) -> {
-            try {
-                return notEmptyAndEqual(shelf.getCorners());
-            } catch (CommonGoalsException e) {
-                throw new RuntimeException(e); //TODO handle better
-            }
+            return notEmptyAndEqual(shelf.getCorners());
         };
         static Predicate<Shelf> equalX = (shelf) -> {
             int columns = shelf.getColumns();
@@ -64,14 +60,8 @@ public enum CommonGoalStrategy {
             //Look for an "x" shape of tiles that are equal and not Empty
             for (int row = 0; row < rows - 2; row++) {
                 for (int column = 0; column < columns - 2; column++) {
-                    try {
-                        if (notEmptyAndEqual(getXShape(shelf, row, column))) {
-                            return true;
-                        }
-                    } catch (CommonGoalsException e) {
-                        throw new RuntimeException(e); //TODO handle better
-                    } catch (ShelfGenericException e) {
-                        throw new RuntimeException(e); //TODO handle better
+                    if (notEmptyAndEqual(getXShape(shelf, row, column))) {
+                        return true;
                     }
                 }
             }
@@ -79,24 +69,14 @@ public enum CommonGoalStrategy {
         };
         static Predicate<Shelf> fourLineWith3Types = (shelf) -> {
             Long result = IntStream.range(0, shelf.getRows())
-                    .filter(row -> {
-                        try {
-                            return maxNTypes(shelf.allTilesInRow(row), 3);
-                        } catch (CommonGoalsException e) {
-                            throw new CommonGoalRuntimeException(e.getMessage());
-                        }
-                    })
+                    .filter(row -> maxNTypes(shelf.allTilesInRow(row), 3))
                     .count();
             return Math.toIntExact(result) >= 4;
         };
         static Predicate<Shelf> fullLadder = (shelf) -> {//get all heights in order
             int[] heights = new int[shelf.getColumns()];
             for (int column = 0; column < shelf.getColumns(); column++) {
-                try {
-                    heights[column] = columnHeigth(shelf, column);
-                } catch (ShelfGenericException e) {
-                    throw new RuntimeException(e); //TODO handle better
-                }
+                heights[column] = columnHeigth(shelf, column);
             }
             //check if they form a ladder
             return isLadder(heights);
@@ -104,56 +84,30 @@ public enum CommonGoalStrategy {
         static Predicate<Shelf> ladder = (shelf) -> {
             //generate ladders
             ArrayList<ArrayList<Tile>> ladders = null;
-            try {
-                ladders = generateLadders(shelf);
-            } catch (ShelfGenericException e) {
-                throw new RuntimeException(e); //TODO handle better
-            }
+            ladders = generateLadders(shelf);
             //check if at least one is composed of all equal tiles
             for (ArrayList<Tile> ladder : ladders) {
-                try {
-                    if (notEmptyAndEqual(ladder)) {
-                        return true;
-                    }
-                } catch (CommonGoalsException e) {
-                    throw new RuntimeException(e);//TODO handle better
+                if (notEmptyAndEqual(ladder)) {
+                    return true;
                 }
             }
             return false;
         };
         static Predicate<Shelf> threeColumnsWith3Types = (shelf) -> {
             Long result = IntStream.range(0, shelf.getColumns())
-                    .filter(column -> {
-                        try {
-                            return maxNTypes(shelf.allTilesInColumn(column), 3);
-                        } catch (CommonGoalsException e) {
-                            throw new CommonGoalRuntimeException(e.getMessage());
-                        }
-                    })
+                    .filter(column -> maxNTypes(shelf.allTilesInColumn(column), 3))
                     .count();
             return Math.toIntExact(result) >= 3;
         };
         static Predicate<Shelf> twoAllDifferentColumns = (shelf) -> {
             Long result = IntStream.range(0, shelf.getColumns())
-                    .filter(column -> {
-                        try {
-                            return notEmptyAndAllDifferent(shelf.allTilesInColumn(column));
-                        } catch (CommonGoalsException e) {
-                            throw new CommonGoalRuntimeException(e.getMessage());
-                        }
-                    })
+                    .filter(column -> notEmptyAndAllDifferent(shelf.allTilesInColumn(column)))
                     .count();
             return Math.toIntExact(result) >= 2;
         };
         static Predicate<Shelf> twoAllDifferentLines = (shelf) -> {
             Long result = IntStream.range(0, shelf.getRows())
-                    .filter(row -> {
-                        try {
-                            return notEmptyAndAllDifferent(shelf.allTilesInRow(row));
-                        } catch (CommonGoalsException e) {
-                            throw new CommonGoalRuntimeException(e.toString());
-                        }
-                    })
+                    .filter(row -> notEmptyAndAllDifferent(shelf.allTilesInRow(row)))
                     .count();
             return Math.toIntExact(result) >= 2;
         };
@@ -165,15 +119,9 @@ public enum CommonGoalStrategy {
             //count all perfect squares (no overlap or adjacency)
             for (int row = 0; row < rows - 1; row++) {
                 for (int column = 0; column < columns - 1; column++) {
-                    try {
-                        if (isPerfectSquare(shelf, visited, row, column)) {
-                            markSquareAsUsed(visited, row, column);
-                            equalSquaresCounter++;
-                        }
-                    } catch (CommonGoalsException e) {
-                        throw new RuntimeException(e);//TODO handle better
-                    } catch (ShelfGenericException e) {
-                        throw new RuntimeException(e);//TODO handle better
+                    if (isPerfectSquare(shelf, visited, row, column)) {
+                        markSquareAsUsed(visited, row, column);
+                        equalSquaresCounter++;
                     }
                 }
             }
@@ -189,12 +137,8 @@ public enum CommonGoalStrategy {
                     int groups_found = 0;
                     for (int row = 0; row < rows; row++) {
                         for (int column = 0; column < columns; column++) {
-                            try {
-                                if (validIslandSize(shelf, new Position(row, column), alreadyChecked) >= size_of_groups) {
-                                    groups_found++;
-                                }
-                            } catch (ShelfGenericException e) {
-                                throw new RuntimeException(e);//TODO handle better
+                            if (validIslandSize(shelf, new Position(row, column), alreadyChecked) >= size_of_groups) {
+                                groups_found++;
                             }
                         }
                     }
@@ -217,16 +161,12 @@ public enum CommonGoalStrategy {
                         for (int column = 0; column < shelf.getColumns(); column++) {
                             try {
                                 currentTile = shelf.getTile(row, column);
-                            } catch (ShelfGenericException e) {
-                                throw new RuntimeException(e); //TODO handle better
+                            } catch (BadPositionException e) {
+                                throw new CommonGoalRuntimeException("Error in test"); //TODO handle better
                             }
-                            try {
-                                if (shelf.isValidTile(row, column)) {
-                                    //increment counter
-                                    counters.put(currentTile, counters.get(currentTile) + 1);
-                                }
-                            } catch (ShelfGenericException e) {
-                                throw new RuntimeException(e);//TODO handle better
+                            if (shelf.isValidTile(row, column)) {
+                                //increment counter
+                                counters.put(currentTile, counters.get(currentTile) + 1);
                             }
                         }
                     }
@@ -241,14 +181,13 @@ public enum CommonGoalStrategy {
          *
          * @param tiles an ArrayList of Tiles
          * @return true if there are no Empty Tiles and they are all equal
-         * @throws CommonGoalsException
          */
-        static private boolean notEmptyAndEqual(ArrayList<Tile> tiles) throws CommonGoalsException {
+        static private boolean notEmptyAndEqual(ArrayList<Tile> tiles) {
             try {
                 return tiles.stream().distinct().count() == 1 && !tiles.contains(Tile.Empty);
 
             } catch (NullPointerException e) {
-                throw new CommonGoalsException("Error while checking notEmptyAndEqual : tiles is null pointer");
+                throw new CommonGoalRuntimeException("Error while checking notEmptyAndEqual : tiles is null pointer");
             }
         }
 
@@ -257,13 +196,12 @@ public enum CommonGoalStrategy {
          *
          * @param tiles an ArrayList of Tiles
          * @return true if there are no Empty Tiles and they are all different
-         * @throws CommonGoalsException if tiles is Null
          */
-        static private boolean notEmptyAndAllDifferent(ArrayList<Tile> tiles) throws CommonGoalsException {
+        static private boolean notEmptyAndAllDifferent(ArrayList<Tile> tiles) {
             try {
                 return !tiles.contains(Tile.Empty) && tiles.stream().distinct().count() == tiles.size();
             } catch (NullPointerException e) {
-                throw new CommonGoalsException("Error while checking notEmptyAndAllDifferent : tiles is null pointer");
+                throw new CommonGoalRuntimeException("Error while checking notEmptyAndAllDifferent : tiles is null pointer");
             }
         }
 
@@ -273,30 +211,35 @@ public enum CommonGoalStrategy {
          * @param tiles an ArrayList of Tiles
          * @param n     the maximum number of accepted types of Tiles in tiles
          * @return True if there are no empty Tiles and there are maximum n types of Tiles in tiles
-         * @throws CommonGoalsException
          */
-        static private boolean maxNTypes(ArrayList<Tile> tiles, int n) throws CommonGoalsException {
+        static private boolean maxNTypes(ArrayList<Tile> tiles, int n) {
             try {
                 return tiles.size() > 0 &&
                         !tiles.contains(Tile.Empty) &&
                         tiles.stream().distinct().count() <= n;
 
             } catch (NullPointerException e) {
-                throw new CommonGoalsException("Error while checking maxThreeTypes : tiles is null pointer");
+                throw new CommonGoalRuntimeException("Error while checking maxThreeTypes : tiles is null pointer");
             }
         }
 
-        static private int recursiveIslandVisit(Shelf shelf, Position position, boolean[][] visited, Tile type) throws ShelfGenericException {
+        static private int recursiveIslandVisit(Shelf shelf, Position position, boolean[][] visited, Tile type) {
             int row = position.getRow();
             int column = position.getColumn();
             int result = 0;
-            if (shelf.isOutOfBounds(row, column) || visited[row][column] == true) {
+            if (shelf.isOutOfBounds(row, column) || visited[row][column]) {
                 return 0;
-            } else if (shelf.getTile(row, column).equals(type)) {
-                visited[row][column] = true;
-                result = 1;
-                for (Position neighbour : position.neighbours()) {
-                    result += recursiveIslandVisit(shelf, neighbour, visited, type);
+            } else {
+                try {
+                    if (shelf.getTile(row, column).equals(type)) {
+                        visited[row][column] = true;
+                        result = 1;
+                        for (Position neighbour : position.neighbours()) {
+                            result += recursiveIslandVisit(shelf, neighbour, visited, type);
+                        }
+                    }
+                } catch (BadPositionException e) {
+                    throw new CommonGoalRuntimeException("Error in recursiveIslandVisit");
                 }
             }
             return result;
@@ -311,25 +254,33 @@ public enum CommonGoalStrategy {
          * @param visited  a matrix of booleans that keeps track of the visited Tiles
          * @return the size of the island
          */
-        static private int validIslandSize(Shelf shelf, Position position, boolean[][] visited) throws ShelfGenericException {
+        static private int validIslandSize(Shelf shelf, Position position, boolean[][] visited) {
             if (shelf.isValidTile(position)) {
-                Tile islandType = shelf.getTile(position);
+                Tile islandType = null;
+                try {
+                    islandType = shelf.getTile(position);
+                } catch (BadPositionException e) {
+                    throw new CommonGoalRuntimeException("Error in validIslandSize");
+                }
                 return recursiveIslandVisit(shelf, position, visited, islandType);
             } else {
                 return 0;
             }
         }
 
-        static private ArrayList<Tile> getXShape(Shelf shelf, int row, int column) throws ShelfGenericException {
-            ArrayList<Tile> tiles = new ArrayList<>();
-            tiles.add(shelf.getTile(row, column));
-            tiles.add(shelf.getTile(row + 1, column + 1));
-            tiles.add(shelf.getTile(row + 2, column + 2));
-            tiles.add(shelf.getTile(row, column + 2));
-            tiles.add(shelf.getTile(row + 2, column));
-            return tiles;
+        static private ArrayList<Tile> getXShape(Shelf shelf, int row, int column) {
+            try {
+                ArrayList<Tile> tiles = new ArrayList<>();
+                tiles.add(shelf.getTile(row, column));
+                tiles.add(shelf.getTile(row + 1, column + 1));
+                tiles.add(shelf.getTile(row + 2, column + 2));
+                tiles.add(shelf.getTile(row, column + 2));
+                tiles.add(shelf.getTile(row + 2, column));
+                return tiles;
+            } catch (BadPositionException e) {
+                throw new CommonGoalRuntimeException("Error in getXshape");
+            }
         }
-
         static private boolean isLadder(int[] heights) {
             if (heights.length == 1) {
                 return true;
@@ -352,12 +303,12 @@ public enum CommonGoalStrategy {
             return ascending || descending;
         }
 
-        static private int columnHeigth(Shelf shelf, int column) throws ShelfGenericException {
+        static private int columnHeigth(Shelf shelf, int column){
             return (int) shelf.allTilesInColumn(column).stream()
                     .filter(x -> !x.equals(Tile.Empty)).count();
         }
 
-        static private ArrayList<ArrayList<Tile>> generateLadders(Shelf shelf) throws ShelfGenericException {
+        static private ArrayList<ArrayList<Tile>> generateLadders(Shelf shelf) {
             int rows = shelf.getRows();
             int columns = shelf.getColumns();
             ArrayList<ArrayList<Tile>> ladders = new ArrayList<>();
@@ -367,7 +318,11 @@ public enum CommonGoalStrategy {
             for (int initial_row = 0; initial_row < 2; initial_row++) { //value 2 is hardcoded
                 currentLadder.clear();
                 for (int i = 0; i < Math.min(rows, columns); i++) {
-                    currentLadder.add(shelf.getTile(new Position(initial_row + i, i)));
+                    try {
+                        currentLadder.add(shelf.getTile(new Position(initial_row + i, i)));
+                    } catch (BadPositionException e) {
+                        throw new CommonGoalRuntimeException("Error in generateLadders");
+                    }
                 }
                 ladders.add(new ArrayList<>(currentLadder));
             }
@@ -376,22 +331,29 @@ public enum CommonGoalStrategy {
             for (int initial_row = 0; initial_row < 2; initial_row++) { //value 2 is hardcoded
                 currentLadder.clear();
                 for (int i = 0; i < Math.min(rows, columns); i++) {
-                    currentLadder.add(shelf.getTile(new Position(initial_row + i, columns - 1 - i)));
+                    try {
+                        currentLadder.add(shelf.getTile(new Position(initial_row + i, columns - 1 - i)));
+                    } catch (BadPositionException e) {
+                        throw new CommonGoalRuntimeException("Error in generateLadders");
+                    }
                 }
                 ladders.add(new ArrayList<>(currentLadder));
             }
             return ladders;
         }
 
-        static private ArrayList<Tile> get2x2Square(Shelf shelf, int row, int column) throws ShelfGenericException {
-            ArrayList<Tile> tiles = new ArrayList<>();
-            tiles.add(shelf.getTile(row, column));
-            tiles.add(shelf.getTile(row + 1, column));
-            tiles.add(shelf.getTile(row, column + 1));
-            tiles.add(shelf.getTile(row + 1, column + 1));
-            return tiles;
+        static private ArrayList<Tile> get2x2Square(Shelf shelf, int row, int column) {
+            try {
+                ArrayList<Tile> tiles = new ArrayList<>();
+                tiles.add(shelf.getTile(row, column));
+                tiles.add(shelf.getTile(row + 1, column));
+                tiles.add(shelf.getTile(row, column + 1));
+                tiles.add(shelf.getTile(row + 1, column + 1));
+                return tiles;
+            } catch (BadPositionException e) {
+                throw new CommonGoalRuntimeException("Error in get2x2Square");
+            }
         }
-
         static private void markSquareAsUsed(boolean[][] visited, int row, int column) {
             visited[row][column] = true;
             visited[row + 1][column] = true;
@@ -399,7 +361,7 @@ public enum CommonGoalStrategy {
             visited[row + 1][column + 1] = true;
         }
 
-        static private boolean isPerfectSquare(Shelf shelf, boolean[][] visited, int row, int column) throws CommonGoalsException, ShelfGenericException {
+        static private boolean isPerfectSquare(Shelf shelf, boolean[][] visited, int row, int column) {
             return !(visited[row][column]) && !(visited[row + 1][column]) &&
                     !(visited[row][column + 1]) && !(visited[row + 1][column + 1])
                     &&

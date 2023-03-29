@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PartialMoveTest {
     @Test
-    void PositionsTest() throws PartialMoveException {
+    void PositionsTest() throws PartialMoveException, InvalidMoveException {
         PartialMove pm = new PartialMove();
         pm.addPosition(new Position(0,1));
         pm.addPosition(new Position(2,3));
@@ -19,7 +19,7 @@ class PartialMoveTest {
     }
 
     @Test
-    void cloningConstructorTest() throws PartialMoveException {
+    void cloningConstructorTest() throws InvalidMoveException {
         PartialMove pm = new PartialMove();
         pm.addPosition(new Position(0,1));
         pm.addPosition(new Position(2,3));
@@ -40,7 +40,7 @@ class PartialMoveTest {
     @Test
     void nullPointerExceptionTest(){
         PartialMove pm = new PartialMove();
-        assertThrows(PartialMoveException.class, () -> pm.addPosition(null));
+        assertThrows(InvalidMoveException.class, () -> pm.addPosition(null));
         assertThrows(PartialMoveException.class, () -> new PartialMove(null));
 
     }

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MoveTest {
     @Test
-    void cloningTest() throws PartialMoveException {
+    void cloningTest() throws PartialMoveException, InvalidMoveException {
         PartialMove pm = new PartialMove();
         pm.addPosition(new Position(0,1));
         pm.addPosition(new Position(2,3));

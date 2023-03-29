@@ -6,6 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.prefs.BackingStoreException;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
@@ -19,9 +20,8 @@ public class Controller implements Jsonable {
     /**
      * Constructor used to initialize the controller
      * @param namePlayers is a List of the (unique) names of the players
-     * @throws ControllerGenericException when parsing error occurs
      */
-    public Controller(List<String> namePlayers) throws ControllerGenericException {
+    public Controller(List<String> namePlayers){
         try {
             players = new ArrayList<>();
             turn = 0;
@@ -30,23 +30,19 @@ public class Controller implements Jsonable {
                         new PlayerGoal(jsonPathForPlayerGoals)));
             }
             board = new Board(players.size());
-        } catch (ClassCastException | NullPointerException e) {
-            throw new ControllerGenericException("Error while creating the Controller : bad json parsing");
-        } catch (BoardGenericException e) {
-            throw new ControllerGenericException("Problem while creating controller");
-        } catch (PlayerGoalLoadingException e) {
-            throw new ControllerGenericException(e.getMessage());
-        } catch (ShelfGenericException e) {
-            throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            throw new ControllerGenericException("Error while creating the Controller : Json file doesn't exists");
+        } catch (ClassCastException | JsonBadParsingException e) {
+            throw new ControllerGenericException("Error while creating the Controller : bad Json parsing");
         }
     }
 
     /**
      * This constructor is used to load the state of the game from a jsonfile.
      * @param gameStatus JSONObject with the status
-     * @throws JsonParsingException when a parsing error happens
+     * @throws JsonBadParsingException when a parsing error happens
      */
-    public Controller(JSONObject gameStatus) throws JsonParsingException {
+    public Controller(JSONObject gameStatus) throws JsonBadParsingException {
         try {
             // TODO load common goals
             this.board = new Board((JSONObject) gameStatus.get("Board"), new ArrayList<>());
@@ -55,7 +51,7 @@ public class Controller implements Jsonable {
             // Loading players
             this.players = new ArrayList<>();
             JSONArray playersJson = (JSONArray) gameStatus.get("Players");
-            if (playersJson==null) {throw new JsonParsingException("Error while loading game status from json: players field not found");}
+            if (playersJson==null) {throw new JsonBadParsingException("Error while loading game status from json: players field not found");}
 
             JSONObject jsonPlayer;
             for (Object objPlayer : playersJson) {
@@ -63,7 +59,7 @@ public class Controller implements Jsonable {
                 this.players.add(new Player(jsonPlayer));
             }
         } catch (Exception e) {
-            throw new JsonParsingException("Error while loading game status from json: " + e.getMessage());
+            throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
         }
     }
 
@@ -107,7 +103,7 @@ public class Controller implements Jsonable {
     /**
      * @return the list of the Shelf objects of each player
      */
-    public List<Shelf> getShelves() throws ShelfGenericException {
+    public List<Shelf> getShelves() {
         List<Shelf> shelves = new ArrayList<>();
         for(Player p : players) {
             shelves.add(p.getShelf());
@@ -122,7 +118,7 @@ public class Controller implements Jsonable {
      * @throws ControllerGenericException if the selected tile is not allowed, if the player is not the current player
      * or if the shelf hasn't enough empty cells
      */
-    public void moveTiles(Player player, Move move) throws ControllerGenericException, InvalidMoveException {
+    public void moveTiles(Player player, Move move) throws ControllerGenericException {
 
         try {
             if (!player.getName().equals(getCurrentPlayer())) { //if player is not the current player we throw an exception
@@ -145,12 +141,10 @@ public class Controller implements Jsonable {
                 playerShelf.insertTile(t, move.getColumn());
             }
             incrementTurn();
-        } catch (BoardGenericException e){
-            throw new InvalidMoveException("Error while moving tile");
-        } catch (ShelfGenericException e) {
-            throw new ControllerGenericException(e.getMessage());
         } catch (InvalidMoveException e) {
             throw new ControllerGenericException("Error invalid move");
+        } catch (BadPositionException e) {
+            throw new ControllerGenericException("Error invalid get");
         }
     }
     /**

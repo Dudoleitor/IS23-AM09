@@ -24,11 +24,10 @@ public class Shelf implements Jsonable {
      * generate Shelf by input parameters
      * @param rows is num of rows
      * @param columns is num of columns
-     * @throws ShelfGenericException when dimensions are bad values
      */
-    public Shelf(int rows, int columns) throws ShelfGenericException { //initialize a shelf with Empty tiles
+    public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles
         if(rows <= 0 || columns <= 0){
-            throw new ShelfGenericException("Error while generating shelf : dimensions are no valid numbers");
+            throw new ShelfRuntimeException("Error while generating shelf : dimensions are no valid numbers");
         }
         this.rows = rows;
         this.columns = columns;
@@ -43,12 +42,11 @@ public class Shelf implements Jsonable {
     /**
      * generate Shelf by copy of another Shelf
      * @param s is Shelf to copy from
-     * @throws ShelfGenericException when shelf is not valid or json file has bad arguments
      */
-    public Shelf(Shelf s) throws ShelfGenericException{
+    public Shelf(Shelf s) {
         try{
             if(!s.isValid()){
-                throw new ShelfGenericException("Error while creating Shelf : input Shelf has not a valid configuration");
+                throw new ShelfRuntimeException("Error while creating Shelf : input Shelf has not a valid configuration");
             }
             rows = s.getRows();
             columns = s.getColumns();
@@ -60,15 +58,17 @@ public class Shelf implements Jsonable {
             }
         } catch(NullPointerException e) {
             throw new ShelfRuntimeException("Error while creating Shelf : input Shelf is null pointer");
+        } catch (BadPositionException e) {
+            throw new ShelfRuntimeException("Error while creating Shelf : input shelf size is illegal");
         }
     }
 
     /**
      * Generates Shelf by JSON file
      * @param jsonPath is the file path to the JSON file
-     * @throws ShelfGenericException when Json file has bad arguments
+     * @throws JsonBadParsingException when Json file has bad arguments
      */
-    public Shelf(String jsonPath) throws ShelfGenericException {
+    public Shelf(String jsonPath) throws JsonBadParsingException {
         this(pathToJSONObject(jsonPath)); //get shelf JSONObject
     }
 
@@ -77,9 +77,9 @@ public class Shelf implements Jsonable {
      * it uses the "shelf" attribute.
      * @param jsonPath path to the json file
      * @return JSONObject with the content
-     * @throws ShelfGenericException when Json file has bad arguments
+     * @throws JsonBadParsingException when Json file has bad arguments
      */
-    public static JSONObject pathToJSONObject(String jsonPath) throws ShelfGenericException {
+    public static JSONObject pathToJSONObject(String jsonPath) throws JsonBadParsingException {
         try {
             JSONObject result;
             JSONParser jsonParser = new JSONParser();
@@ -87,18 +87,18 @@ public class Shelf implements Jsonable {
             result = (JSONObject) jsonParser.parse(reader);
             return (JSONObject) result.get("shelf");
         } catch (IOException e){
-            throw new ShelfRuntimeException("Error while generating Shelf from JSON : file not found");
+            throw new JsonBadParsingException("Error while generating Shelf from JSON : file not found");
         } catch (ParseException e) {
-            throw new ShelfGenericException("Error while generating Shelf from JSON : bad JSON file configuration");
+            throw new JsonBadParsingException("Error while generating Shelf from JSON : bad JSON file configuration");
         }
     }
 
     /**
      * Loads a Shelf from Json Object
      * @param jsonShelf is the JSONObject containing the parameters necessary to build the Shelf object
-     * @throws ShelfGenericException when a problem in the creation of shelf occurs
+     * @throws JsonBadParsingException when a problem in the creation of shelf occurs
      */
-    public Shelf(JSONObject jsonShelf) throws ShelfGenericException {
+    public Shelf(JSONObject jsonShelf) throws JsonBadParsingException {
         rows = Math.toIntExact((long) (jsonShelf.get("numRows")));
         columns = Math.toIntExact((long) (jsonShelf.get("numColumns")));
         tiles = new Tile[rows][columns];
@@ -113,16 +113,16 @@ public class Shelf implements Jsonable {
                 for (int j = 0; j < columns; j++) {
                     t = Tile.valueOfLabel((String) shelfLine.get(j));
                     if (t.equals(Tile.Invalid)) { //check whether Tile is Invalid
-                        throw new ShelfGenericException("Error while generating Shelf from JSON : Tile is Invalid type");
+                        throw new JsonBadParsingException("Error while generating Shelf from JSON : Tile is Invalid type");
                     }
                     tiles[i][j] = t;
                 }
             }
             if (!isValid()) {
-                throw new ShelfGenericException("Error while creating Shelf : input Shelf has not a valid configuration");
+                throw new JsonBadParsingException("Error while creating Shelf : input Shelf has not a valid configuration");
             }
         } catch (TileGenericException e) {
-            throw new ShelfGenericException("Error while creating Shelf : Tile type not found");
+            throw new JsonBadParsingException("Error while creating Shelf : Tile type not found");
         }
     }
     private boolean isValid(){
@@ -149,9 +149,9 @@ public class Shelf implements Jsonable {
      * Get tile in position pos
      * @param pos is the position object
      * @return Tile in position pos
-     * @throws ShelfGenericException when getting position is out of bound
+     * @throws BadPositionException when getting position is out of bound
      */
-    public Tile getTile(Position pos) throws ShelfGenericException{
+    public Tile getTile(Position pos) throws BadPositionException{
         try {
             return getTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e) {
@@ -163,13 +163,13 @@ public class Shelf implements Jsonable {
      * @param row is row index
      * @param column is column index
      * @return Tile in position (row,column)
-     * @throws ShelfGenericException when getting coordinates are out of bound
+     * @throws BadPositionException when getting coordinates are out of bound
      */
-    public Tile getTile(int row, int column) throws ShelfGenericException {
+    public Tile getTile(int row, int column) throws BadPositionException {
         try {
             return tiles[row][column];
         } catch (IndexOutOfBoundsException e){
-            throw new ShelfGenericException("Error while getting Tile in Shelf : Coordinates are beyond boundaries");
+            throw new BadPositionException("Error while getting Tile in Shelf : Coordinates are beyond boundaries");
         }
     }
 
@@ -194,9 +194,9 @@ public class Shelf implements Jsonable {
      * Insert tile to selected column
      * @param tile is the tile object to insert
      * @param column is the selected column
-     * @throws ShelfGenericException whether tile is Invalid or column is already full or selected column is invalid
+     * @throws BadPositionException whether tile is Invalid or column is already full or selected column is invalid
      */
-    public void insertTile(Tile tile, int column) throws ShelfGenericException{
+    public void insertTile(Tile tile, int column) throws BadPositionException{
         boolean isEmpty = false;
         try {
             if (!Tile.existsValue(tile))
@@ -204,9 +204,9 @@ public class Shelf implements Jsonable {
             if (tile.equals(Tile.Empty)) { //if Tile is Empty then do nothing
                 return;
             } else if (tile.equals(Tile.Invalid)) { //if Tile is Invalid then throw exception
-                throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
+                throw new BadPositionException("Error while inserting in Shelf : Tile is Invalid type");
             } else if (!tiles[0][column].equals(Tile.Empty)) { //if selected column has an element in first position aka (also known as) the column is full
-                throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
+                throw new BadPositionException("Error while inserting in Shelf : selected column is already full");
             }
             for (int i = tiles.length - 1; !isEmpty && i >= 0; i--) {// back-iterate the column to find first Empty cell to insert Tile
                 if (tiles[i][column] == Tile.Empty) {
@@ -215,7 +215,7 @@ public class Shelf implements Jsonable {
                 }
             }
         } catch (IndexOutOfBoundsException e){
-            throw new ShelfGenericException("Error while inserting in Shelf : selected column is not valid");
+            throw new BadPositionException("Error while inserting in Shelf : selected column is not valid");
         }
     }
 
@@ -254,26 +254,22 @@ public class Shelf implements Jsonable {
      */
     private int exploreAdjacents(boolean[][] visited, int i, int j){
         int count = 0;
-        try {
-            if (!isValidTile(i, j) || visited[i][j]) // check if current tile is valid for point count
-                return 0;
-            visited[i][j] = true;
-            if (!isOutOfBounds(i - 1, j) && tiles[i][j].equals(tiles[i - 1][j])) { //check if Tile on left side is same type
-                count = count + exploreAdjacents(visited, i - 1, j);
-            }
-            if (!isOutOfBounds(i + 1, j) && tiles[i][j].equals(tiles[i + 1][j])) { //check if Tile on right side is same type
-                count = count + exploreAdjacents(visited, i + 1, j);
-            }
-            if (!isOutOfBounds(i, j - 1) && tiles[i][j].equals(tiles[i][j - 1])) { //check if Tile on upper side is same type
-                count = count + exploreAdjacents(visited, i, j - 1);
-            }
-            if (!isOutOfBounds(i, j + 1) && tiles[i][j].equals(tiles[i][j + 1])) { //check if the Tile below is same type
-                count = count + exploreAdjacents(visited, i, j + 1);
-            }
-            return count + 1;
-        } catch (ShelfGenericException e){
+        if (!isValidTile(i, j) || visited[i][j]) // check if current tile is valid for point count
             return 0;
+        visited[i][j] = true;
+        if (!isOutOfBounds(i - 1, j) && tiles[i][j].equals(tiles[i - 1][j])) { //check if Tile on left side is same type
+            count = count + exploreAdjacents(visited, i - 1, j);
         }
+        if (!isOutOfBounds(i + 1, j) && tiles[i][j].equals(tiles[i + 1][j])) { //check if Tile on right side is same type
+            count = count + exploreAdjacents(visited, i + 1, j);
+        }
+        if (!isOutOfBounds(i, j - 1) && tiles[i][j].equals(tiles[i][j - 1])) { //check if Tile on upper side is same type
+            count = count + exploreAdjacents(visited, i, j - 1);
+        }
+        if (!isOutOfBounds(i, j + 1) && tiles[i][j].equals(tiles[i][j + 1])) { //check if the Tile below is same type
+            count = count + exploreAdjacents(visited, i, j + 1);
+        }
+        return count + 1;
     }
 
     /**
@@ -291,11 +287,16 @@ public class Shelf implements Jsonable {
      * @param column integer
      * @return TRUE if the Tile is Empty or Invalid
      */
-    public boolean isValidTile(int row, int column) throws ShelfGenericException {
-        Tile tile = getTile(row, column);
+    public boolean isValidTile(int row, int column) {
+        Tile tile = null;
+        try {
+            tile = getTile(row, column);
+        } catch (BadPositionException e) {
+            return false;
+        }
         return !tile.equals(Tile.Empty) && !tile.equals(Tile.Invalid);
     }
-    public boolean isValidTile(Position position) throws ShelfGenericException {
+    public boolean isValidTile(Position position){
         return isValidTile(position.getRow(),position.getColumn());
     }
     /**
@@ -330,7 +331,7 @@ public class Shelf implements Jsonable {
                     if (!tiles[i][j].equals(((Shelf) o).getTile(i, j))) {
                         sameShelf = false;
                     }
-                } catch (ShelfGenericException e) {
+                } catch (BadPositionException e) {
                     return false;
                 }
             }
@@ -374,7 +375,7 @@ public class Shelf implements Jsonable {
                 tiles.add(getTile(row, column));
             }
             return tiles;
-        } catch (ShelfGenericException e) {
+        } catch (BadPositionException e) {
             throw new ShelfRuntimeException("Error while getting in allTilesInColumn for Shelf");
         }
     }
@@ -390,7 +391,7 @@ public class Shelf implements Jsonable {
                 tiles.add(getTile(row, column));
             }
             return tiles;
-        } catch (ShelfGenericException e){
+        } catch (BadPositionException e){
             throw new ShelfRuntimeException("Error while getting in allTilesInRow for Shelf");
         }
     }
@@ -408,7 +409,7 @@ public class Shelf implements Jsonable {
             corners.add(getTile(rows - 1, 0));
             corners.add(getTile(rows - 1, columns - 1));
             return corners;
-        } catch (ShelfGenericException e){
+        } catch (BadPositionException e){
             throw new ShelfRuntimeException("Error while getting in getCorners in Shelf");
         }
     }

@@ -11,9 +11,9 @@ public class PartialMove {
     public List<Position> getBoardPositions(){
         return new ArrayList<>(positions);
     }
-    public void addPosition(Position pos) throws PartialMoveException{
+    public void addPosition(Position pos) throws InvalidMoveException {
         if(pos == null){
-            throw new PartialMoveException("Error while adding position : Pointer was Null");
+            throw new InvalidMoveException("Error while adding position : Pointer was Null");
         }
         positions.add(pos);
     }

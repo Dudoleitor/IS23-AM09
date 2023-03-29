@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.JsonBadParsingException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -14,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CommonGoalsFactoryTest {
     @Test
-    void testIDCreation() throws CommonGoalsException {
+    void testIDCreation() throws JsonBadParsingException {
         for(int i = 1; i <= 12; i++){
             assertEquals(i,CommonGoalsFactory.create_goal_with_ID(i,2).getID());
         }
     }
     @Test
-    void LoadFromJson() throws CommonGoalsException {
+    void LoadFromJson()  {
         JSONParser jsonParser = new JSONParser(); //initialize JSON parser
         Object obj;
         try {
@@ -35,7 +36,7 @@ class CommonGoalsFactoryTest {
         assertEquals(6,goal.givePoints());
     }
     @Test
-    void createWithNumberOfPlayers() throws CommonGoalsException {
+    void createWithNumberOfPlayers() throws JsonBadParsingException {
         CommonGoal test = CommonGoalsFactory.create_goal_with_ID(2,2);
         assertEquals(8,test.givePoints());
         assertEquals(4,test.givePoints());
@@ -56,12 +57,12 @@ class CommonGoalsFactoryTest {
     }
     @Test
     void invalidNumberOfPlayersException(){
-        assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,0));
-        assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,5));
+        assertThrows(CommonGoalRuntimeException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,0));
+        assertThrows(CommonGoalRuntimeException.class, () -> CommonGoalsFactory.create_goal_with_ID(2,5));
     }
 
     @Test
     void exceptionInRandomNumbers(){
-        assertThrows(CommonGoalsException.class, () -> CommonGoalsFactory.pickTwoRandomNumbers(-1));
+        assertThrows(CommonGoalRuntimeException.class, () -> CommonGoalsFactory.pickTwoRandomNumbers(-1));
     }
 }

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
-import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
@@ -9,11 +8,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,9 +28,9 @@ public class Board implements Jsonable {
     /**
      * Constructor used to initialize board from default setup
      * @param numPlayers is the number of players of the game
-     * @throws BoardGenericException when parsing errors occurs
+     * @throws JsonBadParsingException when parsing errors occurs
      */
-    public Board(int numPlayers) throws BoardGenericException{
+    public Board(int numPlayers) throws JsonBadParsingException{
             this(pathToJsonObject(boardPathForNumberOfPlayers(numPlayers)));
             tilesToDraw =  createShuffledDeck(22);
             initializeGoals(); //generate two randomly picked goals
@@ -51,7 +48,7 @@ public class Board implements Jsonable {
         Collections.shuffle(deck); //mix tiles
         return deck;
     }
-    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws BoardGenericException {
+    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws JsonBadParsingException, BadPositionException {
         this(objBoard);
         if(objCommonGoals != null){ //skipped in testing only
             initializeGoals(objCommonGoals);
@@ -76,22 +73,22 @@ public class Board implements Jsonable {
      * @param jsonPath path to the json file
      * @return JSONObject with the content
      */
-    public static JSONObject pathToJsonObject(String jsonPath) throws BoardGenericException {
+    public static JSONObject pathToJsonObject(String jsonPath) throws JsonBadParsingException {
         try {
             JSONParser jsonParser = new JSONParser(); //initialize parser
             Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
             return (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
         } catch (IOException e){
-            throw new BoardRuntimeException("Error while generating Board from Json : file was not found");
+            throw new JsonBadParsingException("Error while generating Board from Json : file was not found");
         } catch (ParseException e) {
-            throw new BoardGenericException("Error while generating Board from Json : bad json parsing");
+            throw new JsonBadParsingException("Error while generating Board from Json : bad json parsing");
         }
     }
     /**
      * Constructor used to initialize board from previously generated JSON
      * @param objBoard is a board object that serializes the board
      */
-    private Board(JSONObject objBoard) throws BoardGenericException{
+    private Board(JSONObject objBoard) throws JsonBadParsingException{
         try{
             goals = new ArrayList<>();
             tilesToDraw = new ArrayList<>();
@@ -113,10 +110,10 @@ public class Board implements Jsonable {
                 }
             }
             if(!checkValidBoard()){
-                throw new BoardGenericException("Error while creating board : board is not a valid configuration for given num player");
+                throw new JsonBadParsingException("Error while creating board : board is not a valid configuration for given num player");
             }
         } catch (ClassCastException | NullPointerException | TileGenericException e){
-            throw new BoardGenericException("Error while creating Board : bad json parsing");
+            throw new JsonBadParsingException("Error while creating Board : bad json parsing");
         }
     }
 
@@ -130,7 +127,7 @@ public class Board implements Jsonable {
         JSONObject objBoard;
         try {
             objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
-        } catch (BoardGenericException e) {
+        } catch (JsonBadParsingException e) {
             throw new BoardRuntimeException("Error while checking board validity : JsonPath to numPlayer is not valid");
         }
         JSONArray arrayBoard = (JSONArray) objBoard.get("matrix");
@@ -229,7 +226,7 @@ public class Board implements Jsonable {
 
             return true;
 
-        } catch (BoardGenericException e){
+        } catch (BadPositionException e){
             return false;
         }
     }
@@ -269,9 +266,9 @@ public class Board implements Jsonable {
      * Get tile in position pos
      * @param pos is the position object
      * @return Tile in position pos
-     * @throws BoardGenericException when getting position is out of bound or pos is NullPointer
+     * @throws BadPositionException when getting position is out of bound or pos is NullPointer
      */
-    public Tile getTile(Position pos) throws BoardGenericException {
+    public Tile getTile(Position pos) throws BadPositionException {
         try {
             return getTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e){
@@ -284,13 +281,13 @@ public class Board implements Jsonable {
      * @param row is row index
      * @param column is column index
      * @return Tile in position (i,j)
-     * @throws BoardGenericException when getting coordinates are out of bound
+     * @throws BadPositionException when getting coordinates are out of bound
      */
-    public Tile getTile(int row, int column) throws BoardGenericException{
+    public Tile getTile(int row, int column) throws BadPositionException{
         try {
             return boardTiles[row][column];
         } catch (IndexOutOfBoundsException e){
-            throw new BoardGenericException("Error while getting tile from Board : illegal coordinates");
+            throw new BadPositionException("Error while getting tile from Board : illegal coordinates");
         }
     }
     /**
@@ -298,18 +295,18 @@ public class Board implements Jsonable {
      * @param row is the x coord
      * @param column is the y coord
      * @return Tile in position pos
-     * @throws BoardGenericException when picking position is out of bound or pos is NullPointer
+     * @throws BadPositionException when picking position is out of bound or pos is NullPointer
      */
-    public Tile pickTile(int row, int column) throws BoardGenericException { //maybe add pick tile by coordinates
+    public Tile pickTile(int row, int column) throws BadPositionException { //maybe add pick tile by coordinates
         try {
             Tile selectedTile;
             selectedTile = boardTiles[row][column];
             if(selectedTile.equals(Tile.Invalid))
-                throw new BoardGenericException("Error while picking Tile : Chosen one is Invalid type");
+                throw new BadPositionException("Error while picking Tile : Chosen one is Invalid type");
             boardTiles[row][column] = Tile.Empty;
             return selectedTile;
         } catch (IndexOutOfBoundsException e){
-            throw new BoardGenericException("Error while picking tile from Board : illegal coordinates");
+            throw new BadPositionException("Error while picking tile from Board : illegal coordinates");
         }
     }
 
@@ -317,9 +314,9 @@ public class Board implements Jsonable {
      * Pick a tile from the board removing it from the board
      * @param pos is the position object
      * @return Tile in position pos
-     * @throws BoardGenericException when picking position is out of bound
+     * @throws BadPositionException when picking position is out of bound
      */
-    public Tile pickTile(Position pos) throws BoardGenericException { //maybe add pick tile by coordinates
+    public Tile pickTile(Position pos) throws BadPositionException { //maybe add pick tile by coordinates
         try {
             return pickTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e){
@@ -334,7 +331,7 @@ public class Board implements Jsonable {
     private void initializeGoals(){
         try {
             goals = CommonGoalsFactory.createTwoGoals(numPlayers);
-        } catch (CommonGoalsException e){
+        } catch (JsonBadParsingException e){
             throw new BoardRuntimeException("Error while creating board : common goal exception");
         }
     }
@@ -343,14 +340,10 @@ public class Board implements Jsonable {
      * Initialize the common goals passed as json objects
      * @param commonGoals a List of serialized common goals
      */
-    private void initializeGoals(List<JSONObject> commonGoals) throws BoardGenericException {
+    private void initializeGoals(List<JSONObject> commonGoals){
         goals = new ArrayList<>();
-        try {
-            for (JSONObject jsonObject : commonGoals) {
-                goals.add(CommonGoalsFactory.create_from_json(jsonObject));
-            }
-        } catch (CommonGoalsException e){
-            throw new BoardGenericException("Error while creating board : common goal exception");
+        for (JSONObject jsonObject : commonGoals) {
+            goals.add(CommonGoalsFactory.create_from_json(jsonObject));
         }
     }
     /**
@@ -373,106 +366,111 @@ public class Board implements Jsonable {
      * @param partialMove is the move that the player is building
      * @return the possible positions that the player can add to the move
      */
-    public List<Position> getValidPositions(PartialMove partialMove) throws BoardGenericException {
+    public List<Position> getValidPositions(PartialMove partialMove) {
         List<Position> positions = new ArrayList<>();
-
-        if(partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) { //if the move is complete --> it has maxNumMoves positions inside
-            return positions;
-        }
-        //extreme case when partialMove has no positions inside
-        if(partialMove.getBoardPositions().size() == 0) {
-            IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
-                    IntStream.range(0, getNumColumns()) // create stream of j
-                            .filter(j -> hasFreeSide(i, j))
-                            .forEach(j -> positions.add(new Position(i, j)))
+        try {
+            if (partialMove == null) {
+                return positions;
+            }
+            if (partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) { //if the move is complete --> it has maxNumMoves positions inside
+                return positions;
+            }
+            //extreme case when partialMove has no positions inside
+            if (partialMove.getBoardPositions().size() == 0) {
+                IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
+                        IntStream.range(0, getNumColumns()) // create stream of j
+                                .filter(j -> hasFreeSide(i, j))
+                                .forEach(j -> positions.add(new Position(i, j)))
                 );
 
-        } else if(partialMove.getBoardPositions().size() >= 1){
-            if(partialMove.getBoardPositions().size() == 1) {
-                int tempRow = partialMove.getBoardPositions().get(0).getRow();
-                int tempColumn = partialMove.getBoardPositions().get(0).getColumn();
+            } else if (partialMove.getBoardPositions().size() >= 1) {
+                if (partialMove.getBoardPositions().size() == 1) {
+                    int tempRow = partialMove.getBoardPositions().get(0).getRow();
+                    int tempColumn = partialMove.getBoardPositions().get(0).getColumn();
 
-                if(tempRow + 1 < getNumRows() && !getTile(tempRow + 1, tempColumn).equals(Tile.Empty)
-                        && !getTile(tempRow + 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow + 1, tempColumn)) {
-                    positions.add(new Position(tempRow + 1, tempColumn));
-                }
-                if(tempRow - 1 < getNumRows() && !getTile(tempRow - 1, tempColumn).equals(Tile.Empty)
-                        && !getTile(tempRow - 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow - 1, tempColumn)) {
-                    positions.add(new Position(tempRow - 1, tempColumn));
-                }
-                if(tempColumn + 1 < getNumColumns() && !getTile(tempRow, tempColumn + 1).equals(Tile.Empty)
-                        && !getTile(tempRow, tempColumn + 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn + 1)) {
-                    positions.add(new Position(tempRow, tempColumn + 1));
-                }
-                if(tempColumn - 1 < getNumColumns() && !getTile(tempRow, tempColumn - 1).equals(Tile.Empty)
-                        && !getTile(tempRow, tempColumn - 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn - 1)) {
-                    positions.add(new Position(tempRow, tempColumn - 1));
-                }
-            } else {
-                if(partialMove.getBoardPositions().get(1).getColumn() == partialMove.getBoardPositions().get(0).getColumn()) {
-                    if(partialMove.getBoardPositions().get(1).getRow() > partialMove.getBoardPositions().get(0).getRow()) {
-                        if(partialMove.getBoardPositions().get(1).getRow() + 1 < getNumRows()
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() + 1,partialMove.getBoardPositions().get(1).getColumn()))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() + 1,partialMove.getBoardPositions().get(1).getColumn()));
-                        }
-                        if(partialMove.getBoardPositions().get(0).getRow() - 1 < getNumRows()
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() - 1,partialMove.getBoardPositions().get(0).getColumn()))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() - 1,partialMove.getBoardPositions().get(0).getColumn()));
-                        }
-                    } else {
-                        if(partialMove.getBoardPositions().get(0).getRow() + 1 < getNumRows()
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() + 1,partialMove.getBoardPositions().get(0).getColumn()))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() + 1,partialMove.getBoardPositions().get(0).getColumn()));
-                        }
-                        if(partialMove.getBoardPositions().get(1).getRow() - 1 < getNumRows()
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() - 1,partialMove.getBoardPositions().get(1).getColumn()))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() - 1,partialMove.getBoardPositions().get(1).getColumn()));
-                        }
+                    if (tempRow + 1 < getNumRows() && !getTile(tempRow + 1, tempColumn).equals(Tile.Empty)
+                            && !getTile(tempRow + 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow + 1, tempColumn)) {
+                        positions.add(new Position(tempRow + 1, tempColumn));
+                    }
+                    if (tempRow - 1 < getNumRows() && !getTile(tempRow - 1, tempColumn).equals(Tile.Empty)
+                            && !getTile(tempRow - 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow - 1, tempColumn)) {
+                        positions.add(new Position(tempRow - 1, tempColumn));
+                    }
+                    if (tempColumn + 1 < getNumColumns() && !getTile(tempRow, tempColumn + 1).equals(Tile.Empty)
+                            && !getTile(tempRow, tempColumn + 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn + 1)) {
+                        positions.add(new Position(tempRow, tempColumn + 1));
+                    }
+                    if (tempColumn - 1 < getNumColumns() && !getTile(tempRow, tempColumn - 1).equals(Tile.Empty)
+                            && !getTile(tempRow, tempColumn - 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn - 1)) {
+                        positions.add(new Position(tempRow, tempColumn - 1));
                     }
                 } else {
-                    if(partialMove.getBoardPositions().get(1).getColumn() > partialMove.getBoardPositions().get(0).getColumn()) {
-                        if(partialMove.getBoardPositions().get(1).getColumn() + 1 < getNumColumns()
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() + 1))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() + 1));
-                        }
-                        if(partialMove.getBoardPositions().get(0).getColumn() - 1 < getNumColumns()
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() - 1))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() - 1));
+                    if (partialMove.getBoardPositions().get(1).getColumn() == partialMove.getBoardPositions().get(0).getColumn()) {
+                        if (partialMove.getBoardPositions().get(1).getRow() > partialMove.getBoardPositions().get(0).getRow()) {
+                            if (partialMove.getBoardPositions().get(1).getRow() + 1 < getNumRows()
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn())) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()));
+                            }
+                            if (partialMove.getBoardPositions().get(0).getRow() - 1 < getNumRows()
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn())) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()));
+                            }
+                        } else {
+                            if (partialMove.getBoardPositions().get(0).getRow() + 1 < getNumRows()
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn())) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()));
+                            }
+                            if (partialMove.getBoardPositions().get(1).getRow() - 1 < getNumRows()
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn())) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()));
+                            }
                         }
                     } else {
-                        if(partialMove.getBoardPositions().get(0).getColumn() + 1 < getNumColumns()
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() + 1))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() + 1));
-                        }
-                        if(partialMove.getBoardPositions().get(1).getColumn() - 1 < getNumColumns()
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Empty)
-                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Invalid)
-                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() - 1))  {
-                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() - 1));
-                        }
+                        if (partialMove.getBoardPositions().get(1).getColumn() > partialMove.getBoardPositions().get(0).getColumn()) {
+                            if (partialMove.getBoardPositions().get(1).getColumn() + 1 < getNumColumns()
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1)) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1));
+                            }
+                            if (partialMove.getBoardPositions().get(0).getColumn() - 1 < getNumColumns()
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1)) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1));
+                            }
+                        } else {
+                            if (partialMove.getBoardPositions().get(0).getColumn() + 1 < getNumColumns()
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1)) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1));
+                            }
+                            if (partialMove.getBoardPositions().get(1).getColumn() - 1 < getNumColumns()
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Empty)
+                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Invalid)
+                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1)) {
+                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1));
+                            }
 
+                        }
                     }
                 }
             }
+
+            return positions;
+        } catch (BadPositionException e){
+            throw new BoardRuntimeException("Error while getting valid positions : something went wrong");
         }
-
-        return positions;
     }
-
 
     /**
      * @param row is the given row
@@ -508,7 +506,7 @@ public class Board implements Jsonable {
     private boolean isNotValid (Position pos){
         try {
             return getTile(pos).equals(Tile.Empty) || getTile(pos).equals(Tile.Invalid);
-        } catch (BoardGenericException e) {
+        } catch (BadPositionException e) {
             return true;
         }
     };

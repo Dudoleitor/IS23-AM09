@@ -1,22 +1,22 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.BadPositionException;
+import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Shelf;
 
-import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
 
     @Test
-    void creationTest() throws ShelfGenericException, PlayerGoalLoadingException {
+    void creationTest() throws JsonBadParsingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -35,7 +35,7 @@ public class PlayerTest {
     }
 
     @Test
-    void jsonCongruenceTest() throws PlayerGoalLoadingException, ShelfGenericException, JsonParsingException {
+    void jsonCongruenceTest() throws JsonBadParsingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -47,7 +47,7 @@ public class PlayerTest {
     }
 
     @Test
-    void personalGoalTest() throws ShelfGenericException, PlayerGoalLoadingException {
+    void personalGoalTest() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -61,7 +61,7 @@ public class PlayerTest {
     }
 
     @Test
-    void hasFinishedTest1() throws ShelfGenericException, PlayerGoalLoadingException {
+    void hasFinishedTest1() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -83,11 +83,11 @@ public class PlayerTest {
         testpl.insertTile(Tile.Trophy, 2);
         assertTrue(testpl.hasFinished());
 
-        assertThrows(ShelfGenericException.class, () -> testpl.insertTile(Tile.Cat, 0));
+        assertThrows(BadPositionException.class, () -> testpl.insertTile(Tile.Cat, 0));
     }
 
     @Test
-    void hasFinishedTest2() throws ShelfGenericException, PlayerGoalLoadingException {
+    void hasFinishedTest2() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -109,11 +109,11 @@ public class PlayerTest {
         testpl.insertTile(Tile.Trophy, 2);
         assertTrue(testpl.hasFinished());
 
-        assertThrows(ShelfGenericException.class, () -> testpl.insertTile(Tile.Cat, 0));
+        assertThrows(BadPositionException.class, () -> testpl.insertTile(Tile.Cat, 0));
     }
 
     @Test
-    void CommonGoalTest() throws PlayerGoalLoadingException, CommonGoalsException, ShelfGenericException {
+    void CommonGoalTest() throws JsonBadParsingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(3, 3);
@@ -153,7 +153,7 @@ public class PlayerTest {
     }
 
     @Test
-    void AdjacentPointsTest() throws ShelfGenericException, PlayerGoalLoadingException {
+    void AdjacentPointsTest() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         ServerShelf shelf = new ServerShelf(4, 3);

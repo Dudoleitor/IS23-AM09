@@ -1,9 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Jsonable;
-import it.polimi.ingsw.shared.Shelf;
-import it.polimi.ingsw.shared.ShelfGenericException;
-import it.polimi.ingsw.shared.Tile;
+import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -53,9 +50,9 @@ public class Player implements Jsonable {
     /**
      * This constructor is used to initialize a player from a JSONObject
      * @param playerJson JSONObject with the player's properties
-     * @throws JsonParsingException when a parsing error happens
+     * @throws JsonBadParsingException when a parsing error happens
      */
-    public Player(JSONObject playerJson) throws JsonParsingException {
+    public Player(JSONObject playerJson) throws JsonBadParsingException {
         try {
             this.name = (String) playerJson.get("Name");
             // Loading shelf
@@ -70,12 +67,12 @@ public class Player implements Jsonable {
 
             // Loading common goals achieved ids
             JSONArray jsonPointsAchieved = (JSONArray) playerJson.get("CommonGoalsAchieved");
-            if (jsonPointsAchieved==null) {throw new JsonParsingException("Error while loading player from json: goals achieved not found");}
+            if (jsonPointsAchieved==null) {throw new JsonBadParsingException("Error while loading player from json: goals achieved not found");}
 
             this.checkedCommonGoals = new ArrayList<>(jsonPointsAchieved);
 
         } catch (Exception e) {
-            throw new JsonParsingException("Error while loading player from json: " + e.getMessage());
+            throw new JsonBadParsingException("Error while loading player from json: " + e.getMessage());
         }
     }
     public String getName() { return name; }
@@ -83,14 +80,14 @@ public class Player implements Jsonable {
     /**
      * @return copy of the shelf.
      */
-    public Shelf getShelf() throws ShelfGenericException { return new ServerShelf(shelf); }
+    public Shelf getShelf() { return new ServerShelf(shelf); }
 
     /**
      * To check how many points the player currently has achieved with the personal goal.
      * Note: this method is pure and runs the check when called.
      * @return integer.
      */
-    public int checkPersonalGoal() throws PlayerGoalLoadingException {
+    public int checkPersonalGoal() throws JsonBadParsingException {
         return goal.check(shelf);
     }
 
@@ -106,7 +103,7 @@ public class Player implements Jsonable {
      * placing tiles of the same type in adjacent positions.
      * @return integer.
      */
-    public int getAdjacentPoints() throws ShelfGenericException {
+    public int getAdjacentPoints()  {
         return shelf.countAdjacentPoints();
     }
 
@@ -130,7 +127,7 @@ public class Player implements Jsonable {
      * previously achieved, pops points from the goal and saves them.
      * @param goals list of AbstractCommonGoals to be checked.
      */
-    public void checkCommonGoals(List<CommonGoal> goals) throws CommonGoalsException, ShelfGenericException {
+    public void checkCommonGoals(List<CommonGoal> goals) {
         for (CommonGoal goal : goals) {
             if (goal.check(shelf) &&
                     !checkedCommonGoals.contains(goal.getID())) {
@@ -145,7 +142,7 @@ public class Player implements Jsonable {
      * @param tile Tile enum,
      * @param column int.
      */
-    public void insertTile(Tile tile, int column) throws ShelfGenericException {
+    public void insertTile(Tile tile, int column) throws BadPositionException {
         shelf.insertTile(tile, column);
     }
 
@@ -154,7 +151,7 @@ public class Player implements Jsonable {
      * the player has completed the shelf.
      * @return true/false.
      */
-    public boolean hasFinished() throws ShelfGenericException {
+    public boolean hasFinished() {
         return shelf.getHighestColumn() == 0;
     }
 

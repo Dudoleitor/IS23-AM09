@@ -17,7 +17,7 @@ class BoardTest {
     PartialMove partialMove = new PartialMove();
 
     @Test
-    void boardConstructor() throws CommonGoalsException, BoardGenericException {
+    void boardConstructor() throws JsonBadParsingException, BadPositionException {
         Board t1 = new Board(2);
         Board t2 = new Board(3);
         Board b1 = new Board(4);
@@ -28,23 +28,23 @@ class BoardTest {
 
         Exception e1 = assertThrows(BoardRuntimeException.class, () -> new Board(-1));
         assertEquals("Error while creating Board : invalid number of players", e1.getMessage());
-        Exception e2 = assertThrows(BoardRuntimeException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/WrongPath.json"), null));
+        Exception e2 = assertThrows(JsonBadParsingException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/WrongPath.json"), null));
         assertEquals("Error while generating Board from Json : file was not found", e2.getMessage());
-        Exception e3 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadConfiguration.json"),null));
+        Exception e3 = assertThrows(JsonBadParsingException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadConfiguration.json"),null));
         assertEquals("Error while creating board : board is not a valid configuration for given num player", e3.getMessage());
-        Exception e4 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile.json"),null));
+        Exception e4 = assertThrows(JsonBadParsingException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile.json"),null));
         assertEquals("Error while creating Board : bad json parsing", e4.getMessage());
-        Exception e5 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile2.json"),null));
+        Exception e5 = assertThrows(JsonBadParsingException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile2.json"),null));
         assertEquals("Error while creating Board : bad json parsing", e5.getMessage());
 
         List<JSONObject> l = new ArrayList<>();
 
         l.add(CommonGoalsFactory.pathToJsonObject("src/test/resources/BoardTests/BoardBadGoals.json"));
-        Exception e6 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"),l ));
-        assertEquals("Error while creating board : common goal exception" , e6.getMessage());
+        Exception e6 = assertThrows(CommonGoalRuntimeException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"),l ));
+        assertEquals("Error while creating CommonGoal : file Json not found" , e6.getMessage());
     }
     @Test
-    void testFill() throws CommonGoalsException, BoardGenericException, IOException, ParseException, OutOfTilesException {
+    void testFill() throws OutOfTilesException, JsonBadParsingException, BadPositionException {
         Board b1 = new Board(4);
         Board b2 = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"), null);
         b1.fill();
@@ -64,18 +64,18 @@ class BoardTest {
     }
 
     @Test
-    void getterTest() throws CommonGoalsException, IOException, ParseException, BoardGenericException {
+    void getterTest() throws JsonBadParsingException {
         Board b = new Board(3);
         assertEquals(3, b.getNumPlayers());
         assertEquals(9, b.getNumColumns());
         assertEquals(9, b.getNumRows());
     }
     @Test
-    void tileGetPickTest() throws BoardGenericException, CommonGoalsException {
+    void tileGetPickTest() throws JsonBadParsingException, BadPositionException {
         Board b = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json"), null);
 
         assertEquals(Tile.Trophy, b.getTile(new Position(4,0)));
-        Exception e1 = assertThrows(BoardGenericException.class, () -> b.getTile(new Position(-1, 0)));
+        Exception e1 = assertThrows(BadPositionException.class, () -> b.getTile(new Position(-1, 0)));
         assertEquals("Error while getting tile from Board : illegal coordinates", e1.getMessage());
         Exception e2 = assertThrows(BoardRuntimeException.class, () -> b.getTile(null));
         assertEquals("Error while getting tile: pos is null pointer", e2.getMessage());
@@ -83,15 +83,15 @@ class BoardTest {
         Tile t = b.pickTile(4,0);
         assertEquals(Tile.Trophy, t);
         assertEquals(Tile.Empty, b.getTile(new Position(4,0)));
-        Exception e3 = assertThrows(BoardGenericException.class, () -> b.pickTile(new Position(-1, 0)));
+        Exception e3 = assertThrows(BadPositionException.class, () -> b.pickTile(new Position(-1, 0)));
         assertEquals("Error while picking tile from Board : illegal coordinates", e3.getMessage());
         Exception e4 = assertThrows(BoardRuntimeException.class, () -> b.pickTile(null));
         assertEquals("Error while picking tile: pos is null pointer", e4.getMessage());
-        Exception e5 = assertThrows(BoardGenericException.class, () -> b.pickTile(new Position(0,0)));
+        Exception e5 = assertThrows(BadPositionException.class, () -> b.pickTile(new Position(0,0)));
         assertEquals("Error while picking Tile : Chosen one is Invalid type", e5.getMessage());
     }
     @Test
-    void freeSideTest() throws BoardGenericException, CommonGoalsException {
+    void freeSideTest() throws JsonBadParsingException, BadPositionException {
         Board b = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json"), null);
         assertTrue(b.hasFreeSide(4,0));
         assertTrue(b.hasFreeSide(3,1));
@@ -102,7 +102,7 @@ class BoardTest {
         assertEquals("Error while checking hasFreeSide on board : Index Out Of Bounds", e.getMessage());
     }
     @Test
-    void getValidPositionsTest0() throws BoardGenericException{
+    void getValidPositionsTest0() throws JsonBadParsingException, BadPositionException {
         Board b = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json"), null);
         assertTrue(b.hasFreeSide(4,0));
         assertTrue(b.hasFreeSide(5,5));
@@ -124,7 +124,7 @@ class BoardTest {
 
 
     @Test
-    void toJsonTest1() throws CommonGoalsException, IOException, ParseException, BoardGenericException {
+    void toJsonTest1() throws JsonBadParsingException {
         String jsonPath = Board.boardPathForNumberOfPlayers(2);
         JSONObject jsonBoardExpected = Board.pathToJsonObject(jsonPath);
         Board board = new Board(2);
@@ -136,7 +136,7 @@ class BoardTest {
         assertEquals(jsonBoardExpected.toJSONString(), jsonBoardToTest.toJSONString());
     }
     @Test
-    void toJsonTest2() throws CommonGoalsException, IOException, ParseException, BoardGenericException {
+    void toJsonTest2() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
         JSONObject jsonBoard = Board.pathToJsonObject(jsonPath);
         Board board = new Board(jsonBoard, new ArrayList<>());
@@ -145,7 +145,7 @@ class BoardTest {
     }
 
     @Test
-    void getValidPositionsTest() throws BoardGenericException, OutOfTilesException {
+    void getValidPositionsTest() throws OutOfTilesException, JsonBadParsingException, BadPositionException {
             //partialMove.addPosition(pos3);
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
@@ -161,7 +161,7 @@ class BoardTest {
     }
 
     @Test
-    void getValidPositionsTest2() throws BoardGenericException, OutOfTilesException, PartialMoveException {
+    void getValidPositionsTest2() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
 
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());

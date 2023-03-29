@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.JsonBadParsingException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ControllerTest {
 
     @Test
-    void jsonCongruenceTest() throws JsonParsingException {
+    void jsonCongruenceTest() throws JsonBadParsingException {
         List<String> players = new ArrayList<>();
         players.add("fridgeieri");
         players.add("fridgeoggi");

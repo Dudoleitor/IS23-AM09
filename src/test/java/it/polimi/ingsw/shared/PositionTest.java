@@ -20,7 +20,7 @@ class PositionTest {
     }
 
     @Test
-    void equalsTest() throws ShelfGenericException {
+    void equalsTest() {
         Position a = new Position(0,0);
         Position b = new Position(0,0);
         //correct
