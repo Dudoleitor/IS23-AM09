@@ -24,6 +24,7 @@ public class Shelf {
      * generate Shelf by input parameters
      * @param rows is num of rows
      * @param columns is num of columns
+     * @throws ShelfGenericException when dimensions are bad values
      */
     public Shelf(int rows, int columns) throws ShelfGenericException { //initialize a shelf with Empty tiles
         if(rows <= 0 || columns <= 0){
@@ -42,12 +43,12 @@ public class Shelf {
     /**
      * generate Shelf by copy of another Shelf
      * @param s is Shelf to copy from
-     * @throws ShelfGenericException when input shelf is NullPointer
+     * @throws ShelfGenericException when shelf is not valid or json file has bad arguments
      */
-    public Shelf(Shelf s) throws ShelfGenericException {
+    public Shelf(Shelf s) throws ShelfGenericException{
         try{
             if(!s.isValid()){
-                throw new ShelfGenericException("Error while creating Shelf : input Shelf is not valid");
+                throw new ShelfGenericException("Error while creating Shelf : input Shelf has not a valid configuration");
             }
             rows = s.getRows();
             columns = s.getColumns();
@@ -58,19 +59,16 @@ public class Shelf {
                 }
             }
         } catch(NullPointerException e) {
-            throw new ShelfGenericException("Error while creating Shelf : input Shelf is null pointer");
+            throw new ShelfRuntimeException("Error while creating Shelf : input Shelf is null pointer");
         }
     }
 
     /**
      * Generates Shelf by JSON file
      * @param jsonPath is the file path to the JSON file
-     * @throws ShelfGenericException when JSON file can't be found or bad JSON parsing is done
-     * @throws FileNotFoundException when JSON file can't be found
-     * @throws ParseException when parsing problems occurs
-     * @throws IOException when there are problems accessing file
+     * @throws ShelfGenericException when Json file has bad arguments
      */
-    public Shelf(String jsonPath) throws ShelfGenericException{
+    public Shelf(String jsonPath) throws ShelfGenericException {
         this(pathToJSONObject(jsonPath)); //get shelf JSONObject
     }
 
@@ -79,8 +77,7 @@ public class Shelf {
      * it uses the "shelf" attribute.
      * @param jsonPath path to the json file
      * @return JSONObject with the content
-     * @throws IOException when an IO error happens
-     * @throws ParseException when a parsing error happens
+     * @throws ShelfGenericException when Json file has bad arguments
      */
     public static JSONObject pathToJSONObject(String jsonPath) throws ShelfGenericException {
         try {
@@ -89,8 +86,10 @@ public class Shelf {
             FileReader reader = new FileReader(jsonPath);
             result = (JSONObject) jsonParser.parse(reader);
             return (JSONObject) result.get("shelf");
-        } catch (IOException | ParseException e) {
-            throw new ShelfGenericException("Error while generating Shelf from JSON : file not found");
+        } catch (IOException e){
+            throw new ShelfRuntimeException("Error while generating Shelf from JSON : file not found");
+        } catch (ParseException e) {
+            throw new ShelfGenericException("Error while generating Shelf from JSON : bad JSON file configuration");
         }
     }
 
@@ -120,7 +119,7 @@ public class Shelf {
                 }
             }
             if (!isValid()) {
-                throw new ShelfGenericException("Error while creating Shelf : bad tiles configuration");
+                throw new ShelfGenericException("Error while creating Shelf : input Shelf has not a valid configuration");
             }
         } catch (TileGenericException e) {
             throw new ShelfGenericException("Error while creating Shelf : Tile type not found");
@@ -150,13 +149,13 @@ public class Shelf {
      * Get tile in position pos
      * @param pos is the position object
      * @return Tile in position pos
-     * @throws ShelfGenericException when getting position is out of bound or pos is NullPointer
+     * @throws ShelfGenericException when getting position is out of bound
      */
     public Tile getTile(Position pos) throws ShelfGenericException{
         try {
             return getTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e) {
-            throw new ShelfGenericException("Error while getting Tile in Shelf : Position object is null pointer");
+            throw new ShelfRuntimeException("Error while getting Tile in Shelf : Position object is null pointer");
         }
     }
     /**
@@ -177,59 +176,53 @@ public class Shelf {
     /**
      * @return the max number of Empty tiles in a single column
      */
-    public int getHighestColumn() throws ShelfGenericException {
-        try {
-            LongStream allColumns = LongStream.range(0, columns);
-            Function<Long, Long> countEmptyTiles = x ->
-            {
-                try {
-                    return allTilesInColumn(Math.toIntExact(x))
-                            .stream()
-                            .filter(tile -> tile.equals(Tile.Empty))
-                            .count();
-                } catch (ShelfGenericException e) {
-                    throw new ShelfRuntimeException(e.getMessage());
-                }
-            };
+    public int getHighestColumn(){
+        LongStream allColumns = LongStream.range(0, columns);
+        Function<Long, Long> countEmptyTiles =
+                x -> allTilesInColumn(Math.toIntExact(x))
+                        .stream()
+                        .filter(tile -> tile.equals(Tile.Empty))
+                        .count();
 
-            Long result = allColumns
-                    .map(countEmptyTiles::apply)
-                    .max()
-                    .orElse(0);
-            return Math.toIntExact(result);
-
-        } catch (ShelfRuntimeException e){
-            throw new ShelfGenericException(e.getMessage());
-        }
+        long result = allColumns
+                .map(countEmptyTiles::apply)
+                .max()
+                .orElse(0);
+        return Math.toIntExact(result);
     }
     /**
      * Insert tile to selected column
      * @param tile is the tile object to insert
      * @param column is the selected column
-     * @throws ShelfGenericException whether tile is Invalid or column is already full
+     * @throws ShelfGenericException whether tile is Invalid or column is already full or selected column is invalid
      */
     public void insertTile(Tile tile, int column) throws ShelfGenericException{
         boolean isEmpty = false;
-        if(tile.equals(Tile.Empty)){ //if Tile is Empty then do nothing
-            return;
-        } else if (tile.equals(Tile.Invalid)){ //if Tile is Invalid then throw exception
-            throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
-        } else if (!tiles[0][column].equals(Tile.Empty)) { //if selected column has an element in first position aka (also known as) the column is full
-            throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
-        }
-        for (int i = tiles.length - 1; !isEmpty && i >= 0; i--) {// back-iterate the column to find first Empty cell to insert Tile
-            if (tiles[i][column] == Tile.Empty) {
-                tiles[i][column] = tile;
-                isEmpty = true;
+        try {
+            if (!Tile.existsValue(tile))
+                throw new ShelfRuntimeException("Error while inserting tile : Tile type doesn't exists");
+            if (tile.equals(Tile.Empty)) { //if Tile is Empty then do nothing
+                return;
+            } else if (tile.equals(Tile.Invalid)) { //if Tile is Invalid then throw exception
+                throw new ShelfGenericException("Error while inserting in Shelf : Tile is Invalid type");
+            } else if (!tiles[0][column].equals(Tile.Empty)) { //if selected column has an element in first position aka (also known as) the column is full
+                throw new ShelfGenericException("Error while inserting in Shelf : selected column is already full");
             }
+            for (int i = tiles.length - 1; !isEmpty && i >= 0; i--) {// back-iterate the column to find first Empty cell to insert Tile
+                if (tiles[i][column] == Tile.Empty) {
+                    tiles[i][column] = tile;
+                    isEmpty = true;
+                }
+            }
+        } catch (IndexOutOfBoundsException e){
+            throw new ShelfGenericException("Error while inserting in Shelf : selected column is not valid");
         }
-
     }
 
     /**
      * @return points count from group of adjacent Tiles in the board
      */
-    public int countAdjacentPoints() throws ShelfGenericException {
+    public int countAdjacentPoints(){
         int count;
         int points = 0;
 
@@ -259,25 +252,28 @@ public class Shelf {
      * @param j is the number of column of current position
      * @return the number of adjacent tiles of same type
      */
-    private int exploreAdjacents(boolean[][] visited, int i, int j) throws ShelfGenericException {
+    private int exploreAdjacents(boolean[][] visited, int i, int j){
         int count = 0;
-        if(!isValidTile(i,j) || visited[i][j]) // check if current tile is valid for point count
+        try {
+            if (!isValidTile(i, j) || visited[i][j]) // check if current tile is valid for point count
+                return 0;
+            visited[i][j] = true;
+            if (!isOutOfBounds(i - 1, j) && tiles[i][j].equals(tiles[i - 1][j])) { //check if Tile on left side is same type
+                count = count + exploreAdjacents(visited, i - 1, j);
+            }
+            if (!isOutOfBounds(i + 1, j) && tiles[i][j].equals(tiles[i + 1][j])) { //check if Tile on right side is same type
+                count = count + exploreAdjacents(visited, i + 1, j);
+            }
+            if (!isOutOfBounds(i, j - 1) && tiles[i][j].equals(tiles[i][j - 1])) { //check if Tile on upper side is same type
+                count = count + exploreAdjacents(visited, i, j - 1);
+            }
+            if (!isOutOfBounds(i, j + 1) && tiles[i][j].equals(tiles[i][j + 1])) { //check if the Tile below is same type
+                count = count + exploreAdjacents(visited, i, j + 1);
+            }
+            return count + 1;
+        } catch (ShelfGenericException e){
             return 0;
-        visited[i][j] = true;
-        if( !isOutOfBounds(i-1,j) && tiles[i][j].equals(tiles[i-1][j])){ //check if Tile on left side is same type
-            count = count + exploreAdjacents(visited, i-1, j);
         }
-        if( !isOutOfBounds(i+1,j) && tiles[i][j].equals(tiles[i+1][j])){ //check if Tile on right side is same type
-            count = count + exploreAdjacents(visited, i+1, j);
-        }
-        if( !isOutOfBounds(i,j-1) && tiles[i][j].equals(tiles[i][j-1])){ //check if Tile on upper side is same type
-            count = count + exploreAdjacents(visited, i, j-1);
-        }
-        if( !isOutOfBounds(i,j+1) && tiles[i][j].equals(tiles[i][j+1])){ //check if the Tile below is same type
-            count = count + exploreAdjacents(visited, i, j+1);
-        }
-        return count+1;
-
     }
 
     /**
@@ -287,10 +283,7 @@ public class Shelf {
      * @return True if the coordinates are valid
      */
     public boolean isOutOfBounds(int row, int column){
-        if(row < 0 || row >= getRows() || column < 0 || column >= getColumns()){
-            return true;
-        }
-        return false;
+        return row < 0 || row >= getRows() || column < 0 || column >= getColumns();
     }
     /**
      * Tells if the position is Empty or Invalid
@@ -299,10 +292,9 @@ public class Shelf {
      * @return TRUE if the Tile is Empty or Invalid
      */
     public boolean isValidTile(int row, int column) throws ShelfGenericException {
-        Tile tile = getTile(row,column);
+        Tile tile = getTile(row, column);
         return !tile.equals(Tile.Empty) && !tile.equals(Tile.Invalid);
     }
-
     public boolean isValidTile(Position position) throws ShelfGenericException {
         return isValidTile(position.getRow(),position.getColumn());
     }
@@ -375,42 +367,51 @@ public class Shelf {
      * @param column a column of the shelf
      * @return an ArrayList containing all the Tiles in the selected column of the shelf
      */
-    public ArrayList<Tile> allTilesInColumn(int column) throws ShelfGenericException {
+    public ArrayList<Tile> allTilesInColumn(int column) {
+        try {
             ArrayList<Tile> tiles = new ArrayList<>();
             for (int row = 0; row < getRows(); row++) {
                 tiles.add(getTile(row, column));
             }
             return tiles;
+        } catch (ShelfGenericException e) {
+            throw new ShelfRuntimeException("Error while getting in allTilesInColumn for Shelf");
+        }
     }
-
     /**
      * Get all the Tiles in a specific row of the shelf
      * @param row a row of the shelf
      * @return an ArrayList containing all the Tiles in the selected row of the shelf
      */
-    public  ArrayList<Tile> allTilesInRow(int row) throws ShelfGenericException {
+    public  ArrayList<Tile> allTilesInRow(int row) {
+        try {
             ArrayList<Tile> tiles = new ArrayList<>();
             for (int column = 0; column < getColumns(); column++) {
                 tiles.add(getTile(row, column));
             }
             return tiles;
+        } catch (ShelfGenericException e){
+            throw new ShelfRuntimeException("Error while getting in allTilesInRow for Shelf");
+        }
     }
-
     /**
      * Get all the Tiles in a specific row of the shelf
      * @return all the Tiles in a specific row of the shelf
      */
-    public ArrayList<Tile> getCorners() throws ShelfGenericException {
+    public ArrayList<Tile> getCorners(){
         ArrayList<Tile> corners = new ArrayList<>();
         int rows = getRows();
         int columns = getColumns();
-        corners.add(getTile(0,0));
-        corners.add(getTile(0,columns-1));
-        corners.add(getTile(rows-1,0));
-        corners.add(getTile(rows-1,columns-1));
-        return corners;
+        try { //TODO This function depends also on size of shelf, maybe we should check it to avoid duplicate tiles e.g: shelf is a 1x4
+            corners.add(getTile(0, 0));
+            corners.add(getTile(0, columns - 1));
+            corners.add(getTile(rows - 1, 0));
+            corners.add(getTile(rows - 1, columns - 1));
+            return corners;
+        } catch (ShelfGenericException e){
+            throw new ShelfRuntimeException("Error while getting in getCorners in Shelf");
+        }
     }
-
     /**
      * This method is used to save the status of the shelf with a json object.
      * @return JSONObject with status.

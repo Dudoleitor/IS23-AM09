@@ -165,34 +165,30 @@ public class Controller {
      * @return true if the move is valid
      */
     private boolean checkValidMove(Move move) {
-        try {
-            List<Position> positions = move.getBoardPositions();
+        List<Position> positions = move.getBoardPositions();
 
-            //the number of coordinates is greater than the maximum possible ==> false
-            if (positions.size() > move.getMaxNumMoves())
-                return false;
+        //the number of coordinates is greater than the maximum possible ==> false
+        if (positions.size() > move.getMaxNumMoves())
+            return false;
 
-            //duplicate positions are present ==> false
-            if(Position.duplicates(positions)){
-                return false;
-            }
-
-            //Position with no free side ==> false
-            for (Position p : positions) {
-                if (!board.hasFreeSide(p))
-                    return false;
-            }
-
-            //One tile is always correct if it has a free side ==> true
-            if (positions.size() == 1)
-                return true;
-
-            //check if the positions are correctly aligned
-            return Position.areAligned(positions);
-
-        } catch (BoardGenericException e){
+        //duplicate positions are present ==> false
+        if(Position.duplicates(positions)){
             return false;
         }
+
+        //Position with no free side ==> false
+        for (Position p : positions) {
+            if (!board.hasFreeSide(p))
+                return false;
+        }
+
+        //One tile is always correct if it has a free side ==> true
+        if (positions.size() == 1)
+            return true;
+
+        //check if the positions are correctly aligned
+        return Position.areAligned(positions);
+
     }
 
     public JSONObject toJson() {

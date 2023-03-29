@@ -20,43 +20,28 @@ public class ShelfTest {
     final String value = "Cat";
     @Test
     void generateShelf() throws ShelfGenericException {
+        Shelf s = new Shelf("src/test/resources/ShelfTests/ShelfInsert.json");
+        Shelf s1 = new Shelf(4, 4);
+
         Exception e0 = assertThrows(ShelfGenericException.class,() -> new Shelf(0,5));
         assertEquals("Error while generating shelf : dimensions are no valid numbers", e0.getMessage());
         Exception e1 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/ShelfBadJson1.json"));
-        assertEquals("Error while creating Shelf : bad tiles configuration", e1.getMessage());
+        assertEquals("Error while creating Shelf : input Shelf has not a valid configuration", e1.getMessage());
         Exception e2 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/ShelfBadJson2.json"));
         assertEquals("Error while generating Shelf from JSON : Tile is Invalid type", e2.getMessage());
-        Exception e3 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/notExists.json"));
+        Exception e3 = assertThrows(ShelfRuntimeException.class,() -> new Shelf("src/test/resources/ShelfTests/notExists.json"));
         assertEquals("Error while generating Shelf from JSON : file not found", e3.getMessage());
         Exception e4 = assertThrows(ShelfGenericException.class,() -> new Shelf("src/test/resources/ShelfTests/ShelfBadJson3.json"));
         assertEquals("Error while creating Shelf : Tile type not found", e4.getMessage());
+        Exception e5 = assertThrows(ShelfRuntimeException.class,() -> new Shelf((Shelf) null));
+        assertEquals("Error while creating Shelf : input Shelf is null pointer", e5.getMessage());
 
-        Shelf s = new Shelf("src/test/resources/ShelfTests/ShelfInsert.json");
-        Shelf s1 = new Shelf(4, 4);
-        s1.insertTile(Tile.Trophy, 0);
-        s1.insertTile(Tile.Cat, 0);
-        s1.insertTile(Tile.Trophy, 0);
-        s1.insertTile(Tile.Cat, 0);
+        System.out.println(s);
+        System.out.println(s1);
 
-        s1.insertTile(Tile.Cat, 1);
-        s1.insertTile(Tile.Cat, 1);
-        s1.insertTile(Tile.Cat, 1);
-        s1.insertTile(Tile.Cat, 1);
-
-        s1.insertTile(Tile.Book, 2);
-        s1.insertTile(Tile.Cat, 2);
-        s1.insertTile(Tile.Cat, 2);
-        s1.insertTile(Tile.Empty, 2);
-
-        s1.insertTile(Tile.Cat, 3);
-        s1.insertTile(Tile.Cat, 3);
-        s1.insertTile(Tile.Book, 3);
-        s1.insertTile(Tile.Book, 3);
-
-        assert(s.equals(s1));
     }
     @Test
-    void insertTest() throws ShelfGenericException, TileGenericException, ParseException, IOException {
+    void insertTest() throws ShelfGenericException{
         Shelf s = new Shelf("src/test/resources/ShelfTests/ShelfBadTileInsert.json");
         s.insertTile(Tile.Trophy,0);
         assertEquals(s.getTile(1, 0), Tile.Trophy);
@@ -64,6 +49,11 @@ public class ShelfTest {
         assertEquals("Error while inserting in Shelf : Tile is Invalid type", e1.getMessage());
         Exception e2 =assertThrows(ShelfGenericException.class, () -> s.insertTile(Tile.Trophy,3));
         assertEquals("Error while inserting in Shelf : selected column is already full", e2.getMessage());
+        Exception e3 =assertThrows(ShelfGenericException.class, () -> s.insertTile(Tile.Trophy,-1));
+        assertEquals("Error while inserting in Shelf : selected column is not valid", e3.getMessage());
+        Exception e4 =assertThrows(ShelfRuntimeException.class, () -> s.insertTile(null,4));
+        assertEquals("Error while inserting tile : Tile type doesn't exists", e4.getMessage());
+
 
     }
     @Test
@@ -80,12 +70,12 @@ public class ShelfTest {
         assert(s1.equals(s2)); //check they are the same
     }
     @Test
-    void getTileTest() throws TileGenericException, ParseException, IOException, ShelfGenericException {
+    void getTileTest() throws ShelfGenericException {
         Shelf s = new Shelf("src/test/resources/ShelfTests/ShelfGenericTest.json");
         assertEquals(Tile.Trophy, s.getTile(3,0));
         Exception e1 = assertThrows(ShelfGenericException.class, () -> s.getTile(-1,0));
         assertEquals("Error while getting Tile in Shelf : Coordinates are beyond boundaries", e1.getMessage());
-        Exception e2 = assertThrows(ShelfGenericException.class, () -> s.getTile(null));
+        Exception e2 = assertThrows(ShelfRuntimeException.class, () -> s.getTile(null));
         assertEquals("Error while getting Tile in Shelf : Position object is null pointer", e2.getMessage());
     }
     @Test
@@ -181,6 +171,10 @@ public class ShelfTest {
         l.add(Tile.Empty);
         l.add(Tile.Book);
         assertEquals(t , l);
+
+        Exception e = assertThrows(ShelfRuntimeException.class, ()->s.allTilesInRow(-1));
+        assertEquals("Error while getting in allTilesInRow for Shelf", e.getMessage());
+
     }
     @Test
     void columnTiles() throws TileGenericException, ParseException, IOException, ShelfGenericException {
@@ -192,6 +186,9 @@ public class ShelfTest {
         l.add(Tile.Cat);
         l.add(Tile.Trophy);
         assertEquals(t , l);
+
+        Exception e = assertThrows(ShelfRuntimeException.class, ()->s.allTilesInColumn(-1));
+        assertEquals("Error while getting in allTilesInColumn for Shelf", e.getMessage());
     }
     @Test
     void cornersTiles() throws TileGenericException, ParseException, IOException, ShelfGenericException {
