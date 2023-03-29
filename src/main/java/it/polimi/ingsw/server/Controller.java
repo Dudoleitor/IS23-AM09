@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
 
 
-public class Controller {
+public class Controller implements Jsonable {
     private final Board board;
     private final List<Player> players;
     private int turn;

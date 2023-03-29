@@ -35,10 +35,6 @@ public class ShelfTest {
         assertEquals("Error while creating Shelf : Tile type not found", e4.getMessage());
         Exception e5 = assertThrows(ShelfRuntimeException.class,() -> new Shelf((Shelf) null));
         assertEquals("Error while creating Shelf : input Shelf is null pointer", e5.getMessage());
-
-        System.out.println(s);
-        System.out.println(s1);
-
     }
     @Test
     void insertTest() throws ShelfGenericException{

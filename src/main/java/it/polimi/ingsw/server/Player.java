@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
@@ -15,7 +16,7 @@ import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
 /**
  * This class implements the player inside the model.
  */
-public class Player {
+public class Player implements Jsonable {
     private final String name;
     private int commonGoalPoints;
     private final List<Integer> checkedCommonGoals;

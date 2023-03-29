@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
-public class Board {
+public class Board implements Jsonable {
 
     private final Tile[][] boardTiles;
     private List<Tile> tilesToDraw;

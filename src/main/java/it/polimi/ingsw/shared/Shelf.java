@@ -14,7 +14,7 @@ import java.util.function.Function;
 import java.util.stream.LongStream;
 
 
-public class Shelf {
+public class Shelf implements Jsonable {
     private final Tile[][] tiles; //matrix coordinate (0,0) is the top-left corner of the shelf
     private final int rows;
     private final int columns;
