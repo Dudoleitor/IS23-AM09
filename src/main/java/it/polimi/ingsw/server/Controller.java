@@ -9,10 +9,6 @@ import java.util.*;
 
 
 public class Controller {
-    private final int shelfRows = 6;
-    private final int shelfColumns = 5;
-    private final String jsonPathForPlayerGoals = "src/main/resources/personalGoals.json";
-
     private final Board board;
     private final List<Player> players;
     private int turn;
@@ -27,8 +23,8 @@ public class Controller {
             players = new ArrayList<>();
             turn = 0;
             for (String name : namePlayers) {
-                players.add(new Player(name, new ServerShelf(shelfRows, shelfColumns),
-                        new PlayerGoal(jsonPathForPlayerGoals)));
+                players.add(new Player(name, new ServerShelf(Constants.shelfRows,Constants.shelfColumns),
+                        new PlayerGoal(Constants.jsonPathForPlayerGoals)));
             }
             board = new Board(players.size());
         } catch (ClassCastException | NullPointerException e) {
@@ -40,25 +36,6 @@ public class Controller {
         } catch (ShelfGenericException e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    /**
-     * Load a whole match at a saved state
-     * @param state a MatchState than contains the state of a saved mathc
-     */
-    public Controller(MatchState state){
-        try {
-            turn = state.getTurn();
-            board = new Board(state.getBoardJson(),state.getAllCommonGoalsJson());
-            players = new ArrayList<>();
-            for(JSONObject playerJson : state.getAllPlayersJson()){
-                //players.add(new Player(playerJson,state.getPlayerShelfJson()));
-            }
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     /**

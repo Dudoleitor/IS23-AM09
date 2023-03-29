@@ -59,16 +59,15 @@ public class Board {
     }
 
     public static String boardPathForNumberOfPlayers(int number_of_players) throws BoardGenericException{
-        switch(number_of_players){
-            case(2):
-                return "src/main/resources/BoardInit2players.json";
-            case(3):
-                return "src/main/resources/BoardInit3players.json";
-            case(4):
-                return "src/main/resources/BoardInit4players.json";
-            default:
-                throw new BoardGenericException("Error while creating Board : invalid number of players");
+        String path;
+        if(number_of_players <= Constants.maxSupportedPlayers &&
+                number_of_players >= Constants.minSupportedPlayers){
+            path = Constants.jsonPathForBoard.replace("?",String.valueOf(number_of_players));
         }
+        else{
+            throw new BoardGenericException("Error while creating Board : invalid number of players");
+        }
+        return path;
     }
 
     /**
@@ -140,15 +139,6 @@ public class Board {
             return false;
         }
     }
-/*public String toString() {
-    return "Board{" +
-            "boardTiles=" + Arrays.toString(boardTiles) +
-            ", tilesToDraw=" + tilesToDraw +
-            ", numPlayers=" + numPlayers +
-            ", goalsFactory=" + goalsFactory +
-            ", goals=" + goals +
-            '}';
-}*/
 
     /**
      * Randomly refill the board removing every valid tile previously contained
@@ -279,32 +269,32 @@ public class Board {
 
     /**
      * Get tile in position (i,j)
-     * @param i is row index
-     * @param j is column index
+     * @param row is row index
+     * @param column is column index
      * @return Tile in position (i,j)
      * @throws BoardGenericException when getting coordinates are out of bound
      */
-    public Tile getTile(int i, int j) throws BoardGenericException{
+    public Tile getTile(int row, int column) throws BoardGenericException{
         try {
-            return boardTiles[i][j];
+            return boardTiles[row][column];
         } catch (IndexOutOfBoundsException e){
             throw new BoardGenericException("Error while getting tile from Board : illegal coordinates");
         }
     }
     /**
      * Pick a tile from the board removing it from the board
-     * @param i is the x coord
-     * @param j is the y coord
+     * @param row is the x coord
+     * @param column is the y coord
      * @return Tile in position pos
      * @throws BoardGenericException when picking position is out of bound or pos is NullPointer
      */
-    public Tile pickTile(int i, int j) throws BoardGenericException { //maybe add pick tile by coordinates
+    public Tile pickTile(int row, int column) throws BoardGenericException { //maybe add pick tile by coordinates
         try {
             Tile selectedTile;
-            selectedTile = boardTiles[i][j];
+            selectedTile = boardTiles[row][column];
             if(selectedTile.equals(Tile.Invalid))
                 throw new BoardGenericException("Error while picking Tile : Chosen one is Invalid type");
-            boardTiles[i][j] = Tile.Empty;
+            boardTiles[row][column] = Tile.Empty;
             return selectedTile;
         } catch (IndexOutOfBoundsException e){
             throw new BoardGenericException("Error while picking tile from Board : illegal coordinates");

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.commonGoals.*;
+import it.polimi.ingsw.shared.Constants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -59,19 +60,15 @@ public class CommonGoalsFactory {
      */
     public static CommonGoal create_goal_with_ID(int id, int number_of_players) throws CommonGoalsException {
         JSONObject jsonObject;
-            switch (number_of_players) {
-                case (2):
-                    jsonObject = pathToJsonObject("src/main/resources/Two_Players_CommonGoal.json"); //acquire JSON object file
-                    break;
-                case (3):
-                    jsonObject = pathToJsonObject("src/main/resources/Three_Players_CommonGoal.json"); //acquire JSON object file
-                    break;
-                case (4):
-                    jsonObject = pathToJsonObject("src/main/resources/Four_Players_CommonGoal.json"); //acquire JSON object file
-                    break;
-                default:
-                    throw new CommonGoalsException("Error while creating CommonGoal: Invalid number of Players");
-            }
+        String path;
+        if(number_of_players <= Constants.maxSupportedPlayers &&
+                number_of_players >= Constants.minSupportedPlayers){
+            path = Constants.jsonPathForCommonGoals.replace("?",String.valueOf(number_of_players));
+        }
+        else{
+            throw new CommonGoalsException("Error while creating CommonGoal: Invalid number of Players");
+        }
+        jsonObject = pathToJsonObject(path);
         jsonObject.put("id", Long.valueOf(id));
         return create_from_json(jsonObject);
     }

@@ -46,6 +46,8 @@ class BoardTest {
         Board b1 = new Board(4);
         Board b2 = new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"), null);
         b1.fill();
+        System.out.println(b1); //to check for fill
+
         boolean noEmptyFound = true;
         for(int i = 0; noEmptyFound && i < b1.getNumRows(); i++){
             for(int j = 0; noEmptyFound && j < b1.getNumColumns(); j++){
