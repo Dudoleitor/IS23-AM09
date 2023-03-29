@@ -419,8 +419,8 @@ public class Shelf {
         JSONObject shelfJson = new JSONObject();  // Object to return
 
         // Saving final parameters
-        shelfJson.put("numRows", rows);
-        shelfJson.put("numColumns", columns);
+        shelfJson.put("numRows", Long.valueOf(rows));
+        shelfJson.put("numColumns", Long.valueOf(columns));
 
         // Looping to save the matrix
         JSONArray shelfMatrix = new JSONArray();

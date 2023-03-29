@@ -534,9 +534,9 @@ public class Board {
         JSONObject boardJson = new JSONObject();  // Object to return
 
         // Saving final parameters
-        boardJson.put("numPlayers", numPlayers);
-        boardJson.put("numRows", numRows);
-        boardJson.put("numColumns", numColumns);
+        boardJson.put("numPlayers", Long.valueOf(numPlayers));
+        boardJson.put("numRows", Long.valueOf(numRows));
+        boardJson.put("numColumns", Long.valueOf(numColumns));
 
         // Looping to save the matrix
         JSONArray boardMatrix = new JSONArray();
