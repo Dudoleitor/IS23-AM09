@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
     Position pos1 = new Position(3, 4);
-    Position pos2 = new Position(1, 2);
+    Position pos2 = new Position(1, 5);
     Board board;
     PartialMove partialMove = new PartialMove();
 
@@ -73,7 +73,7 @@ class BoardTest {
 
     @Test
     void pickTile2() throws BoardGenericException {
-        assertEquals(Tile.Invalid, board2.pickTile(pos2));
+        assertEquals(Tile.Empty, board2.pickTile(pos2));
     }
 
     @Test
