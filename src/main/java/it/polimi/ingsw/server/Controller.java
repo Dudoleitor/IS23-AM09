@@ -1,11 +1,13 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.*;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
 
 
 public class Controller {
@@ -24,7 +26,7 @@ public class Controller {
             turn = 0;
             for (String name : namePlayers) {
                 players.add(new Player(name, new ServerShelf(Constants.shelfRows,Constants.shelfColumns),
-                        new PlayerGoal(Constants.jsonPathForPlayerGoals)));
+                        new PlayerGoal(jsonPathForPlayerGoals)));
             }
             board = new Board(players.size());
         } catch (ClassCastException | NullPointerException e) {
@@ -35,6 +37,32 @@ public class Controller {
             throw new ControllerGenericException(e.getMessage());
         } catch (ShelfGenericException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * This constructor is used to load the state of the game from a jsonfile.
+     * @param gameStatus JSONObject with the status
+     * @throws JsonParsingException when a parsing error happens
+     */
+    public Controller(JSONObject gameStatus) throws JsonParsingException {
+        try {
+            // TODO load common goals
+            this.board = new Board((JSONObject) gameStatus.get("Board"), new ArrayList<>());
+            this.turn = Math.toIntExact((Long) gameStatus.get("Turn"));
+
+            // Loading players
+            this.players = new ArrayList<>();
+            JSONArray playersJson = (JSONArray) gameStatus.get("Players");
+            if (playersJson==null) {throw new JsonParsingException("Error while loading game status from json: players field not found");}
+
+            JSONObject jsonPlayer;
+            for (Object objPlayer : playersJson) {
+                jsonPlayer = (JSONObject) objPlayer;
+                this.players.add(new Player(jsonPlayer));
+            }
+        } catch (Exception e) {
+            throw new JsonParsingException("Error while loading game status from json: " + e.getMessage());
         }
     }
 
@@ -166,4 +194,25 @@ public class Controller {
             return false;
         }
     }
+
+    public JSONObject toJson() {
+        JSONObject gameStatus = new JSONObject();
+        gameStatus.put("Board", board.toJson());
+        gameStatus.put("Turn", Long.valueOf(turn));
+
+        JSONArray playersJson = new JSONArray();
+        playersJson.addAll(
+                players.stream()
+                        .map(Player::toJson)
+                        .collect(Collectors.toList())
+        );
+        gameStatus.put("Players", playersJson);
+
+        JSONArray commonGoalsJson = new JSONArray();
+        // TODO save common goals
+        gameStatus.put("CommonGoals", commonGoalsJson);
+
+        return gameStatus;
+    }
+
 }
