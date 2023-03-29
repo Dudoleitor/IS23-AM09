@@ -49,13 +49,11 @@ class BoardTest {
     }
 
     @Test
-    void getTile2() {
+    void getTile2() throws BoardGenericException {
         String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
-        try {
+
             Board jsonBoard = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     @Test
@@ -74,22 +72,16 @@ class BoardTest {
     }
 
     @Test
-    void boardFiller() {
-        try {
+    void boardFiller() throws BoardGenericException, OutOfTilesException {
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
             b.fill();
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        } catch (OutOfTilesException e) {
-            throw new RuntimeException(e);
         }
-    }
+
 
 
     @Test
-    void getValidPositionsTest() {
-        try {
+    void getValidPositionsTest() throws BoardGenericException, OutOfTilesException {
             //partialMove.addPosition(pos3);
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
@@ -100,17 +92,13 @@ class BoardTest {
             assertTrue(b.getValidPositions(partialMove).contains(pos2));
 
 
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        } catch (OutOfTilesException e) {
-            throw new RuntimeException(e);
-        }
+
 
     }
 
     @Test
-    void getValidPositionsTest2() {
-        try {
+    void getValidPositionsTest2() throws BoardGenericException, OutOfTilesException, PartialMoveException {
+
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
             b.fill();
@@ -124,13 +112,7 @@ class BoardTest {
             assertFalse(b.getValidPositions(partialMove).contains(pos3));
 
 
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        } catch (OutOfTilesException e) {
-            throw new RuntimeException(e);
-        } catch (PartialMoveException e) {
-            e.printStackTrace();
-        }
+
     }
 
 }

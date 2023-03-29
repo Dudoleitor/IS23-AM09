@@ -406,7 +406,7 @@ public class Board {
                     positions.add(new Position(tempRow, tempColumn - 1));
                 }
             } else {
-                if(partialMove.getBoardPositions().get(0).getColumn() == partialMove.getBoardPositions().get(1).getColumn()) {
+                if(partialMove.getBoardPositions().get(1).getColumn() == partialMove.getBoardPositions().get(0).getColumn()) {
                     if(partialMove.getBoardPositions().get(1).getRow() > partialMove.getBoardPositions().get(0).getRow()) {
                         if(partialMove.getBoardPositions().get(1).getRow() + 1 < getNumRows()
                                 && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
