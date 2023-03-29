@@ -384,9 +384,88 @@ public class Board {
             return positions;
         }
 
-        /*if(partialMove.getBoardPositions().size() >= 1 && partialMove.getBoardPositions().size() < partialMove.getMaxNumMoves()){
+        if(partialMove.getBoardPositions().size() >= 1 && partialMove.getBoardPositions().size() < partialMove.getMaxNumMoves()){
+            if(partialMove.getBoardPositions().size() == 1) {
+                int tempRow = partialMove.getBoardPositions().get(0).getRow();
+                int tempColumn = partialMove.getBoardPositions().get(0).getColumn();
 
-        }*/
+                if(tempRow + 1 < getNumRows() && !getTile(tempRow + 1, tempColumn).equals(Tile.Empty)
+                        && !getTile(tempRow + 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow + 1, tempColumn)) {
+                    positions.add(new Position(tempRow + 1, tempColumn));
+                }
+                if(tempRow - 1 < getNumRows() && !getTile(tempRow - 1, tempColumn).equals(Tile.Empty)
+                        && !getTile(tempRow - 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow - 1, tempColumn)) {
+                    positions.add(new Position(tempRow - 1, tempColumn));
+                }
+                if(tempColumn + 1 < getNumColumns() && !getTile(tempRow, tempColumn + 1).equals(Tile.Empty)
+                        && !getTile(tempRow, tempColumn + 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn + 1)) {
+                    positions.add(new Position(tempRow, tempColumn + 1));
+                }
+                if(tempColumn - 1 < getNumColumns() && !getTile(tempRow, tempColumn - 1).equals(Tile.Empty)
+                        && !getTile(tempRow, tempColumn - 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn - 1)) {
+                    positions.add(new Position(tempRow, tempColumn - 1));
+                }
+            } else {
+                if(partialMove.getBoardPositions().get(0).getColumn() == partialMove.getBoardPositions().get(1).getColumn()) {
+                    if(partialMove.getBoardPositions().get(1).getRow() > partialMove.getBoardPositions().get(0).getRow()) {
+                        if(partialMove.getBoardPositions().get(1).getRow() + 1 < getNumRows()
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() + 1,partialMove.getBoardPositions().get(1).getColumn()))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() + 1,partialMove.getBoardPositions().get(1).getColumn()));
+                        }
+                        if(partialMove.getBoardPositions().get(0).getRow() - 1 < getNumRows()
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() - 1,partialMove.getBoardPositions().get(0).getColumn()))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() - 1,partialMove.getBoardPositions().get(0).getColumn()));
+                        }
+                    } else {
+                        if(partialMove.getBoardPositions().get(0).getRow() + 1 < getNumRows()
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() + 1,partialMove.getBoardPositions().get(0).getColumn()))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() + 1,partialMove.getBoardPositions().get(0).getColumn()));
+                        }
+                        if(partialMove.getBoardPositions().get(1).getRow() - 1 < getNumRows()
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() - 1,partialMove.getBoardPositions().get(1).getColumn()))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() - 1,partialMove.getBoardPositions().get(1).getColumn()));
+                        }
+                    }
+                } else {
+                    if(partialMove.getBoardPositions().get(1).getColumn() > partialMove.getBoardPositions().get(0).getColumn()) {
+                        if(partialMove.getBoardPositions().get(1).getColumn() + 1 < getNumColumns()
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() + 1))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() + 1));
+                        }
+                        if(partialMove.getBoardPositions().get(0).getColumn() - 1 < getNumColumns()
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() - 1))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() - 1));
+                        }
+                    } else {
+                        if(partialMove.getBoardPositions().get(0).getColumn() + 1 < getNumColumns()
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() + 1))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(),partialMove.getBoardPositions().get(0).getColumn() + 1));
+                        }
+                        if(partialMove.getBoardPositions().get(1).getColumn() - 1 < getNumColumns()
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Empty)
+                                && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Invalid)
+                                && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() - 1))  {
+                            positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(),partialMove.getBoardPositions().get(1).getColumn() - 1));
+                        }
+
+                    }
+                }
+            }
+        }
 
         return positions;
     }
