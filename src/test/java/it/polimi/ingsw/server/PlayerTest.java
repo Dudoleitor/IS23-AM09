@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -109,10 +111,11 @@ public class PlayerTest {
         ArrayList<Integer> stackState = new ArrayList<>();
         stackState.add(4);
         stackState.add(8);
-
-        CommonGoalTest commonGoal1 = new CommonGoalTest(stackState);
+        //the Strategy is ignored in CommonGoalTest, a random one is used because
+        //super class CommonGoal requires so
+        CommonGoalTest commonGoal1 = new CommonGoalTest(CommonGoalStrategy.Ladders,stackState);
         commonGoal1.setId(10);
-        CommonGoalTest commonGoal2 = new CommonGoalTest(stackState);
+        CommonGoalTest commonGoal2 = new CommonGoalTest(CommonGoalStrategy.Ladders,stackState);
         commonGoal2.setId(20);
         commonGoalsList.add(commonGoal1);
         commonGoalsList.add(commonGoal2);
@@ -163,19 +166,22 @@ public class PlayerTest {
         assertEquals(8, testpl.getAdjacentPoints());
     }
 }
-
-class CommonGoalTest extends CommonGoal {
+class CommonGoalTest extends CommonGoal{
     private boolean achieved = false;
     private int id;
-    public CommonGoalTest(ArrayList<Integer> stackState) {
-        super(stackState);
+    private Stack<Integer> pointsStack;
+    public CommonGoalTest(CommonGoalStrategy s, ArrayList<Integer> stackState) {
+        super(s,stackState);
+        pointsStack = new Stack<>();
+        for(Integer i : stackState){
+            pointsStack.push(i);
+        }
+        id = 0;
     }
     public void setId(int id){
         this.id = id;
     }
-    @Override
     public int getID() {return id;}
-        @Override
     public boolean check(Shelf shelf) { return achieved;}
     public void setAchieved() {this.achieved = true;}
 }

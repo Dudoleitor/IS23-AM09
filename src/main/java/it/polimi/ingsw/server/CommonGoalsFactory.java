@@ -1,6 +1,5 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.server.commonGoals.*;
 import it.polimi.ingsw.shared.Constants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +15,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class CommonGoalsFactory {
-    static final int number_of_goals = 12;
 
     /**
      * Generates two distinct common goals for the match
@@ -26,7 +24,7 @@ public class CommonGoalsFactory {
      */
     public static ArrayList<CommonGoal> createTwoGoals(int number_of_players) throws CommonGoalsException{
         ArrayList<CommonGoal> active_goals = new ArrayList<>();
-        for(int i : pickTwoRandomNumbers(number_of_goals)){
+        for(int i : pickTwoRandomNumbers(CommonGoalStrategy.values().length)){
             active_goals.add(create_goal_with_ID(i,number_of_players));
         }
         return active_goals;
@@ -80,48 +78,7 @@ public class CommonGoalsFactory {
      * @return the generated common goal
      */
     private static CommonGoal create_goal_with_ID(int ID, List<Integer> stackState) throws CommonGoalsException {
-        CommonGoal newGoal;
-        switch (ID){
-            case(1):
-                newGoal = new SixGroupsOf2(stackState);
-                break;
-            case(2):
-                newGoal = new TwoSquares(stackState);
-                break;
-            case(3):
-                newGoal = new EqualTilesInAllCorners(stackState);
-                break;
-            case(4):
-                newGoal = new ThreeColumnsWith3Types(stackState);
-                break;
-            case(5):
-                newGoal = new TwoAllDifferentColumns(stackState);
-                break;
-            case(6):
-                newGoal = new EightEqualTiles(stackState);
-                break;
-            case(7):
-                newGoal = new Ladders(stackState);
-                break;
-            case(8):
-                newGoal = new FourLineWith3Types(stackState);
-                break;
-            case(9):
-                newGoal = new TwoAllDifferentLines(stackState);
-                break;
-            case(10):
-                newGoal = new FullLadder(stackState);
-                break;
-            case(11):
-                newGoal = new FourGroupsOfFour(stackState);
-                break;
-            case(12):
-                newGoal = new EqualX(stackState);
-                break;
-            default:
-                throw new CommonGoalsException("Error while creating CommonGoal: Invalid Id");
-        }
-        return newGoal;
+         return new CommonGoal(CommonGoalStrategy.findById(ID),stackState);
     }
 
     /**

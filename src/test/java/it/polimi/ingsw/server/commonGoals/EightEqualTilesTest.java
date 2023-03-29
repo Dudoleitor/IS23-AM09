@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.commonGoals;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.CommonGoalStrategy;
 import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.shared.Shelf;
@@ -48,7 +49,7 @@ class EightEqualTilesTest{
         stackState.add(20);
         stackState.add(30);
         stackState.add(40);
-        CommonGoal t = new EightEqualTiles(stackState);
+        CommonGoal t = new CommonGoal(CommonGoalStrategy.EightEqualTiles,stackState);
         assertEquals(stackState,t.showPointsStack());
     }
 }
