@@ -24,14 +24,26 @@ public class PlayerTest {
         Player testpl = new Player(name, shelf, goal);
 
         assertEquals("fridgeieri", testpl.getName());
-        // TODO waiting for methods in ServerShelf
-        // assertEquals((Shelf) shelf, testpl.getShelf());
+        assertEquals(shelf, testpl.getShelf());
+        assertEquals(goal.getGoalId(), testpl.getPersonalGoalId());
         assertFalse(testpl.hasFinished());
         assertEquals(0, testpl.getAdjacentPoints());
         assertEquals(0, testpl.getCommonGoalPoints());
         assertEquals(0, testpl.checkPersonalGoal());
         assertTrue(testpl.getCheckedCommonGoals().isEmpty());
         testpl.checkPersonalGoal();
+    }
+
+    @Test
+    void jsonCongruenceTest() throws PlayerGoalLoadingException, ShelfGenericException, JsonParsingException {
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
+        String name = "fridgeieri";
+        ServerShelf shelf = new ServerShelf(3, 3);
+        PlayerGoal goal = new PlayerGoal(jsonPath);
+        Player testpl1 = new Player(name, shelf, goal);
+        Player testpl2 = new Player(testpl1.toJson());
+
+        assertEquals(testpl1.toJson().toJSONString(), testpl2.toJson().toJSONString());
     }
 
     @Test

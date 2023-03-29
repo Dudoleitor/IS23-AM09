@@ -3,10 +3,14 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.ShelfGenericException;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
 
 /**
  * This class implements the player inside the model.
@@ -15,7 +19,7 @@ public class Player {
     private final String name;
     private int commonGoalPoints;
     private final List<Integer> checkedCommonGoals;
-    private final ServerShelf shelf;
+    private final Shelf shelf;
     private final PlayerGoal goal;
 
 
@@ -25,20 +29,19 @@ public class Player {
      * @param shelf player's shelf;
      * @param goal player's personal goal.
      */
-    public Player(String name, ServerShelf shelf, PlayerGoal goal) {
+    public Player(String name, Shelf shelf, PlayerGoal goal) {
         this(name, shelf, goal, 0, new ArrayList<>());
     }
 
     /**
-     * This constructor is used to initialize a player with known properties,
-     * used when loading model status from file.
+     * This constructor is used to initialize a player with known properties.
      * @param name player's name;
      * @param shelf player's shelf;
      * @param goal player's personal goal;
      * @param commonGoalPoints integer, previously achieved points;
      * @param checkedCommonGoals list of integers, id of common goals the player already achieved.
      */
-    public Player(String name, ServerShelf shelf, PlayerGoal goal, int commonGoalPoints, List<Integer> checkedCommonGoals) {
+    public Player(String name, Shelf shelf, PlayerGoal goal, int commonGoalPoints, List<Integer> checkedCommonGoals) {
         this.name = name;
         this.shelf = shelf;
         this.goal = goal;
@@ -46,6 +49,34 @@ public class Player {
         this.checkedCommonGoals = new ArrayList<>(checkedCommonGoals);
     }
 
+    /**
+     * This constructor is used to initialize a player from a JSONObject
+     * @param playerJson JSONObject with the player's properties
+     * @throws JsonParsingException when a parsing error happens
+     */
+    public Player(JSONObject playerJson) throws JsonParsingException {
+        try {
+            this.name = (String) playerJson.get("Name");
+            // Loading shelf
+            this.shelf = new Shelf((JSONObject) playerJson.get("Shelf"));
+
+            // Loading player goal
+            this.goal = new PlayerGoal(jsonPathForPlayerGoals,
+                    Math.toIntExact((Long) playerJson.get("PersonalGoalId")));
+
+            // Loading common goals points
+            this.commonGoalPoints = Math.toIntExact((Long) playerJson.get("CommonGoalsPoints"));
+
+            // Loading common goals achieved ids
+            JSONArray jsonPointsAchieved = (JSONArray) playerJson.get("CommonGoalsAchieved");
+            if (jsonPointsAchieved==null) {throw new JsonParsingException("Error while loading player from json: goals achieved not found");}
+
+            this.checkedCommonGoals = new ArrayList<>(jsonPointsAchieved);
+
+        } catch (Exception e) {
+            throw new JsonParsingException("Error while loading player from json: " + e.getMessage());
+        }
+    }
     public String getName() { return name; }
 
     /**
@@ -60,6 +91,13 @@ public class Player {
      */
     public int checkPersonalGoal() throws PlayerGoalLoadingException {
         return goal.check(shelf);
+    }
+
+    /**
+     * @return id of the personal goal
+     */
+    public int getPersonalGoalId() {
+        return goal.getGoalId();
     }
 
     /**
@@ -117,6 +155,25 @@ public class Player {
      */
     public boolean hasFinished() throws ShelfGenericException {
         return shelf.getHighestColumn() == 0;
+    }
+
+    /**
+     * This method is used to save the status of the player with a json object.
+     * @return JSONObject with status.
+     */
+    public JSONObject toJson() {
+        JSONObject playerJson = new JSONObject();
+        playerJson.put("Name", name);
+        playerJson.put("Shelf", shelf.toJson());
+        playerJson.put("PersonalGoalId", Long.valueOf(goal.getGoalId()));
+        playerJson.put("CommonGoalsPoints", Long.valueOf(commonGoalPoints));
+
+        // Saving common goals achieved ids
+        JSONArray commonGoals = new JSONArray();
+        commonGoals.addAll(checkedCommonGoals);
+        playerJson.put("CommonGoalsAchieved", commonGoals);
+
+        return playerJson;
     }
 
     @Override
