@@ -7,16 +7,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public enum CommonGoalStrategy {
-    EightEqualTiles(6, Predicates.eightEqualTiles),
+    EightEqualTiles(6, Predicates.NequalTiles(8)),
     EqualTilesInAllCorners(3, Predicates.equalTilesInAllCorners),
     EqualX(12, Predicates.equalX),
-    FourGroupsOf4(11, Predicates.fourGroupsOfFour),
+    FourGroupsOf4(11, Predicates.groups(4,4)),
     FourLineWith3Types(8, Predicates.fourLineWith3Types),
     FullLadder(10, Predicates.fullLadder),
     Ladders(7, Predicates.ladder),
-    SixGroupsOf2(1, Predicates.sixGroupsOf2),
+    SixGroupsOf2(1, Predicates.groups(6,2)),
     ThreeColumnsWith3Types(4, Predicates.threeColumnsWith3Types),
     TwoAllDifferentColumns(5, Predicates.twoAllDifferentColumns),
     TwoAllDifferentLines(9, Predicates.twoAllDifferentLines),
@@ -46,33 +47,6 @@ public enum CommonGoalStrategy {
     }
 
     private static class Predicates {
-        static Predicate<Shelf> eightEqualTiles = (shelf) -> {
-            Tile currentTile;
-            //initialize counters for all tyle of Tiles
-            HashMap<Tile, Integer> counters = new HashMap<>();
-            for (Tile tile : Tile.values()) {
-                counters.put(tile, 0);
-            }
-            //count all tiles in different counters
-            for (int row = 0; row < shelf.getRows(); row++) {
-                for (int column = 0; column < shelf.getColumns(); column++) {
-                    try {
-                        currentTile = shelf.getTile(row, column);
-                    } catch (ShelfGenericException e) {
-                        throw new RuntimeException(e); //TODO handle better
-                    }
-                    try {
-                        if (shelf.isValidTile(row, column)) {
-                            //increment counter
-                            counters.put(currentTile, counters.get(currentTile) + 1);
-                        }
-                    } catch (ShelfGenericException e) {
-                        throw new RuntimeException(e);//TODO handle better
-                    }
-                }
-            }
-            return counters.values().stream().filter(x -> x >= 8).count() > 0;
-        };
         static Predicate<Shelf> equalTilesInAllCorners = (shelf) -> {
             try {
                 return notEmptyAndEqual(shelf.getCorners());
@@ -102,25 +76,6 @@ public enum CommonGoalStrategy {
                 }
             }
             return false;
-        };
-        static Predicate<Shelf> fourGroupsOfFour = (shelf) -> {
-            int rows = shelf.getRows();
-            int columns = shelf.getColumns();
-            boolean[][] alreadyChecked = new boolean[rows][columns];
-            int groups_found = 0;
-            //count all groups with more than 2 tiles
-            for (int row = 0; row < rows; row++) {
-                for (int column = 0; column < columns; column++) {
-                    try {
-                        if (validIslandSize(shelf, new Position(row, column), alreadyChecked) >= 4) {
-                            groups_found++;
-                        }
-                    } catch (ShelfGenericException e) {
-                        throw new RuntimeException(e); //TODO handle better
-                    }
-                }
-            }
-            return groups_found >= 4;
         };
         static Predicate<Shelf> fourLineWith3Types = (shelf) -> {
             Long result = IntStream.range(0, shelf.getRows())
@@ -165,24 +120,6 @@ public enum CommonGoalStrategy {
                 }
             }
             return false;
-        };
-        static Predicate<Shelf> sixGroupsOf2 = (shelf) -> {
-            int rows = shelf.getRows();
-            int columns = shelf.getColumns();
-            boolean[][] alreadyChecked = new boolean[rows][columns];
-            int groups_found = 0;
-            for (int row = 0; row < rows; row++) {
-                for (int column = 0; column < columns; column++) {
-                    try {
-                        if (validIslandSize(shelf, new Position(row, column), alreadyChecked) >= 2) {
-                            groups_found++;
-                        }
-                    } catch (ShelfGenericException e) {
-                        throw new RuntimeException(e);//TODO handle better
-                    }
-                }
-            }
-            return groups_found >= 6;
         };
         static Predicate<Shelf> threeColumnsWith3Types = (shelf) -> {
             Long result = IntStream.range(0, shelf.getColumns())
@@ -242,7 +179,61 @@ public enum CommonGoalStrategy {
             }
             return equalSquaresCounter >= 2;
         };
-
+        static Predicate<Shelf> groups(int number_of_groups, int size_of_groups){
+            return new Predicate<Shelf>() {
+                @Override
+                public boolean test(Shelf shelf) {
+                    int rows = shelf.getRows();
+                    int columns = shelf.getColumns();
+                    boolean[][] alreadyChecked = new boolean[rows][columns];
+                    int groups_found = 0;
+                    for (int row = 0; row < rows; row++) {
+                        for (int column = 0; column < columns; column++) {
+                            try {
+                                if (validIslandSize(shelf, new Position(row, column), alreadyChecked) >= size_of_groups) {
+                                    groups_found++;
+                                }
+                            } catch (ShelfGenericException e) {
+                                throw new RuntimeException(e);//TODO handle better
+                            }
+                        }
+                    }
+                    return groups_found >= number_of_groups;
+                }
+            };
+        }
+        static Predicate<Shelf> NequalTiles(int n){
+            return new Predicate<Shelf>() {
+                @Override
+                public boolean test(Shelf shelf) {
+                    Tile currentTile;
+                    //initialize counters for all tyle of Tiles
+                    HashMap<Tile, Integer> counters = new HashMap<>();
+                    for (Tile tile : Tile.values()) {
+                        counters.put(tile, 0);
+                    }
+                    //count all tiles in different counters
+                    for (int row = 0; row < shelf.getRows(); row++) {
+                        for (int column = 0; column < shelf.getColumns(); column++) {
+                            try {
+                                currentTile = shelf.getTile(row, column);
+                            } catch (ShelfGenericException e) {
+                                throw new RuntimeException(e); //TODO handle better
+                            }
+                            try {
+                                if (shelf.isValidTile(row, column)) {
+                                    //increment counter
+                                    counters.put(currentTile, counters.get(currentTile) + 1);
+                                }
+                            } catch (ShelfGenericException e) {
+                                throw new RuntimeException(e);//TODO handle better
+                            }
+                        }
+                    }
+                    return counters.values().stream().filter(x -> x >= n).count() > 0;
+                }
+            };
+        }
         //static private functions used in predicates
 
         /**
