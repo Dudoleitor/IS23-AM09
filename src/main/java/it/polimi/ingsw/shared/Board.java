@@ -81,8 +81,10 @@ public class Board {
             JSONParser jsonParser = new JSONParser(); //initialize parser
             Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
             return (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
-        } catch (IOException | ParseException e){
-            throw new BoardGenericException("Error while generating Board from Json : file was not found");
+        } catch (IOException e){
+            throw new BoardRuntimeException("Error while generating Board from Json : file was not found");
+        } catch (ParseException e) {
+            throw new BoardGenericException("Error while generating Board from Json : bad json parsing");
         }
     }
     /**
@@ -117,10 +119,20 @@ public class Board {
             throw new BoardGenericException("Error while creating Board : bad json parsing");
         }
     }
-    private boolean checkValidBoard() throws BoardGenericException {
+
+    /**
+     *
+     * @return is board is valid comparing to standard configuration for given number of players
+     */
+    private boolean checkValidBoard(){
         boolean valid = true;
         JSONArray boardLine;
-        JSONObject objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
+        JSONObject objBoard;
+        try {
+            objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
+        } catch (BoardGenericException e) {
+            throw new BoardRuntimeException("Error while checking board validity : JsonPath to numPlayer is not valid");
+        }
         JSONArray arrayBoard = (JSONArray) objBoard.get("matrix");
 
         Tile t;
@@ -263,7 +275,7 @@ public class Board {
         try {
             return getTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e){
-            throw new BoardGenericException("Error while getting tile: pos is null pointer");
+            throw new BoardRuntimeException("Error while getting tile: pos is null pointer");
         }
     }
 
@@ -305,13 +317,13 @@ public class Board {
      * Pick a tile from the board removing it from the board
      * @param pos is the position object
      * @return Tile in position pos
-     * @throws BoardGenericException when picking position is out of bound or pos is NullPointer
+     * @throws BoardGenericException when picking position is out of bound
      */
     public Tile pickTile(Position pos) throws BoardGenericException { //maybe add pick tile by coordinates
         try {
             return pickTile(pos.getRow(), pos.getColumn());
         } catch (NullPointerException e){
-            throw new BoardGenericException("Error while picking tile: pos is null pointer");
+            throw new BoardRuntimeException("Error while picking tile: pos is null pointer");
         }
     }
 
@@ -319,11 +331,11 @@ public class Board {
     /**
      * Initialize two random goals from CommonGoalsFactory
      */
-    private void initializeGoals() throws BoardGenericException {
+    private void initializeGoals(){
         try {
             goals = CommonGoalsFactory.createTwoGoals(numPlayers);
         } catch (CommonGoalsException e){
-            throw new BoardGenericException("Error while creating board : common goal exception");
+            throw new BoardRuntimeException("Error while creating board : common goal exception");
         }
     }
 
@@ -349,6 +361,9 @@ public class Board {
         return new ArrayList<>(goals);
     }
 
+    /**
+     * @return deck of tiles
+     */
     public List<Tile> getTilesToDraw() {
         return new ArrayList<>(tilesToDraw);
     }
@@ -361,30 +376,18 @@ public class Board {
     public List<Position> getValidPositions(PartialMove partialMove) throws BoardGenericException {
         List<Position> positions = new ArrayList<>();
 
-        //extreme case when partialMove has no positions inside
-        if(partialMove.getBoardPositions().size() == 0) {
-            try {
-                IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
-                        IntStream.range(0, getNumColumns()) // create stream of j
-                                .filter(j -> { //filter not valid positions
-                                    try {
-                                        return hasFreeSide(i, j);
-                                    } catch (BoardGenericException e) {
-                                        throw new BoardRuntimeException(e.getMessage());
-                                    }
-                                })
-                                .forEach(j -> positions.add(new Position(i, j)))
-                );
-            } catch (BoardRuntimeException e){
-                throw new BoardGenericException(e.getMessage());
-            }
-        }
-        //if the move is complete --> it has maxNumMoves positions inside
-        if(partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) {
+        if(partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) { //if the move is complete --> it has maxNumMoves positions inside
             return positions;
         }
+        //extreme case when partialMove has no positions inside
+        if(partialMove.getBoardPositions().size() == 0) {
+            IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
+                    IntStream.range(0, getNumColumns()) // create stream of j
+                            .filter(j -> hasFreeSide(i, j))
+                            .forEach(j -> positions.add(new Position(i, j)))
+                );
 
-        if(partialMove.getBoardPositions().size() >= 1 && partialMove.getBoardPositions().size() < partialMove.getMaxNumMoves()){
+        } else if(partialMove.getBoardPositions().size() >= 1){
             if(partialMove.getBoardPositions().size() == 1) {
                 int tempRow = partialMove.getBoardPositions().get(0).getRow();
                 int tempColumn = partialMove.getBoardPositions().get(0).getColumn();
@@ -476,7 +479,7 @@ public class Board {
      * @param column is the given column
      * @return true if position has at least one free adjacent side
      */
-    public boolean hasFreeSide(int row, int column) throws BoardGenericException {
+    public boolean hasFreeSide(int row, int column){
         Position p = new Position(row, column);
         return hasFreeSide(p);
     }
@@ -484,9 +487,9 @@ public class Board {
      * @param position is the given row
      * @return true if position has at least one free adjacent side
      */
-    public boolean hasFreeSide(Position position) throws BoardGenericException {
+    public boolean hasFreeSide(Position position){
         if(isOutOfBounds(position.getRow(), position.getColumn()))
-            throw new BoardGenericException("Error while checking hasFreeSide on board : Index Out Of Bounds");
+            throw new BoardRuntimeException("Error while checking hasFreeSide on board : Index Out Of Bounds");
 
         if(isNotValid(position))
             return false;
@@ -498,7 +501,7 @@ public class Board {
             //check the extreme cases where pos has at least one free side for sure
             return true;
 
-        return position.neighbours().stream().anyMatch(pos -> isNotValid(pos));
+        return position.neighbours().stream().anyMatch(this::isNotValid); //return true if there is any neighbour which is either Empty or Invalid
     }
 
     //check if pos in the board has one adjacent empty (or invalid) cell
@@ -517,13 +520,10 @@ public class Board {
      * @return True if the coordinates are valid
      */
     public boolean isOutOfBounds(int row, int column){
-        if(     row < 0 ||
+        return row < 0 ||
                 row >= getNumRows() ||
                 column < 0 ||
-                column >= getNumColumns()){
-            return true;
-        }
-        return false;
+                column >= getNumColumns();
     }
 
     /**

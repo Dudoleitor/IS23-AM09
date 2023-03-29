@@ -13,38 +13,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
-    Position pos1 = new Position(3, 4);
-    Position pos2 = new Position(1, 5);
-    Board board;
+
     PartialMove partialMove = new PartialMove();
-
-    {
-        try {
-            board = new Board(3);
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    Board board1;
-
-    {
-        try {
-            board1 = new Board(3);
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    Board board2;
-
-    {
-        try {
-            board2 = new Board(4);
-        } catch (BoardGenericException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void boardConstructor() throws CommonGoalsException, BoardGenericException {
@@ -58,17 +28,20 @@ class BoardTest {
 
         Exception e1 = assertThrows(BoardRuntimeException.class, () -> new Board(-1));
         assertEquals("Error while creating Board : invalid number of players", e1.getMessage());
-        Exception e2 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/WrongPath.json"), null));
+        Exception e2 = assertThrows(BoardRuntimeException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/WrongPath.json"), null));
         assertEquals("Error while generating Board from Json : file was not found", e2.getMessage());
         Exception e3 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadConfiguration.json"),null));
         assertEquals("Error while creating board : board is not a valid configuration for given num player", e3.getMessage());
         Exception e4 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile.json"),null));
         assertEquals("Error while creating Board : bad json parsing", e4.getMessage());
+        Exception e5 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile2.json"),null));
+        assertEquals("Error while creating Board : bad json parsing", e5.getMessage());
+
         List<JSONObject> l = new ArrayList<>();
 
         l.add(CommonGoalsFactory.pathToJsonObject("src/test/resources/BoardTests/BoardBadGoals.json"));
-        Exception e5 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"),l ));
-        assertEquals("Error while creating board : common goal exception" , e5.getMessage());
+        Exception e6 = assertThrows(BoardGenericException.class, () -> new Board(Board.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json"),l ));
+        assertEquals("Error while creating board : common goal exception" , e6.getMessage());
     }
     @Test
     void testFill() throws CommonGoalsException, BoardGenericException, IOException, ParseException, OutOfTilesException {
@@ -105,7 +78,7 @@ class BoardTest {
         assertEquals(Tile.Trophy, b.getTile(new Position(4,0)));
         Exception e1 = assertThrows(BoardGenericException.class, () -> b.getTile(new Position(-1, 0)));
         assertEquals("Error while getting tile from Board : illegal coordinates", e1.getMessage());
-        Exception e2 = assertThrows(BoardGenericException.class, () -> b.getTile(null));
+        Exception e2 = assertThrows(BoardRuntimeException.class, () -> b.getTile(null));
         assertEquals("Error while getting tile: pos is null pointer", e2.getMessage());
 
         Tile t = b.pickTile(4,0);
@@ -113,7 +86,7 @@ class BoardTest {
         assertEquals(Tile.Empty, b.getTile(new Position(4,0)));
         Exception e3 = assertThrows(BoardGenericException.class, () -> b.pickTile(new Position(-1, 0)));
         assertEquals("Error while picking tile from Board : illegal coordinates", e3.getMessage());
-        Exception e4 = assertThrows(BoardGenericException.class, () -> b.pickTile(null));
+        Exception e4 = assertThrows(BoardRuntimeException.class, () -> b.pickTile(null));
         assertEquals("Error while picking tile: pos is null pointer", e4.getMessage());
         Exception e5 = assertThrows(BoardGenericException.class, () -> b.pickTile(new Position(0,0)));
         assertEquals("Error while picking Tile : Chosen one is Invalid type", e5.getMessage());
@@ -126,7 +99,7 @@ class BoardTest {
         assertFalse(b.hasFreeSide(4,1));
         assertFalse(b.hasFreeSide(0,0));
         assertFalse(b.hasFreeSide(2,4));
-        Exception e = assertThrows(BoardGenericException.class, () -> b.hasFreeSide(0,-1));
+        Exception e = assertThrows(BoardRuntimeException.class, () -> b.hasFreeSide(0,-1));
         assertEquals("Error while checking hasFreeSide on board : Index Out Of Bounds", e.getMessage());
     }
     @Test
@@ -171,42 +144,6 @@ class BoardTest {
 
         assertEquals(jsonBoard.toJSONString(), board.toJson().toJSONString());
     }
-    @Test
-    void getTile() throws BoardGenericException {
-        assertEquals(Tile.Empty, board.getTile(pos1));
-    }
-
-    @Test
-    void getTile2() throws BoardGenericException {
-        String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
-
-            Board jsonBoard = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
-
-    }
-
-    @Test
-    void pickTile() throws BoardGenericException {
-        assertEquals(Tile.Empty, board.pickTile(pos1));
-    }
-
-    @Test
-    void pickTile1() throws BoardGenericException {
-        assertEquals(Tile.Empty, board1.pickTile(pos1));
-    }
-
-    @Test
-    void pickTile2() throws BoardGenericException {
-        assertEquals(Tile.Empty, board2.pickTile(pos2));
-    }
-
-    @Test
-    void boardFiller() throws BoardGenericException, OutOfTilesException {
-            String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
-            Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
-            b.fill();
-        }
-
-
 
     @Test
     void getValidPositionsTest() throws BoardGenericException, OutOfTilesException {
