@@ -58,14 +58,14 @@ public class Board {
         }
     }
 
-    public static String boardPathForNumberOfPlayers(int number_of_players) throws BoardGenericException{
+    public static String boardPathForNumberOfPlayers(int number_of_players){
         String path;
         if(number_of_players <= Constants.maxSupportedPlayers &&
                 number_of_players >= Constants.minSupportedPlayers){
             path = Constants.jsonPathForBoard.replace("?",String.valueOf(number_of_players));
         }
         else{
-            throw new BoardGenericException("Error while creating Board : invalid number of players");
+            throw new BoardRuntimeException("Error while creating Board : invalid number of players");
         }
         return path;
     }
