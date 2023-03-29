@@ -1,12 +1,9 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.server.CommonGoalsException;
 import it.polimi.ingsw.server.PartialMove;
 import it.polimi.ingsw.server.PartialMoveException;
-import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +50,7 @@ class BoardTest {
 
     @Test
     void getTile2() {
-        String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
+        String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
         try {
             Board jsonBoard = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
         } catch (BoardGenericException e) {
@@ -79,7 +76,7 @@ class BoardTest {
     @Test
     void boardFiller() {
         try {
-            String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
+            String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
             b.fill();
         } catch (BoardGenericException e) {
@@ -94,7 +91,7 @@ class BoardTest {
     void getValidPositionsTest() {
         try {
             //partialMove.addPosition(pos3);
-            String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
+            String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
             b.fill();
             Position pos2 = new Position(0, 3);
@@ -114,7 +111,7 @@ class BoardTest {
     @Test
     void getValidPositionsTest2() {
         try {
-            String jsonPath = "src/test/resources/BoardTests/boardTestInsert.json";
+            String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Board.pathToJsonObject(jsonPath), new ArrayList<>());
             b.fill();
             Position pos1 = new Position(8, 5);
