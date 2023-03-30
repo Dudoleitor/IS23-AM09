@@ -1,12 +1,6 @@
 package it.polimi.ingsw.shared;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +39,7 @@ public class Shelf implements Jsonable {
      */
     public Shelf(Shelf s) {
         try{
-            if(!s.isValid()){
+            if(s.isNotValid()){
                 throw new ShelfRuntimeException("Error while creating Shelf : input Shelf has not a valid configuration");
             }
             rows = s.getRows();
@@ -88,7 +82,7 @@ public class Shelf implements Jsonable {
                     tiles[i][j] = t;
                 }
             }
-            if (!isValid()) {
+            if (isNotValid()) {
                 throw new JsonBadParsingException("Error while creating Shelf : input Shelf has not a valid configuration");
             }
         } catch (TileGenericException e) {
@@ -96,7 +90,7 @@ public class Shelf implements Jsonable {
         }
     }
 
-    private boolean isValid(){
+    private boolean isNotValid(){
         boolean valid = true;
         boolean notEmptyFound;
 
@@ -113,7 +107,7 @@ public class Shelf implements Jsonable {
                 }
             }
         }
-        return valid;
+        return !valid;
     }
 
     /**
@@ -201,7 +195,7 @@ public class Shelf implements Jsonable {
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++){
                 if (!visited[i][j]) {//if a cell hasn't been explored yet, then it starts looking for greatest size group containing this cell
-                    count = exploreAdjacents(visited, i, j);
+                    count = exploreAdjacents(visited, new Position(i,j));
                     if(count >= 6)
                         points = points+8;
                     else if (count == 5)
@@ -219,30 +213,25 @@ public class Shelf implements Jsonable {
     /**
      * recursive method to explore adjacent Tiles of same type
      * @param visited is matrix of already visited positions
-     * @param i is the number of row of current position
-     * @param j is the number of column of current position
+     * @param pos is the position
      * @return the number of adjacent tiles of same type
      */
-    private int exploreAdjacents(boolean[][] visited, int i, int j){
+    public int exploreAdjacents(boolean[][] visited, Position pos) {
         int count = 0;
-        if (!isValidTile(i, j) || visited[i][j]) // check if current tile is valid for point count
+        if (!isValidTile(pos) || visited[pos.getRow()][pos.getColumn()]) // check if current tile is valid for point count
             return 0;
-        visited[i][j] = true;
-        if (!isOutOfBounds(i - 1, j) && tiles[i][j].equals(tiles[i - 1][j])) { //check if Tile on left side is same type
-            count = count + exploreAdjacents(visited, i - 1, j);
-        }
-        if (!isOutOfBounds(i + 1, j) && tiles[i][j].equals(tiles[i + 1][j])) { //check if Tile on right side is same type
-            count = count + exploreAdjacents(visited, i + 1, j);
-        }
-        if (!isOutOfBounds(i, j - 1) && tiles[i][j].equals(tiles[i][j - 1])) { //check if Tile on upper side is same type
-            count = count + exploreAdjacents(visited, i, j - 1);
-        }
-        if (!isOutOfBounds(i, j + 1) && tiles[i][j].equals(tiles[i][j + 1])) { //check if the Tile below is same type
-            count = count + exploreAdjacents(visited, i, j + 1);
-        }
-        return count + 1;
-    }
+        visited[pos.getRow()][pos.getColumn()] = true;
+        try {
+            for (Position neighbour : pos.neighbours()) {
+                if (!isOutOfBounds(neighbour.getRow(), neighbour.getColumn()) && getTile(pos).equals(getTile(neighbour)))
+                    count = count + exploreAdjacents(visited, neighbour);
+            }
 
+            return count + 1;
+        } catch (BadPositionException e) {
+            throw new ShelfRuntimeException("Error in the exploringAdjacents algorithm");
+        }
+    }
     /**
      * Tells if the coordinates are compatible with the shelf
      * @param row integer

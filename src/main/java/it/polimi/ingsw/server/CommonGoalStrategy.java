@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public enum CommonGoalStrategy {
     EightEqualTiles(6, Predicates.nEqualTiles(8)),

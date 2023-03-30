@@ -75,54 +75,28 @@ public class ShelfTest {
         assertEquals("Error while getting Tile in Shelf : Position object is null pointer", e2.getMessage());
     }
     @Test
-    void checkAdiacentTest() throws BadPositionException {
-        Shelf s = new Shelf(4,4);
-        s.insertTile(Tile.Cat,0);
-        s.insertTile(Tile.Cat,0);
-        s.insertTile(Tile.Book,0);
-        s.insertTile(Tile.Cat,0);
+    void checkAdiacentTest() throws JsonBadParsingException {
 
-        s.insertTile(Tile.Trophy,1);
-        s.insertTile(Tile.Cat,1);
-        s.insertTile(Tile.Cat,1);
-        s.insertTile(Tile.Cat,1);
-
-        s.insertTile(Tile.Trophy,2);
-        s.insertTile(Tile.Trophy,2);
-        s.insertTile(Tile.Trophy,2);
-        s.insertTile(Tile.Book,2);
-
-        s.insertTile(Tile.Trophy,3);
-        s.insertTile(Tile.Book,3);
-        s.insertTile(Tile.Book,3);
-        s.insertTile(Tile.Book,3);
-
+        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints1.json", Shelf.class));
         int res = s.countAdjacentPoints();
         assertEquals(16, res);
 
-        s = new Shelf(4,4);
-        s.insertTile(Tile.Trophy,0);
-        s.insertTile(Tile.Book,0);
-        s.insertTile(Tile.Empty,0);
-        s.insertTile(Tile.Empty,0);
-
-        s.insertTile(Tile.Trophy,1);
-        s.insertTile(Tile.Book,1);
-        s.insertTile(Tile.Cat,1);
-        s.insertTile(Tile.Empty,1);
-
-        s.insertTile(Tile.Trophy,2);
-        s.insertTile(Tile.Book,2);
-        s.insertTile(Tile.Trophy,2);
-        s.insertTile(Tile.Empty,2);
-
-        s.insertTile(Tile.Trophy,3);
-        s.insertTile(Tile.Book,3);
-        s.insertTile(Tile.Trophy,3);
-        s.insertTile(Tile.Empty,3);
-
+        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints2.json",Shelf.class));
         res = s.countAdjacentPoints();
         assertEquals(6, res);
+
+        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints3.json",Shelf.class));
+        res = s.countAdjacentPoints();
+        assertEquals(0, res);
+
+        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints4.json", Shelf.class));
+        res = s.countAdjacentPoints();
+        assertEquals(8, res);
+
+        s = new Shelf(5,8);
+        res = s.countAdjacentPoints();
+        assertEquals(0, res);
+
     }
     @Test
     void getHighestColumnTest() throws JsonBadParsingException, BadPositionException {
