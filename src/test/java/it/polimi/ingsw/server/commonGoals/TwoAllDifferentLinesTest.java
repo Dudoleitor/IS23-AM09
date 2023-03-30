@@ -23,14 +23,14 @@ class TwoAllDifferentLinesTest {
     }
     @Test
     void testTrue() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_TwoAllDifferentLines.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_TwoAllDifferentLines.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(9, 2);
         assertTrue(to_test.getID() == 9);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentLines.json");
+        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentLines.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(9,2);
         assertTrue(to_test.getID() == 9);
         assertFalse(to_test.check(falseShelf));

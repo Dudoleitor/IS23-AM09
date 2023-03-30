@@ -28,24 +28,13 @@ public class Player implements Jsonable {
      * @param goal player's personal goal.
      */
     public Player(String name, Shelf shelf, PlayerGoal goal) {
-        this(name, shelf, goal, 0, new ArrayList<>());
-    }
-
-    /**
-     * This constructor is used to initialize a player with known properties.
-     * @param name player's name;
-     * @param shelf player's shelf;
-     * @param goal player's personal goal;
-     * @param commonGoalPoints integer, previously achieved points;
-     * @param checkedCommonGoals list of integers, id of common goals the player already achieved.
-     */
-    public Player(String name, Shelf shelf, PlayerGoal goal, int commonGoalPoints, List<Integer> checkedCommonGoals) {
         this.name = name;
         this.shelf = shelf;
         this.goal = goal;
-        this.commonGoalPoints = commonGoalPoints;
-        this.checkedCommonGoals = new ArrayList<>(checkedCommonGoals);
+        this.commonGoalPoints = 0;
+        this.checkedCommonGoals = new ArrayList<>();
     }
+
 
     /**
      * This constructor is used to initialize a player from a JSONObject
@@ -75,6 +64,7 @@ public class Player implements Jsonable {
             throw new JsonBadParsingException("Error while loading player from json: " + e.getMessage());
         }
     }
+
     public String getName() { return name; }
 
     /**

@@ -64,36 +64,6 @@ public class Shelf implements Jsonable {
     }
 
     /**
-     * Generates Shelf by JSON file
-     * @param jsonPath is the file path to the JSON file
-     * @throws JsonBadParsingException when Json file has bad arguments
-     */
-    public Shelf(String jsonPath) throws JsonBadParsingException {
-        this(pathToJSONObject(jsonPath)); //get shelf JSONObject
-    }
-
-    /**
-     * This static method returns the JSONObject from a json file,
-     * it uses the "shelf" attribute.
-     * @param jsonPath path to the json file
-     * @return JSONObject with the content
-     * @throws JsonBadParsingException when Json file has bad arguments
-     */
-    public static JSONObject pathToJSONObject(String jsonPath) throws JsonBadParsingException {
-        try {
-            JSONObject result;
-            JSONParser jsonParser = new JSONParser();
-            FileReader reader = new FileReader(jsonPath);
-            result = (JSONObject) jsonParser.parse(reader);
-            return (JSONObject) result.get("shelf");
-        } catch (IOException e){
-            throw new JsonBadParsingException("Error while generating Shelf from JSON : file not found");
-        } catch (ParseException e) {
-            throw new JsonBadParsingException("Error while generating Shelf from JSON : bad JSON file configuration");
-        }
-    }
-
-    /**
      * Loads a Shelf from Json Object
      * @param jsonShelf is the JSONObject containing the parameters necessary to build the Shelf object
      * @throws JsonBadParsingException when a problem in the creation of shelf occurs
@@ -123,6 +93,27 @@ public class Shelf implements Jsonable {
             }
         } catch (TileGenericException e) {
             throw new JsonBadParsingException("Error while creating Shelf : Tile type not found");
+        }
+    }
+
+    /**
+     * This static method returns the JSONObject from a json file,
+     * it uses the "shelf" attribute.
+     * @param jsonPath path to the json file
+     * @return JSONObject with the content
+     * @throws JsonBadParsingException when Json file has bad arguments
+     */
+    public static JSONObject pathToJSONObject(String jsonPath) throws JsonBadParsingException {
+        try {
+            JSONObject result;
+            JSONParser jsonParser = new JSONParser();
+            FileReader reader = new FileReader(jsonPath);
+            result = (JSONObject) jsonParser.parse(reader);
+            return (JSONObject) result.get("shelf");
+        } catch (IOException e){
+            throw new JsonBadParsingException("Error while generating Shelf from JSON : file not found");
+        } catch (ParseException e) {
+            throw new JsonBadParsingException("Error while generating Shelf from JSON : bad JSON file configuration");
         }
     }
     private boolean isValid(){

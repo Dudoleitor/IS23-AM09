@@ -23,14 +23,14 @@ class EqualsTilesInAllCornersTest {
     }
     @Test
     void testTrue() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_EqualCorners.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_EqualCorners.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(3, 2);
         assertTrue(to_test.getID() == 3);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_EqualCorners.json");
+        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_EqualCorners.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(3,2);
         assertTrue(to_test.getID() == 3);
         assertFalse(to_test.check(falseShelf));

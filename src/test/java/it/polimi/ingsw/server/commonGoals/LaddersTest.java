@@ -23,21 +23,21 @@ class LaddersTest {
     }
     @Test
     void testTrueDescending() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_Ladders.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_Ladders.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(7, 2);
         assertTrue(to_test.getID() == 7);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testTrueAscending() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_Ladders.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_Ladders.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(7, 2);
         assertTrue(to_test.getID() == 7);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_3_Ladders.json");
+        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_3_Ladders.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(7,2);
         assertTrue(to_test.getID() == 7);
         assertFalse(to_test.check(falseShelf));

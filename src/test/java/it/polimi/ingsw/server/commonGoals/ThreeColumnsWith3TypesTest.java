@@ -23,14 +23,14 @@ class ThreeColumnsWith3TypesTest {
     }
     @Test
     void testTrue() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_3columns_3types.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_3columns_3types.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(4, 2);
         assertTrue(to_test.getID() == 4);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_3columns_3types.json");
+        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_3columns_3types.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(4,2);
         assertTrue(to_test.getID() == 4);
         assertFalse(to_test.check(falseShelf));

@@ -23,14 +23,14 @@ class SixGroupsOf2Test {
     }
     @Test
     void testTrue() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_6groupsOf2.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_6groupsOf2.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(1, 2);
         assertTrue(to_test.getID() == 1);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentColumns.json");
+        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentColumns.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(1,2);
         assertTrue(to_test.getID() == 1);
         assertFalse(to_test.check(falseShelf));

@@ -25,14 +25,14 @@ class EightEqualTilesTest{
     }
     @Test
     void trueTest() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_1_8equalsTiles.json");
+        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_8equalsTiles.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void falseTest() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf("src/test/resources/CommonGoalTests/TestShelf_2_8equalsTiles.json");
+        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_8equalsTiles.json"));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(6,2);
         assertTrue(to_test.getID() == 6);
         assertFalse(to_test.check(falseShelf));
