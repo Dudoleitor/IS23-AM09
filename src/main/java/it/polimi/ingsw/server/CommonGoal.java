@@ -42,8 +42,8 @@ public class CommonGoal implements Jsonable{
     }
     /**
      * Cretes a CommonGoal with a specified id for a specified number of players
-     * @param strategy
-     * @param number_of_players
+     * @param strategy is the check static function
+     * @param number_of_players talks by itself //TODO to change one day or the other
      */
     public CommonGoal(CommonGoalStrategy strategy, int number_of_players) throws JsonBadParsingException {
         this(getJsonObject(number_of_players,strategy));
@@ -51,7 +51,7 @@ public class CommonGoal implements Jsonable{
 
     /**
      * Extracts the id from the JsonObject
-     * @param jsonObject
+     * @param jsonObject is the ini object
      * @return the id
      */
     private static int getIdFromJson(JSONObject jsonObject){
@@ -60,7 +60,7 @@ public class CommonGoal implements Jsonable{
     }
     /**
      * Extracts the stack state from the JsonObject
-     * @param jsonObject
+     * @param jsonObject is the reload object
      * @return a List of Integers representing the stack state
      */
     private static List<Integer> getStackStateFromJson(JSONObject jsonObject){
@@ -73,10 +73,10 @@ public class CommonGoal implements Jsonable{
     }
 
     /**
-     * @param number_of_players
-     * @param strategy
+     * @param number_of_players's been created to be intuitive //TODO to change one day or the other
+     * @param strategy is the check static function
      * @return a jsonObject with the required characteristics
-     * @throws JsonBadParsingException
+     * @throws JsonBadParsingException when Json file is bad formatted
      */
     private static JSONObject getJsonObject(int number_of_players, CommonGoalStrategy strategy) throws JsonBadParsingException {
         JSONObject jsonObject;

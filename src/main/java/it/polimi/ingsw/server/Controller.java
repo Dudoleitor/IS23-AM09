@@ -1,12 +1,9 @@
 package it.polimi.ingsw.server;
-
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import java.util.*;
-import java.util.prefs.BackingStoreException;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
