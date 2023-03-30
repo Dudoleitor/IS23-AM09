@@ -1,5 +1,5 @@
 {
-  "CommonGoal": {
+  "commongoal": {
     "id": 1,
     "stack": [4, 6, 8]
   }

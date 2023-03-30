@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.commonGoals;
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.Shelf;
 import it.polimi.ingsw.shared.TileGenericException;
 import org.json.simple.parser.ParseException;
@@ -23,14 +24,14 @@ class TwoAllDifferentColumnsTest {
     }
     @Test
     void testTrue() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_1_TwoAllDifferentColumns.json"));
+        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_1_TwoAllDifferentColumns.json", Shelf.class));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(5, 2);
         assertTrue(to_test.getID() == 5);
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf(Shelf.pathToJSONObject("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentColumns.json"));
+        Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_2_TwoAllDifferentColumns.json", Shelf.class));
         CommonGoal to_test = CommonGoalsFactory.create_goal_with_ID(5,2);
         assertTrue(to_test.getID() == 5);
         assertFalse(to_test.check(falseShelf));

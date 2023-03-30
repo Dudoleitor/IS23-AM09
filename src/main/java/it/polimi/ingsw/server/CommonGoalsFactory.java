@@ -2,13 +2,10 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.Jsonable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -64,7 +61,7 @@ public class CommonGoalsFactory {
         else{
             throw new CommonGoalRuntimeException("Error while creating CommonGoal: Invalid number of Players");
         }
-        jsonObject = pathToJsonObject(path);
+        jsonObject = Jsonable.pathToJsonObject(path,CommonGoal.class);
         jsonObject.put("id", Long.valueOf(id));
         return create_from_json(jsonObject);
     }
@@ -92,19 +89,6 @@ public class CommonGoalsFactory {
             return create_goal_with_ID(id, stackState);
         } catch (ClassCastException | NullPointerException e) {
             throw new CommonGoalRuntimeException("Error while creating CommonGoal : file Json not found");
-        }
-    }
-    public static JSONObject pathToJsonObject(String jsonPath) throws JsonBadParsingException {
-        Object obj = null;
-        try {
-            JSONParser jsonParser = new JSONParser(); //initialize parser
-            obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-            JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get("CommonGoal"); //get CommonGoal
-            return jsonObject;
-        } catch (IOException | NullPointerException e) {
-            throw new CommonGoalRuntimeException("Error while creating CommonGoal : bad json parsing");
-        } catch (ParseException | ClassCastException e ) {
-            throw new JsonBadParsingException("Error while creating CommonGoal : bad JsonParsing");
         }
     }
 }

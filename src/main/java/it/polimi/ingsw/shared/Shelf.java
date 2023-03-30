@@ -96,26 +96,6 @@ public class Shelf implements Jsonable {
         }
     }
 
-    /**
-     * This static method returns the JSONObject from a json file,
-     * it uses the "shelf" attribute.
-     * @param jsonPath path to the json file
-     * @return JSONObject with the content
-     * @throws JsonBadParsingException when Json file has bad arguments
-     */
-    public static JSONObject pathToJSONObject(String jsonPath) throws JsonBadParsingException {
-        try {
-            JSONObject result;
-            JSONParser jsonParser = new JSONParser();
-            FileReader reader = new FileReader(jsonPath);
-            result = (JSONObject) jsonParser.parse(reader);
-            return (JSONObject) result.get("shelf");
-        } catch (IOException e){
-            throw new JsonBadParsingException("Error while generating Shelf from JSON : file not found");
-        } catch (ParseException e) {
-            throw new JsonBadParsingException("Error while generating Shelf from JSON : bad JSON file configuration");
-        }
-    }
     private boolean isValid(){
         boolean valid = true;
         boolean notEmptyFound;

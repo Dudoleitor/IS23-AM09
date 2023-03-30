@@ -31,7 +31,7 @@ public class Board implements Jsonable {
      * @throws JsonBadParsingException when parsing errors occurs
      */
     public Board(int numPlayers) throws JsonBadParsingException{
-            this(pathToJsonObject(boardPathForNumberOfPlayers(numPlayers)));
+            this(Jsonable.pathToJsonObject(boardPathForNumberOfPlayers(numPlayers),Board.class));
             tilesToDraw =  createShuffledDeck(22);
             initializeGoals(); //generate two randomly picked goals
     }
@@ -68,23 +68,6 @@ public class Board implements Jsonable {
     }
 
     /**
-     * This static method returns the JSONObject from a json file,
-     * it uses the "board" attribute.
-     * @param jsonPath path to the json file
-     * @return JSONObject with the content
-     */
-    public static JSONObject pathToJsonObject(String jsonPath) throws JsonBadParsingException {
-        try {
-            JSONParser jsonParser = new JSONParser(); //initialize parser
-            Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-            return (JSONObject) ((JSONObject) obj).get("board"); //acquire board object
-        } catch (IOException e){
-            throw new JsonBadParsingException("Error while generating Board from Json : file was not found");
-        } catch (ParseException e) {
-            throw new JsonBadParsingException("Error while generating Board from Json : bad json parsing");
-        }
-    }
-    /**
      * Constructor used to initialize board from previously generated JSON
      * @param objBoard is a board object that serializes the board
      */
@@ -110,7 +93,7 @@ public class Board implements Jsonable {
                 }
             }
             if(!checkValidBoard()){
-                throw new JsonBadParsingException("Error while creating board : board is not a valid configuration for given num player");
+                throw new JsonBadParsingException("Error while creating Board : board is not a valid configuration for given num player");
             }
         } catch (ClassCastException | NullPointerException | TileGenericException e){
             throw new JsonBadParsingException("Error while creating Board : bad json parsing");
@@ -126,7 +109,7 @@ public class Board implements Jsonable {
         JSONArray boardLine;
         JSONObject objBoard;
         try {
-            objBoard = pathToJsonObject(boardPathForNumberOfPlayers(numPlayers));
+            objBoard = Jsonable.pathToJsonObject(boardPathForNumberOfPlayers(numPlayers),Board.class);
         } catch (JsonBadParsingException e) {
             throw new BoardRuntimeException("Error while checking board validity : JsonPath to numPlayer is not valid");
         }

@@ -20,7 +20,6 @@ public class Player implements Jsonable {
     private final Shelf shelf;
     private final PlayerGoal goal;
 
-
     /**
      * This constructor is used to initialize a new player, with no properties
      * @param name player's name;
@@ -28,13 +27,13 @@ public class Player implements Jsonable {
      * @param goal player's personal goal.
      */
     public Player(String name, Shelf shelf, PlayerGoal goal) {
+        super();
         this.name = name;
         this.shelf = shelf;
         this.goal = goal;
         this.commonGoalPoints = 0;
         this.checkedCommonGoals = new ArrayList<>();
     }
-
 
     /**
      * This constructor is used to initialize a player from a JSONObject
@@ -149,6 +148,7 @@ public class Player implements Jsonable {
      * This method is used to save the status of the player with a json object.
      * @return JSONObject with status.
      */
+    @Override
     public JSONObject toJson() {
         JSONObject playerJson = new JSONObject();
         playerJson.put("Name", name);
