@@ -9,12 +9,13 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public abstract class JsonableFactory {
-    public static JSONObject pathToJsonObject(String jsonPath, Class<?> cls) throws JsonBadParsingException {
+    static Class<?> toBuild;
+    public static JSONObject pathToJsonObject(String jsonPath) throws JsonBadParsingException {
         Object obj = null;
         try {
             JSONParser jsonParser = new JSONParser(); //initialize parser
             obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
-            JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get(cls.toString().toLowerCase()); //get CommonGoal
+            JSONObject jsonObject = (JSONObject) ((JSONObject) obj).get(toBuild.toString().toLowerCase()); //get CommonGoal
             return jsonObject;
         } catch (IOException | NullPointerException e) {
             throw new CommonGoalRuntimeException("Error while creating CommonGoal : bad json parsing");
@@ -24,4 +25,7 @@ public abstract class JsonableFactory {
     }
     public abstract Jsonable create_from_json(JSONObject jsonObject);
     public abstract Jsonable create_with_player_number(int number_of_players);
+    public Jsonable creat_from_json_filepath(String jsonPath) throws JsonBadParsingException{
+        return create_from_json(JsonableFactory.pathToJsonObject(jsonPath));
+    }
 }
