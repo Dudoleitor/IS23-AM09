@@ -44,13 +44,13 @@ public class Controller implements Jsonable {
      */
     public Controller(JSONObject gameStatus) throws JsonBadParsingException {
         try {
-            // TODO load common goals
-            this.board = new Board((JSONObject) gameStatus.get("Board"), new ArrayList<>());
-            this.turn = Math.toIntExact((Long) gameStatus.get("Turn"));
+            JSONArray commonGoalsJson = (JSONArray) gameStatus.get("commonGoals");
+            this.board = new Board((JSONObject) gameStatus.get("board"), new ArrayList<>(commonGoalsJson));
+            this.turn = Math.toIntExact((Long) gameStatus.get("turn"));
 
             // Loading players
             this.players = new ArrayList<>();
-            JSONArray playersJson = (JSONArray) gameStatus.get("Players");
+            JSONArray playersJson = (JSONArray) gameStatus.get("players");
             if (playersJson==null) {throw new JsonBadParsingException("Error while loading game status from json: players field not found");}
 
             JSONObject jsonPlayer;
@@ -188,8 +188,8 @@ public class Controller implements Jsonable {
 
     public JSONObject toJson() {
         JSONObject gameStatus = new JSONObject();
-        gameStatus.put("Board", board.toJson());
-        gameStatus.put("Turn", Long.valueOf(turn));
+        gameStatus.put("board", board.toJson());
+        gameStatus.put("turn", Long.valueOf(turn));
 
         JSONArray playersJson = new JSONArray();
         playersJson.addAll(
@@ -197,11 +197,14 @@ public class Controller implements Jsonable {
                         .map(Player::toJson)
                         .collect(Collectors.toList())
         );
-        gameStatus.put("Players", playersJson);
+        gameStatus.put("players", playersJson);
 
         JSONArray commonGoalsJson = new JSONArray();
-        // TODO save common goals
-        gameStatus.put("CommonGoals", commonGoalsJson);
+        commonGoalsJson.addAll(board.getCommonGoals()
+                .stream()
+                .map(CommonGoal::toJson)
+                .collect(Collectors.toList()));
+        gameStatus.put("commonGoals", commonGoalsJson);
 
         return gameStatus;
     }

@@ -329,7 +329,7 @@ public class Board implements Jsonable {
      * @return CommonGoals array copy
      */
     public List<CommonGoal> getCommonGoals() {
-        return new ArrayList<>(goals);
+        return goals;
     }
 
     /**
