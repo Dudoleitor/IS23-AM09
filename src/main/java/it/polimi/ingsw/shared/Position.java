@@ -112,4 +112,13 @@ public class Position {
         neighbours.add(new Position(getRow(),getColumn()+1));
         return neighbours;
     }
+
+    public List<Position> square(){
+        List<Position> square = new ArrayList<>();
+        square.add(new Position(getRow(),getColumn()));
+        square.add(new Position(getRow()+1,getColumn()));
+        square.add(new Position(getRow(),getColumn()+1));
+        square.add(new Position(getRow()+1,getColumn()+1));
+        return square;
+    }
 }

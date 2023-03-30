@@ -4,10 +4,8 @@ import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -102,13 +100,18 @@ public class CommonGoal implements Jsonable{
      */
     public static ArrayList<CommonGoal> createTwoGoals(int number_of_players) throws JsonBadParsingException {
         ArrayList<CommonGoal> active_goals = new ArrayList<>();
-        for(int i : pickTwoRandomNumbers(CommonGoalStrategy.values().length)){
-            active_goals.add(new CommonGoal(CommonGoalStrategy.findById(i),number_of_players));
+        //get a list of all the IDs
+        List<Integer> allIDs= Arrays.stream(CommonGoalStrategy.values()).map(x -> x.getId()).collect(Collectors.toList());
+        //Select two random ids between the ones selected
+        for(int i : pickTwoRandomNumbers(allIDs.size())){
+            active_goals.add(
+                    new CommonGoal(CommonGoalStrategy.findById(allIDs.get(i)), //select the i_th ID in the list
+                            number_of_players));
         }
         return active_goals;
     }
     /** Picks two random numbers to generate the goals
-     * @param max the maximum accepted random number to generate
+     * @param max the first excluded number to generate
      * @return an Array containing the two randomly selected integers
      */
     static int[] pickTwoRandomNumbers(int max) { //max must be positive
@@ -117,10 +120,10 @@ public class CommonGoal implements Jsonable{
         }
         int[] result = new int[2];
         Random rand = new Random();
-        result[0] = rand.nextInt(max) + 1;
+        result[0] = rand.nextInt(max);
         result[1] = result[0];
         while(result[1] == result[0]){
-            result[1] = rand.nextInt(max) + 1;
+            result[1] = rand.nextInt(max);
         }
         return result;
     }
