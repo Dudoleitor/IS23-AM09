@@ -1,15 +1,10 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
-import it.polimi.ingsw.server.CommonGoalsFactory;
 import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -48,9 +43,9 @@ public class Board implements Jsonable {
         Collections.shuffle(deck); //mix tiles
         return deck;
     }
-    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws JsonBadParsingException, BadPositionException {
+    public Board(JSONObject objBoard, List<JSONObject> objCommonGoals) throws JsonBadParsingException {
         this(objBoard);
-        if(objCommonGoals != null){ //skipped in testing only
+        if(objCommonGoals != null){
             initializeGoals(objCommonGoals);
         }
     }
@@ -313,7 +308,7 @@ public class Board implements Jsonable {
      */
     private void initializeGoals(){
         try {
-            goals = CommonGoalsFactory.createTwoGoals(numPlayers);
+            goals = CommonGoal.createTwoGoals(numPlayers);
         } catch (JsonBadParsingException e){
             throw new BoardRuntimeException("Error while creating board : common goal exception");
         }
@@ -326,7 +321,7 @@ public class Board implements Jsonable {
     private void initializeGoals(List<JSONObject> commonGoals){
         goals = new ArrayList<>();
         for (JSONObject jsonObject : commonGoals) {
-            goals.add(CommonGoalsFactory.create_from_json(jsonObject));
+            goals.add(new CommonGoal(jsonObject));
         }
     }
     /**

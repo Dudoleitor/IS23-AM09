@@ -182,8 +182,8 @@ class CommonGoalTest extends CommonGoal{
     private boolean achieved = false;
     private int id;
     private Stack<Integer> pointsStack;
-    public CommonGoalTest(CommonGoalStrategy s, ArrayList<Integer> stackState) {
-        super(s,stackState);
+    public CommonGoalTest(CommonGoalStrategy s, ArrayList<Integer> stackState) throws JsonBadParsingException {
+        super(s,2);
         pointsStack = new Stack<>();
         for(Integer i : stackState){
             pointsStack.push(i);

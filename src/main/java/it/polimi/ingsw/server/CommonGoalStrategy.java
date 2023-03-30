@@ -50,17 +50,6 @@ public enum CommonGoalStrategy {
     //PREDICATES PASSED TO COMMON GOALS
     private static class Predicates {
         //PREDICATES ON GROUPS OF TILES (called by most of Predicate<Shelf>)
-        static Predicate<List<Tile>> notEmptyAndEqual = new Predicate<List<Tile>>() {
-            @Override
-            public boolean test(List<Tile> tiles) {
-                try {
-                    return tiles.stream().distinct().count() == 1 && !tiles.contains(Tile.Empty);
-
-                } catch (NullPointerException e) {
-                    throw new CommonGoalRuntimeException("Error while checking notEmptyAndEqual : tiles is null pointer");
-                }
-            }
-        };
         static Predicate<List<Tile>> notEmptyAndAllDifferent = new Predicate<List<Tile>>() {
             @Override
             public boolean test(List<Tile> tiles) {
@@ -196,7 +185,7 @@ public enum CommonGoalStrategy {
             return !(visited[row][column]) && !(visited[row + 1][column]) &&
                     !(visited[row][column + 1]) && !(visited[row + 1][column + 1])
                     &&
-                    notEmptyAndEqual.test(get2x2Square(shelf, row, column)) &&
+                    maxNtypes(1).test(get2x2Square(shelf, row, column)) &&
                     4 == validIslandSize(shelf, new Position(row, column), visited);
         }
 
@@ -271,7 +260,7 @@ public enum CommonGoalStrategy {
          * is true when all corners of the shelf are not Empty and Equal
          */
         static Predicate<Shelf> equalTilesInAllCorners = (shelf) -> {
-            return Predicates.notEmptyAndEqual.test(shelf.getCorners());
+            return Predicates.maxNtypes(1).test(shelf.getCorners());
         };
 
         /**
@@ -287,7 +276,7 @@ public enum CommonGoalStrategy {
             //Look for an "x" shape of tiles that are equal and not Empty
             for (int row = 0; row < rows - 2; row++) {
                 for (int column = 0; column < columns - 2; column++) {
-                    if (Predicates.notEmptyAndEqual.test(getXShape(shelf, row, column))) {
+                    if (Predicates.maxNtypes(1).test(getXShape(shelf, row, column))) {
                         return true;
                     }
                 }
@@ -354,7 +343,7 @@ public enum CommonGoalStrategy {
             ladders = generateLadders(shelf);
             //check if at least one is composed of all equal tiles
             for (ArrayList<Tile> ladder : ladders) {
-                if (Predicates.notEmptyAndEqual.test(ladder)) {
+                if (Predicates.maxNtypes(1).test(ladder)) {
                     return true;
                 }
             }

@@ -20,15 +20,19 @@ public interface Jsonable {
             JSONParser jsonParser = new JSONParser(); //initialize parser
             Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
             return (JSONObject) ((JSONObject) obj).get(parseClassName(cls)); //acquire board object
-        } catch (IOException e){
+        } catch (IOException | NullPointerException e){
             throw new JsonBadParsingException("Error while generating " + parseClassName1UC(cls) + " from JSON : file was not found");
         } catch (ParseException e) {
             throw new JsonBadParsingException("Error while generating " + parseClassName1UC(cls) + " from JSON : bad json parsing");
         }
     }
-    private static String parseClassName(Class<?> cls){
-        String[] subStrings = cls.toString().split("\\.");
-        return subStrings[subStrings.length-1].toLowerCase();
+    private static String parseClassName(Class<?> cls) {
+        try {
+            String[] subStrings = cls.toString().split("\\.");
+            return subStrings[subStrings.length - 1].toLowerCase();
+        } catch (NullPointerException e){
+            return null;
+        }
     }
     private static String parseClassName1UC(Class<?> cls){
         String str  =parseClassName(cls);

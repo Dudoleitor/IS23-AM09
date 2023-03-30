@@ -154,10 +154,6 @@ class BoardTest {
 
 
             assertTrue(b.getValidPositions(partialMove).contains(pos2));
-
-
-
-
     }
 
     @Test
