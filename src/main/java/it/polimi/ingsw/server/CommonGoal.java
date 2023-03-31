@@ -12,8 +12,8 @@ public class CommonGoal implements Jsonable{
     /**
      * A Stack of points where players pop from when they complete CommonGoals
      */
-    private Stack<Integer> points;
-    private CommonGoalStrategy strategy;
+    private final Stack<Integer> points;
+    private final CommonGoalStrategy strategy;
 
     //CONSTRUCTORS
     /**
@@ -97,7 +97,7 @@ public class CommonGoal implements Jsonable{
     public static ArrayList<CommonGoal> createTwoGoals(int number_of_players) throws JsonBadParsingException {
         ArrayList<CommonGoal> active_goals = new ArrayList<>();
         //get a list of all the IDs
-        List<Integer> allIDs= Arrays.stream(CommonGoalStrategy.values()).map(x -> x.getId()).collect(Collectors.toList());
+        List<Integer> allIDs= Arrays.stream(CommonGoalStrategy.values()).map(CommonGoalStrategy::getId).collect(Collectors.toList());
         //Select two random ids between the ones selected
         for(int i : pickTwoRandomNumbers(allIDs.size())){
             active_goals.add(
@@ -173,9 +173,7 @@ public class CommonGoal implements Jsonable{
         JSONObject commonGoalJson = new JSONObject();  // Object to return
         JSONArray goalStack = new JSONArray(); //points pile
 
-        for(long point : showPointsStack()){
-            goalStack.add(point);
-        }
+        goalStack.addAll(showPointsStack());
         commonGoalJson.put("id", (long)getID());
         commonGoalJson.put("stack", goalStack);
 
@@ -189,8 +187,6 @@ public class CommonGoal implements Jsonable{
             return true;
 
         CommonGoal c = (CommonGoal) o;
-        if(c.getID() != this.getID())
-            return false;
-        return true;
+        return c.getID() == this.getID();
     }
 }
