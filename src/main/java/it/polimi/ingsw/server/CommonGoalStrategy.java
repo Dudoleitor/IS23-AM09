@@ -45,7 +45,7 @@ public enum CommonGoalStrategy {
         return Arrays.stream(values()).
                 filter(x -> x.getId() == id).
                 findFirst().
-                orElseThrow();
+                orElseThrow(); //TODO some work for @mik ado
     }
 
     //PREDICATES PASSED TO COMMON GOALS

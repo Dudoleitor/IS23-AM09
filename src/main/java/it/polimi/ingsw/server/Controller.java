@@ -19,6 +19,9 @@ public class Controller implements Jsonable {
      * @param namePlayers is a List of the (unique) names of the players
      */
     public Controller(List<String> namePlayers){
+        if(namePlayers == null){
+            throw new ControllerGenericException("Error while creating the Controller: namePlayers was null");
+        }
         try {
             players = new ArrayList<>();
             turn = 0;

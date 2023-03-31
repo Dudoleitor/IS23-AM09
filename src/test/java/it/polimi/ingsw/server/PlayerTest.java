@@ -1,10 +1,8 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.BadPositionException;
-import it.polimi.ingsw.shared.JsonBadParsingException;
-import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.*;
 
-import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -32,6 +30,34 @@ public class PlayerTest {
         assertEquals(0, testpl.checkPersonalGoal());
         assertTrue(testpl.getCheckedCommonGoals().isEmpty());
         testpl.checkPersonalGoal();
+
+        JSONObject nullJson = new JSONObject();
+        assertThrows(JsonBadParsingException.class,()-> new Player(nullJson));
+        JSONObject wrongJson = new JSONObject();
+        wrongJson.put("random bullshit",123);
+        assertThrows(JsonBadParsingException.class,()-> new Player(wrongJson));
+    }
+
+    @Test
+    void equalOrNot(){
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
+        PlayerGoal goal = null;
+        try {
+            goal = new PlayerGoal(jsonPath);
+        } catch (JsonBadParsingException e) {
+            fail();
+        }
+        Player A = new Player("GigaMike",new Shelf(5,6),goal);
+        Player alsoA = new Player("gigamike",new Shelf(5,6),goal);
+        assertEquals(A,alsoA); //names are not case sensitive
+
+        Player B = new Player("Dudoleitor",new Shelf(5,6),goal);
+        assertNotEquals(A,B);
+
+        Player nullP = null;
+        assertNotEquals(nullP,A); //null pointer
+
+        assertNotEquals(new ArrayList<>(),A); //other classes
     }
 
     @Test

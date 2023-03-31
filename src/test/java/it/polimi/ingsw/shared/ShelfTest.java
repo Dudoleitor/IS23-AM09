@@ -186,4 +186,17 @@ public class ShelfTest {
 
         assertEquals(jsonShelf.toJSONString(), shelf.toJson().toJSONString());
     }
+
+    @Test
+    void equalOrNot(){
+        Shelf A = new Shelf(4,5);
+        Shelf alsoA = new Shelf(4,5);
+        assertEquals(A,alsoA);
+        Shelf differentSize = new Shelf(4,4);
+        assertNotEquals(A,differentSize);
+
+        Shelf nullS = null;
+        assertNotEquals(A,nullS);
+        assertNotEquals(A,new ArrayList<>());
+    }
 }

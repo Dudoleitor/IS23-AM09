@@ -4,9 +4,7 @@ import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CommonGoal implements Jsonable{
@@ -15,8 +13,7 @@ public class CommonGoal implements Jsonable{
      * A Stack of points where players pop from when they complete CommonGoals
      */
     private Stack<Integer> points;
-    private int id;
-    private Predicate<Shelf> check;
+    private CommonGoalStrategy strategy;
 
     //CONSTRUCTORS
     /**
@@ -29,8 +26,7 @@ public class CommonGoal implements Jsonable{
         for(Integer i : stackState){
             points.push(i);
         }
-        id = strategy.getId();
-        check = strategy.getCheck();
+        this.strategy = strategy;
     }
     /**
      * Loads a common goal from a JSON object
@@ -134,7 +130,7 @@ public class CommonGoal implements Jsonable{
      * @return CommonGoal ID (1-12)
      */
     public int getID(){
-        return id;
+        return strategy.getId();
     }
 
     /**
@@ -143,7 +139,7 @@ public class CommonGoal implements Jsonable{
      * @return TRUE if the condition of the CommonGoal is verified
      */
     public boolean check(Shelf shelf){
-        return check.test(shelf);
+        return strategy.getCheck().test(shelf);
     }
 
     /**
