@@ -69,7 +69,7 @@ public class Player implements Jsonable {
     /**
      * @return copy of the shelf.
      */
-    public Shelf getShelf() { return new ServerShelf(shelf); }
+    public Shelf getShelf() { return new Shelf(shelf); }
 
     /**
      * To check how many points the player currently has achieved with the personal goal.

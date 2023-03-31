@@ -1,12 +1,13 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Board;
+import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.Shelf;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,8 +46,28 @@ public class ControllerTest {
         players.add("fridgeoggi");
         players.add("fridgedomani");
         Controller c = new Controller(players);
-
+        List<Player> playerList = null;
+        try{
+            playerList = (List<Player>) players.stream().map(p -> {
+                try {
+                    return new Player(p,new Shelf(Constants.shelfRows,Constants.shelfColumns), new PlayerGoal(Constants.jsonPathForPlayerGoals));
+                } catch (JsonBadParsingException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+        }
+        catch (Exception e){
+            fail();
+        }
         assertEquals(0,c.getTurn());
-        Board emptyBoard = new Board(3);
+        assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
+        //TODO as long as CommonGoals are in board c.getBoard() cannot be tested on controller
+        assertEquals(c.getPlayers(), playerList);
+
+        assertEquals(players.get(0),c.getCurrentPlayerName());
+
+        //all shelves are empty
+        Shelf emptyShelf = new Shelf(Constants.shelfRows,Constants.shelfColumns);
+        assertTrue(c.getShelves().stream().allMatch(s -> s.equals(emptyShelf)));
     }
 }

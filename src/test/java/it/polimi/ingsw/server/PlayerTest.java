@@ -17,7 +17,7 @@ public class PlayerTest {
     void creationTest() throws JsonBadParsingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
         Player testpl = new Player(name, shelf, goal);
 
@@ -64,7 +64,7 @@ public class PlayerTest {
     void jsonCongruenceTest() throws JsonBadParsingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
         Player testpl1 = new Player(name, shelf, goal);
         Player testpl2 = new Player(testpl1.toJson());
@@ -76,7 +76,7 @@ public class PlayerTest {
     void personalGoalTest() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
         Player testpl = new Player(name, shelf, goal);
 
@@ -90,7 +90,7 @@ public class PlayerTest {
     void hasFinishedTest1() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
         Player testpl = new Player(name, shelf, goal);
 
@@ -116,7 +116,7 @@ public class PlayerTest {
     void hasFinishedTest2() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);
         Player testpl = new Player(name, shelf, goal);
 
@@ -142,7 +142,7 @@ public class PlayerTest {
     void CommonGoalTest() throws JsonBadParsingException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(3, 3);
+        Shelf shelf = new Shelf(3, 3);
         PlayerGoal playerGoal = new PlayerGoal(jsonPath);
         List<CommonGoal> commonGoalsList = new ArrayList<>();
 
@@ -182,7 +182,7 @@ public class PlayerTest {
     void AdjacentPointsTest() throws JsonBadParsingException, BadPositionException {
         String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
-        ServerShelf shelf = new ServerShelf(4, 3);
+        Shelf shelf = new Shelf(4, 3);
         PlayerGoal playerGoal = new PlayerGoal(jsonPath);
         Player testpl = new Player(name, shelf, playerGoal);
 

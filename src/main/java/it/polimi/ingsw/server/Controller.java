@@ -26,7 +26,7 @@ public class Controller implements Jsonable {
             players = new ArrayList<>();
             turn = 0;
             for (String name : namePlayers) {
-                players.add(new Player(name, new ServerShelf(Constants.shelfRows,Constants.shelfColumns),
+                players.add(new Player(name, new Shelf(Constants.shelfRows,Constants.shelfColumns),
                         new PlayerGoal(jsonPathForPlayerGoals)));
             }
             board = new Board(players.size());
@@ -89,8 +89,8 @@ public class Controller implements Jsonable {
      * in order to get the actual player
      * @return the current player
      */
-    public String getCurrentPlayer() {
-        return getPlayers().get((turn + 1) % (getPlayers().size())).getName();
+    public String getCurrentPlayerName() {
+        return getPlayers().get((turn) % (getPlayers().size())).getName();
     }
 
     /**
@@ -121,7 +121,7 @@ public class Controller implements Jsonable {
     public void moveTiles(Player player, Move move) throws ControllerGenericException {
 
         try {
-            if (!player.getName().equals(getCurrentPlayer())) { //if player is not the current player we throw an exception
+            if (!player.getName().equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
                 throw new ControllerGenericException("Player is not the current player");
             }
 
