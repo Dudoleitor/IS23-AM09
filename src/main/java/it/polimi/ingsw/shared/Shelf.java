@@ -221,16 +221,18 @@ public class Shelf implements Jsonable {
         if (!isValidTile(pos) || visited[pos.getRow()][pos.getColumn()]) // check if current tile is valid for point count
             return 0;
         visited[pos.getRow()][pos.getColumn()] = true;
-        try {
-            for (Position neighbour : pos.neighbours()) {
-                if (!isOutOfBounds(neighbour.getRow(), neighbour.getColumn()) && getTile(pos).equals(getTile(neighbour)))
-                    count = count + exploreAdjacents(visited, neighbour);
-            }
+        count = count + pos.neighbours().stream()
+                .filter(x -> {
+                                try {
+                                    return !isOutOfBounds(x.getRow(), x.getColumn()) && getTile(x).equals(getTile(pos)); //check neighbour x is a valid position
+                                } catch (BadPositionException e) {
+                                throw new ShelfRuntimeException("Error in the exploringAdjacents algorithm");
+                                }
+                            })
+                .mapToInt(x -> exploreAdjacents(visited, x))
+                .sum();
 
-            return count + 1;
-        } catch (BadPositionException e) {
-            throw new ShelfRuntimeException("Error in the exploringAdjacents algorithm");
-        }
+        return count + 1;
     }
     /**
      * Tells if the coordinates are compatible with the shelf
