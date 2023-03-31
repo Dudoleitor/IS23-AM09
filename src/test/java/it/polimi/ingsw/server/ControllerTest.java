@@ -1,8 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Constants;
-import it.polimi.ingsw.shared.JsonBadParsingException;
-import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -61,13 +59,67 @@ public class ControllerTest {
         }
         assertEquals(0,c.getTurn());
         assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
-        //TODO as long as CommonGoals are in board c.getBoard() cannot be tested on controller
         assertEquals(c.getPlayers(), playerList);
-
+        assertTrue(c.getBoard().sameBoard(new Board(3)));
         assertEquals(players.get(0),c.getCurrentPlayerName());
 
         //all shelves are empty
         Shelf emptyShelf = new Shelf(Constants.shelfRows,Constants.shelfColumns);
         assertTrue(c.getShelves().stream().allMatch(s -> s.equals(emptyShelf)));
+    }
+    @Test
+    void validMoves() throws InvalidMoveException {
+        List<String> players = new ArrayList<>();
+        players.add("fridgeieri");
+        players.add("fridgeoggi");
+        players.add("fridgedomani");
+        Controller c = new Controller(players);
+        List<Player> playerList = null;
+        try {
+            playerList = (List<Player>) players.stream().map(p -> {
+                try {
+                    return new Player(p, new Shelf(Constants.shelfRows, Constants.shelfColumns), new PlayerGoal(Constants.jsonPathForPlayerGoals));
+                } catch (JsonBadParsingException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            fail();
+        }
+
+        Move move;
+        PartialMove pm = new PartialMove();
+        pm.addPosition(new Position(0, 0));
+        pm.addPosition(new Position(0, 1));
+        pm.addPosition(new Position(0, 2));
+        move = new Move(pm, 0);
+        //TODO end test
+    }
+
+    @Test
+    void turnIncrement(){
+        List<String> players = new ArrayList<>();
+        players.add("fridgeieri");
+        players.add("fridgeoggi");
+        players.add("fridgedomani");
+        Controller c = new Controller(players);
+        List<Player> playerList = null;
+        try {
+            playerList = (List<Player>) players.stream().map(p -> {
+                try {
+                    return new Player(p, new Shelf(Constants.shelfRows, Constants.shelfColumns), new PlayerGoal(Constants.jsonPathForPlayerGoals));
+                } catch (JsonBadParsingException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            fail();
+        }
+        //TODO end test
+        /*for(int i = 0; i < 10; i++){
+            assertEquals(i,c.getTurn());
+            assertEquals(c.getCurrentPlayerName(),players.get(i%3));
+            //do something that will increment turn
+        }*/
     }
 }

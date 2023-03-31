@@ -208,6 +208,35 @@ public class Board implements Jsonable {
             return false;
         }
     }
+
+    /**
+     * Checks if two Board objects have the same board without checking all other
+     * parameters
+     * @param other an other Board
+     * @return true if the Boards (Tile[][]) are equal
+     */
+    public boolean sameBoard(Board other){
+        if(other == null){
+            return false;
+        }
+        if(this == other){
+            return true;
+        }
+        if (numRows != other.getNumRows() || numColumns != other.getNumColumns()) //if they have different sizes or num of players
+            return false;
+        for (int i = 0; i < numRows; i++) { //check they have same tiles in board
+            for (int j = 0; j < numColumns; j++) {
+                try {
+                    if (!boardTiles[i][j].equals(other.getTile(i, j))) {
+                        return false;
+                    }
+                } catch (BadPositionException e) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     /**
      * generate hashcode from private attributes of board class
      * @return calculated hashcode
