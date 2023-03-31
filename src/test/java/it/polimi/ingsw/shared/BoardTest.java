@@ -2,10 +2,7 @@ package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.*;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +14,7 @@ class BoardTest {
     PartialMove partialMove = new PartialMove();
 
     @Test
-    void boardConstructor() throws JsonBadParsingException, BadPositionException {
+    void boardConstructor() throws JsonBadParsingException {
         Board t1 = new Board(2);
         Board t2 = new Board(3);
         Board b1 = new Board(4);
@@ -59,7 +56,7 @@ class BoardTest {
         }
         assertTrue(noEmptyFound);
 
-        Exception e = assertThrows(OutOfTilesException.class, () -> b2.fill());
+        Exception e = assertThrows(OutOfTilesException.class, b2::fill);
         assertEquals("The END is near : No more tiles left in the deck", e.getMessage());
     }
 

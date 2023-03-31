@@ -14,21 +14,21 @@ class EqualXTest {
     void testEmptyShelf() throws JsonBadParsingException {
         Shelf emptyShelf = new Shelf(6,5);
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.EqualX, 2);
-        assertTrue(to_test.getID() == 12);
+        assertEquals(12, to_test.getID());
         assertFalse(to_test.check(emptyShelf));
     }
     @Test
     void testTrue() throws JsonBadParsingException {
         Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_1_XShape.json",Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.EqualX, 2);
-        assertTrue(to_test.getID() == 12);
+        assertEquals(12, to_test.getID());
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
         Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_2_XShape.json",Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.EqualX, 2);
-        assertTrue(to_test.getID() == 12);
+        assertEquals(12, to_test.getID());
         assertFalse(to_test.check(falseShelf));
     }
 }

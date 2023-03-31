@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ShelfTest {
     final int rows = 6;
     final int columns = 5;
-    final String value = "Cat";
+
     @Test
     void generateShelf() throws JsonBadParsingException {
         Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfInsert.json", Shelf.class));
@@ -92,6 +91,10 @@ public class ShelfTest {
         s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints4.json", Shelf.class));
         res = s.countAdjacentPoints();
         assertEquals(8, res);
+
+        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints5.json", Shelf.class));
+        res = s.countAdjacentPoints();
+        assertEquals(9, res);
 
         s = new Shelf(5,8);
         res = s.countAdjacentPoints();

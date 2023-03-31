@@ -24,15 +24,15 @@ class PositionTest {
         Position a = new Position(0,0);
         Position b = new Position(0,0);
         //correct
-        assertTrue(a.equals(b));
-        assertTrue(a.equals(new Position(0,0)));
+        assertEquals(a, b);
+        assertEquals(a, new Position(0, 0));
 
         //different
         Position c = new Position(0,1);
-        assertFalse(c.equals(a));
+        assertNotEquals(c, a);
         //other objects
         Shelf k = new Shelf(5,6);
-        assertFalse(a.equals(k));
+        assertNotEquals(a, k);
 
     }
 

@@ -14,28 +14,28 @@ class TwoSquaresTest {
     void testEmptyShelf() throws JsonBadParsingException {
         Shelf emptyShelf = new Shelf(6,5);
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.TwoSquares, 2);
-        assertTrue(to_test.getID() == 2);
+        assertEquals(2, to_test.getID());
         assertFalse(to_test.check(emptyShelf));
     }
     @Test
     void testTrue() throws JsonBadParsingException {
         Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_1_2Squares.json", Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.TwoSquares, 2);
-        assertTrue(to_test.getID() == 2);
+        assertEquals(2, to_test.getID());
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
         Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_2_2Squares.json", Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.TwoSquares, 2);
-        assertTrue(to_test.getID() == 2);
+        assertEquals(2, to_test.getID());
         assertFalse(to_test.check(falseShelf));
     }
     @Test
     void testFalse2() throws JsonBadParsingException {
         Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_3_2Squares.json", Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.TwoSquares, 2);
-        assertTrue(to_test.getID() == 2);
+        assertEquals(2, to_test.getID());
         assertFalse(to_test.check(falseShelf));
     }
 }
