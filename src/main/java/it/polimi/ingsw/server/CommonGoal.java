@@ -173,7 +173,9 @@ public class CommonGoal implements Jsonable{
         JSONObject commonGoalJson = new JSONObject();  // Object to return
         JSONArray goalStack = new JSONArray(); //points pile
 
-        goalStack.addAll(showPointsStack());
+        for(long point : showPointsStack()){
+            goalStack.add(point);
+        }
         commonGoalJson.put("id", (long)getID());
         commonGoalJson.put("stack", goalStack);
 
@@ -187,6 +189,8 @@ public class CommonGoal implements Jsonable{
             return true;
 
         CommonGoal c = (CommonGoal) o;
-        return c.getID() == this.getID();
+        if(c.getID() != this.getID())
+            return false;
+        return true;
     }
 }
