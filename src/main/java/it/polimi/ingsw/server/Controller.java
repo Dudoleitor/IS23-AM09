@@ -101,12 +101,13 @@ public class Controller implements Jsonable {
     }
 
     /**
-     * @return the list of the Shelf objects of each player
+     * @return a map that contains the shelf of each player
      */
-    public List<Shelf> getShelves() {
-        List<Shelf> shelves = new ArrayList<>();
-        for(Player p : players) {
-            shelves.add(p.getShelf());
+    public Map<String, Shelf> getShelves() {
+        Map<String,Shelf> shelves = new HashMap<>();
+        for(Player p : getPlayers()) {
+            shelves.put(p.getName(), p.getShelf());
+
         }
         return shelves;
     }

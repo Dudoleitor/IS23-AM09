@@ -44,6 +44,8 @@ public class Riemann { //an integration test
         assertEquals(players.get(0),c.getCurrentPlayerName());
         //all shelves are empty
         Shelf emptyShelf = new Shelf(Constants.shelfRows,Constants.shelfColumns);
-        assertTrue(c.getShelves().stream().allMatch(s -> s.equals(emptyShelf)));
+        for(Player p : c.getPlayers()) {
+            assertTrue(c.getShelves().get(p.getName()).equals(emptyShelf));
+        }
     }
 }

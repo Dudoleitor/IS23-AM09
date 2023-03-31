@@ -44,7 +44,7 @@ public class ControllerTest {
         players.add("fridgeoggi");
         players.add("fridgedomani");
         Controller c = new Controller(players);
-        List<Player> playerList = null;
+        List<Player> playerList = new ArrayList<>();
         try{
             playerList = (List<Player>) players.stream().map(p -> {
                 try {
@@ -65,7 +65,10 @@ public class ControllerTest {
 
         //all shelves are empty
         Shelf emptyShelf = new Shelf(Constants.shelfRows,Constants.shelfColumns);
-        assertTrue(c.getShelves().stream().allMatch(s -> s.equals(emptyShelf)));
+
+        for(Player p : c.getPlayers()) {
+            assertTrue(c.getShelves().get(p.getName()).equals(emptyShelf));
+        }
     }
     @Test
     void validMoves() throws InvalidMoveException {
