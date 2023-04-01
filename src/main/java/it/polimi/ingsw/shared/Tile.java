@@ -1,23 +1,23 @@
 package it.polimi.ingsw.shared;
 
 public enum Tile {
-    Cat("C", Colors.ANSI_GREEN),
-    Book("B",Colors.ANSI_WHITE),
-    Game("G",Colors.ANSI_YELLOW),
-    Frame("F",Colors.ANSI_BLUE),
-    Trophy("T",Colors.ANSI_CYAN),
-    Plant("P",Colors.ANSI_PURPLE),
-    Empty("E",Colors.ANSI_BLACK),
-    Invalid("I",Colors.ANSI_RED);
+    Cat("C", Color.Green),
+    Book("B",Color.White),
+    Game("G",Color.Yellow),
+    Frame("F",Color.Blue),
+    Trophy("T",Color.Cyan),
+    Plant("P",Color.Purple),
+    Empty("E",Color.Black),
+    Invalid("I",Color.Red);
 
     public final String label;
-    public final String color;
+    public final Color color;
 
     /**
      * Initialize label of tile
      * @param s is the label attached to the tile
      */
-    Tile(String s,String c){
+    Tile(String s,Color c){
         label = s;
         color = c;
     }
@@ -59,19 +59,7 @@ public enum Tile {
     }
 
     public String toColorFulString(){
-        return this.color + this.label + Colors.ANSI_RESET;
-    }
-
-    private class Colors {
-        public static final String ANSI_RESET = "\u001B[0m";
-        public static final String ANSI_BLACK = "\u001B[30m";
-        public static final String ANSI_RED = "\u001B[31m";
-        public static final String ANSI_GREEN = "\u001B[32m";
-        public static final String ANSI_YELLOW = "\u001B[33m";
-        public static final String ANSI_BLUE = "\u001B[34m";
-        public static final String ANSI_PURPLE = "\u001B[35m";
-        public static final String ANSI_CYAN = "\u001B[36m";
-        public static final String ANSI_WHITE = "\u001B[37m";
+        return Color.coloredString(this.label,this.color);
     }
 }
 

@@ -9,10 +9,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ServerMain implements RemoteCall{
     private static volatile boolean keepOn = true;
     private static int port = 1234;
+    private static List<ChatMessage> messages;
+
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
         RemoteCall stub;
@@ -35,6 +40,10 @@ public class ServerMain implements RemoteCall{
         } catch (AlreadyBoundException e) {
             throw new RuntimeException(e);
         }
+
+        //init livechat
+        messages = Collections.synchronizedList(new ArrayList<>());
+
         System.out.println("Server is on");
         while (keepOn) {
             Thread.onSpinWait(); //is used to suspend the process and make it wait
@@ -60,5 +69,23 @@ public class ServerMain implements RemoteCall{
         return true;
     }
 
+    @Override
+    public boolean postToLiveChat(String playerName, String message) {
+        if(playerName == null || message == null){
+            return false;
+        }
+        messages.add(new ChatMessage(playerName,message));
+        System.out.println("Posted:" + messages.get(messages.size()-1));
+        return true;
+    }
 
+    @Override
+    public List<ChatMessage> updateLiveChat(int alreadyReceived) throws RemoteException {
+        List<ChatMessage> livechatUpdate = new ArrayList<>();
+        for(int i = alreadyReceived; i < messages.size(); i++){
+            livechatUpdate.add(messages.get(i));
+        }
+        System.out.println("updated client chat");
+        return livechatUpdate;
+    }
 }
