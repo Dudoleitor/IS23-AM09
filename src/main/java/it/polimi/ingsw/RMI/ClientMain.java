@@ -54,6 +54,9 @@ public class ClientMain implements Runnable{
         }
         try {
             stub.joinLobby(playerName, stub);
+            LiveChat chat = new LiveChat(playerName, stub);
+            chat.start();
+            chat.join();
             stub.quitGame(playerName, stub);
         } catch (RemoteException e) {
             throw new RuntimeException(e);

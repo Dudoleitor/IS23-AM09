@@ -16,7 +16,6 @@ import java.util.*;
 public class ServerMain implements RemoteCall{
     private static volatile boolean keepOn = true;
     private static int port = 1234;
-    private static List<ChatMessage> messages;
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
     private List<Lobby> lobbies = new ArrayList<>();
 
@@ -43,8 +42,6 @@ public class ServerMain implements RemoteCall{
             throw new RuntimeException(e);
         }
 
-        //init livechat
-        messages = Collections.synchronizedList(new ArrayList<>());
 
         System.out.println("Server is on");
         while (keepOn) {
@@ -72,15 +69,19 @@ public class ServerMain implements RemoteCall{
         if(playerName == null || message == null){
             throw new Exception("Wrong format of message");
         }
-        messages.add(new ChatMessage(playerName,message, colorPlayer.get(playerName)));
-        System.out.println("Posted:" + messages.get(messages.size()-1));
+        lobbies.stream()
+                .filter(l -> l.getPlayers().contains(playerName))
+                .forEach(l -> l.addChatMessage(playerName, message, colorPlayer.get(playerName)));
     }
 
     @Override
-    public List<ChatMessage> updateLiveChat(int alreadyReceived) throws RemoteException {
+    public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
+        List<ChatMessage> lobbyChat = lobbies.stream()
+                .filter(l -> l.getPlayers().contains(playerName))
+                .findFirst().get().getChat();
         List<ChatMessage> livechatUpdate = new ArrayList<>();
-        for(int i = alreadyReceived; i < messages.size(); i++){
-            livechatUpdate.add(messages.get(i));
+        for(int i = alreadyReceived; i < lobbyChat.size(); i++){
+            livechatUpdate.add(lobbyChat.get(i));
         }
         System.out.println("updated client chat");
         return livechatUpdate;

@@ -49,7 +49,7 @@ public class LiveChat extends ClientThread{
      * @throws RemoteException
      */
     public void updateLiveChat() throws RemoteException {
-        chat.addAll(stub.updateLiveChat(chat.size()));
+        chat.addAll(stub.updateLiveChat(playerName, chat.size()));
     }
 
     /**
