@@ -1,6 +1,8 @@
 package it.polimi.ingsw.shared;
 
 public class Constants {
+    public static final int port = 1234;
+    public static final IpAddressV4 serverIp = new IpAddressV4((short) 127, (short) 0, (short) 0, (short) 1);
     public static final int shelfRows = 5;
     public static final int shelfColumns = 6;
     public static final int maxSupportedPlayers = 4;

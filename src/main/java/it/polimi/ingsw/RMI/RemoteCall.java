@@ -11,7 +11,7 @@ public interface RemoteCall extends Remote {
     boolean login(String nick) throws RemoteException;
     boolean shutDown() throws RemoteException;
 
-    boolean sendShelf(JSONObject s) throws RemoteException, JsonBadParsingException;
-    boolean postToLiveChat(String playerName, String message) throws RemoteException;
+    void sendShelf(JSONObject s) throws RemoteException, JsonBadParsingException;
+    void postToLiveChat(String playerName, String message) throws Exception;
     List<ChatMessage> updateLiveChat(int alreadyReceived) throws RemoteException;
 }

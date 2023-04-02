@@ -54,7 +54,7 @@ public class ServerMain implements RemoteCall{
 
     @Override
     public boolean login(String nick) throws RemoteException {
-        System.out.println(nick + " has just logged in... but cannot talk");
+        System.out.println(nick + " has just logged in");
         return true;
     }
 
@@ -65,19 +65,17 @@ public class ServerMain implements RemoteCall{
     }
 
     @Override
-    public boolean sendShelf(JSONObject s) throws JsonBadParsingException {
+    public void sendShelf(JSONObject s) throws JsonBadParsingException {
         System.out.println("Here's your shelf bro:\n" + new Shelf(s));
-        return true;
     }
 
     @Override
-    public boolean postToLiveChat(String playerName, String message) {
+    public void postToLiveChat(String playerName, String message) throws Exception {
         if(playerName == null || message == null){
-            return false;
+            throw new Exception("Wrong format of message");
         }
         messages.add(new ChatMessage(playerName,message));
         System.out.println("Posted:" + messages.get(messages.size()-1));
-        return true;
     }
 
     @Override
