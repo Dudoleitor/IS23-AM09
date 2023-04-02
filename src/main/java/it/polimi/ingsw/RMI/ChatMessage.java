@@ -10,16 +10,18 @@ public class ChatMessage implements Serializable {
     private String playerName;
     private String message;
     private Timestamp timestamp;
+    private Color color;
 
-    ChatMessage(String playerName, String message){
+    ChatMessage(String playerName, String message, Color color){
         this.message = message;
         this.playerName = playerName;
         Date date = new Date();
         this.timestamp = new Timestamp(date.getTime());
+        this.color = color;
     }
     @Override
     public String toString(){
-            return ">" + Color.coloredString(playerName,Color.Green) +
+            return ">" + Color.coloredString(playerName,color) +
                     ": " + message;
         }
 }

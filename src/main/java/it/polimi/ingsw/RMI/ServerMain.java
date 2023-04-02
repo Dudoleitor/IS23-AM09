@@ -1,5 +1,6 @@
 package it.polimi.ingsw.RMI;
 
+import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Shelf;
 import org.json.simple.JSONObject;
@@ -9,14 +10,13 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ServerMain implements RemoteCall{
     private static volatile boolean keepOn = true;
     private static int port = 1234;
     private static List<ChatMessage> messages;
+    private static Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
 
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
@@ -55,6 +55,7 @@ public class ServerMain implements RemoteCall{
     @Override
     public boolean login(String nick) throws RemoteException {
         System.out.println(nick + " has just logged in");
+        colorPlayer.put(nick, Color.getRandomColor());
         return true;
     }
 
@@ -74,7 +75,7 @@ public class ServerMain implements RemoteCall{
         if(playerName == null || message == null){
             throw new Exception("Wrong format of message");
         }
-        messages.add(new ChatMessage(playerName,message));
+        messages.add(new ChatMessage(playerName,message, colorPlayer.get(playerName)));
         System.out.println("Posted:" + messages.get(messages.size()-1));
     }
 

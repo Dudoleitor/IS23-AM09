@@ -1,4 +1,5 @@
 package it.polimi.ingsw.RMI;
+import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Shelf;
 import org.json.simple.JSONObject;

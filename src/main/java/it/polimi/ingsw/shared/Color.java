@@ -1,5 +1,9 @@
 package it.polimi.ingsw.shared;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public enum Color {
         Reset("\u001B[0m"),
         Black("\u001B[30m"),
@@ -22,5 +26,12 @@ public enum Color {
                 return color.getColorAnsiCode() + //set desired color
                         str +
                         Reset.getColorAnsiCode(); //reset to default
+        }
+        private static int numOfColors(){
+                return List.of(Color.values()).size();
+        }
+        public static Color getRandomColor(){
+                return List.of(Color.values())
+                        .get(new Random().nextInt(numOfColors()));
         }
 }
