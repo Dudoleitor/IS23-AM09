@@ -99,7 +99,7 @@ class BoardTest {
         assertEquals("Error while checking hasFreeSide on board : Index Out Of Bounds", e.getMessage());
     }
     @Test
-    void getValidPositionsTest0() throws JsonBadParsingException, BadPositionException {
+    void getValidPositionsTest0() throws JsonBadParsingException, BadPositionException, InvalidMoveException {
         Board b = new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json", Board.class), null);
         assertTrue(b.hasFreeSide(4,0));
         assertTrue(b.hasFreeSide(5,5));
@@ -142,13 +142,12 @@ class BoardTest {
     }
 
     @Test
-    void getValidPositionsTest() throws OutOfTilesException, JsonBadParsingException, BadPositionException {
+    void getValidPositionsTest() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
             //partialMove.addPosition(pos3);
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
             Board b = new Board(Jsonable.pathToJsonObject(jsonPath, Board.class), new ArrayList<>());
             b.fill();
             Position pos2 = new Position(0, 3);
-
 
             assertTrue(b.getValidPositions(partialMove).contains(pos2));
     }

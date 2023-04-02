@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.server.InvalidMoveException;
 import it.polimi.ingsw.server.PartialMove;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -373,110 +374,55 @@ public class Board implements Jsonable {
      * @param partialMove is the move that the player is building
      * @return the possible positions that the player can add to the move
      */
-    public List<Position> getValidPositions(PartialMove partialMove) {
+    public List<Position> getValidPositions(PartialMove partialMove) throws InvalidMoveException {
         List<Position> positions = new ArrayList<>();
-        try {
-            if (partialMove == null) {
-                return positions;
-            }
-            if (partialMove.getBoardPositions().size() >= partialMove.getMaxNumMoves()) { //if the move is complete --> it has maxNumMoves positions inside
-                return positions;
-            }
-            //extreme case when partialMove has no positions inside
-            if (partialMove.getBoardPositions().size() == 0) {
+        if (partialMove == null) {
+            return positions;
+        }
+        List<Position> movePositions = partialMove.getBoardPositions();
+        if(!Position.areAligned(movePositions))
+            throw new InvalidMoveException("Positions are not alligned");
+        if (movePositions.size() >= partialMove.getMaxNumMoves()) { //if the move is complete --> it has maxNumMoves positions inside
+            return positions;
+        }
+        List<Position> temL = new ArrayList<>();
+
+        switch(movePositions.size()) {
+            case 0:
+                //extreme case when partialMove has no positions inside
                 IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
                         IntStream.range(0, getNumColumns()) // create stream of j
                                 .filter(j -> hasFreeSide(i, j))
-                                .forEach(j -> positions.add(new Position(i, j)))
-                );
-
-            } else if (partialMove.getBoardPositions().size() >= 1) {
-                if (partialMove.getBoardPositions().size() == 1) {
-                    int tempRow = partialMove.getBoardPositions().get(0).getRow();
-                    int tempColumn = partialMove.getBoardPositions().get(0).getColumn();
-
-                    if (tempRow + 1 < getNumRows() && !getTile(tempRow + 1, tempColumn).equals(Tile.Empty)
-                            && !getTile(tempRow + 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow + 1, tempColumn)) {
-                        positions.add(new Position(tempRow + 1, tempColumn));
-                    }
-                    if (tempRow - 1 < getNumRows() && !getTile(tempRow - 1, tempColumn).equals(Tile.Empty)
-                            && !getTile(tempRow - 1, tempColumn).equals(Tile.Invalid) && hasFreeSide(tempRow - 1, tempColumn)) {
-                        positions.add(new Position(tempRow - 1, tempColumn));
-                    }
-                    if (tempColumn + 1 < getNumColumns() && !getTile(tempRow, tempColumn + 1).equals(Tile.Empty)
-                            && !getTile(tempRow, tempColumn + 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn + 1)) {
-                        positions.add(new Position(tempRow, tempColumn + 1));
-                    }
-                    if (tempColumn - 1 < getNumColumns() && !getTile(tempRow, tempColumn - 1).equals(Tile.Empty)
-                            && !getTile(tempRow, tempColumn - 1).equals(Tile.Invalid) && hasFreeSide(tempRow, tempColumn - 1)) {
-                        positions.add(new Position(tempRow, tempColumn - 1));
-                    }
+                                .forEach(j -> temL.add(new Position(i, j))));
+                positions.addAll(temL);
+                break;
+            case 1:
+                positions = movePositions.get(0).neighbours().stream()
+                        .filter(p -> !isOutOfBounds(p) && !isNotValid(p) && hasFreeSide(p))
+                        .collect(Collectors.toList());
+                break;
+            default:
+                if (Position.sameRow(movePositions)) {
+                    positions = movePositions.stream()
+                            .map(Position::neighbours)
+                            .flatMap(Collection::stream)
+                            .filter(p -> !isOutOfBounds(p) && !isNotValid(p) && hasFreeSide(p) && Position.sameRow(movePositions, p))
+                            .collect(Collectors.toList());
                 } else {
-                    if (partialMove.getBoardPositions().get(1).getColumn() == partialMove.getBoardPositions().get(0).getColumn()) {
-                        if (partialMove.getBoardPositions().get(1).getRow() > partialMove.getBoardPositions().get(0).getRow()) {
-                            if (partialMove.getBoardPositions().get(1).getRow() + 1 < getNumRows()
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn())) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() + 1, partialMove.getBoardPositions().get(1).getColumn()));
-                            }
-                            if (partialMove.getBoardPositions().get(0).getRow() - 1 < getNumRows()
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn())) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() - 1, partialMove.getBoardPositions().get(0).getColumn()));
-                            }
-                        } else {
-                            if (partialMove.getBoardPositions().get(0).getRow() + 1 < getNumRows()
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn())) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow() + 1, partialMove.getBoardPositions().get(0).getColumn()));
-                            }
-                            if (partialMove.getBoardPositions().get(1).getRow() - 1 < getNumRows()
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn())) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow() - 1, partialMove.getBoardPositions().get(1).getColumn()));
-                            }
-                        }
-                    } else {
-                        if (partialMove.getBoardPositions().get(1).getColumn() > partialMove.getBoardPositions().get(0).getColumn()) {
-                            if (partialMove.getBoardPositions().get(1).getColumn() + 1 < getNumColumns()
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1)) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() + 1));
-                            }
-                            if (partialMove.getBoardPositions().get(0).getColumn() - 1 < getNumColumns()
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1)) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() - 1));
-                            }
-                        } else {
-                            if (partialMove.getBoardPositions().get(0).getColumn() + 1 < getNumColumns()
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1)) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(0).getRow(), partialMove.getBoardPositions().get(0).getColumn() + 1));
-                            }
-                            if (partialMove.getBoardPositions().get(1).getColumn() - 1 < getNumColumns()
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Empty)
-                                    && !getTile(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1).equals(Tile.Invalid)
-                                    && hasFreeSide(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1)) {
-                                positions.add(new Position(partialMove.getBoardPositions().get(1).getRow(), partialMove.getBoardPositions().get(1).getColumn() - 1));
-                            }
+                    positions = movePositions.stream()
+                            .map(Position::neighbours)
+                            .flatMap(Collection::stream)
+                            .filter(p -> !isOutOfBounds(p) && !isNotValid(p) && hasFreeSide(p) && Position.sameColumn(movePositions, p))
+                            .collect(Collectors.toList());
 
-                        }
-                    }
                 }
-            }
 
-            return positions;
-        } catch (BadPositionException e){
-            throw new BoardRuntimeException("Error while getting valid positions : something went wrong");
+                break;
+
         }
+
+        return positions;
+
     }
 
     /**
@@ -529,6 +475,10 @@ public class Board implements Jsonable {
                 row >= getNumRows() ||
                 column < 0 ||
                 column >= getNumColumns();
+    }
+
+    public boolean isOutOfBounds(Position pos){
+        return isOutOfBounds(pos.getRow(), pos.getColumn());
     }
 
     /**

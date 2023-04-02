@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class Position {
                 ( sameRow(positions) && adjacentColumns(positions) );
     }
 
-    private static boolean sameRow(List<Position> positions){
+    public static boolean sameRow(List<Position> positions){
         if(positions.size() == 0){
             return true;
         }
@@ -65,8 +66,18 @@ public class Position {
         //no Position has different row thant the first one
         return !positions.stream().map(p -> p.getRow()).anyMatch(row -> row != rowToMatch);
     }
+    public static boolean sameRow(List<Position> positions, Position p){
+        List<Position> temL = new ArrayList<>(positions);
+        temL.add(p);
+        return sameRow(temL);
+    }
+    public static boolean sameColumn(List<Position> positions, Position p){
+        List<Position> temL = new ArrayList<>(positions);
+        temL.add(p);
+        return sameColumn(temL);
+    }
 
-    private static boolean sameColumn(List<Position> positions) {
+    public static boolean sameColumn(List<Position> positions) {
         if (positions.size() == 0) {
             return true;
         }
