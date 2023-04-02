@@ -42,6 +42,10 @@ public class ClientMain {
         catch (RuntimeException e){
             System.out.println("Something went terribly wrong");
         }
+        boolean end =stub.shutDown();
+        if(end){
+            System.out.println("Server is now down");
+        } //TODO fix bug
     }
     public static void doSomething(RemoteCall stub) throws RemoteException {
         boolean logged = stub.login("Not_a_consulent");
@@ -53,10 +57,6 @@ public class ClientMain {
             if (feedback)
                 System.out.println("Shelf sent successfully");
 
-            /*boolean end =stub.shutDown();
-            if(end){
-                System.out.println("Server is now down");
-            }*/ //TODO fix bug
         } catch (JsonBadParsingException e) { //TODO to handle it better
             throw new RuntimeException(e);
         }

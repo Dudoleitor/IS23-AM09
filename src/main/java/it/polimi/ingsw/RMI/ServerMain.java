@@ -49,6 +49,7 @@ public class ServerMain implements RemoteCall{
             Thread.onSpinWait(); //is used to suspend the process and make it wait
         } //to keep it online
         System.out.println("Server is shutting down :D, don't forget to save... oh no too late");
+        System.exit(0); //to shut down the server, maybe it doesn't shut down spontaneously because fo the interface it gave away
     }
 
     @Override
