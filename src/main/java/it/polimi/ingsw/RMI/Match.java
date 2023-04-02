@@ -15,6 +15,7 @@ public class Match extends ClientThread{
         try {
             sleep(2000);
             Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+            lock.lock();
             stub.sendShelf(s.toJson()); //item passed must be a serializable object
             System.out.println("Shelf sent successfully");
         } catch (JsonBadParsingException e) { //TODO to handle it better
@@ -23,6 +24,9 @@ public class Match extends ClientThread{
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            lock.unlock();
         }
     }
 }

@@ -9,6 +9,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 import static org.junit.experimental.theories.internal.ParameterizedAssertionError.join;
@@ -61,12 +65,12 @@ public class ClientMain {
         liveChat.join();
         match.join();
 
-        try {
+        /*try {
             //shutdown server
             stub.shutDown();
             System.out.println("Server is now down");
         } catch (RemoteException e) {
             System.out.println("Failed to shut server down");
-        }
+        }*/
     }
 }
