@@ -1,6 +1,7 @@
 package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.shared.Color;
+import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Shelf;
 import org.json.simple.JSONObject;
@@ -16,7 +17,8 @@ public class ServerMain implements RemoteCall{
     private static volatile boolean keepOn = true;
     private static int port = 1234;
     private static List<ChatMessage> messages;
-    private static Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
+    private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
+    private List<Lobby> lobbies = new ArrayList<>();
 
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
@@ -61,11 +63,6 @@ public class ServerMain implements RemoteCall{
     }
 
     @Override
-    public void shutDown() throws RemoteException {
-        keepOn = false;
-    }
-
-    @Override
     public void sendShelf(JSONObject s) throws JsonBadParsingException {
         System.out.println("Here's your shelf bro:\n" + new Shelf(s));
     }
@@ -87,5 +84,34 @@ public class ServerMain implements RemoteCall{
         }
         System.out.println("updated client chat");
         return livechatUpdate;
+    }
+    @Override
+    public void joinLobby(String player, RemoteCall stub){ //TODO to handle a rejoin of the same player possibility
+        Lobby lobby = lobbies.stream()
+                    .filter(l -> !l.isReady()) //keep only not full lobbies
+                    .findFirst() //find first lobby matched
+                    .orElse(null);
+        if(lobby != null){
+            lobby.addPlayer(player, stub); //if exists then add player
+            if(lobby.isReady())
+                lobby.start(); //TODO one day will start a lobby thread
+        }else {
+            createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise create new lobby
+        }
+
+
+
+    }
+    @Override
+    public void createLobby(String player, RemoteCall stub, int numPlayers){
+        Lobby lobby = new Lobby(player, stub, numPlayers);
+        lobbies.add(lobby);
+    }
+
+    @Override
+    public void quitGame(String player, RemoteCall stub) {
+        lobbies.stream()
+                .filter(l -> l.getPlayers().contains(player))
+                .forEach(l -> l.remove(player));
     }
 }

@@ -10,8 +10,11 @@ import java.util.List;
 
 public interface RemoteCall extends Remote {
     boolean login(String nick) throws RemoteException;
-    void shutDown() throws RemoteException;
     void sendShelf(JSONObject s) throws RemoteException, JsonBadParsingException;
     void postToLiveChat(String playerName, String message) throws Exception;
     List<ChatMessage> updateLiveChat(int alreadyReceived) throws RemoteException;
+
+    void joinLobby(String player, RemoteCall stub) throws RemoteException;
+    void createLobby(String player, RemoteCall stub,  int numPlayers) throws RemoteException;
+    void quitGame(String player, RemoteCall stub) throws RemoteException;
 }

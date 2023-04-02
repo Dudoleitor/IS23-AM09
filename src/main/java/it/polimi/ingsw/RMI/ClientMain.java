@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import static java.lang.Thread.sleep;
 import static org.junit.experimental.theories.internal.ParameterizedAssertionError.join;
 
-public class ClientMain {
+public class ClientMain implements Runnable{
     public static void main(String argv[]) throws NotBoundException, InterruptedException {
         RemoteCall stub = null;
         Registry registry = null;
@@ -52,25 +52,17 @@ public class ClientMain {
             System.out.println("30s elapsed. Server is down, retry later");
             return;
         }
-
-        //Launch match handling thread
-        Thread match = new Match(playerName,stub);
-        match.start();
-
-        //CHAT
-        Thread liveChat = new LiveChat(playerName,stub);
-        liveChat.start();
-
-        //End all threads
-        liveChat.join();
-        match.join();
-
-        /*try {
-            //shutdown server
-            stub.shutDown();
-            System.out.println("Server is now down");
+        try {
+            stub.joinLobby(playerName, stub);
+            stub.quitGame(playerName, stub);
         } catch (RemoteException e) {
-            System.out.println("Failed to shut server down");
-        }*/
+            throw new RuntimeException(e);
+        }
+        //End all threads
+    }
+
+    @Override
+    public void run() {
+
     }
 }
