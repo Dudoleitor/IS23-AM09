@@ -16,7 +16,6 @@ import java.util.*;
 public class ServerMain implements RemoteCall{
     private static volatile boolean keepOn = true;
     private static int port = 1234;
-    private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
     private List<Lobby> lobbies = new ArrayList<>();
 
     public static void main(String argv[]){
@@ -51,34 +50,52 @@ public class ServerMain implements RemoteCall{
         System.exit(0); //to shut down the server, maybe it doesn't shut down spontaneously because fo the interface it gave away
     }
 
+    /**
+     *
+     * @param nick is login nickname
+     * @return true is login is successful
+     * @throws RemoteException is there are problems with connection
+     */
     @Override
     public boolean login(String nick) throws RemoteException {
         System.out.println(nick + " has just logged in");
-        if(!colorPlayer.containsKey(nick))
-            colorPlayer.put(nick, Color.getRandomColor());
         return true;
     }
 
     @Override
-    public void sendShelf(JSONObject s) throws JsonBadParsingException {
+    public void sendShelf(JSONObject s) throws JsonBadParsingException { //this method is for a test
         System.out.println("Here's your shelf bro:\n" + new Shelf(s));
     }
 
+    /**
+     *
+     * @param playerName is the player that is sending a message
+     * @param message is the content
+     * @throws Exception when message format is wrong
+     */
     @Override
     public void postToLiveChat(String playerName, String message) throws Exception {
         if(playerName == null || message == null){
             throw new Exception("Wrong format of message");
         }
         lobbies.stream()
-                .filter(l -> l.getPlayers().contains(playerName))
-                .forEach(l -> l.addChatMessage(playerName, message, colorPlayer.get(playerName)));
+                .filter(l -> l.getPlayers().contains(playerName)) //find lobbies that contain that player
+                .forEach(l -> l.addChatMessage(playerName, message));
     }
 
+    /**
+     *
+     * @param playerName is the player requesting updated chat
+     * @param alreadyReceived are messages already in client chat
+     * @return list of messages yet to be received
+     * @throws RemoteException when there are connection errors
+     */
     @Override
     public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
         List<ChatMessage> lobbyChat = lobbies.stream()
-                .filter(l -> l.getPlayers().contains(playerName))
-                .findFirst().get().getChat();
+                .filter(l -> l.getPlayers().contains(playerName)) //find the lobby that contain this player
+                .findFirst().get().getChat(); //get chat of that lobby
+
         List<ChatMessage> livechatUpdate = new ArrayList<>();
         for(int i = alreadyReceived; i < lobbyChat.size(); i++){
             livechatUpdate.add(lobbyChat.get(i));
@@ -86,23 +103,35 @@ public class ServerMain implements RemoteCall{
         System.out.println("updated client chat");
         return livechatUpdate;
     }
+
+    /**
+     * @param player requesting to join the lobby
+     * @param stub is the player interface
+     */
     @Override
-    public void joinLobby(String player, RemoteCall stub){ //TODO to handle a rejoin of the same player possibility
+    public void joinLobby(String player, RemoteCall stub){ //TODO to handle a re-join of the same player possibility
         Lobby lobby = lobbies.stream()
                     .filter(l -> !l.isReady()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
-        if(lobby != null){
+        if(lobby != null){ //if a lobby exists then add player
             lobby.addPlayer(player, stub); //if exists then add player
             if(lobby.isReady())
                 lobby.start(); //TODO one day will start a lobby thread
         }else {
-            createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise create new lobby
+            createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise creates new lobby
         }
 
 
 
     }
+
+    /**
+     *
+     * @param player requesting to create the lobby
+     * @param stub is the player interface
+     * @param numPlayers is the size of the lobby
+     */
     @Override
     public void createLobby(String player, RemoteCall stub, int numPlayers){
         Lobby lobby = new Lobby(player, stub, numPlayers);
@@ -110,7 +139,7 @@ public class ServerMain implements RemoteCall{
     }
 
     @Override
-    public void quitGame(String player, RemoteCall stub) {
+    public void quitGame(String player, RemoteCall stub) { //TODO to refactor
         lobbies.stream()
                 .filter(l -> l.getPlayers().contains(player))
                 .forEach(l -> l.remove(player));

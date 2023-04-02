@@ -21,7 +21,7 @@ public class LiveChat extends ClientThread{
     public void run(){
         Scanner scanner = new Scanner(System.in);
         String command = "";
-        threadSafePrint(Color.coloredString("Fell free to express yourself",Color.Yellow));
+        threadSafePrint(Color.coloredString("Fell free to express yourself",Color.Yellow)); //introduction message after login
         while(!command.equals("exit")){ //Receive commands until "exit" command is launched
             try{
                 command = threadSafeScan(scanner);

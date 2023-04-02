@@ -23,6 +23,7 @@ public class ClientMain implements Runnable{
         Registry registry = null;
         String playerName;
         Scanner scanner = new Scanner(System.in);
+
         //Set username
         System.out.println(Color.coloredString("ENTER YOUR USERNAME",Color.Green));
         playerName = scanner.nextLine();
@@ -52,16 +53,16 @@ public class ClientMain implements Runnable{
             System.out.println("30s elapsed. Server is down, retry later");
             return;
         }
-        try {
-            stub.joinLobby(playerName, stub);
+        try { //this is a test behavioural
+
+            stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
             LiveChat chat = new LiveChat(playerName, stub);
-            chat.start();
-            chat.join();
+            chat.start(); //initialize chat
+            chat.join(); //when chat is closed
             stub.quitGame(playerName, stub);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-        //End all threads
     }
 
     @Override
