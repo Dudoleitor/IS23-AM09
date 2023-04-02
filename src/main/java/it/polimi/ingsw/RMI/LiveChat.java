@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class LiveChat extends ClientThread{
+    /**
+     * The client's copy of chat
+     */
     List<ChatMessage> chat;
     LiveChat(String playerName, RemoteCall stub) {
         super(playerName, stub);
@@ -18,18 +21,18 @@ public class LiveChat extends ClientThread{
         Scanner scanner = new Scanner(System.in);
         String command = "";
         System.out.println(Color.coloredString("Fell free to express yourself",Color.Yellow));
-        while(!command.equals("exit")){
+        while(!command.equals("exit")){ //Receive commands until "exit" command is launched
             try{
                 command = scanner.nextLine();
-                if(command.equals("exit")){
+                if(command.equals("exit")){ //Terminate thread
                     break;
                 }
-                else if(command.toLowerCase().equals("print")){
+                else if(command.toLowerCase().equals("print")){ //update chat and print it
                     updateLiveChat();
                     printAllMessages();
                 }
                 else{
-                    stub.postToLiveChat(playerName,command);
+                    stub.postToLiveChat(playerName,command); //post message to server
                 }
             }
             catch (RemoteException e){
@@ -40,10 +43,17 @@ public class LiveChat extends ClientThread{
         }
     }
 
+    /**
+     * Downloads all the messages that are present on server and missing in local copy
+     * @throws RemoteException
+     */
     public void updateLiveChat() throws RemoteException {
         chat.addAll(stub.updateLiveChat(chat.size()));
     }
 
+    /**
+     * Print all messages in local copy of chat. If none is present "No message yet" will be printed
+     */
     public void printAllMessages(){
         System.out.println(Color.coloredString("Printing Messages:",Color.Yellow));
         if(chat == null || chat.size() == 0){

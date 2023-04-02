@@ -55,14 +55,14 @@ public class ServerMain implements RemoteCall{
     @Override
     public boolean login(String nick) throws RemoteException {
         System.out.println(nick + " has just logged in");
-        colorPlayer.put(nick, Color.getRandomColor());
+        if(!colorPlayer.containsKey(nick))
+            colorPlayer.put(nick, Color.getRandomColor());
         return true;
     }
 
     @Override
-    public boolean shutDown() throws RemoteException {
+    public void shutDown() throws RemoteException {
         keepOn = false;
-        return true;
     }
 
     @Override

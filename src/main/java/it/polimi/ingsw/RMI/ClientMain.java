@@ -19,13 +19,18 @@ public class ClientMain {
         Registry registry = null;
         String playerName;
         Scanner scanner = new Scanner(System.in);
+        //Set username
         System.out.println(Color.coloredString("ENTER YOUR USERNAME",Color.Green));
         playerName = scanner.nextLine();
         boolean logged = false;
+        //Try to log in for 30s (1 try each second)
         for(int tries = 0; tries < 30 && !logged; tries++){
             try {
-                registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port); //get remote registry that points to 127.0.0.1:port
-                stub = (RemoteCall) registry.lookup("interface"); //get interface from remote registry
+                //get remote registry that points to 127.0.0.1:port
+                registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port);
+                //get interface from remote registry
+                stub = (RemoteCall) registry.lookup("interface");
+                //try to log in
                 logged = stub.login(playerName);
             }
             catch (ConnectException e){
@@ -39,12 +44,12 @@ public class ClientMain {
         }
         if (logged)
             System.out.println("Logged successfully");
-        else{
+        else{ //if none of the 30 tries was successful
             System.out.println("30s elapsed. Server is down, retry later");
             return;
         }
 
-        //Get shelf
+        //Launch match handling thread
         Thread match = new Match(playerName,stub);
         match.start();
 
@@ -52,12 +57,16 @@ public class ClientMain {
         Thread liveChat = new LiveChat(playerName,stub);
         liveChat.start();
 
-        join(String.valueOf(match));
-        join(String.valueOf(liveChat));
+        //End all threads
+        liveChat.join();
+        match.join();
 
-        /*boolean end =stub.shutDown();
-        if(end){
+        try {
+            //shutdown server
+            stub.shutDown();
             System.out.println("Server is now down");
-        }*/
+        } catch (RemoteException e) {
+            System.out.println("Failed to shut server down");
+        }
     }
 }
