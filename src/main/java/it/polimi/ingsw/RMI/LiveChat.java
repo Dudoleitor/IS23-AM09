@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class LiveChat extends ClientThread{
     /**
@@ -20,14 +21,10 @@ public class LiveChat extends ClientThread{
     public void run(){
         Scanner scanner = new Scanner(System.in);
         String command = "";
-        lock.lock();
-        System.out.println(Color.coloredString("Fell free to express yourself",Color.Yellow));
-        lock.unlock();
+        threadSafePrint(Color.coloredString("Fell free to express yourself",Color.Yellow));
         while(!command.equals("exit")){ //Receive commands until "exit" command is launched
             try{
-                lock.lock();
-                command = scanner.nextLine();
-                lock.unlock();
+                command = threadSafeScan(scanner);
                 if(command.equals("exit")){ //Terminate thread
                     break;
                 }
@@ -38,12 +35,11 @@ public class LiveChat extends ClientThread{
                 else{
                     stub.postToLiveChat(playerName,command); //post message to server
                 }
-                sleep(500);
             }
             catch (RemoteException e){
-                System.out.println(Color.coloredString("Error in RMI",Color.Red));
+                threadSafePrint(Color.coloredString("Error in RMI",Color.Red));
             } catch (Exception e) {
-                System.out.println(Color.coloredString("Error in Message Format",Color.Red));
+                threadSafePrint(Color.coloredString("Error in Message Format",Color.Red));
             }
         }
     }
@@ -60,16 +56,12 @@ public class LiveChat extends ClientThread{
      * Print all messages in local copy of chat. If none is present "No message yet" will be printed
      */
     public void printAllMessages(){
-        lock.lock();
-        System.out.println(Color.coloredString("Printing Messages:",Color.Yellow));
+        threadSafePrint(Color.coloredString("Printing Messages:",Color.Yellow));
         if(chat == null || chat.size() == 0){
-            System.out.println("No messages Yet");
-            lock.unlock();
+            threadSafePrint("No messages Yet");
             return;
         }
-        for(ChatMessage mes : chat){
-            System.out.println(mes);
-        }
-        lock.unlock();
+        List<String> toPrint = chat.stream().map(mes -> mes.toString()).collect(Collectors.toList());
+        threadSafePrint(toPrint);
     }
 }
