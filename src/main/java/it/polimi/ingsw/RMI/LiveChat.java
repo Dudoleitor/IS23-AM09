@@ -21,11 +21,11 @@ public class LiveChat extends ClientThread{
     public void run(){
         Scanner scanner = new Scanner(System.in);
         String command = "";
-        threadSafePrint(Color.coloredString("Feel free to express yourself",Color.Yellow)); //introduction message after login
+        printer.printMessage("Feel free to express your self!"); //introduction message after login
         while(!command.equals("exit")){ //Receive commands until "exit" command is launched
             try{
-                threadSafePrint("$:");
-                command = threadSafeScan(scanner);
+                printer.print("$:");
+                command = printer.scan(scanner);
                 if(command.equals("exit")){ //Terminate thread
                     break;
                 }
@@ -34,16 +34,17 @@ public class LiveChat extends ClientThread{
                     printAllMessages();
                 }
                 else if(command.equals("")){
-                    threadSafePrint("Your updates:\n");
+                    printer.printMessage("Your updates");
+                    sleep(100); //give time to others threads to print their status updates
                 }
                 else{
                     stub.postToLiveChat(playerName,command); //post message to server
                 }
             }
             catch (RemoteException e){
-                threadSafePrint(Color.coloredString("Error in RMI",Color.Red));
+                printer.printErrorMessage("Error in RMI");
             } catch (Exception e) {
-                threadSafePrint(Color.coloredString("Error in Message Format",Color.Red));
+                printer.printErrorMessage("Error in Message Format");
             }
         }
     }
@@ -60,12 +61,12 @@ public class LiveChat extends ClientThread{
      * Print all messages in local copy of chat. If none is present "No message yet" will be printed
      */
     public void printAllMessages(){
-        threadSafePrint(Color.coloredString("Printing Messages:",Color.Yellow));
         if(chat == null || chat.size() == 0){
-            threadSafePrint("No messages Yet");
+            printer.printMessage("No messages yet");
             return;
         }
         List<String> toPrint = chat.stream().map(mes -> mes.toString()).collect(Collectors.toList());
-        threadSafePrint(toPrint);
+        toPrint.add(0,printer.messageFormat("Here are all messages"));
+        printer.multiPrint(toPrint);
     }
 }

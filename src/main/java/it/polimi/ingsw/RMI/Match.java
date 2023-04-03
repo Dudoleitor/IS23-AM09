@@ -13,16 +13,14 @@ public class Match extends ClientThread{
     @Override
     public void run() {
         try {
-            sleep(2000);
+            //sleep(2000);
             Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
-            threadSafePrint("Shelf created\n" + s);
+            printer.printErrorMessage("Shelf created\n" + s);
             stub.sendShelf(s.toJson()); //item passed must be a serializable object
-            threadSafePrint("Shelf sent successfully");
+            printer.printErrorMessage("Shelf sent successfully");
         } catch (JsonBadParsingException e) { //TODO to handle it better
             throw new RuntimeException(e);
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

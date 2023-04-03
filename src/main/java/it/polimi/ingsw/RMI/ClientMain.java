@@ -9,10 +9,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 import static org.junit.experimental.theories.internal.ParameterizedAssertionError.join;
@@ -23,16 +19,16 @@ public class ClientMain implements Runnable{
         Registry registry = null;
         String playerName;
         Scanner scanner = new Scanner(System.in);
+        CLIPrinter printer = new CLIPrinter();
 
         //Set username
         System.out.println(Color.coloredString("ENTER YOUR USERNAME",Color.Green));
         playerName = scanner.nextLine();
-        printMessage("Hello "+playerName);
+        printer.printMessage("Hello "+playerName+"!");
         boolean logged = false;
         //Try to log in for 30s (1 try each second)
         for(int tries = 0; tries < 30 && !logged; tries++){
             try {
-                printMessage("Login attempt");
                 //get remote registry that points to 127.0.0.1:port
                 registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port);
                 //get interface from remote registry
@@ -41,18 +37,18 @@ public class ClientMain implements Runnable{
                 logged = stub.login(playerName);
             }
             catch (ConnectException e){
-                printErrorMessage("Server was down, retying in 1 second");
+                printer.printErrorMessage("Server was down, retying in 1 second");
                 sleep(1000);
             }
             catch (RemoteException e) {
-                printErrorMessage("Error in RMI, retying in 1 second");
+                printer.printErrorMessage("Error in RMI, retying in 1 second");
                 sleep(1000);
             }
         }
         if (logged)
-            printStatusUpdate("Login was successful");
+            printer.printMessage("Login was successful");
         else{ //if none of the 30 tries was successful
-            printErrorMessage("30s elapsed. Server is down, retry later");
+            printer.printErrorMessage("Shutting down. 30s elapsed");
             return;
         }
         try { //this is a test behavioural
@@ -70,18 +66,6 @@ public class ClientMain implements Runnable{
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void printErrorMessage(String mes){
-        System.out.println(Color.coloredString(mes,Color.Red));
-    }
-
-    public static void printStatusUpdate(String mes){
-        System.out.println(Color.coloredString(mes,Color.Green));
-    }
-
-    public static void printMessage(String mes){
-        System.out.println(Color.coloredString(mes,Color.Yellow));
     }
 
     @Override
