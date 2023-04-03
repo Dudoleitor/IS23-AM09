@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -388,6 +389,11 @@ public class Board implements Jsonable {
             return positions;
         }
 
+        Predicate<Position> validfreeSide = (p) ->{
+                        return !isOutOfBounds(p)
+                        && !isNotValid(p) //check it isn't Empty or Invalid
+                        && hasFreeSide(p);};
+
         List<Position> temL = new ArrayList<>();
 
         switch(movePositions.size()) {
@@ -401,7 +407,7 @@ public class Board implements Jsonable {
 
             case 1:
                 positions = movePositions.get(0).neighbours().stream()
-                        .filter(p -> !isOutOfBounds(p) && !isNotValid(p) && hasFreeSide(p))
+                        .filter(p -> validfreeSide.test(p))
                         .collect(Collectors.toList());
                 break;
 
@@ -410,21 +416,17 @@ public class Board implements Jsonable {
                     positions = movePositions.stream()
                             .map(Position::neighbours)
                             .flatMap(Collection::stream)
-                            .filter(p -> !isOutOfBounds(p)
-                                    && !isNotValid(p) //check it isn't Empty or Invalid
-                                    && !movePositions.contains(p) //check it wasn't already in partialMove
-                                    && hasFreeSide(p)
-                                    && Position.sameRow(movePositions, p)) //check is aligned with other tiles
+                            .filter(p -> validfreeSide.test(p) &&
+                                    !movePositions.contains(p) && //check it wasn't already in partialMove
+                                    Position.sameRow(movePositions, p)) //check is aligned with other tiles
                             .collect(Collectors.toList());
                 } else {
                     positions = movePositions.stream()
                             .map(Position::neighbours)
                             .flatMap(Collection::stream)
-                            .filter(p -> !isOutOfBounds(p)
-                                    && !isNotValid(p)
-                                    && !movePositions.contains(p)
-                                    && hasFreeSide(p)
-                                    && Position.sameColumn(movePositions, p))
+                            .filter(p -> validfreeSide.test(p) &&
+                                    !movePositions.contains(p) && //check it wasn't already in partialMove
+                                    Position.sameColumn(movePositions, p))
                             .collect(Collectors.toList());
 
                 }

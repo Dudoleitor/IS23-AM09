@@ -51,8 +51,8 @@ public class Lobby{
     /**
      * start the lobby when it's full of players
      */
-    public void start(){ //TODO will initialize the controller
-        // the lobby starts
+    public void start(){
+        controller = new Controller(players);
     }
 
     public void remove(String player){ //actually does nothin'
