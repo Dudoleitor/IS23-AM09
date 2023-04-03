@@ -17,4 +17,5 @@ public interface RemoteCall extends Remote {
     void joinLobby(String player, RemoteCall stub) throws RemoteException;
     void createLobby(String player, RemoteCall stub,  int numPlayers) throws RemoteException;
     void quitGame(String player, RemoteCall stub) throws RemoteException;
+    boolean matchHasStarted(String player) throws RemoteException;
 }

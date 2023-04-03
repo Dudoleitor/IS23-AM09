@@ -9,7 +9,6 @@ public class Lobby{
     private final List<String> players = new ArrayList<>();
     private final int numPlayers;
     private boolean ready;
-    private final Map<String, Match> matches = new HashMap<>();
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
     private Controller controller; //TODO to initialize
     private  List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
@@ -17,7 +16,6 @@ public class Lobby{
         players.add(firstPlayer);
         this.numPlayers = numPlayers;
         ready = false;
-        matches.put(firstPlayer, new Match(firstPlayer, stub));
         colorPlayer.put(firstPlayer, Color.getRandomColor());
     }
 
@@ -29,7 +27,6 @@ public class Lobby{
     public void addPlayer(String player, RemoteCall stub) {
         if (players.size() < numPlayers) { //checks lobby isn't already full
             players.add(player);
-            matches.put(player, new Match(player, stub));
             if(!colorPlayer.containsKey(player))
                 colorPlayer.put(player, Color.getRandomColor());
 
@@ -51,15 +48,10 @@ public class Lobby{
      * start the lobby when it's full of players
      */
     public void start(){ //TODO will initialize the controller
-        matches.values().forEach(Match::start);
+        // the lobby starts
     }
 
-    public void remove(String player){ //to implement better, for now it's useful for tests
-        try {
-            matches.get(player).join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public void remove(String player){ //actually does nothin'
 
 
     }

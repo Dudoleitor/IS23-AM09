@@ -57,7 +57,13 @@ public class ClientMain implements Runnable{
 
             stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
             LiveChat chat = new LiveChat(playerName, stub);
+            Match match = new Match(playerName, stub);
             chat.start(); //initialize chat
+            while(!stub.matchHasStarted(playerName)){
+                sleep(5000);
+            }
+            match.start();
+            match.join();
             chat.join(); //when chat is closed
             stub.quitGame(playerName, stub);
         } catch (RemoteException e) {

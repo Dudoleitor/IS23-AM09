@@ -144,4 +144,12 @@ public class ServerMain implements RemoteCall{
                 .filter(l -> l.getPlayers().contains(player))
                 .forEach(l -> l.remove(player));
     }
+
+    @Override
+    public boolean matchHasStarted(String player){
+        return lobbies.stream()
+                .filter(l -> l.getPlayers().contains(player))
+                .findFirst()
+                .get().isReady();
+    }
 }
