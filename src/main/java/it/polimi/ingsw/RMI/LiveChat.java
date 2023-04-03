@@ -21,9 +21,10 @@ public class LiveChat extends ClientThread{
     public void run(){
         Scanner scanner = new Scanner(System.in);
         String command = "";
-        threadSafePrint(Color.coloredString("Fell free to express yourself",Color.Yellow)); //introduction message after login
+        threadSafePrint(Color.coloredString("Feel free to express yourself",Color.Yellow)); //introduction message after login
         while(!command.equals("exit")){ //Receive commands until "exit" command is launched
             try{
+                threadSafePrint("$:");
                 command = threadSafeScan(scanner);
                 if(command.equals("exit")){ //Terminate thread
                     break;
@@ -31,6 +32,9 @@ public class LiveChat extends ClientThread{
                 else if(command.toLowerCase().equals("print")){ //update chat and print it
                     updateLiveChat();
                     printAllMessages();
+                }
+                else if(command.equals("")){
+                    threadSafePrint("Your updates:\n");
                 }
                 else{
                     stub.postToLiveChat(playerName,command); //post message to server

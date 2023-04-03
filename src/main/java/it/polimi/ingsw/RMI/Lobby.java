@@ -4,12 +4,15 @@ import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.shared.Color;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Lobby{
     private final List<String> players = new ArrayList<>();
     private final int numPlayers;
     private boolean ready;
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
+    private Lock niceLockBro;
     private Controller controller; //TODO to initialize
     private  List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
     public Lobby(String firstPlayer, RemoteCall stub,  int numPlayers){
@@ -17,6 +20,7 @@ public class Lobby{
         this.numPlayers = numPlayers;
         ready = false;
         colorPlayer.put(firstPlayer, Color.getRandomColor());
+        this.niceLockBro = new ReentrantLock();
     }
 
     /**

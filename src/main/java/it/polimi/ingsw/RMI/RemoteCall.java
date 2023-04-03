@@ -1,4 +1,5 @@
 package it.polimi.ingsw.RMI;
+import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Shelf;
@@ -18,4 +19,7 @@ public interface RemoteCall extends Remote {
     void createLobby(String player, RemoteCall stub,  int numPlayers) throws RemoteException;
     void quitGame(String player, RemoteCall stub) throws RemoteException;
     boolean matchHasStarted(String player) throws RemoteException;
+    boolean isMyTurn(String player) throws RemoteException;
+    List<Move> getValidMoves(String player) throws RemoteException;
+    void postMove(String player,int moveCode) throws RemoteException;
 }

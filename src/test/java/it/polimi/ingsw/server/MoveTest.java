@@ -19,4 +19,20 @@ class MoveTest {
         assertEquals(pm.getBoardPositions().get(0),mo.getBoardPositions().get(0));
         assertEquals(pm.getBoardPositions().get(2),mo.getBoardPositions().get(2));
     }
+    @Test
+    void MoveToString(){
+        PartialMove pm = new PartialMove();
+        try {
+            pm.addPosition(new Position(0,0));
+            pm.addPosition(new Position(1,0));
+            pm.addPosition(new Position(2,0));
+        } catch (InvalidMoveException e) {
+            fail();
+        }
+        Position pos = new Position(0,0);
+        System.out.println(pos);
+        System.out.println(pm);
+        Move move = new Move(pm,2);
+        System.out.println(move);
+    }
 }

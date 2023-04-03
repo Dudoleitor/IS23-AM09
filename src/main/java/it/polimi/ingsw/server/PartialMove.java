@@ -31,4 +31,12 @@ public class PartialMove {
     public int getMaxNumMoves() {
         return maxNumMoves;
     }
+    @Override
+    public String toString(){
+        String s = "";
+        for(Position p : positions){
+            s = s.concat(p+"\n");
+        }
+        return s;
+    }
 }

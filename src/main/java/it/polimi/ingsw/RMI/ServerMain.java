@@ -1,5 +1,7 @@
 package it.polimi.ingsw.RMI;
 
+import it.polimi.ingsw.server.Controller;
+import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.JsonBadParsingException;
@@ -17,6 +19,7 @@ public class ServerMain implements RemoteCall{
     private static volatile boolean keepOn = true;
     private static int port = 1234;
     private List<Lobby> lobbies = new ArrayList<>();
+    private Controller controller = null;
 
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
@@ -151,5 +154,28 @@ public class ServerMain implements RemoteCall{
                 .filter(l -> l.getPlayers().contains(player))
                 .findFirst()
                 .get().isReady();
+    }
+
+    @Override
+    public boolean isMyTurn(String player) throws RemoteException {
+        if(player == null){
+            return false;
+        }
+        if(player.equals(controller.getCurrentPlayerName())){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    @Override
+    public List<Move> getValidMoves(String player) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public void postMove(String player, int moveCode) throws RemoteException {
+
     }
 }

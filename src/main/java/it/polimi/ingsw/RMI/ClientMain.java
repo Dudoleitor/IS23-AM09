@@ -27,10 +27,12 @@ public class ClientMain implements Runnable{
         //Set username
         System.out.println(Color.coloredString("ENTER YOUR USERNAME",Color.Green));
         playerName = scanner.nextLine();
+        printMessage("Hello "+playerName);
         boolean logged = false;
         //Try to log in for 30s (1 try each second)
         for(int tries = 0; tries < 30 && !logged; tries++){
             try {
+                printMessage("Login attempt");
                 //get remote registry that points to 127.0.0.1:port
                 registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port);
                 //get interface from remote registry
@@ -39,22 +41,21 @@ public class ClientMain implements Runnable{
                 logged = stub.login(playerName);
             }
             catch (ConnectException e){
-                System.out.println("Server was down, retying in 1 second");
+                printErrorMessage("Server was down, retying in 1 second");
                 sleep(1000);
             }
             catch (RemoteException e) {
-                System.out.println("Error in RMI, retying in 1 second");
+                printErrorMessage("Error in RMI, retying in 1 second");
                 sleep(1000);
             }
         }
         if (logged)
-            System.out.println("Logged successfully");
+            printStatusUpdate("Login was successful");
         else{ //if none of the 30 tries was successful
-            System.out.println("30s elapsed. Server is down, retry later");
+            printErrorMessage("30s elapsed. Server is down, retry later");
             return;
         }
         try { //this is a test behavioural
-
             stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
             LiveChat chat = new LiveChat(playerName, stub);
             Match match = new Match(playerName, stub);
@@ -69,6 +70,18 @@ public class ClientMain implements Runnable{
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void printErrorMessage(String mes){
+        System.out.println(Color.coloredString(mes,Color.Red));
+    }
+
+    public static void printStatusUpdate(String mes){
+        System.out.println(Color.coloredString(mes,Color.Green));
+    }
+
+    public static void printMessage(String mes){
+        System.out.println(Color.coloredString(mes,Color.Yellow));
     }
 
     @Override

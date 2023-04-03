@@ -9,4 +9,9 @@ public class Move extends PartialMove {
     public int getColumn(){
         return column;
     }
+
+    @Override
+    public String toString(){
+        return super.toString() + "Column: " + String.valueOf(column);
+    }
 }

@@ -50,6 +50,10 @@ public class Position {
         return false;
     }
     @Override
+    public String toString(){
+        return "("+String.valueOf(row)+", "+String.valueOf(column)+")";
+    }
+    @Override
     public int hashCode() {
         return Objects.hash(row, column);
     }

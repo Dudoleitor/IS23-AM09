@@ -16,7 +16,7 @@ public abstract class ClientThread extends Thread{
 
     public void threadSafePrint(String str){
         lock.lock();
-        System.out.println(str);
+        System.out.print(str);
         lock.unlock();
     }
 
