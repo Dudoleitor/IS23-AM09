@@ -428,7 +428,6 @@ public class Board implements Jsonable {
                                     !movePositions.contains(p) && //check it wasn't already in partialMove
                                     Position.sameColumn(movePositions, p))
                             .collect(Collectors.toList());
-
                 }
                 break;
         }
