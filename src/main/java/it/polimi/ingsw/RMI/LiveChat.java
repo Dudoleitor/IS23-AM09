@@ -32,8 +32,8 @@ public class LiveChat extends ClientThread{
                     io.printMessage("Your updates");
                     sleep(100); //give time to others threads to print their status updates
                 } else if (command.equals("secret")) {
-                    String receiver = printer.scan(scanner);
-                    String message = printer.scan(scanner);
+                    String receiver = io.scan();
+                    String message = io.scan();
                     stub.postSecretToLiveChat(playerName, receiver, message);
 
                 } else{
