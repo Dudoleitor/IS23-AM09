@@ -92,7 +92,7 @@ public class ServerMain implements ServerRemoteInterface {
     @Override
     public boolean joinSelectedLobby(String player, int id){ //TODO to handle a re-join of the same player possibility
         Lobby lobby = lobbies.stream()
-                .filter(x -> x.getId()==id && !x.lobbyIsReady()) //verify lobby exists and is not full
+                .filter(x -> x.getId() == id && !x.lobbyIsReady()) //verify lobby exists and is not full
                 .findFirst().orElse(null);
         if(lobby != null){ //if a lobby exists then add player
             lobby.addPlayer(player); //if exists then add player

@@ -117,12 +117,17 @@ public class ClientMain{
         while(!lobbySelected){
             io.printMessage("Choose a Lobby (ENTER for random):");
             String id = io.scan();
-            if(id.length() == 0){
+            if(id.isEmpty()){
                 lobbyID = stub.joinRandomLobby(playerName); //join first available lobby, otherwise creates one
+                lobbySelected = true;
             }
             else if(isNumber(id)){
-                lobbyID = Integer.valueOf(id);
+                lobbyID = Integer.parseInt(id);
                 lobbySelected = stub.joinSelectedLobby(playerName,lobbyID);
+                if(!lobbySelected){
+                    io.printErrorMessage("Input id not found");
+                }
+
             }
             else{
                 io.printErrorMessage("Input a valid id (must be a number)");
