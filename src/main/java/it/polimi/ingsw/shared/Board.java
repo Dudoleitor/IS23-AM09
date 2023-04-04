@@ -96,6 +96,7 @@ public class Board implements Jsonable {
             throw new JsonBadParsingException("Error while creating Board : bad json parsing");
         }
     }
+    
 
     /**
      *
