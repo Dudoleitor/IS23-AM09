@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Lobby implements LobbyRemoteInterface {
     private final int id;
@@ -96,6 +98,16 @@ public class Lobby implements LobbyRemoteInterface {
         System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
 
     }
+    /**
+     * @param sender is the sender of the message
+     * @param receiver is the recipient of the message
+     * @param message is the text content
+     */
+    public void addSecretChatMessage(String sender, String receiver, String message){
+        chatMessages.add(new PrivateChatMessage(sender,receiver,message, colorPlayer.get(sender)));
+        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
+
+    }
 
     /**
      * @return every message in that lobby
@@ -129,6 +141,21 @@ public class Lobby implements LobbyRemoteInterface {
 
     /**
      *
+     * @param sender is the player that is sending a message
+     * @param receiver is the player that is sending a message
+     * @param message is the content
+     * @throws Exception when message format is wrong
+     */
+    @Override
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws Exception {
+        if(sender == null || receiver == null || message == null){
+            throw new Exception("Wrong format of message");
+        }
+        addSecretChatMessage(sender, receiver, message);
+    }
+
+    /**
+     *
      * @param playerName is the player requesting updated chat
      * @param alreadyReceived are messages already in client chat
      * @return list of messages yet to be received
@@ -136,7 +163,7 @@ public class Lobby implements LobbyRemoteInterface {
      */
     @Override
     public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
-        List<ChatMessage> lobbyChat = getChat(); //get chat of that lobby
+        List<ChatMessage> lobbyChat = getChat().stream().filter(x->LiveChat.checkValidReceiver(x,playerName)).collect(Collectors.toList()); //get chat of that lobby
 
         List<ChatMessage> livechatUpdate = new ArrayList<>();
         for(int i = alreadyReceived; i < lobbyChat.size(); i++){

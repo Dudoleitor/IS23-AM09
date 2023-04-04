@@ -33,8 +33,12 @@ public class LiveChat extends ClientThread{
                 else if(command.equals("")){
                     printer.printMessage("Your updates");
                     sleep(100); //give time to others threads to print their status updates
-                }
-                else{
+                } else if (command.equals("secret")) {
+                    String receiver = printer.scan(scanner);
+                    String message = printer.scan(scanner);
+                    stub.postSecretToLiveChat(playerName, receiver, message);
+
+                } else{
                     stub.postToLiveChat(playerName,command); //post message to server
                 }
             }
@@ -65,5 +69,13 @@ public class LiveChat extends ClientThread{
         List<String> toPrint = chat.stream().map(mes -> mes.toString()).collect(Collectors.toList());
         toPrint.add(0,printer.messageFormat("Here are all messages"));
         printer.multiPrint(toPrint);
+    }
+
+    public static boolean checkValidReceiver(ChatMessage message, String receiverName){
+        if (message.getClass().equals(PrivateChatMessage.class)){
+            if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
+                return false;
+        }
+        return true;
     }
 }

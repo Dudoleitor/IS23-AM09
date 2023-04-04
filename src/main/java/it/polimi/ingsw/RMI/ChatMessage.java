@@ -24,4 +24,11 @@ public class ChatMessage implements Serializable {
             return ">" + Color.coloredString(playerName,color) +
                     ": " + message;
         }
+
+        public String getSender(){
+            return playerName;
+        }
+        public String getMessage(){
+            return message;
+        }
 }
