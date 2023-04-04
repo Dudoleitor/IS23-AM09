@@ -224,7 +224,7 @@ public class PlayerGoal {
 
     @Override
     public String toString() {
-        String str = Color.coloredString("PlayerGoal "+goalId,Color.Yellow);
+        String str = "PlayerGoal ";
         str = str.concat(": ");
         for(GoalPosition p : positionList){
             str = str.concat("\n" + p.toString());

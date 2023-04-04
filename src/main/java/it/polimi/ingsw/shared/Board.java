@@ -174,6 +174,9 @@ public class Board implements Jsonable {
             str = str.concat("\n");
         }
         str = str.concat("Common Goals:\n");
+        if(getCommonGoals().size() == 0){
+            str = str.concat(Color.coloredString("None",Color.Yellow));
+        }
         for(CommonGoal cg : getCommonGoals()){
             str = str.concat(cg.toString());
         }
