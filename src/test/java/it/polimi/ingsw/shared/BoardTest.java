@@ -58,6 +58,8 @@ class BoardTest {
 
         Exception e = assertThrows(OutOfTilesException.class, b2::fill);
         assertEquals("The END is near : No more tiles left in the deck", e.getMessage());
+        System.out.println(b1);
+        System.out.println("\n\n"+b2);
     }
 
     @Test

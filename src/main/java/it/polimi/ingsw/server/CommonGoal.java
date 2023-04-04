@@ -181,6 +181,16 @@ public class CommonGoal implements Jsonable{
 
         return commonGoalJson;
     }
+
+    public String toString(){
+        String str = Color.coloredString(strategy.name(),Color.Yellow);
+        str = str.concat(": ");
+        for(Integer points : showPointsStack()){
+            str = str.concat(points + " ");
+        }
+        str = str.concat("\n");
+        return str;
+    }
     @Override
     public boolean equals(Object o){ //check they have same ID
         if(o == null)

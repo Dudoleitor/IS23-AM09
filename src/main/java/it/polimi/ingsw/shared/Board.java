@@ -161,14 +161,24 @@ public class Board implements Jsonable {
      */
     @Override
     public String toString(){
-        String s = "";
-        for(int i = 0; i < numRows; i++){
-            for(int j = 0; j < numColumns; j++){
-                s = s.concat(boardTiles[i][j].toColorFulString() + " ");
+        String str = "Board:\n";
+        int rows = getNumRows();
+        int columns = getNumColumns();
+        for(int row = 0; row < rows; row++){
+            for(int col = 0; col < columns; col++){
+                try {
+                    str = str.concat(getTile(row,col).toColorFulString()+" ");
+                } catch (BadPositionException e) {
+                    //Will never be executed
+                }
             }
-            s = s.concat("\n");
+            str = str.concat("\n");
         }
-        return s;
+        str = str.concat("Common Goals:\n");
+        for(CommonGoal cg : getCommonGoals()){
+            str = str.concat(cg.toString());
+        }
+        return str;
     }
 
     /**
