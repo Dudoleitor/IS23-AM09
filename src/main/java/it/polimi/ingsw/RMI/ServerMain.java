@@ -60,17 +60,28 @@ public class ServerMain implements ServerRemoteInterface {
      * @throws RemoteException is there are problems with connection
      */
     @Override
-    public List<Integer> login(String nick) throws RemoteException {
+    public boolean login(String nick) throws RemoteException {
+
+        System.out.println(nick + " has just logged in");
+
+        return true;
+    }
+
+    /**
+     *
+     * @param nick is the player name
+     * @return list of lobby id of matches joined by the player
+     */
+    @Override
+    public List<Integer> getJoinedLobbies(String nick){
         List<Integer> listLobbies = //get all lobbies already joined by the client
                 lobbies.stream()
                         .filter(x -> x.getPlayers().contains(nick))
                         .map(Lobby::getId)
                         .collect(Collectors.toList());
-        System.out.println(nick + " has just logged in");
 
         return listLobbies;
     }
-
 
     /**
      * @param player requesting to join the lobby

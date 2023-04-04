@@ -94,7 +94,6 @@ public class ClientMain{
 
     public static boolean tryLogin() throws InterruptedException {
         boolean logged = false;
-        List<Integer> previousSessions = new ArrayList<>();
         //Try to log in for 30s (1 try each second)
         for(int tries = 0; tries < 30 && !logged; tries++){
             try {
@@ -103,15 +102,10 @@ public class ClientMain{
                 //get interface from remote registry
                 stub = (ServerRemoteInterface) registry.lookup("interface");
                 //try to log in
-                previousSessions = stub.login(playerName); //get previous sessions if present
-                if(previousSessions == null)
-                    return false;
-                if(!previousSessions.isEmpty()){ //if some previous session is available
-                    io.printMessage("Welcome back!");
-                    io.printMessage("Here are your already joined lobbies");
-                    previousSessions.stream().forEach(x->io.printMessage("Lobby " + x));
+                logged = stub.login(playerName); //get previous sessions if present
+                if(logged) {
+                    showJoinedLobbies();
                 }
-                logged = true;
             }
             catch (ConnectException | NotBoundException e){
                 io.printErrorMessage("Server was down, retying in 1 second");
@@ -123,6 +117,18 @@ public class ClientMain{
             }
         }
         return logged;
+    }
+    public static void showJoinedLobbies(){
+        try {
+            List<Integer> previousSessions = stub.getJoinedLobbies(playerName);
+            if (previousSessions != null && !previousSessions.isEmpty()) { //if some previous session is available
+                io.printMessage("Welcome back!");
+                io.printMessage("Here are your already joined lobbies");
+                previousSessions.stream().forEach(x -> io.printMessage("--> Lobby " + x));
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void joinLobby() throws RemoteException, NotBoundException {
@@ -150,13 +156,11 @@ public class ClientMain{
         lobbyStub = (LobbyRemoteInterface) registry.lookup(String.valueOf(lobbyID));
     }
     public static void showLobbyList(){
-        Map m = null;
         try {
-            m = stub.showAvailableLobbbies();
+            Map m = stub.showAvailableLobbbies();
             if (!m.isEmpty()) {
                 io.printMessage("Here are the active lobbies:");
-                Map finalM = m;
-                m.keySet().stream().forEach(x -> io.printMessage("Lobby " + x + ":  " + finalM.get(x) + " players in"));
+                m.keySet().stream().forEach(x -> io.printMessage("--> Lobby " + x + ":  " + m.get(x) + " players in"));
             } else {
                 io.printMessage("No other active lobby is available, you might want to create one");
             }
