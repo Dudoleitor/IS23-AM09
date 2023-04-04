@@ -2,7 +2,6 @@ package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.Move;
-import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Shelf;
@@ -15,7 +14,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
-public class ServerMain implements RemoteCall{
+public class ServerMain implements ServerRemoteInterface {
     private static volatile boolean keepOn = true;
     private static int port = 1234;
     private List<Lobby> lobbies = new ArrayList<>();
@@ -23,9 +22,9 @@ public class ServerMain implements RemoteCall{
 
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
-        RemoteCall stub;
+        ServerRemoteInterface stub;
         try {
-            stub = (RemoteCall) UnicastRemoteObject.exportObject(obj, port); //create an interface to export
+            stub = (ServerRemoteInterface) UnicastRemoteObject.exportObject(obj, port); //create an interface to export
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -112,7 +111,7 @@ public class ServerMain implements RemoteCall{
      * @param stub is the player interface
      */
     @Override
-    public void joinLobby(String player, RemoteCall stub){ //TODO to handle a re-join of the same player possibility
+    public void joinLobby(String player, ServerRemoteInterface stub){ //TODO to handle a re-join of the same player possibility
         Lobby lobby = lobbies.stream()
                     .filter(l -> !l.isReady()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
@@ -136,13 +135,13 @@ public class ServerMain implements RemoteCall{
      * @param numPlayers is the size of the lobby
      */
     @Override
-    public void createLobby(String player, RemoteCall stub, int numPlayers){
+    public void createLobby(String player, ServerRemoteInterface stub, int numPlayers){
         Lobby lobby = new Lobby(player, stub, numPlayers);
         lobbies.add(lobby);
     }
 
     @Override
-    public void quitGame(String player, RemoteCall stub) { //TODO to refactor
+    public void quitGame(String player, ServerRemoteInterface stub) { //TODO to refactor
         lobbies.stream()
                 .filter(l -> l.getPlayers().contains(player))
                 .forEach(l -> l.remove(player));

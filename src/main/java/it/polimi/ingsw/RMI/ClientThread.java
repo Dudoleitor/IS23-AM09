@@ -4,9 +4,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class ClientThread extends Thread{
     protected String playerName;
-    protected RemoteCall stub;
+    protected ServerRemoteInterface stub;
     protected static ConcurrentCLiPrinter printer = new ConcurrentCLiPrinter(new ReentrantLock());
-    ClientThread(String playerName, RemoteCall stub){
+    ClientThread(String playerName, ServerRemoteInterface stub){
         this.playerName = playerName;
         this.stub = stub;
     }

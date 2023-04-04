@@ -1,6 +1,5 @@
 package it.polimi.ingsw.RMI;
 
-import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Constants;
 
 import java.rmi.ConnectException;
@@ -15,7 +14,7 @@ import static org.junit.experimental.theories.internal.ParameterizedAssertionErr
 
 public class ClientMain implements Runnable{
     public static void main(String argv[]) throws NotBoundException, InterruptedException {
-        RemoteCall stub = null;
+        ServerRemoteInterface stub = null;
         Registry registry = null;
         String playerName;
         Scanner scanner = new Scanner(System.in);
@@ -33,7 +32,7 @@ public class ClientMain implements Runnable{
                 //get remote registry that points to 127.0.0.1:port
                 registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port);
                 //get interface from remote registry
-                stub = (RemoteCall) registry.lookup("interface");
+                stub = (ServerRemoteInterface) registry.lookup("interface");
                 //try to log in
                 logged = stub.login(playerName);
             }
