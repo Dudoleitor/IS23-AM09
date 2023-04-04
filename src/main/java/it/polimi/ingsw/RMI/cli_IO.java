@@ -2,13 +2,14 @@ package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.shared.Color;
 
-import java.io.File;
+import java.util.Scanner;
 
-public class CLIPrinter {
+public class cli_IO {
     //Default Colors
     public static Color messageColor = Color.Yellow;
     public static Color GAMEColor = Color.Purple;
     public static Color errorColor = Color.Red;
+    public static Scanner scanner = new Scanner(System.in);
 
     //Methods to format CLI messages
 
@@ -39,6 +40,10 @@ public class CLIPrinter {
     public void printErrorMessage(String s){
         System.out.println(errorFormat(s));
     }
-
+    public String scan(){
+        printPlaceHolder();
+        String command = scanner.nextLine();
+        return command;
+    }
 }
 

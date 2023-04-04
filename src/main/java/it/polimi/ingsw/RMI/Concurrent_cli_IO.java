@@ -3,11 +3,10 @@ package it.polimi.ingsw.RMI;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class ConcurrentCLiPrinter extends CLIPrinter {
+public class Concurrent_cli_IO extends cli_IO {
     Lock lock;
-    ConcurrentCLiPrinter(Lock lock){
+    Concurrent_cli_IO(Lock lock){
         this.lock = lock;
     }
     @Override
@@ -59,9 +58,8 @@ public class ConcurrentCLiPrinter extends CLIPrinter {
     }
     /**
      * Lock the access to StdOut when you are waiting for strings
-     * @param scanner scanner
      */
-    public String scan(Scanner scanner){
+    public String scan(){
         lock.lock();
         printPlaceHolder();
         String command = scanner.nextLine();

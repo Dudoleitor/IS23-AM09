@@ -15,9 +15,9 @@ public class Match extends ClientThread{
         try {
             //sleep(2000);
             Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
-            printer.printErrorMessage("Shelf created\n" + s);
+            io.printErrorMessage("Shelf created\n" + s);
             stub.sendShelf(s.toJson()); //item passed must be a serializable object
-            printer.printErrorMessage("Shelf sent successfully");
+            io.printErrorMessage("Shelf sent successfully");
         } catch (JsonBadParsingException e) { //TODO to handle it better
             throw new RuntimeException(e);
         } catch (RemoteException e) {
