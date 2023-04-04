@@ -101,23 +101,28 @@ public enum CommonGoalStrategy {
                         counters.put(tile, 0);
                     }
                     //count all tiles in different counters
-                    for (int row = 0; row < shelf.getRows(); row++) {
-                        for (int column = 0; column < shelf.getColumns(); column++) {
-                            try {
-                                currentTile = shelf.getTile(row, column);
-                            } catch (BadPositionException e) {
-                                throw new CommonGoalRuntimeException("Error in test"); //TODO handle better
-                            }
-                            if (shelf.isValidTile(row, column)) {
-                                //increment counter
-                                counters.put(currentTile, counters.get(currentTile) + 1);
-                            }
-                        }
-                    }
+                    countAllTiles(shelf,counters);
                     //true if at least one counter is >= n
                     return counters.values().stream().filter(x -> x >= n).count() > 0;
                 }
             };
+        }
+
+        static void countAllTiles(Shelf shelf, HashMap<Tile, Integer> counters){
+            Tile currentTile;
+            for (int row = 0; row < shelf.getRows(); row++) {
+                for (int column = 0; column < shelf.getColumns(); column++) {
+                    try {
+                        currentTile = shelf.getTile(row, column);
+                    } catch (BadPositionException e) {
+                        throw new CommonGoalRuntimeException("Error in test"); //TODO handle better
+                    }
+                    if (shelf.isValidTile(row, column)) {
+                        //increment counter
+                        counters.put(currentTile, counters.get(currentTile) + 1);
+                    }
+                }
+            }
         }
 
         /**
@@ -186,6 +191,7 @@ public enum CommonGoalStrategy {
         };
         static private ArrayList<Tile> getXShape(Shelf shelf, int row, int column) {
             try {
+                //coolect tiles in an X shape
                 ArrayList<Tile> tiles = new ArrayList<>();
                 tiles.add(shelf.getTile(row, column));
                 tiles.add(shelf.getTile(row + 1, column + 1));
@@ -214,6 +220,7 @@ public enum CommonGoalStrategy {
                     for (int row = 0; row < rows - 1; row++) {
                         for (int column = 0; column < columns - 1; column++) {
                             currentPos = new Position(row,column);
+                            //if perfect square is found increase the counter
                             if (isPerfectSquare(shelf, visited, currentPos)) {
                                 markSquareAsUsed(visited, currentPos);
                                 equalSquaresCounter++;
@@ -225,6 +232,7 @@ public enum CommonGoalStrategy {
                 }
             };
         }
+
         static private void markSquareAsUsed(boolean[][] visited, Position position) {
             for(Position pos: position.square()){
                 visited[pos.getRow()][pos.getColumn()] = true;
@@ -232,18 +240,19 @@ public enum CommonGoalStrategy {
         }
         static private boolean isPerfectSquare(Shelf shelf, boolean[][] visited, Position position) {
             List<Position> square = position.square();
-
-            return  square.stream().allMatch(pos-> !visited[pos.getRow()][pos.getColumn()]) //none is already used
-                    &&
-                    4 == validIslandSize(shelf, position, visited) //there are exactly 4 squares in the island
-                    &&
-                    maxNtypes(1).test(position.square().stream().map(p -> { //forall the positions in the square
+            return  //none is already used
+                    square.stream().allMatch(pos-> !visited[pos.getRow()][pos.getColumn()]) &&
+                    //there are exactly 4 squares in the island
+                    4 == validIslandSize(shelf, position, visited) &&
+                    //test if all tiles are equal
+                    maxNtypes(1).test(position.square().stream().map(p -> {
+                        //forall the positions in the square
                         try {
                             return shelf.getTile(p); //get tile
                         } catch (BadPositionException e) {
                             return Tile.Empty; //get empty if out of bounds ==> test will fail
                         }
-                    }).collect(Collectors.toList())); //test if all tiles are equal
+                    }).collect(Collectors.toList()));
         }
 
         /**
@@ -282,12 +291,11 @@ public enum CommonGoalStrategy {
                     //if equal tile found add 1
                     if (shelf.getTile(row, column).equals(type)) {
                         visited[row][column] = true;
-                        result = 1;
                         //recursively visit all neighbours of nth grade until you fill the island
                         //and add one for each one you find
-                        for (Position neighbour : position.neighbours()) {
-                            result += recursiveIslandVisit(shelf, neighbour, visited, type);
-                        }
+                        result = 1 + position.neighbours().stream().
+                                mapToInt(neighbour -> recursiveIslandVisit(shelf, neighbour, visited, type)).
+                                sum();
                     }
                 } catch (BadPositionException e) {
                     throw new CommonGoalRuntimeException("Error in recursiveIslandVisit");
@@ -380,31 +388,43 @@ public enum CommonGoalStrategy {
             ArrayList<Tile> currentLadder = new ArrayList<>();
 
             //collect tiles in ascending ladders
-            for (int initial_row = 0; initial_row < 2; initial_row++) { //value 2 is hardcoded
-                currentLadder.clear();
-                for (int i = 0; i < Math.min(rows, columns); i++) {
-                    try {
-                        currentLadder.add(shelf.getTile(new Position(initial_row + i, i)));
-                    } catch (BadPositionException e) {
-                        throw new CommonGoalRuntimeException("Error in generateLadders");
-                    }
+            for (int initial_row = 0; initial_row < 2; initial_row++) {//value 2 is hardcoded
+                try{
+                    ladders.add((ArrayList<Tile>) ascendingLadder(shelf,initial_row));
+                    ladders.add((ArrayList<Tile>) descendingLadder(shelf,initial_row));
                 }
-                ladders.add(new ArrayList<>(currentLadder));
-            }
-
-            //collect tiles in descending ladders
-            for (int initial_row = 0; initial_row < 2; initial_row++) { //value 2 is hardcoded
-                currentLadder.clear();
-                for (int i = 0; i < Math.min(rows, columns); i++) {
-                    try {
-                        currentLadder.add(shelf.getTile(new Position(initial_row + i, columns - 1 - i)));
-                    } catch (BadPositionException e) {
-                        throw new CommonGoalRuntimeException("Error in generateLadders");
-                    }
+                catch (CommonGoalRuntimeException e){
+                    throw new CommonGoalRuntimeException("Error in generateLadders");
                 }
-                ladders.add(new ArrayList<>(currentLadder));
             }
             return ladders;
+        }
+        static private List<Tile> ascendingLadder(Shelf shelf,int initial_row) throws CommonGoalRuntimeException{
+            int rows = shelf.getRows();
+            int columns = shelf.getColumns();
+            List<Tile> ladder = new ArrayList<>();
+            for (int i = 0; i < Math.min(rows, columns); i++) {
+                try {
+                    ladder.add(shelf.getTile(new Position(initial_row + i, i)));
+                } catch (BadPositionException e) {
+                    throw new CommonGoalRuntimeException("Error in generateLadders");
+                }
+            }
+            return ladder;
+        }
+
+        static private List<Tile> descendingLadder(Shelf shelf,int initial_row) throws CommonGoalRuntimeException{
+            int rows = shelf.getRows();
+            int columns = shelf.getColumns();
+            List<Tile> ladder = new ArrayList<>();
+            for (int i = 0; i < Math.min(rows, columns); i++) {
+                try {
+                    ladder.add(shelf.getTile(new Position(initial_row + i, columns - 1 - i)));
+                } catch (BadPositionException e) {
+                    throw new CommonGoalRuntimeException("Error in generateLadders");
+                }
+            }
+            return ladder;
         }
     }
 }
