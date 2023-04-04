@@ -14,6 +14,7 @@ public class Controller implements Jsonable {
     private final List<Player> players;
     private int turn;
 
+
     /**
      * Constructor used to initialize the controller
      * @param namePlayers is a List of the (unique) names of the players
@@ -95,8 +96,26 @@ public class Controller implements Jsonable {
      * in order to get the actual player
      * @return the current player
      */
+
+    //TODO: spezzare la funzione --> devo poter vedere il currentPlayer senza modificare il turno
     public String getCurrentPlayerName() {
-        return getPlayers().get((turn) % (getPlayers().size())).getName();
+        final int initialSize = getPlayers().size();
+        int currentPlayerTurn = turn;
+
+        List<ActivePlayer> activePlayers = new ArrayList<>();
+        for(Player p : getPlayers()) {
+            ActivePlayer p1 = new ActivePlayer(p, true);
+            activePlayers.add(p1);
+        }
+
+        while(!activePlayers.get((currentPlayerTurn) % (initialSize)).isActive()) {
+            next(currentPlayerTurn);
+        }
+
+        //At the end the actual turn could be incremented. In fact, if the currentPlayer
+        //is not active, then the turn is skipped
+        turn = currentPlayerTurn;
+        return activePlayers.get((currentPlayerTurn) % (initialSize)).getPlayer().getName();
     }
 
     /**
@@ -157,8 +176,12 @@ public class Controller implements Jsonable {
     /**
      * increment the private variable turn
      */
-    private void incrementTurn() {
+    public void incrementTurn() {
         turn += 1;
+    }
+
+    private void next(int actualTurn) {
+        actualTurn += 1;
     }
 
     /**
@@ -214,6 +237,28 @@ public class Controller implements Jsonable {
         gameStatus.put("commonGoals", commonGoalsJson);
 
         return gameStatus;
+    }
+
+    private class ActivePlayer {
+        Player player;
+        boolean isActive;
+
+        public ActivePlayer(Player player, boolean isActive) {
+            this.player = player;
+            this.isActive = isActive;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+
+        public boolean isActive() {
+            return isActive;
+        }
+
+        public void setActive(boolean active) {
+            isActive = active;
+        }
     }
 
 }

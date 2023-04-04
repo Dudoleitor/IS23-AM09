@@ -100,6 +100,21 @@ public class ControllerTest {
     }
 
     @Test
+    void getCurrentPlayer(){
+        List<String> players = new ArrayList<>();
+        players.add("fridgeieri");
+        players.add("fridgeoggi");
+        players.add("fridgedomani");
+        Controller c = new Controller(players);
+
+        for (int i = 0; i < 100; i++) {
+            assertEquals(c.getCurrentPlayerName(), players.get(i%3));
+            c.incrementTurn();
+        }
+
+    }
+
+    @Test
     void turnIncrement(){
         List<String> players = new ArrayList<>();
         players.add("fridgeieri");
