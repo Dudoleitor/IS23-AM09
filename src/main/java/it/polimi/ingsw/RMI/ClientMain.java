@@ -67,7 +67,7 @@ public class ClientMain implements Runnable{
             chat.start(); //initialize chat
             while(!lobbyStub.matchHasStarted()){
                 if(!lobbyStub.startGame(playerName))
-                    System.out.println("wrong player admin");
+                    System.out.println("wrong player admin or lobby isn't full yet");
                 sleep(5000);
             }
             match.start();
