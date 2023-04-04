@@ -155,6 +155,20 @@ class BoardTest {
     }
 
     @Test
+    void getValidPositionsTest1() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
+        //partialMove.addPosition(pos3);
+        String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
+        Board b = new Board(Jsonable.pathToJsonObject(jsonPath, Board.class), new ArrayList<>());
+        b.fill();
+        Position pos = new Position(0, 3);
+        partialMove.addPosition(pos);
+        Position pos1 = new Position(0, 4);
+        System.out.println(b);
+
+        assertTrue(b.getValidPositions(partialMove).contains(pos1));
+    }
+
+    @Test
     void getValidPositionsTest2() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
 
             String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
