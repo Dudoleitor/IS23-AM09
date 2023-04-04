@@ -15,7 +15,7 @@ public class Lobby{
     private Lock niceLockBro;
     private Controller controller; //TODO to initialize
     private  List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
-    public Lobby(String firstPlayer, RemoteCall stub,  int numPlayers){
+    public Lobby(String firstPlayer, ServerRemoteInterface stub, int numPlayers){
         players.add(firstPlayer);
         this.numPlayers = numPlayers;
         ready = false;
@@ -28,7 +28,7 @@ public class Lobby{
      * @param player is the player to add to lobby
      * @param stub is he's stub
      */
-    public void addPlayer(String player, RemoteCall stub) {
+    public void addPlayer(String player, ServerRemoteInterface stub) {
         if (players.size() < numPlayers) { //checks lobby isn't already full
             players.add(player);
             if(!colorPlayer.containsKey(player))

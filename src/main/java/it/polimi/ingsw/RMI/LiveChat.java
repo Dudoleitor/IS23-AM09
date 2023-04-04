@@ -1,7 +1,5 @@
 package it.polimi.ingsw.RMI;
 
-import it.polimi.ingsw.shared.Color;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,7 @@ public class LiveChat extends ClientThread{
      * The client's copy of chat
      */
     List<ChatMessage> chat;
-    LiveChat(String playerName, RemoteCall stub) {
+    LiveChat(String playerName, ServerRemoteInterface stub) {
         super(playerName, stub);
         chat = new ArrayList<>();
     }
