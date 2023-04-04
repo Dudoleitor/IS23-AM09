@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ServerRemoteInterface extends Remote {
-    boolean login(String nick) throws RemoteException;
+    List<Integer> login(String nick) throws RemoteException;
     int joinRandomLobby(String player) throws RemoteException;
     int createLobby(String player, int numPlayers) throws RemoteException;
     Map<Integer,Integer> showAvailableLobbbies() throws RemoteException;

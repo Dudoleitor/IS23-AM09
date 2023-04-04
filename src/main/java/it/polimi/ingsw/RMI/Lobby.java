@@ -39,6 +39,8 @@ public class Lobby implements LobbyRemoteInterface {
      * @param player is the player to add to lobby
      */
     public void addPlayer(String player) {
+        if(players.contains(player)) //if player logged in previously
+            return;
         if (players.size() < numPlayers) { //checks lobby isn't already full
             players.add(player);
             if(!colorPlayer.containsKey(player))

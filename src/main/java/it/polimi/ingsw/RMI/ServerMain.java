@@ -14,6 +14,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.RemoteCall;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServerMain implements ServerRemoteInterface {
     private static boolean keepOn = true;
@@ -59,9 +60,15 @@ public class ServerMain implements ServerRemoteInterface {
      * @throws RemoteException is there are problems with connection
      */
     @Override
-    public boolean login(String nick) throws RemoteException {
+    public List<Integer> login(String nick) throws RemoteException {
+        List<Integer> listLobbies = //get all lobbies already joined by the client
+                lobbies.stream()
+                        .filter(x -> x.getPlayers().contains(nick))
+                        .map(Lobby::getId)
+                        .collect(Collectors.toList());
         System.out.println(nick + " has just logged in");
-        return true;
+
+        return listLobbies;
     }
 
 
@@ -92,15 +99,16 @@ public class ServerMain implements ServerRemoteInterface {
     @Override
     public boolean joinSelectedLobby(String player, int id){ //TODO to handle a re-join of the same player possibility
         Lobby lobby = lobbies.stream()
-                .filter(x -> x.getId() == id && !x.lobbyIsReady()) //verify lobby exists and is not full
+                .filter(x -> x.getId() == id) //verify lobby exists and is not full
                 .findFirst().orElse(null);
-        if(lobby != null){ //if a lobby exists then add player
+        if(lobby == null) //if a lobby exists then add player
+            return false;
+        try {
             lobby.addPlayer(player); //if exists then add player
             return true;
-        }else {
+        } catch (RuntimeException e) {
             return false;
         }
-
     }
     /**
      *
