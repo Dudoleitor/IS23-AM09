@@ -45,12 +45,12 @@ public enum CommonGoalStrategy {
         return Arrays.stream(values()).
                 filter(x -> x.getId() == id).
                 findFirst().
-                orElseThrow(); //TODO some work for @mik ado
+                orElseThrow();
     }
 
     //PREDICATES PASSED TO COMMON GOALS
     private static class Predicates {
-        //PREDICATES ON GROUPS OF TILES (called by most of Predicate<Shelf>)
+        //PREDICATES ON COLLECTIONS OF TILES (called by most of Predicate<Shelf>)
         /**
          * true if the list of tiles does not contain empty Tiles and they are all different
          */

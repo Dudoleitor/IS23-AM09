@@ -8,22 +8,30 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import static java.lang.Thread.sleep;
+import static java.util.Arrays.stream;
 import static org.junit.experimental.theories.internal.ParameterizedAssertionError.join;
 
 public class ClientMain implements Runnable{
     public static void main(String argv[]) throws NotBoundException, InterruptedException {
         ServerRemoteInterface stub = null;
         Registry registry = null;
-        String playerName;
+        String playerName = null;
         Scanner scanner = new Scanner(System.in);
         CLIPrinter printer = new CLIPrinter();
 
         //Set username
-        printer.printMessage("Enter your username");
-        printer.printPlaceHolder();
-        playerName = scanner.nextLine();
+        while(!isValid(playerName)){
+            printer.printMessage("Enter your username");
+            printer.printPlaceHolder();
+            playerName = scanner.nextLine();
+            if(!isValid(playerName)){
+                printer.printErrorMessage("Please enter a valid name");
+            }
+        }
+
         printer.printMessage("Hello "+playerName+"!");
         boolean logged = false;
         //Try to log in for 30s (1 try each second)
@@ -51,7 +59,7 @@ public class ClientMain implements Runnable{
             printer.printErrorMessage("Shutting down. 30s elapsed");
             return;
         }
-        try { //this is a test behavioural
+        try {
             int lobbyID = stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
             LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) registry.lookup(String.valueOf(lobbyID));
             LiveChat chat = new LiveChat(playerName, lobbyStub);
@@ -68,9 +76,26 @@ public class ClientMain implements Runnable{
             throw new RuntimeException(e);
         }
     }
+    public static boolean isValid(String name){
 
+        Predicate<Character> isLowerCaseLetter =
+                (c) -> {return c.compareTo('a') >= 0 && c.compareTo('z') <= 0;};
+        Predicate<Character> isUpperCaseLetter =
+                (c) -> {return c.compareTo('A') >= 0 && c.compareTo('Z') <= 0;};
+        Predicate<Character> isNumber =
+                (c) -> {return c.compareTo('0') >= 0 && c.compareTo('9') <= 0;};
+        Predicate<Character> isValidSymbol =
+                (c) -> {return c.compareTo('_') == 0 && c.compareTo('-') == 0;};
+        return  name!= null &&
+                name.chars().count() >= 1 &&
+                name.chars().
+                allMatch(c ->
+                isValidSymbol.test((char) c) ||
+                isNumber.test((char) c) ||
+                isLowerCaseLetter.test((char) c) ||
+                isUpperCaseLetter.test((char) c));
+    }
     @Override
     public void run() {
-
     }
 }
