@@ -22,6 +22,10 @@ public enum Tile {
         color = c;
     }
 
+    public Color getColor(){
+        return this.color;
+    }
+
     /**
      * @param label is the label to look for
      * @return the Tile corresponding to the label

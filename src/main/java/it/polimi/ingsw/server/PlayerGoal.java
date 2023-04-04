@@ -224,11 +224,12 @@ public class PlayerGoal {
 
     @Override
     public String toString() {
-        return "PlayerGoal{" +
-                "positionList=" + positionList +
-                ", pointsMap=" + pointsMap +
-                ", goalId=" + goalId +
-                '}';
+        String str = Color.coloredString("PlayerGoal "+goalId,Color.Yellow);
+        str = str.concat(": ");
+        for(GoalPosition p : positionList){
+            str = str.concat("\n" + p.toString());
+        }
+        return str;
     }
 
     @Override
@@ -256,10 +257,7 @@ class GoalPosition {
     }
     @Override
     public String toString() {
-        return "GoalPosition{" +
-                "pos=" + pos +
-                ", tile=" + tile +
-                '}';
+        return Color.coloredString(pos.toString(),getTile().getColor());
     }
 
     @Override

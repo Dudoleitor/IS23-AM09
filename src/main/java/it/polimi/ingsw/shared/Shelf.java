@@ -13,7 +13,7 @@ public class Shelf implements Jsonable {
     private final int rows;
     private final int columns;
 
-
+    //Constructors
     /**
      * generate Shelf by input parameters
      * @param rows is num of rows
@@ -90,24 +90,18 @@ public class Shelf implements Jsonable {
         }
     }
 
-    private boolean isNotValid(){
-        boolean valid = true;
-        boolean notEmptyFound;
-
-        for(int j = 0; valid && j < columns; j++){
-            notEmptyFound = false;
-            for( int i = 0; valid && i < rows; i++){ //check if there are empty tiles between valid tiles ineach column
-                if(tiles[i][j].equals(Tile.Empty)){
-                    if(notEmptyFound)
-                        valid = false;
-                } else if (tiles[i][j].equals(Tile.Invalid)) {
-                    valid = false;
-                } else {
-                    notEmptyFound = true;
-                }
-            }
-        }
-        return !valid;
+    //Observers
+    /**
+     * @return rows attribute
+     */
+    public int getRows() {
+        return rows;
+    }
+    /**
+     * @return columns attribute
+     */
+    public int getColumns() {
+        return columns;
     }
 
     /**
@@ -155,33 +149,29 @@ public class Shelf implements Jsonable {
                 .orElse(0);
         return Math.toIntExact(result);
     }
+
     /**
-     * Insert tile to selected column
-     * @param tile is the tile object to insert
-     * @param column is the selected column
-     * @throws BadPositionException whether tile is Invalid or column is already full or selected column is invalid
+     * Checks if the Shelf is valid according to the game rulels
+     * @return true if valid
      */
-    public void insertTile(Tile tile, int column) throws BadPositionException{
-        boolean isEmpty = false;
-        try {
-            if (!Tile.existsValue(tile))
-                throw new ShelfRuntimeException("Error while inserting tile : Tile type doesn't exists");
-            if (tile.equals(Tile.Empty)) { //if Tile is Empty then do nothing
-                return;
-            } else if (tile.equals(Tile.Invalid)) { //if Tile is Invalid then throw exception
-                throw new BadPositionException("Error while inserting in Shelf : Tile is Invalid type");
-            } else if (!tiles[0][column].equals(Tile.Empty)) { //if selected column has an element in first position aka (also known as) the column is full
-                throw new BadPositionException("Error while inserting in Shelf : selected column is already full");
-            }
-            for (int i = tiles.length - 1; !isEmpty && i >= 0; i--) {// back-iterate the column to find first Empty cell to insert Tile
-                if (tiles[i][column] == Tile.Empty) {
-                    tiles[i][column] = tile;
-                    isEmpty = true;
+    private boolean isNotValid(){
+        boolean valid = true;
+        boolean notEmptyFound;
+
+        for(int j = 0; valid && j < columns; j++){
+            notEmptyFound = false;
+            for( int i = 0; valid && i < rows; i++){ //check if there are empty tiles between valid tiles ineach column
+                if(tiles[i][j].equals(Tile.Empty)){
+                    if(notEmptyFound)
+                        valid = false;
+                } else if (tiles[i][j].equals(Tile.Invalid)) {
+                    valid = false;
+                } else {
+                    notEmptyFound = true;
                 }
             }
-        } catch (IndexOutOfBoundsException e){
-            throw new BadPositionException("Error while inserting in Shelf : selected column is not valid");
         }
+        return !valid;
     }
 
     /**
@@ -223,12 +213,12 @@ public class Shelf implements Jsonable {
         visited[pos.getRow()][pos.getColumn()] = true;
         count = count + pos.neighbours().stream()
                 .filter(x -> {
-                                try {
-                                    return !isOutOfBounds(x.getRow(), x.getColumn()) && getTile(x).equals(getTile(pos)); //check neighbour x is a valid position
-                                } catch (BadPositionException e) {
-                                throw new ShelfRuntimeException("Error in the exploringAdjacents algorithm");
-                                }
-                            })
+                    try {
+                        return !isOutOfBounds(x.getRow(), x.getColumn()) && getTile(x).equals(getTile(pos)); //check neighbour x is a valid position
+                    } catch (BadPositionException e) {
+                        throw new ShelfRuntimeException("Error in the exploringAdjacents algorithm");
+                    }
+                })
                 .mapToInt(x -> exploreAdjacents(visited, x))
                 .sum();
 
@@ -261,18 +251,89 @@ public class Shelf implements Jsonable {
     public boolean isValidTile(Position position){
         return isValidTile(position.getRow(),position.getColumn());
     }
+
     /**
-     * @return rows attribute
+     * Get all the Tiles in a specific column of the shelf
+     * @param column a column of the shelf
+     * @return an ArrayList containing all the Tiles in the selected column of the shelf
      */
-    public int getRows() {
-        return rows;
+    public ArrayList<Tile> allTilesInColumn(int column) {
+        try {
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int row = 0; row < getRows(); row++) {
+                tiles.add(getTile(row, column));
+            }
+            return tiles;
+        } catch (BadPositionException e) {
+            throw new ShelfRuntimeException("Error while getting in allTilesInColumn for Shelf");
+        }
     }
     /**
-     * @return columns attribute
+     * Get all the Tiles in a specific row of the shelf
+     * @param row a row of the shelf
+     * @return an ArrayList containing all the Tiles in the selected row of the shelf
      */
-    public int getColumns() {
-        return columns;
+    public  ArrayList<Tile> allTilesInRow(int row) {
+        try {
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int column = 0; column < getColumns(); column++) {
+                tiles.add(getTile(row, column));
+            }
+            return tiles;
+        } catch (BadPositionException e){
+            throw new ShelfRuntimeException("Error while getting in allTilesInRow for Shelf");
+        }
     }
+    /**
+     * Get all the Tiles in a specific row of the shelf
+     * @return all the Tiles in a specific row of the shelf
+     */
+    public ArrayList<Tile> getCorners(){
+        ArrayList<Tile> corners = new ArrayList<>();
+        int rows = getRows();
+        int columns = getColumns();
+        try {
+            corners.add(getTile(0, 0));
+            corners.add(getTile(0, columns - 1));
+            corners.add(getTile(rows - 1, 0));
+            corners.add(getTile(rows - 1, columns - 1));
+            return corners;
+        } catch (BadPositionException e){
+            throw new ShelfRuntimeException("Error while getting in getCorners in Shelf");
+        }
+    }
+
+    //Modifiers
+    /**
+     * Insert tile to selected column
+     * @param tile is the tile object to insert
+     * @param column is the selected column
+     * @throws BadPositionException whether tile is Invalid or column is already full or selected column is invalid
+     */
+    public void insertTile(Tile tile, int column) throws BadPositionException{
+        boolean isEmpty = false;
+        try {
+            if (!Tile.existsValue(tile))
+                throw new ShelfRuntimeException("Error while inserting tile : Tile type doesn't exists");
+            if (tile.equals(Tile.Empty)) { //if Tile is Empty then do nothing
+                return;
+            } else if (tile.equals(Tile.Invalid)) { //if Tile is Invalid then throw exception
+                throw new BadPositionException("Error while inserting in Shelf : Tile is Invalid type");
+            } else if (!tiles[0][column].equals(Tile.Empty)) { //if selected column has an element in first position aka (also known as) the column is full
+                throw new BadPositionException("Error while inserting in Shelf : selected column is already full");
+            }
+            for (int i = tiles.length - 1; !isEmpty && i >= 0; i--) {// back-iterate the column to find first Empty cell to insert Tile
+                if (tiles[i][column] == Tile.Empty) {
+                    tiles[i][column] = tile;
+                    isEmpty = true;
+                }
+            }
+        } catch (IndexOutOfBoundsException e){
+            throw new BadPositionException("Error while inserting in Shelf : selected column is not valid");
+        }
+    }
+
+    //Others
     /**
      * compare two Shelf objects
      * @param o is the object to compare with
@@ -324,56 +385,6 @@ public class Shelf implements Jsonable {
     @Override
     public int hashCode(){
         return Arrays.deepHashCode(tiles); //deepHashCode is similar to HashCode but also applied to any sub-array of elements
-    }
-    /**
-     * Get all the Tiles in a specific column of the shelf
-     * @param column a column of the shelf
-     * @return an ArrayList containing all the Tiles in the selected column of the shelf
-     */
-    public ArrayList<Tile> allTilesInColumn(int column) {
-        try {
-            ArrayList<Tile> tiles = new ArrayList<>();
-            for (int row = 0; row < getRows(); row++) {
-                tiles.add(getTile(row, column));
-            }
-            return tiles;
-        } catch (BadPositionException e) {
-            throw new ShelfRuntimeException("Error while getting in allTilesInColumn for Shelf");
-        }
-    }
-    /**
-     * Get all the Tiles in a specific row of the shelf
-     * @param row a row of the shelf
-     * @return an ArrayList containing all the Tiles in the selected row of the shelf
-     */
-    public  ArrayList<Tile> allTilesInRow(int row) {
-        try {
-            ArrayList<Tile> tiles = new ArrayList<>();
-            for (int column = 0; column < getColumns(); column++) {
-                tiles.add(getTile(row, column));
-            }
-            return tiles;
-        } catch (BadPositionException e){
-            throw new ShelfRuntimeException("Error while getting in allTilesInRow for Shelf");
-        }
-    }
-    /**
-     * Get all the Tiles in a specific row of the shelf
-     * @return all the Tiles in a specific row of the shelf
-     */
-    public ArrayList<Tile> getCorners(){
-        ArrayList<Tile> corners = new ArrayList<>();
-        int rows = getRows();
-        int columns = getColumns();
-        try { //TODO This function depends also on size of shelf, maybe we should check it to avoid duplicate tiles e.g: shelf is a 1x4
-            corners.add(getTile(0, 0));
-            corners.add(getTile(0, columns - 1));
-            corners.add(getTile(rows - 1, 0));
-            corners.add(getTile(rows - 1, columns - 1));
-            return corners;
-        } catch (BadPositionException e){
-            throw new ShelfRuntimeException("Error while getting in getCorners in Shelf");
-        }
     }
     /**
      * This method is used to save the status of the shelf with a json object.
