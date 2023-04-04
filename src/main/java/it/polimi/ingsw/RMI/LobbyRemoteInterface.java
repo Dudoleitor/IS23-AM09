@@ -17,4 +17,5 @@ public interface LobbyRemoteInterface extends Remote {
     boolean isMyTurn(String player) throws RemoteException;
     List<Move> getValidMoves(String player) throws RemoteException;
     void postMove(String player,int moveCode) throws RemoteException;
+    boolean startGame(String player) throws RemoteException;
 }

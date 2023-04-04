@@ -17,17 +17,18 @@ public class Lobby implements LobbyRemoteInterface {
     private final int id;
     private final List<String> players = new ArrayList<>();
     private final int numPlayers;
-    private boolean ready;
+    private boolean ready = false;
+    private boolean started = false;
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
-    private Lock niceLockBro;
+    private final Lock niceLockBro = new ReentrantLock();;
     private Controller controller; //TODO to initialize
-    private  List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
+    private final List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
+    private final String lobbyAdmin; //admin
     public Lobby(String firstPlayer, int id, int numPlayers){
-        players.add(firstPlayer);
+        this.lobbyAdmin = firstPlayer;
+        this.players.add(firstPlayer);
         this.numPlayers = numPlayers;
-        ready = false;
-        colorPlayer.put(firstPlayer, Color.getRandomColor());
-        this.niceLockBro = new ReentrantLock();
+        this.colorPlayer.put(firstPlayer, Color.getRandomColor());
         this.id = id;
     }
 
@@ -51,15 +52,27 @@ public class Lobby implements LobbyRemoteInterface {
     /**
      * @return true is the lobby is full of players for it's capacity
      */
-    public boolean isReady(){
+
+    public boolean lobbyIsReady(){
         return ready;
     }
 
+    @Override
+    public boolean matchHasStarted(){
+        return started;
+    }
     /**
      * start the lobby when it's full of players
      */
-    public void start(){
+    @Override
+    public boolean startGame(String player){
+        if(!ready  || !player.equals(lobbyAdmin))
+            return false;
+
+        started = true;
         controller = new Controller(players);
+
+        return true;
     }
 
     public void remove(String player){ //actually does nothin'
@@ -138,10 +151,6 @@ public class Lobby implements LobbyRemoteInterface {
 
     }
 
-    @Override
-    public boolean matchHasStarted(){
-        return isReady();
-    }
 
     @Override
     public boolean isMyTurn(String player) throws RemoteException {

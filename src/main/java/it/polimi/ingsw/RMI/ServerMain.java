@@ -73,14 +73,12 @@ public class ServerMain implements ServerRemoteInterface {
     public int joinLobby(String player, ServerRemoteInterface stub){ //TODO to handle a re-join of the same player possibility
         int lobbyID;
         Lobby lobby = lobbies.stream()
-                    .filter(l -> !l.isReady()) //keep only not full lobbies
+                    .filter(l -> !l.lobbyIsReady()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
         if(lobby != null){ //if a lobby exists then add player
             lobby.addPlayer(player); //if exists then add player
             lobbyID = lobby.getId();
-            if(lobby.isReady())
-                lobby.start(); //TODO one day will start a lobby thread
         }else {
             lobbyID = createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise creates new lobby
         }
