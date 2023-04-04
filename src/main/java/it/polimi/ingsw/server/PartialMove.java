@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Position;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class PartialMove {
     }
     @Override
     public String toString(){
-        String s = "";
+        String s = "Positions:\n";
         for(Position p : positions){
             s = s.concat(p+"\n");
         }

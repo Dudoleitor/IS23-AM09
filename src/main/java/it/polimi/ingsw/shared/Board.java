@@ -96,10 +96,9 @@ public class Board implements Jsonable {
             throw new JsonBadParsingException("Error while creating Board : bad json parsing");
         }
     }
-    
 
     /**
-     *
+     *Check if the board is valid
      * @return is board is valid comparing to standard configuration for given number of players
      */
     private boolean checkValidBoard(){
@@ -155,7 +154,6 @@ public class Board implements Jsonable {
         }
 
     }
-
     /**
      * Convert the matrix to a printable String
      * @return the string visual conversion of the matrix
@@ -176,6 +174,9 @@ public class Board implements Jsonable {
             str = str.concat("\n");
         }
         str = str.concat("Common Goals:\n");
+        if(getCommonGoals().size() == 0){
+            str = str.concat(Color.coloredString("None",Color.Yellow));
+        }
         for(CommonGoal cg : getCommonGoals()){
             str = str.concat(cg.toString());
         }
@@ -541,7 +542,4 @@ public class Board implements Jsonable {
         boardJson.put("deck", boardDeck);
         return boardJson;
     }
-
-
-
 }
