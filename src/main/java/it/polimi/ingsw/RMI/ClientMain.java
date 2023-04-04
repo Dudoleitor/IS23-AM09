@@ -60,7 +60,7 @@ public class ClientMain implements Runnable{
             return;
         }
         try {
-            int lobbyID = stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
+            int lobbyID = stub.joinRandomLobby(playerName); //join first available lobby, otherwise creates one
             LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) registry.lookup(String.valueOf(lobbyID));
             LiveChat chat = new LiveChat(playerName, lobbyStub);
             Match match = new Match(playerName, lobbyStub);

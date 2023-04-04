@@ -16,9 +16,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
 public class ServerMain implements ServerRemoteInterface {
-    private static volatile boolean keepOn = true;
-    private static int port = 1234;
-    private List<Lobby> lobbies = new ArrayList<>();
+    private static boolean keepOn = true;
+    private static final int port = 1234;
+    private final List<Lobby> lobbies = new ArrayList<>();
 
     private static Registry registry = null;
     public static void main(String argv[]){
@@ -67,10 +67,10 @@ public class ServerMain implements ServerRemoteInterface {
 
     /**
      * @param player requesting to join the lobby
-     * @param stub is the player interface
+     * @return id of assigned lobby
      */
     @Override
-    public int joinLobby(String player, ServerRemoteInterface stub){ //TODO to handle a re-join of the same player possibility
+    public int joinRandomLobby(String player){ //TODO to handle a re-join of the same player possibility
         int lobbyID;
         Lobby lobby = lobbies.stream()
                     .filter(l -> !l.lobbyIsReady()) //keep only not full lobbies
@@ -80,23 +80,35 @@ public class ServerMain implements ServerRemoteInterface {
             lobby.addPlayer(player); //if exists then add player
             lobbyID = lobby.getId();
         }else {
-            lobbyID = createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise creates new lobby
+            lobbyID = createLobby(player,Constants.maxSupportedPlayers); //otherwise creates new lobby
         }
 
         return lobbyID;
-
-
-
     }
 
     /**
+     * @param player requesting to join the lobby
+     */
+    @Override
+    public boolean joinSelectedLobby(String player, int id){ //TODO to handle a re-join of the same player possibility
+        Lobby lobby = lobbies.stream()
+                .filter(x -> x.getId()==id && !x.lobbyIsReady()) //verify lobby exists and is not full
+                .findFirst().orElse(null);
+        if(lobby != null){ //if a lobby exists then add player
+            lobby.addPlayer(player); //if exists then add player
+            return true;
+        }else {
+            return false;
+        }
+
+    }
+    /**
      *
      * @param player requesting to create the lobby
-     * @param stub is the player interface
      * @param numPlayers is the size of the lobby
      */
     @Override
-    public int createLobby(String player, ServerRemoteInterface stub, int numPlayers){
+    public int createLobby(String player, int numPlayers){
         int nextFreeKey = lobbies.stream().map(Lobby::getId).max(Integer::compareTo).orElse(0) + 1; //find max allocated key and gives back next one
         Lobby lobby = new Lobby(player, nextFreeKey, numPlayers);
         try {
@@ -112,6 +124,15 @@ public class ServerMain implements ServerRemoteInterface {
         return lobby.getId();
     }
 
+    @Override
+    public Map<Integer, Integer> showAvailableLobbbies() throws RemoteException {
+        Map<Integer, Integer> lobbyMap = new HashMap<>();
+        lobbies.stream()
+                .filter(x -> !x.lobbyIsReady())
+                .forEach(x -> lobbyMap.put(x.getId(), x.getPlayers().size())); //add id lobby + num of players currently in
+
+        return lobbyMap;
+    }
 
 
 }
