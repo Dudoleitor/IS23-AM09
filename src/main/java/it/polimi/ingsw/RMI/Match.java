@@ -7,7 +7,7 @@ import it.polimi.ingsw.shared.Shelf;
 import java.rmi.RemoteException;
 
 public class Match extends ClientThread{
-    Match(String playerName, ServerRemoteInterface stub) {
+    Match(String playerName, LobbyRemoteInterface stub) {
         super(playerName, stub);
     }
     @Override

@@ -1,13 +1,20 @@
 package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.server.Controller;
+import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Color;
+import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.Shelf;
+import org.json.simple.JSONObject;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Lobby{
+public class Lobby implements LobbyRemoteInterface {
+    private final int id;
     private final List<String> players = new ArrayList<>();
     private final int numPlayers;
     private boolean ready;
@@ -15,20 +22,20 @@ public class Lobby{
     private Lock niceLockBro;
     private Controller controller; //TODO to initialize
     private  List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
-    public Lobby(String firstPlayer, ServerRemoteInterface stub, int numPlayers){
+    public Lobby(String firstPlayer, int id, int numPlayers){
         players.add(firstPlayer);
         this.numPlayers = numPlayers;
         ready = false;
         colorPlayer.put(firstPlayer, Color.getRandomColor());
         this.niceLockBro = new ReentrantLock();
+        this.id = id;
     }
 
     /**
      * add a player to lobby
      * @param player is the player to add to lobby
-     * @param stub is he's stub
      */
-    public void addPlayer(String player, ServerRemoteInterface stub) {
+    public void addPlayer(String player) {
         if (players.size() < numPlayers) { //checks lobby isn't already full
             players.add(player);
             if(!colorPlayer.containsKey(player))
@@ -84,6 +91,77 @@ public class Lobby{
         return new ArrayList<>(chatMessages);
     }
 
+    public int getId() {
+        return id;
+    }
 
+    @Override
+    public void sendShelf(JSONObject s) throws RemoteException, JsonBadParsingException {
+        System.out.println("Here's your shelf bro:\n" + new Shelf(s));
+    }
 
+    /**
+     *
+     * @param playerName is the player that is sending a message
+     * @param message is the content
+     * @throws Exception when message format is wrong
+     */
+    @Override
+    public void postToLiveChat(String playerName, String message) throws Exception {
+        if(playerName == null || message == null){
+            throw new Exception("Wrong format of message");
+        }
+        addChatMessage(playerName, message);
+    }
+
+    /**
+     *
+     * @param playerName is the player requesting updated chat
+     * @param alreadyReceived are messages already in client chat
+     * @return list of messages yet to be received
+     * @throws RemoteException when there are connection errors
+     */
+    @Override
+    public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
+        List<ChatMessage> lobbyChat = getChat(); //get chat of that lobby
+
+        List<ChatMessage> livechatUpdate = new ArrayList<>();
+        for(int i = alreadyReceived; i < lobbyChat.size(); i++){
+            livechatUpdate.add(lobbyChat.get(i));
+        }
+        System.out.println("updated client chat");
+        return livechatUpdate;
+    }
+
+    @Override
+    public void quitGame(String player, LobbyRemoteInterface stub) throws RemoteException {
+
+    }
+
+    @Override
+    public boolean matchHasStarted(){
+        return isReady();
+    }
+
+    @Override
+    public boolean isMyTurn(String player) throws RemoteException {
+        if(player == null){
+            return false;
+        }
+        if(player.equals(controller.getCurrentPlayerName())){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    @Override
+    public List<Move> getValidMoves(String player) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public void postMove(String player, int moveCode) throws RemoteException {
+
+    }
 }

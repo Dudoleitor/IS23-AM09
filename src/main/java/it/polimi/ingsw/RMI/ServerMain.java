@@ -11,6 +11,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteCall;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
@@ -18,8 +19,8 @@ public class ServerMain implements ServerRemoteInterface {
     private static volatile boolean keepOn = true;
     private static int port = 1234;
     private List<Lobby> lobbies = new ArrayList<>();
-    private Controller controller = null;
 
+    private static Registry registry = null;
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
         ServerRemoteInterface stub;
@@ -29,7 +30,6 @@ public class ServerMain implements ServerRemoteInterface {
             throw new RuntimeException(e);
         }
 
-        Registry registry = null;
         try {
             registry = LocateRegistry.createRegistry(port); //create a registry that accepts request on a defined port
         } catch (RemoteException e) {
@@ -64,65 +64,28 @@ public class ServerMain implements ServerRemoteInterface {
         return true;
     }
 
-    @Override
-    public void sendShelf(JSONObject s) throws JsonBadParsingException { //this method is for a test
-        System.out.println("Here's your shelf bro:\n" + new Shelf(s));
-    }
-
-    /**
-     *
-     * @param playerName is the player that is sending a message
-     * @param message is the content
-     * @throws Exception when message format is wrong
-     */
-    @Override
-    public void postToLiveChat(String playerName, String message) throws Exception {
-        if(playerName == null || message == null){
-            throw new Exception("Wrong format of message");
-        }
-        lobbies.stream()
-                .filter(l -> l.getPlayers().contains(playerName)) //find lobbies that contain that player
-                .forEach(l -> l.addChatMessage(playerName, message));
-    }
-
-    /**
-     *
-     * @param playerName is the player requesting updated chat
-     * @param alreadyReceived are messages already in client chat
-     * @return list of messages yet to be received
-     * @throws RemoteException when there are connection errors
-     */
-    @Override
-    public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
-        List<ChatMessage> lobbyChat = lobbies.stream()
-                .filter(l -> l.getPlayers().contains(playerName)) //find the lobby that contain this player
-                .findFirst().get().getChat(); //get chat of that lobby
-
-        List<ChatMessage> livechatUpdate = new ArrayList<>();
-        for(int i = alreadyReceived; i < lobbyChat.size(); i++){
-            livechatUpdate.add(lobbyChat.get(i));
-        }
-        System.out.println("updated client chat");
-        return livechatUpdate;
-    }
 
     /**
      * @param player requesting to join the lobby
      * @param stub is the player interface
      */
     @Override
-    public void joinLobby(String player, ServerRemoteInterface stub){ //TODO to handle a re-join of the same player possibility
+    public int joinLobby(String player, ServerRemoteInterface stub){ //TODO to handle a re-join of the same player possibility
+        int lobbyID;
         Lobby lobby = lobbies.stream()
                     .filter(l -> !l.isReady()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
         if(lobby != null){ //if a lobby exists then add player
-            lobby.addPlayer(player, stub); //if exists then add player
+            lobby.addPlayer(player); //if exists then add player
+            lobbyID = lobby.getId();
             if(lobby.isReady())
                 lobby.start(); //TODO one day will start a lobby thread
         }else {
-            createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise creates new lobby
+            lobbyID = createLobby(player, stub,Constants.maxSupportedPlayers); //otherwise creates new lobby
         }
+
+        return lobbyID;
 
 
 
@@ -135,46 +98,22 @@ public class ServerMain implements ServerRemoteInterface {
      * @param numPlayers is the size of the lobby
      */
     @Override
-    public void createLobby(String player, ServerRemoteInterface stub, int numPlayers){
-        Lobby lobby = new Lobby(player, stub, numPlayers);
+    public int createLobby(String player, ServerRemoteInterface stub, int numPlayers){
+        int nextFreeKey = lobbies.stream().map(Lobby::getId).max(Integer::compareTo).orElse(0) + 1; //find max allocated key and gives back next one
+        Lobby lobby = new Lobby(player, nextFreeKey, numPlayers);
+        try {
+            LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) UnicastRemoteObject.exportObject(lobby, port); //create an interface to export
+            registry.bind(String.valueOf(lobby.getId()), lobbyStub); //Binds a remote reference to the specified name in this registry
+
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (AlreadyBoundException e) {
+            throw new RuntimeException(e);
+        }
         lobbies.add(lobby);
+        return lobby.getId();
     }
 
-    @Override
-    public void quitGame(String player, ServerRemoteInterface stub) { //TODO to refactor
-        lobbies.stream()
-                .filter(l -> l.getPlayers().contains(player))
-                .forEach(l -> l.remove(player));
-    }
 
-    @Override
-    public boolean matchHasStarted(String player){
-        return lobbies.stream()
-                .filter(l -> l.getPlayers().contains(player))
-                .findFirst()
-                .get().isReady();
-    }
 
-    @Override
-    public boolean isMyTurn(String player) throws RemoteException {
-        if(player == null){
-            return false;
-        }
-        if(player.equals(controller.getCurrentPlayerName())){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    @Override
-    public List<Move> getValidMoves(String player) throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public void postMove(String player, int moveCode) throws RemoteException {
-
-    }
 }

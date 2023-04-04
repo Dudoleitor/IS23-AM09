@@ -11,7 +11,7 @@ public class LiveChat extends ClientThread{
      * The client's copy of chat
      */
     List<ChatMessage> chat;
-    LiveChat(String playerName, ServerRemoteInterface stub) {
+    LiveChat(String playerName, LobbyRemoteInterface stub) {
         super(playerName, stub);
         chat = new ArrayList<>();
     }

@@ -52,17 +52,18 @@ public class ClientMain implements Runnable{
             return;
         }
         try { //this is a test behavioural
-            stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
-            LiveChat chat = new LiveChat(playerName, stub);
-            Match match = new Match(playerName, stub);
+            int lobbyID = stub.joinLobby(playerName, stub); //join first available lobby, otherwise creates one
+            LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) registry.lookup(String.valueOf(lobbyID));
+            LiveChat chat = new LiveChat(playerName, lobbyStub);
+            Match match = new Match(playerName, lobbyStub);
             chat.start(); //initialize chat
-            while(!stub.matchHasStarted(playerName)){
+            while(!lobbyStub.matchHasStarted()){
                 sleep(5000);
             }
             match.start();
             match.join();
             chat.join(); //when chat is closed
-            stub.quitGame(playerName, stub);
+            lobbyStub.quitGame(playerName, lobbyStub);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
