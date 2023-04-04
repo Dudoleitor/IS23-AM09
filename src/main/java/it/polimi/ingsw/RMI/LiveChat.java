@@ -24,7 +24,6 @@ public class LiveChat extends ClientThread{
         printer.printMessage("Feel free to express your self!"); //introduction message after login
         while(!command.equals("exit")){ //Receive commands until "exit" command is launched
             try{
-                printer.print("$:");
                 command = printer.scan(scanner);
                 if(command.equals("exit")){ //Terminate thread
                     break;

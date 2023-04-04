@@ -45,6 +45,7 @@ public class ConcurrentCLiPrinter extends CLIPrinter {
         System.out.println(str);
         lock.unlock();
     }
+
     /**
      * Write some Strings on Std out without avoiding concurrent access
      * @param stringList the strings to print
@@ -62,6 +63,7 @@ public class ConcurrentCLiPrinter extends CLIPrinter {
      */
     public String scan(Scanner scanner){
         lock.lock();
+        printPlaceHolder();
         String command = scanner.nextLine();
         lock.unlock();
         return command;

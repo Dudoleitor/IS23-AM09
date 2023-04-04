@@ -22,7 +22,8 @@ public class ClientMain implements Runnable{
         CLIPrinter printer = new CLIPrinter();
 
         //Set username
-        System.out.println(Color.coloredString("ENTER YOUR USERNAME",Color.Green));
+        printer.printMessage("Enter your username");
+        printer.printPlaceHolder();
         playerName = scanner.nextLine();
         printer.printMessage("Hello "+playerName+"!");
         boolean logged = false;

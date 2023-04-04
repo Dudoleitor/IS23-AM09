@@ -21,6 +21,10 @@ public class CLIPrinter {
         return ">"+ Color.coloredString("GAME",GAMEColor)+": " + Color.coloredString(s,messageColor);
     }
 
+    public void printPlaceHolder(){
+        System.out.print("$:");
+    }
+
     /**
      * A decorator that formats an error message
      * @param s the message
