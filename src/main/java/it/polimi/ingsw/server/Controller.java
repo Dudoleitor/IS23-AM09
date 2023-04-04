@@ -67,21 +67,27 @@ public class Controller implements Jsonable {
      * @return the board
      */
     public Board getBoard() {
-        return board;
+        Board board1;
+        board1 = board;
+        return board1;
     }
 
     /**
      * @return the commonGoals we instantiated in the constructor
      */
     public List<CommonGoal> getCommonGoals() {
-        return board.getCommonGoals();
+        List<CommonGoal> commonGoals = new ArrayList<>();
+        commonGoals.addAll(board.getCommonGoals());
+        return commonGoals;
     }
 
     /**
      * @return the players of the match
      */
     public List<Player> getPlayers() {
-        return players;
+        List<Player> matchPlayers = new ArrayList<>();
+        matchPlayers.addAll(players);
+        return matchPlayers;
     }
 
     /**
