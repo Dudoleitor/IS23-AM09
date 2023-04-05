@@ -8,6 +8,8 @@ public class LiveChat extends ClientThread{
     /**
      * The client's copy of chat
      */
+    boolean exit = false;
+    InputSanitizer inputSanitizer = new InputSanitizer();
     List<ChatMessage> chat;
     LiveChat(String playerName, LobbyRemoteInterface stub) {
         super(playerName, stub);
@@ -16,45 +18,45 @@ public class LiveChat extends ClientThread{
     @Override
     public void run(){
         String command;
-        boolean exit = false;
-        InputSanitizer inputSanitizer = new InputSanitizer();
         io.printMessage("Feel free to express your self!"); //introduction message after login
         while(!exit){ //Receive commands until "exit" command is launched
             try{
                 command = io.scan();
-                if(!inputSanitizer.isValidMessage(command)){
-                    io.printErrorMessage("Invalid format");
-                    continue;
-                }
-                if(command.equals("exit")){ //Terminate thread
-                    io.printMessage("You quit");
-                    exit = true;
-                }
-                else if(command.toLowerCase().equals("print")){ //update chat and print it
-                    updateLiveChat();
-                    printAllMessages();
-                }
-                else if(command.equals("")){
-                    io.printMessage("Your updates");
-                    sleep(100); //give time to others threads to print their status updates
-                } else if (command.equals("secret")) {
-                    List<String> fields = new ArrayList<>();
-                    fields.add("receiver");
-                    fields.add("message");
-                    Map<String,String> header = io.multiScan(fields);
-                    stub.postSecretToLiveChat(
-                            playerName,
-                            header.get("receiver"),
-                            header.get("message"));
-                } else{
-                    stub.postToLiveChat(playerName,command); //post message to server
-                }
+                executeUserCommand(command);
             }
             catch (RemoteException e){
                 io.printErrorMessage("Error in RMI");
             } catch (Exception e) {
                 io.printErrorMessage("Error in Message Format");
             }
+        }
+    }
+
+    private void executeUserCommand(String command) throws Exception {
+        //Invalid command
+        if(!inputSanitizer.isValidMessage(command)){
+            io.printErrorMessage("Invalid format");
+            return;
+        }
+        //execute action for every command
+        switch (command.toLowerCase()){
+            case("exit"): //quit game
+                io.printMessage("You quit");
+                exit = true;
+                break;
+            case("print"): //print all messages
+                updateLiveChat();
+                printAllMessages();
+            case(""): //refresh updates
+                io.printMessage("Your updates");
+                //give time to others threads to print their status updates
+                sleep(100);
+                break;
+            case("secret"): //send private message
+                postToPrivateChat();
+            default: //post message to chat
+                stub.postToLiveChat(playerName,command);
+                break;
         }
     }
 
@@ -85,5 +87,16 @@ public class LiveChat extends ClientThread{
                 return false;
         }
         return true;
+    }
+
+    public void postToPrivateChat() throws Exception {
+        List<String> fields = new ArrayList<>();
+        fields.add("receiver");
+        fields.add("message");
+        Map<String,String> header = io.multiScan(fields);
+        stub.postSecretToLiveChat(
+                playerName,
+                header.get("receiver"),
+                header.get("message"));
     }
 }
