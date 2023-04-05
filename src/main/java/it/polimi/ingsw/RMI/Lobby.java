@@ -68,9 +68,19 @@ public class Lobby implements LobbyRemoteInterface {
         return true;
     }
 
-    public void remove(String player){ //actually does nothin'
+    @Override
+    public boolean isLobbyAdmin(String player) throws RemoteException {
+        return false;
+    }
 
+    @Override
+    public String peekBoard() throws RemoteException {
+        return controller.getBoard().toString();
+    }
 
+    @Override
+    public String peekPlayerShelf(String playerName) throws RemoteException {
+        return controller.getShelves().get(playerName).toString();
     }
 
     /**
@@ -159,26 +169,8 @@ public class Lobby implements LobbyRemoteInterface {
 
     }
 
-
     @Override
-    public boolean isMyTurn(String player) throws RemoteException {
-        if(player == null){
-            return false;
-        }
-        if(player.equals(controller.getCurrentPlayerName())){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    @Override
-    public List<Move> getValidMoves(String player) throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public void postMove(String player, int moveCode) throws RemoteException {
+    public void postMove(String player, Move move) throws RemoteException {
 
     }
 }

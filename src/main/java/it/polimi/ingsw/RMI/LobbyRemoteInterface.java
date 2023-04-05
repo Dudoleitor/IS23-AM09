@@ -14,8 +14,9 @@ public interface LobbyRemoteInterface extends Remote {
     List<ChatMessage> updateLiveChat(String player, int alreadyReceived) throws RemoteException;
     void quitGame(String player, LobbyRemoteInterface stub) throws RemoteException;
     boolean matchHasStarted() throws RemoteException;
-    boolean isMyTurn(String player) throws RemoteException;
-    List<Move> getValidMoves(String player) throws RemoteException;
-    void postMove(String player,int moveCode) throws RemoteException;
+    void postMove(String player,Move move) throws RemoteException;
     boolean startGame(String player) throws RemoteException;
+    boolean isLobbyAdmin(String player) throws RemoteException;
+    String peekBoard() throws RemoteException;
+    String peekPlayerShelf(String playerName) throws RemoteException;
 }

@@ -9,7 +9,6 @@ public class LiveChat extends ClientThread{
      * The client's copy of chat
      */
     boolean exit = false;
-    InputSanitizer inputSanitizer = new InputSanitizer();
     List<ChatMessage> chat;
     LiveChat(String playerName, LobbyRemoteInterface stub) {
         super(playerName, stub);
@@ -17,22 +16,11 @@ public class LiveChat extends ClientThread{
     }
     @Override
     public void run(){
-        String command;
         io.printMessage("Feel free to express your self!"); //introduction message after login
-        while(!exit){ //Receive commands until "exit" command is launched
-            try{
-                command = io.scan();
-                executeUserCommand(command);
-            }
-            catch (RemoteException e){
-                io.printErrorMessage("Error in RMI");
-            } catch (Exception e) {
-                io.printErrorMessage("Error in Message Format");
-            }
-        }
+        loopCommands();
     }
-
-    private void executeUserCommand(String command) throws Exception {
+    @Override
+    protected void executeUserCommand(String command) throws Exception {
         //Invalid command
         if(!inputSanitizer.isValidMessage(command)){
             io.printErrorMessage("Invalid format");
