@@ -22,7 +22,6 @@ public class Lobby implements LobbyRemoteInterface {
     private boolean ready = false;
     private boolean started = false;
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
-    private final Lock niceLockBro = new ReentrantLock();;
     private Controller controller; //TODO to initialize
     private final List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
     private final String lobbyAdmin; //admin

@@ -43,13 +43,13 @@ class InputSanitizerTest {
     }
     @Test
     void letterLC(){
-        assertTrue(inputSanitizer.isUpperCaseLetter('a'));
-        assertTrue(inputSanitizer.isUpperCaseLetter('h'));
-        assertTrue(inputSanitizer.isUpperCaseLetter('z'));
-        assertFalse(inputSanitizer.isUpperCaseLetter('A'));
-        assertFalse(inputSanitizer.isUpperCaseLetter('Z'));
-        assertFalse(inputSanitizer.isUpperCaseLetter('-'));
-        assertFalse(inputSanitizer.isUpperCaseLetter(' '));
+        assertTrue(inputSanitizer.isLowerCaseLetter('a'));
+        assertTrue(inputSanitizer.isLowerCaseLetter('h'));
+        assertTrue(inputSanitizer.isLowerCaseLetter('z'));
+        assertFalse(inputSanitizer.isLowerCaseLetter('A'));
+        assertFalse(inputSanitizer.isLowerCaseLetter('Z'));
+        assertFalse(inputSanitizer.isLowerCaseLetter('-'));
+        assertFalse(inputSanitizer.isLowerCaseLetter(' '));
     }
     @Test
     void integer(){

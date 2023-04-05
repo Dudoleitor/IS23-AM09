@@ -96,7 +96,6 @@ public class ControllerTest {
         pm.addPosition(new Position(0, 1));
         pm.addPosition(new Position(0, 2));
         move = new Move(pm, 0);
-        //TODO end test
     }
 
     @Test
