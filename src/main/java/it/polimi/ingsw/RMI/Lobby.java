@@ -3,32 +3,24 @@ package it.polimi.ingsw.RMI;
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Color;
-import it.polimi.ingsw.shared.JsonBadParsingException;
-import it.polimi.ingsw.shared.Shelf;
-import org.json.simple.JSONObject;
+import it.polimi.ingsw.shared.Constants;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Lobby implements LobbyRemoteInterface {
     private final int id;
     private final List<String> players = new ArrayList<>();
-    private final int numPlayers;
     private boolean ready = false;
     private boolean started = false;
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
     private Controller controller; //TODO to initialize
     private final List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
     private final String lobbyAdmin; //admin
-    public Lobby(String firstPlayer, int id, int numPlayers){
+    public Lobby(String firstPlayer, int id){
         this.lobbyAdmin = firstPlayer;
         this.players.add(firstPlayer);
-        this.numPlayers = numPlayers;
         this.colorPlayer.put(firstPlayer, Color.getRandomColor());
         this.id = id;
     }
@@ -40,15 +32,15 @@ public class Lobby implements LobbyRemoteInterface {
     public void addPlayer(String player) {
         if(players.contains(player)) //if player logged in previously
             return;
-        if (players.size() < numPlayers) { //checks lobby isn't already full
+        if (players.size() < Constants.maxSupportedPlayers) { //checks lobby isn't already full
             players.add(player);
             if(!colorPlayer.containsKey(player))
                 colorPlayer.put(player, Color.getRandomColor());
-
         }else
             throw new RuntimeException("Lobby already full");
 
-        if(players.size() == numPlayers) //if after adding the lobby it is full then it's set to be ready to start
+        //if the lobby has enough players it's ready to start
+        if(players.size() >= Constants.minSupportedPlayers)
             ready = true;
     }
 
@@ -56,7 +48,7 @@ public class Lobby implements LobbyRemoteInterface {
      * @return true is the lobby is full of players for it's capacity
      */
 
-    public boolean lobbyIsReady(){
+    public boolean isReady(){
         return ready;
     }
 
@@ -71,10 +63,8 @@ public class Lobby implements LobbyRemoteInterface {
     public boolean startGame(String player){
         if(!ready  || !player.equals(lobbyAdmin))
             return false;
-
         started = true;
         controller = new Controller(players);
-
         return true;
     }
 
@@ -89,27 +79,6 @@ public class Lobby implements LobbyRemoteInterface {
     public ArrayList<String> getPlayers(){
         return new ArrayList<>(players);
     }
-
-    /**
-     * @param player  is the sender of the message
-     * @param message is the text content
-     */
-    public void addChatMessage(String player, String message){
-        chatMessages.add(new ChatMessage(player,message, colorPlayer.get(player)));
-        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
-
-    }
-    /**
-     * @param sender is the sender of the message
-     * @param receiver is the recipient of the message
-     * @param message is the text content
-     */
-    public void addSecretChatMessage(String sender, String receiver, String message){
-        chatMessages.add(new PrivateChatMessage(sender,receiver,message, colorPlayer.get(sender)));
-        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
-
-    }
-
     /**
      * @return every message in that lobby
      */
@@ -120,12 +89,23 @@ public class Lobby implements LobbyRemoteInterface {
     public int getId() {
         return id;
     }
-
-    @Override
-    public void sendShelf(JSONObject s) throws RemoteException, JsonBadParsingException {
-        System.out.println("Here's your shelf bro:\n" + new Shelf(s));
+    /**
+     * @param player  is the sender of the message
+     * @param message is the text content
+     */
+    public void addChatMessage(String player, String message){
+        chatMessages.add(new ChatMessage(player,message, colorPlayer.get(player)));
+        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
     }
-
+    /**
+     * @param sender is the sender of the message
+     * @param receiver is the recipient of the message
+     * @param message is the text content
+     */
+    public void addSecretChatMessage(String sender, String receiver, String message){
+        chatMessages.add(new PrivateChatMessage(sender,receiver,message, colorPlayer.get(sender)));
+        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
+    }
     /**
      *
      * @param playerName is the player that is sending a message

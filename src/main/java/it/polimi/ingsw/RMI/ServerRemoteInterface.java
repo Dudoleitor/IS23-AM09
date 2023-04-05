@@ -12,7 +12,7 @@ public interface ServerRemoteInterface extends Remote {
     boolean login(String nick) throws RemoteException;
     List<Integer> getJoinedLobbies(String nick) throws RemoteException;
     int joinRandomLobby(String player) throws RemoteException;
-    int createLobby(String player, int numPlayers) throws RemoteException;
+    int createLobby(String player) throws RemoteException;
     Map<Integer,Integer> showAvailableLobbbies() throws RemoteException;
     boolean joinSelectedLobby(String player, int id) throws RemoteException;
 
