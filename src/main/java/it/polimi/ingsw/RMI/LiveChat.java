@@ -1,8 +1,7 @@
 package it.polimi.ingsw.RMI;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LiveChat extends ClientThread{
@@ -22,7 +21,7 @@ public class LiveChat extends ClientThread{
             try{
                 command = io.scan();
                 if(command.equals("exit")){ //Terminate thread
-                    break;
+                    return;
                 }
                 else if(command.toLowerCase().equals("print")){ //update chat and print it
                     updateLiveChat();
@@ -32,10 +31,14 @@ public class LiveChat extends ClientThread{
                     io.printMessage("Your updates");
                     sleep(100); //give time to others threads to print their status updates
                 } else if (command.equals("secret")) {
-                    String receiver = io.scan();
-                    String message = io.scan();
-                    stub.postSecretToLiveChat(playerName, receiver, message);
-
+                    List<String> fields = new ArrayList<>();
+                    fields.add("receiver");
+                    fields.add("message");
+                    Map<String,String> header = io.multiScan(fields);
+                    stub.postSecretToLiveChat(
+                            playerName,
+                            header.get("receiver"),
+                            header.get("message"));
                 } else{
                     stub.postToLiveChat(playerName,command); //post message to server
                 }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class ServerMain implements ServerRemoteInterface {
     private static boolean keepOn = true;
-    private static final int port = 1234;
+    private static final int port = Constants.port;
     private final List<Lobby> lobbies = new ArrayList<>();
 
     private static Registry registry = null;
@@ -149,7 +149,6 @@ public class ServerMain implements ServerRemoteInterface {
         lobbies.stream()
                 .filter(x -> !x.lobbyIsReady())
                 .forEach(x -> lobbyMap.put(x.getId(), x.getPlayers().size())); //add id lobby + num of players currently in
-
         return lobbyMap;
     }
 

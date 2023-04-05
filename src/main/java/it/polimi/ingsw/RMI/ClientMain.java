@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.stream;
@@ -46,6 +47,7 @@ public class ClientMain{
             match.start();
             match.join();
             chat.join(); //when chat is closed
+            io.printErrorMessage("You quit the game!");
             lobbyStub.quitGame(playerName, lobbyStub);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -78,7 +80,7 @@ public class ClientMain{
         return c.compareTo('0') >= 0 && c.compareTo('9') <= 0;
     }
     public static boolean isValidSymbol(Character c){
-        return c.compareTo('_') == 0 && c.compareTo('-') == 0;
+        return c.compareTo('_') == 0 || c.compareTo('-') == 0;
     }
 
 
@@ -123,8 +125,14 @@ public class ClientMain{
             List<Integer> previousSessions = stub.getJoinedLobbies(playerName);
             if (previousSessions != null && !previousSessions.isEmpty()) { //if some previous session is available
                 io.printMessage("Welcome back!");
-                io.printMessage("Here are your already joined lobbies");
-                previousSessions.stream().forEach(x -> io.printMessage("--> Lobby " + x));
+                String message = "Here are your already joined lobbies";
+                List<String> previousLobbies = previousSessions.stream().
+                        map(x -> "\n   --> Lobby " + x).
+                        collect(Collectors.toList());
+                for(String s : previousLobbies){
+                    message = message.concat(s);
+                }
+                io.printMessage(message);
             }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -147,20 +155,27 @@ public class ClientMain{
                 if(!lobbySelected){
                     io.printErrorMessage("Input id not found");
                 }
-
             }
             else{
                 io.printErrorMessage("Input a valid id (must be a number)");
             }
         }
+        io.printMessage("You joined #"+lobbyID+" lobby!");
         lobbyStub = (LobbyRemoteInterface) registry.lookup(String.valueOf(lobbyID));
     }
     public static void showLobbyList(){
         try {
-            Map m = stub.showAvailableLobbbies();
-            if (!m.isEmpty()) {
-                io.printMessage("Here are the active lobbies:");
-                m.keySet().stream().forEach(x -> io.printMessage("--> Lobby " + x + ":  " + m.get(x) + " players in"));
+            Map availableLobbies = stub.showAvailableLobbbies();
+            if (!availableLobbies.isEmpty()) {
+                String lobbyMessage = "Here are the active lobbies:";
+                List<String> lobbyList = (List<String>)
+                        availableLobbies.keySet().stream().
+                        map(x -> "\n   --> Lobby " + x + ":  " + availableLobbies.get(x) + " players in").
+                        collect(Collectors.toList());
+                for(String mes : lobbyList){
+                    lobbyMessage = lobbyMessage.concat(mes);
+                }
+                io.printMessage(lobbyMessage);
             } else {
                 io.printMessage("No other active lobby is available, you might want to create one");
             }

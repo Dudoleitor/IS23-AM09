@@ -1,7 +1,6 @@
 package it.polimi.ingsw.RMI;
 
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 
 public class Concurrent_cli_IO extends cli_IO {
@@ -65,5 +64,28 @@ public class Concurrent_cli_IO extends cli_IO {
         String command = scanner.nextLine();
         lock.unlock();
         return command;
+    }
+    public String[] multiScan(int size){
+        lock.lock();
+        String[] result = new String[size];
+        for(int i = 0; i< size; i++){
+            printPlaceHolder();
+            result[i] = scanner.nextLine();
+        }
+        lock.unlock();
+        return result;
+    }
+    public Map<String,String> multiScan(List<String> fields){
+        lock.lock();
+        Map<String,String> result = new HashMap();
+        String value;
+        for(String field : fields){
+            super.printMessage(field+":");
+            printPlaceHolder();
+            value =  scanner.nextLine();
+            result.put(field,value);
+        }
+        lock.unlock();
+        return result;
     }
 }
