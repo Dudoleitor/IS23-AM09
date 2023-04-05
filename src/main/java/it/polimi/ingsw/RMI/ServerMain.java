@@ -22,6 +22,7 @@ public class ServerMain implements ServerRemoteInterface {
     private final List<Lobby> lobbies = new ArrayList<>();
 
     private static Registry registry = null;
+    private static InputSanitizer inputSanitizer;
     public static void main(String argv[]){
         ServerMain obj = new ServerMain();
         ServerRemoteInterface stub;
@@ -30,7 +31,6 @@ public class ServerMain implements ServerRemoteInterface {
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-
         try {
             registry = LocateRegistry.createRegistry(port); //create a registry that accepts request on a defined port
         } catch (RemoteException e) {

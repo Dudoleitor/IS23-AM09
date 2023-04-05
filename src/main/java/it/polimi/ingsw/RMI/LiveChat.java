@@ -15,13 +15,20 @@ public class LiveChat extends ClientThread{
     }
     @Override
     public void run(){
-        String command = "";
+        String command;
+        boolean exit = false;
+        InputSanitizer inputSanitizer = new InputSanitizer();
         io.printMessage("Feel free to express your self!"); //introduction message after login
-        while(!command.equals("exit")){ //Receive commands until "exit" command is launched
+        while(!exit){ //Receive commands until "exit" command is launched
             try{
                 command = io.scan();
+                if(!inputSanitizer.isValidMessage(command)){
+                    io.printErrorMessage("Invalid format");
+                    continue;
+                }
                 if(command.equals("exit")){ //Terminate thread
-                    return;
+                    io.printMessage("You quit");
+                    exit = true;
                 }
                 else if(command.toLowerCase().equals("print")){ //update chat and print it
                     updateLiveChat();

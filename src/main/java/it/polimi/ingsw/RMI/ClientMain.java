@@ -24,6 +24,7 @@ public class ClientMain{
     static Registry registry = null;
     static cli_IO io = new cli_IO();
     static LobbyRemoteInterface lobbyStub;
+    static InputSanitizer inputSanitizer = new InputSanitizer();
     public static void main(String argv[]) throws NotBoundException, InterruptedException {
         setUserName();
         io.printMessage("Hello "+playerName+"!");
@@ -53,42 +54,12 @@ public class ClientMain{
             throw new RuntimeException(e);
         }
     }
-    public static boolean isSanitized(String name){
-        return  name!= null &&
-                name.chars().count() >= 1 &&
-                name.chars().
-                allMatch(c ->
-                isValidSymbol((char) c) ||
-                isNumber((char) c) ||
-                isLowerCaseLetter((char) c) ||
-                isUpperCaseLetter((char) c));
-    }
-    public static boolean isNumber(String id){
-        return id != null &&
-                id.chars().count() >= 1 &&
-                id.chars().allMatch(c ->
-                isNumber((char) c)
-                );
-    }
-    public static boolean isLowerCaseLetter(Character c){
-        return c.compareTo('a') >= 0 && c.compareTo('z') <= 0;
-    }
-    public static boolean isUpperCaseLetter(Character c){
-        return c.compareTo('A') >= 0 && c.compareTo('Z') <= 0;
-    }
-    public static boolean isNumber(Character c){
-        return c.compareTo('0') >= 0 && c.compareTo('9') <= 0;
-    }
-    public static boolean isValidSymbol(Character c){
-        return c.compareTo('_') == 0 || c.compareTo('-') == 0;
-    }
-
 
     public static void setUserName(){
-        while(!isSanitized(playerName)){
+        while(!inputSanitizer.isValidName(playerName)){
             io.printMessage("Enter your username");
             playerName = io.scan();
-            if(!isSanitized(playerName)){
+            if(!inputSanitizer.isValidName(playerName)){
                 io.printErrorMessage("Please enter a valid name");
             }
         }
@@ -149,7 +120,7 @@ public class ClientMain{
                 lobbyID = stub.joinRandomLobby(playerName); //join first available lobby, otherwise creates one
                 lobbySelected = true;
             }
-            else if(isNumber(id)){
+            else if(inputSanitizer.isInteger(id)){
                 lobbyID = Integer.parseInt(id);
                 lobbySelected = stub.joinSelectedLobby(playerName,lobbyID);
                 if(!lobbySelected){
