@@ -17,6 +17,4 @@ public interface LobbyRemoteInterface extends Remote {
     void postMove(String player,Move move) throws RemoteException;
     boolean startGame(String player) throws RemoteException;
     boolean isLobbyAdmin(String player) throws RemoteException;
-    String peekBoard() throws RemoteException;
-    String peekPlayerShelf(String playerName) throws RemoteException;
 }

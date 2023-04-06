@@ -73,16 +73,6 @@ public class Lobby implements LobbyRemoteInterface {
         return false;
     }
 
-    @Override
-    public String peekBoard() throws RemoteException {
-        return controller.getBoard().toString();
-    }
-
-    @Override
-    public String peekPlayerShelf(String playerName) throws RemoteException {
-        return controller.getShelves().get(playerName).toString();
-    }
-
     /**
      * @return list of players in this lobby
      */

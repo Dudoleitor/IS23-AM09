@@ -9,6 +9,7 @@ import it.polimi.ingsw.shared.Shelf;
 import java.rmi.RemoteException;
 
 public class Match extends ClientThread{
+    //TODO add view and local copies of Model
     Match(String playerName, LobbyRemoteInterface stub) {
         super(playerName, stub);
     }
@@ -54,11 +55,7 @@ public class Match extends ClientThread{
         }
         switch (choice.toLowerCase()){
             case("board"):
-                try {
-                    io.printMessage("Board:\n"+stub.peekBoard());
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
+                //TODO show board
                 break;
             case("shelf"):
                 io.printMessage("Select the player:");
@@ -67,17 +64,8 @@ public class Match extends ClientThread{
                     io.printErrorMessage("Please enter valid command");
                     return;
                 }
-                try {
-                    String shelf = stub.peekPlayerShelf(player);
-                    if(shelf == null){
-                        io.printErrorMessage("Player not found");
-                    }
-                    else{
-                        io.printMessage("Shelf:\n"+shelf);
-                    }
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
+                //TODO show player's shelf
+                break;
         }
     }
     @Override
