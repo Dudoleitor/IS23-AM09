@@ -1,8 +1,16 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.server.virtualview;
+
+import it.polimi.ingsw.shared.Client;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used on the server to send updates to
+ * the clients when something changes in the model.
+ * Each VirtualView has a list of clients and
+ * will update each one of them.
+ */
 public abstract class VirtualView {
 
     private final List<Client> clientList;

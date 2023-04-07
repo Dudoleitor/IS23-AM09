@@ -1,7 +1,13 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.server.virtualview;
 
+import it.polimi.ingsw.shared.Client;
 import it.polimi.ingsw.shared.Position;
 
+/**
+ * This object is used on the server to send
+ * updates to clients when something changes
+ * in the model.
+ */
 public class VirtualBoard extends VirtualView{
 
     public VirtualBoard() {
