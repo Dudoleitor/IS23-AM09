@@ -58,8 +58,6 @@ class BoardTest {
 
         Exception e = assertThrows(OutOfTilesException.class, b2::fill);
         assertEquals("The END is near : No more tiles left in the deck", e.getMessage());
-        System.out.println(b1);
-        System.out.println("\n\n"+b2);
     }
 
     @Test
@@ -163,7 +161,6 @@ class BoardTest {
         Position pos = new Position(0, 3);
         partialMove.addPosition(pos);
         Position pos1 = new Position(0, 4);
-        System.out.println(b);
 
         assertTrue(b.getValidPositions(partialMove).contains(pos1));
     }

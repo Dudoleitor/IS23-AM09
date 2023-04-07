@@ -30,9 +30,6 @@ class MoveTest {
             fail();
         }
         Position pos = new Position(0,0);
-        System.out.println(pos);
-        System.out.println(pm);
         Move move = new Move(pm,2);
-        System.out.println(move);
     }
 }

@@ -84,7 +84,6 @@ public class PlayerGoalTest {
         JSONParser jsonParser = new JSONParser();
         JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
         PlayerGoal goal = new PlayerGoal(obj, 0);
-        System.out.println(goal);
         assertEquals(0, goal.getGoalId());
     }
 
