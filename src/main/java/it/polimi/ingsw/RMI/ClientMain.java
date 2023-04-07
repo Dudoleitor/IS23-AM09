@@ -1,5 +1,6 @@
 package it.polimi.ingsw.RMI;
 
+import it.polimi.ingsw.shared.ClientRMI;
 import it.polimi.ingsw.shared.Constants;
 
 import java.rmi.ConnectException;
@@ -20,15 +21,21 @@ import static org.junit.experimental.theories.internal.ParameterizedAssertionErr
 public class ClientMain{
     //Variables
     static ServerRemoteInterface stub = null;
+
+    // TODO WARNING this field must be final!!
+    // this needs to disappear from here asap
     static String playerName = null;
     static Registry registry = null;
     static cli_IO io = new cli_IO();
     static LobbyRemoteInterface lobbyStub;
     static InputSanitizer inputSanitizer = new InputSanitizer();
+
+
     public static void main(String argv[]) throws NotBoundException, InterruptedException {
         setUserName();
+        ClientRMI clientRMI = new ClientRMI(playerName);
         io.printMessage("Hello "+playerName+"!");
-        boolean logged = tryLogin();
+        boolean logged = tryLogin(clientRMI);
         if (logged)
             io.printMessage("Login was successful");
         else{ //if none of the 30 tries was successful
@@ -37,7 +44,7 @@ public class ClientMain{
         }
         try {
             showLobbyList();
-            joinLobby();
+            joinLobby(clientRMI);
             LiveChat chat = new LiveChat(playerName, lobbyStub);
             Match match = new Match(playerName, lobbyStub);
             chat.start(); //initialize chat
@@ -68,7 +75,7 @@ public class ClientMain{
         }
     }
 
-    public static boolean tryLogin() throws InterruptedException {
+    public static boolean tryLogin(ClientRMI clientRMI) throws InterruptedException {
         boolean logged = false;
         //Try to log in for 30s (1 try each second)
         for(int tries = 0; tries < 30 && !logged; tries++){
@@ -78,7 +85,7 @@ public class ClientMain{
                 //get interface from remote registry
                 stub = (ServerRemoteInterface) registry.lookup("interface");
                 //try to log in
-                logged = stub.login(playerName); //get previous sessions if present
+                logged = stub.login(clientRMI); //get previous sessions if present
                 if(logged) {
                     showJoinedLobbies();
                 }
@@ -114,19 +121,19 @@ public class ClientMain{
         }
     }
 
-    public static void joinLobby() throws RemoteException, NotBoundException {
+    public static void joinLobby(ClientRMI clientRMI) throws RemoteException, NotBoundException {
         boolean lobbySelected = false;
         int lobbyID = 0;
         while(!lobbySelected){
             io.printMessage("Choose a Lobby (ENTER for random):");
             String id = io.scan();
             if(id.isEmpty()){
-                lobbyID = stub.joinRandomLobby(playerName); //join first available lobby, otherwise creates one
+                lobbyID = stub.joinRandomLobby(clientRMI); //join first available lobby, otherwise creates one
                 lobbySelected = true;
             }
             else if(inputSanitizer.isInteger(id)){
                 lobbyID = Integer.parseInt(id);
-                lobbySelected = stub.joinSelectedLobby(playerName,lobbyID);
+                lobbySelected = stub.joinSelectedLobby(clientRMI, lobbyID);
                 if(!lobbySelected){
                     io.printErrorMessage("Input id not found");
                 }

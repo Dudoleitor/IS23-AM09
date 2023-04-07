@@ -2,6 +2,8 @@ package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.Move;
+import it.polimi.ingsw.shared.Client;
+import it.polimi.ingsw.shared.ClientRMI;
 import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Constants;
 
@@ -11,30 +13,30 @@ import java.util.stream.Collectors;
 
 public class Lobby implements LobbyRemoteInterface {
     private final int id;
-    private final List<String> players = new ArrayList<>();
+    private final List<Client> players = new ArrayList<>();
     private boolean ready = false;
     private boolean started = false;
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
     private Controller controller; //TODO to initialize
     private final List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
 
-    public Lobby(String firstPlayer, int id){
+    public Lobby(Client firstPlayer, int id){
         this.players.add(firstPlayer);
-        this.colorPlayer.put(firstPlayer, Color.getRandomColor());
+        this.colorPlayer.put(firstPlayer.getPlayerName(), Color.getRandomColor());
         this.id = id;
     }
 
     /**
      * add a player to lobby
-     * @param player is the player to add to lobby
+     * @param client is the player object to add to the lobby
      */
-    public void addPlayer(String player) {
-        if(players.contains(player)) //if player logged in previously
+    public void addPlayer(Client client) {
+        if(players.contains(client)) //if player logged in previously
             return;
         if (players.size() < Constants.maxSupportedPlayers) { //checks lobby isn't already full
-            players.add(player);
-            if(!colorPlayer.containsKey(player))
-                colorPlayer.put(player, Color.getRandomColor());
+            players.add(client);
+            if(!colorPlayer.containsKey(client.getPlayerName()))
+                colorPlayer.put(client.getPlayerName(), Color.getRandomColor());
         }else
             throw new RuntimeException("Lobby already full");
 
@@ -52,7 +54,7 @@ public class Lobby implements LobbyRemoteInterface {
     /**
      * @return list of players in this lobby
      */
-    public ArrayList<String> getPlayers(){
+    public ArrayList<Client> getPlayers(){
         return new ArrayList<>(players);
     }
     /**
@@ -75,7 +77,7 @@ public class Lobby implements LobbyRemoteInterface {
             return "";
         }
         else{
-            return players.get(0);
+            return players.get(0).getPlayerName();
         }
     }
 
@@ -90,18 +92,24 @@ public class Lobby implements LobbyRemoteInterface {
     public boolean startGame(String player){
         if(!ready  || !getLobbyAdmin().equals(player))
             return false;
+
         started = true;
-        controller = new Controller(players);
+        controller = new Controller(
+                players.stream()
+                        .map(Client::getPlayerName)
+                        .collect(Collectors.toList())
+        );
+
         return true;
     }
 
     @Override
-    public boolean isLobbyAdmin(String player) throws RemoteException {
+    public boolean isLobbyAdmin(String playerName) throws RemoteException {
         if(isEmpty()){
             return false;
         }
         else{
-            return players.get(0).equals(player);
+            return players.get(0).getPlayerName().equals(playerName);
         }
     }
 

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.RMI;
 import it.polimi.ingsw.server.Move;
+import it.polimi.ingsw.shared.Client;
+import it.polimi.ingsw.shared.ClientRMI;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import org.json.simple.JSONObject;
 
@@ -9,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface ServerRemoteInterface extends Remote {
-    boolean login(String nick) throws RemoteException;
+    boolean login(ClientRMI clientRMI) throws RemoteException;
     List<Integer> getJoinedLobbies(String nick) throws RemoteException;
-    int joinRandomLobby(String player) throws RemoteException;
-    int createLobby(String player) throws RemoteException;
+    int joinRandomLobby(Client client) throws RemoteException;
+    int createLobby(Client client) throws RemoteException;
     Map<Integer,Integer> showAvailableLobbbies() throws RemoteException;
-    boolean joinSelectedLobby(String player, int id) throws RemoteException;
+    boolean joinSelectedLobby(Client client, int id) throws RemoteException;
 
 }
