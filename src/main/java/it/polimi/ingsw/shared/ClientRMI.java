@@ -1,5 +1,6 @@
 package it.polimi.ingsw.shared;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.Objects;
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * This object will reside on the client,
  * remote calls will work thanks to RMI.
  */
-public class ClientRMI implements Client, Remote {
+public class ClientRMI implements Client, Remote, Serializable {
     // TODO add board and shelves
     private final String playerName;
 
