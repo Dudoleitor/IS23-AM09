@@ -181,6 +181,6 @@ public class Player implements Jsonable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name.toLowerCase());
     }
 }
