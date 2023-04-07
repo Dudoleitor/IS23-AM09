@@ -183,4 +183,15 @@ class BoardTest {
 
             assertFalse(b.getValidPositions(partialMove).contains(pos3));
     }
+    @Test
+    void copyConstuctor() throws JsonBadParsingException {
+        Board b1;
+        Board b2;
+        b1 = new Board(3);
+        b2 = new Board(b1);
+        assertTrue(b1.sameBoard(b2));
+        assertEquals(b1.getCommonGoals(),b2.getCommonGoals());
+        assertTrue(b1.equals(b2));
+
+    }
 }

@@ -46,6 +46,14 @@ public class CommonGoal implements Jsonable{
     }
 
     /**
+     * Creates a copy of a CommonGoal
+     * @param toCopy
+     */
+    public CommonGoal(CommonGoal toCopy){
+        this(toCopy.getStrategy(),toCopy.showPointsStack());
+    }
+
+    /**
      * Extracts the id from the JsonObject
      * @param jsonObject is the ini object
      * @return the id
@@ -131,6 +139,10 @@ public class CommonGoal implements Jsonable{
      */
     public int getID(){
         return strategy.getId();
+    }
+
+    public CommonGoalStrategy getStrategy(){
+        return strategy;
     }
 
     /**

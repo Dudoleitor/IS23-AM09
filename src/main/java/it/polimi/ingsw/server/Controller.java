@@ -74,10 +74,8 @@ public class Controller implements Jsonable {
     /**
      * @return the board
      */
-    public Board getBoard() {
-        Board board1;
-        board1 = board;
-        return board1;
+    public Board getBoard() throws JsonBadParsingException {
+        return new Board(board);
     }
 
     /**
@@ -161,10 +159,11 @@ public class Controller implements Jsonable {
             }
 
             Shelf playerShelf = player.getShelf();
-
-            if (move.getBoardPositions().size() >
-                    playerShelf.allTilesInColumn(move.getColumn()).stream().filter(x -> x.equals(Tile.Empty)).count()
-            ) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
+            int freeSpaceInColumn = (int) playerShelf.
+                    allTilesInColumn(move.getColumn()).stream().
+                    filter(x -> x.equals(Tile.Empty)).
+                    count();
+            if (move.getBoardPositions().size() > freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
                 throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
             }
             if (checkValidMove(move))

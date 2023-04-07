@@ -41,10 +41,13 @@ public class ClientMain{
             LiveChat chat = new LiveChat(playerName, lobbyStub);
             Match match = new Match(playerName, lobbyStub);
             chat.start(); //initialize chat
+
+            //TODO orribile
             while(!lobbyStub.matchHasStarted()){
                 if(!lobbyStub.startGame(playerName))
                 sleep(5000);
             }
+
             match.start();
             match.join();
             chat.join(); //when chat is closed
@@ -91,6 +94,7 @@ public class ClientMain{
         }
         return logged;
     }
+
     public static void showJoinedLobbies(){
         try {
             List<Integer> previousSessions = stub.getJoinedLobbies(playerName);

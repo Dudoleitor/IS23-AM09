@@ -32,6 +32,8 @@ public class Riemann { //an integration test
         catch (Exception e){
             fail();
         }
+
+        //TURN 0
         //contains the correct players
         assertEquals(c.getPlayers(), playerList);
         //valid commongoals (hardcoded valid values 1-12)
@@ -47,5 +49,8 @@ public class Riemann { //an integration test
         for(Player p : c.getPlayers()) {
             assertTrue(c.getShelves().get(p.getName()).equals(emptyShelf));
         }
+
+        //TURN 1
+
     }
 }
