@@ -17,9 +17,8 @@ public class Lobby implements LobbyRemoteInterface {
     private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
     private Controller controller; //TODO to initialize
     private final List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
-    private final String lobbyAdmin; //admin
+
     public Lobby(String firstPlayer, int id){
-        this.lobbyAdmin = firstPlayer;
         this.players.add(firstPlayer);
         this.colorPlayer.put(firstPlayer, Color.getRandomColor());
         this.id = id;
@@ -47,32 +46,9 @@ public class Lobby implements LobbyRemoteInterface {
     /**
      * @return true is the lobby is full of players for it's capacity
      */
-
     public boolean isReady(){
         return ready;
     }
-
-    @Override
-    public boolean matchHasStarted(){
-        return started;
-    }
-    /**
-     * start the lobby when it's full of players
-     */
-    @Override
-    public boolean startGame(String player){
-        if(!ready  || !player.equals(lobbyAdmin))
-            return false;
-        started = true;
-        controller = new Controller(players);
-        return true;
-    }
-
-    @Override
-    public boolean isLobbyAdmin(String player) throws RemoteException {
-        return false;
-    }
-
     /**
      * @return list of players in this lobby
      */
@@ -89,6 +65,46 @@ public class Lobby implements LobbyRemoteInterface {
     public int getId() {
         return id;
     }
+    public boolean isEmpty(){
+        return players == null ||
+                players.size() == 0;
+    }
+
+    public String getLobbyAdmin(){
+        if(players == null || players.size() == 0){
+            return "";
+        }
+        else{
+            return players.get(0);
+        }
+    }
+
+    @Override
+    public boolean matchHasStarted(){
+        return started;
+    }
+    /**
+     * start the lobby when it's full of players
+     */
+    @Override
+    public boolean startGame(String player){
+        if(!ready  || !getLobbyAdmin().equals(player))
+            return false;
+        started = true;
+        controller = new Controller(players);
+        return true;
+    }
+
+    @Override
+    public boolean isLobbyAdmin(String player) throws RemoteException {
+        if(isEmpty()){
+            return false;
+        }
+        else{
+            return players.get(0).equals(player);
+        }
+    }
+
     /**
      * @param player  is the sender of the message
      * @param message is the text content

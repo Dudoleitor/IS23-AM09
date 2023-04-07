@@ -47,6 +47,7 @@ public class ClientMain{
                 if(!lobbyStub.startGame(playerName))
                 sleep(5000);
             }
+
             match.start();
             match.join();
             chat.join(); //when chat is closed

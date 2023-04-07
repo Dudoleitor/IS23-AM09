@@ -35,6 +35,7 @@ public class Board implements Jsonable {
 
     /**
      * Constructor by copy of Board
+     *
      * @param toCopy
      * @throws JsonBadParsingException
      */
