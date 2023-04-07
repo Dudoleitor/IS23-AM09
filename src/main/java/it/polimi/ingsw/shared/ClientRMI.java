@@ -1,22 +1,19 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.Client;
-import it.polimi.ingsw.shared.Position;
-import it.polimi.ingsw.shared.Tile;
-
+import java.rmi.Remote;
 import java.util.Objects;
 
 /**
- * This object is used on the server to send updates to
+ * This object is used to send updates to
  * a specific client.
- * This object is used on the server to create the messages
- * and send them over a tcp tunnel.
+ * This object will reside on the client,
+ * remote calls will work thanks to RMI.
  */
-public class ClientSocket implements Client {
+public class ClientRMI implements Client, Remote {
     // TODO add board and shelves
     private final String playerName;
 
-    public ClientSocket(String playerName) {
+    public ClientRMI(String playerName) {
         this.playerName = playerName;
     }
 
@@ -44,7 +41,6 @@ public class ClientSocket implements Client {
      * This method is used to transfer the whole board
      * to the remote view,
      * it uses a json string.
-     *
      * @param board JSONObject.toJsonString
      */
     @Override
@@ -58,7 +54,6 @@ public class ClientSocket implements Client {
      * It is used to send the message to the remote view
      * of the client in order to insert the tile
      * into the shelf.
-     *
      * @param player String name of the player that moved the tile
      * @param column destination column of the shelf
      * @param tile Tile to insert
@@ -72,7 +67,6 @@ public class ClientSocket implements Client {
      * This method is used to transfer the whole shelf
      * of a player to the remote view,
      * it uses a json string.
-     *
      * @param player name of the player
      * @param shelf  JSONObject.toJsonString
      */
@@ -85,8 +79,8 @@ public class ClientSocket implements Client {
     public boolean equals(Object o) {  // Checking using LOWERCASE name
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClientSocket clientSocket = (ClientSocket) o;
-        return Objects.equals(playerName.toLowerCase(), clientSocket.playerName.toLowerCase());
+        ClientRMI clientRMI = (ClientRMI) o;
+        return Objects.equals(playerName.toLowerCase(), clientRMI.playerName.toLowerCase());
     }
 
     @Override
