@@ -13,6 +13,7 @@ public class Controller implements Jsonable {
     private final Board board;
     private final List<Player> players;
     private int turn;
+    private final List<ActivePlayer> activePlayers = new ArrayList<>();
 
 
     /**
@@ -29,6 +30,9 @@ public class Controller implements Jsonable {
             for (String name : namePlayers) {
                 players.add(new Player(name, new Shelf(Constants.shelfRows,Constants.shelfColumns),
                         new PlayerGoal(jsonPathForPlayerGoals)));
+            }
+            for(Player p : players) {
+                activePlayers.add(new ActivePlayer(p, true));
             }
             board = new Board(players.size());
         } catch (NullPointerException e) {
@@ -58,6 +62,9 @@ public class Controller implements Jsonable {
             for (Object objPlayer : playersJson) {
                 jsonPlayer = (JSONObject) objPlayer;
                 this.players.add(new Player(jsonPlayer));
+            }
+            for(Player p : players) {
+                activePlayers.add(new ActivePlayer(p, true));
             }
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
@@ -90,30 +97,32 @@ public class Controller implements Jsonable {
     }
 
     /**
-     * turn is the actual turn of the match, every turn has an increment of 1, and we calculate (turn + 1) mod the size of players array
-     * in order to get the actual player
+     * @return active players of the match
+     */
+    public List<ActivePlayer> getActivePlayers() {
+            List<ActivePlayer> matchActivePlayers = new ArrayList<>();
+            matchActivePlayers.addAll(activePlayers);
+            return matchActivePlayers;
+    }
+
+    /**
+     * increments the turn, if the current player is not active goes on
+     */
+    public void nextTurn() {
+        incrementTurn();
+
+        if(!activePlayers.get((getTurn()) % activePlayers.size()).isActive()) {
+            nextTurn();
+        }
+
+    }
+
+    /**
      * @return the current player
      */
-
-    //TODO: spezzare la funzione --> devo poter vedere il currentPlayer senza modificare il turno
     public String getCurrentPlayerName() {
-        final int initialSize = getPlayers().size();
-        int currentPlayerTurn = turn;
 
-        List<ActivePlayer> activePlayers = new ArrayList<>();
-        for(Player p : getPlayers()) {
-            ActivePlayer p1 = new ActivePlayer(p, true);
-            activePlayers.add(p1);
-        }
-
-        while(!activePlayers.get((currentPlayerTurn) % (initialSize)).isActive()) {
-            next(currentPlayerTurn);
-        }
-
-        //At the end the actual turn could be incremented. In fact, if the currentPlayer
-        //is not active, then the turn is skipped
-        turn = currentPlayerTurn;
-        return activePlayers.get((currentPlayerTurn) % (initialSize)).getPlayer().getName();
+        return getPlayers().get(getTurn() % getActivePlayers().size()).getName();
     }
 
     /**
@@ -165,7 +174,7 @@ public class Controller implements Jsonable {
                 Tile t = board.pickTile(p);
                 playerShelf.insertTile(t, move.getColumn());
             }
-            incrementTurn();
+            nextTurn();
         } catch (InvalidMoveException e) {
             throw new ControllerGenericException("Error invalid move");
         } catch (BadPositionException e) {
@@ -179,9 +188,6 @@ public class Controller implements Jsonable {
         turn += 1;
     }
 
-    private void next(int actualTurn) {
-        actualTurn += 1;
-    }
 
     /**
      * check if a given move can be done
@@ -238,7 +244,7 @@ public class Controller implements Jsonable {
         return gameStatus;
     }
 
-    private class ActivePlayer {
+    public class ActivePlayer {
         Player player;
         boolean isActive;
 

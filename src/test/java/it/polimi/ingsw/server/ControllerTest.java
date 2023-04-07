@@ -106,9 +106,48 @@ public class ControllerTest {
         players.add("fridgedomani");
         Controller c = new Controller(players);
 
+
         for (int i = 0; i < 100; i++) {
             assertEquals(c.getCurrentPlayerName(), players.get(i%3));
-            c.incrementTurn();
+            c.nextTurn();
+        }
+
+    }
+
+    @Test
+    void getCurrentPlayer3Players1Quit(){
+        List<String> players = new ArrayList<>();
+        players.add("fridgeieri");
+        players.add("fridgeoggi");
+        players.add("fridgedomani");
+        Controller c = new Controller(players);
+
+        c.getActivePlayers().get(1).setActive(false);
+
+        for (int i = 0; i < 10; i++) {
+            assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
+            c.nextTurn();
+        }
+
+    }
+
+    @Test
+    void getCurrentPlayer4Players2Quit(){
+        List<String> players = new ArrayList<>();
+        players.add("fridgeieri");
+        players.add("fridgeoggi");
+        players.add("fridgedomani");
+        players.add("fridgedopodomani");
+        Controller c = new Controller(players);
+
+        c.getActivePlayers().get(1).setActive(false);
+        c.getActivePlayers().get(3).setActive(false);
+
+
+        for (int i = 0; i < 10; i++) {
+            assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
+            assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
+            c.nextTurn();
         }
 
     }
