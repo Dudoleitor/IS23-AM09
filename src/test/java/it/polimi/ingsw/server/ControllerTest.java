@@ -136,7 +136,7 @@ public class ControllerTest {
         /*for(int i = 0; i < 10; i++){
             assertEquals(i,c.getTurn());
             assertEquals(c.getCurrentPlayerName(),players.get(i%3));
-            //do something that will increment turn
+            //increment turn
         }*/
     }
 }

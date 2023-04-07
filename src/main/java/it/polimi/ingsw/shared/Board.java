@@ -33,6 +33,19 @@ public class Board implements Jsonable {
             initializeGoals(); //generate two randomly picked goals
     }
 
+    /**
+     * Constructor by copy of Board
+     * @param toCopy
+     * @throws JsonBadParsingException
+     */
+    public Board(Board toCopy) throws JsonBadParsingException {
+        this(toCopy.toJson());
+        goals = new ArrayList<>();
+        for(CommonGoal cg : toCopy.getCommonGoals()){
+            goals.add(new CommonGoal(cg));
+        }
+    }
+
     private List<Tile> createShuffledDeck(int numOfTilePerType){
         ArrayList<Tile> deck = new ArrayList<>();
         for (Tile t : Tile.values()){ //t assumes every Tile enum possible value and add to tilesToDraw if they aren't empty or invalid

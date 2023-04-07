@@ -67,10 +67,8 @@ public class Controller implements Jsonable {
     /**
      * @return the board
      */
-    public Board getBoard() {
-        Board board1;
-        board1 = board;
-        return board1;
+    public Board getBoard() throws JsonBadParsingException {
+        return new Board(board);
     }
 
     /**
