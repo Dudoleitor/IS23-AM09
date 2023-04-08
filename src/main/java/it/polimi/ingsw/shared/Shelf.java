@@ -1,4 +1,5 @@
 package it.polimi.ingsw.shared;
+import it.polimi.ingsw.shared.virtualview.VirtualShelf;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ public class Shelf implements Jsonable {
     private final Tile[][] tiles; //matrix coordinate (0,0) is the top-left corner of the shelf
     private final int rows;
     private final int columns;
+
+    private VirtualShelf virtualShelf;
 
     //Constructors
     /**
@@ -331,6 +334,9 @@ public class Shelf implements Jsonable {
         } catch (IndexOutOfBoundsException e){
             throw new BadPositionException("Error while inserting in Shelf : selected column is not valid");
         }
+
+        if (virtualShelf!=null)
+            virtualShelf.onTileInsert(column, tile);  // Updating clients
     }
 
     //Others
@@ -415,5 +421,15 @@ public class Shelf implements Jsonable {
         shelfJson.put("matrix", shelfMatrix);
 
         return shelfJson;
+    }
+
+    /**
+     * This method is used to set the virtual shelf,
+     * it'll be used to send updates when the
+     * status changes.
+     * @param virtualShelf virtual shelf object
+     */
+    public void setVirtualShelf(VirtualShelf virtualShelf) {
+        this.virtualShelf = virtualShelf;
     }
 }

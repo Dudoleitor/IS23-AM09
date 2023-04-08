@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.virtualview.VirtualShelf;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,6 +21,8 @@ public class Player implements Jsonable {
     private final Shelf shelf;
     private final PlayerGoal goal;
 
+    private final VirtualShelf virtualShelf;
+
     /**
      * This constructor is used to initialize a new player, with no properties
      * @param name player's name;
@@ -29,7 +32,11 @@ public class Player implements Jsonable {
     public Player(String name, Shelf shelf, PlayerGoal goal) {
         super();
         this.name = name;
+        this.virtualShelf = new VirtualShelf(name);
+
         this.shelf = shelf;
+        this.shelf.setVirtualShelf(this.virtualShelf);
+
         this.goal = goal;
         this.commonGoalPoints = 0;
         this.checkedCommonGoals = new ArrayList<>();
@@ -43,8 +50,11 @@ public class Player implements Jsonable {
     public Player(JSONObject playerJson) throws JsonBadParsingException {
         try {
             this.name = (String) playerJson.get("Name");
+
+            this.virtualShelf = new VirtualShelf(this.name);
             // Loading shelf
             this.shelf = new Shelf((JSONObject) playerJson.get("Shelf"));
+            this.shelf.setVirtualShelf(this.virtualShelf);
 
             // Loading player goal
             this.goal = new PlayerGoal(jsonPathForPlayerGoals,
@@ -58,6 +68,7 @@ public class Player implements Jsonable {
             if (jsonPointsAchieved==null) {throw new JsonBadParsingException("Error while loading player from json: goals achieved not found");}
 
             this.checkedCommonGoals = new ArrayList<>(jsonPointsAchieved);
+
 
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading player from json: " + e.getMessage());
@@ -142,6 +153,16 @@ public class Player implements Jsonable {
      */
     public boolean hasFinished() {
         return shelf.getHighestColumn() == 0;
+    }
+
+    /**
+     * This method is used to get the virtual shelf,
+     * it'll be used to send updates when the
+     * status changes.
+     * @return virtual shelf object
+     */
+    public VirtualShelf getVirtualShelf() {
+        return virtualShelf;
     }
 
     /**

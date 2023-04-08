@@ -3,6 +3,7 @@ package it.polimi.ingsw.shared;
 import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.server.InvalidMoveException;
 import it.polimi.ingsw.server.PartialMove;
+import it.polimi.ingsw.shared.virtualview.VirtualBoard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,6 +21,8 @@ public class Board implements Jsonable {
     private final int numRows;
     private final int numColumns;
     private ArrayList<CommonGoal> goals;
+
+    private final VirtualBoard virtualBoard;
 
     //Constructors
     /**
@@ -109,6 +112,7 @@ public class Board implements Jsonable {
         } catch (ClassCastException | NullPointerException | TileGenericException e){
             throw new JsonBadParsingException("Error while creating Board : bad json parsing");
         }
+            this.virtualBoard = new VirtualBoard();
     }
 
     /**
@@ -166,7 +170,7 @@ public class Board implements Jsonable {
 
             }
         }
-
+        virtualBoard.refresh(this.toJson().toJSONString());  // Updating clients
     }
     /**
      * Convert the matrix to a printable String
@@ -339,6 +343,9 @@ public class Board implements Jsonable {
             if(selectedTile.equals(Tile.Invalid))
                 throw new BadPositionException("Error while picking Tile : Chosen one is Invalid type");
             boardTiles[row][column] = Tile.Empty;
+
+            virtualBoard.onPickTile(new Position(row, column));  // Updating clients
+
             return selectedTile;
         } catch (IndexOutOfBoundsException e){
             throw new BadPositionException("Error while picking tile from Board : illegal coordinates");
@@ -555,5 +562,15 @@ public class Board implements Jsonable {
                 .collect(Collectors.toList()));
         boardJson.put("deck", boardDeck);
         return boardJson;
+    }
+
+    /**
+     * This method is used to get the virtual board,
+     * it'll be used to send updates when the
+     * status changes.
+     * @return virtualBoard virtual board object
+     */
+    public VirtualBoard getVirtualBoard() {
+        return virtualBoard;
     }
 }

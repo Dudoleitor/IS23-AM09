@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.virtualview;
+package it.polimi.ingsw.shared.virtualview;
 
 import it.polimi.ingsw.shared.Client;
 

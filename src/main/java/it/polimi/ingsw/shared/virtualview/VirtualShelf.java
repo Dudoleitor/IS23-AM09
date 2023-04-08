@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.virtualview;
+package it.polimi.ingsw.shared.virtualview;
 
 import it.polimi.ingsw.shared.Client;
 import it.polimi.ingsw.shared.Tile;
@@ -6,7 +6,7 @@ import it.polimi.ingsw.shared.Tile;
 /**
  * This object is used on the server to send
  * updates to clients when something changes
- * in a particualar shelf.
+ * in a particular shelf.
  * This VirtualShelf is linked to the shelf
  * of a player, calls to methods in this object
  * come only from that particular shelf in the model.
