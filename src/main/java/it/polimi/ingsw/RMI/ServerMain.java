@@ -88,7 +88,7 @@ public class ServerMain implements ServerRemoteInterface {
     }
 
     /**
-     * @param player requesting to join the lobby
+     * @param client requesting to join the lobby
      * @return id of assigned lobby
      */
     @Override

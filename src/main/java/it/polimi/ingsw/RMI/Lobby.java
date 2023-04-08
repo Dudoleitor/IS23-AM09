@@ -3,7 +3,6 @@ package it.polimi.ingsw.RMI;
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Client;
-import it.polimi.ingsw.shared.ClientRMI;
 import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Constants;
 
@@ -168,7 +167,7 @@ public class Lobby implements LobbyRemoteInterface {
      */
     @Override
     public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
-        List<ChatMessage> lobbyChat = getChat().stream().filter(x->LiveChat.checkValidReceiver(x,playerName)).collect(Collectors.toList()); //get chat of that lobby
+        List<ChatMessage> lobbyChat = getChat().stream().filter(x-> CLI.checkValidReceiver(x,playerName)).collect(Collectors.toList()); //get chat of that lobby
 
         List<ChatMessage> livechatUpdate = new ArrayList<>();
         for(int i = alreadyReceived; i < lobbyChat.size(); i++){
