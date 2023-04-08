@@ -8,8 +8,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,8 +22,8 @@ public class ClientMain{
 
     // TODO WARNING this field must be final!!
     // this needs to disappear from here asap
-    static String playerName = null;
-    static Registry registry = null;
+    static String playerName;
+    static Registry registry;
     static cli_IO io = new cli_IO();
     static LobbyRemoteInterface lobbyStub;
     static InputSanitizer inputSanitizer = new InputSanitizer();
@@ -45,19 +43,9 @@ public class ClientMain{
         try {
             showLobbyList();
             joinLobby(clientRMI);
-            LiveChat chat = new LiveChat(playerName, lobbyStub);
-            Match match = new Match(playerName, lobbyStub);
-            chat.start(); //initialize chat
-
-            //TODO orribile
-            while(!lobbyStub.matchHasStarted()){
-                if(!lobbyStub.startGame(playerName))
-                sleep(5000);
-            }
-
-            match.start();
-            match.join();
-            chat.join(); //when chat is closed
+            CLI cli = new CLI(playerName,lobbyStub);
+            cli.start();
+            cli.join();
             io.printErrorMessage("You quit the game!");
             lobbyStub.quitGame(playerName, lobbyStub);
         } catch (RemoteException e) {
@@ -165,5 +153,4 @@ public class ClientMain{
             throw new RuntimeException(e);
         }
     }
-
 }

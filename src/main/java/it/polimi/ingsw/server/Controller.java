@@ -109,12 +109,10 @@ public class Controller implements Jsonable {
      * increments the turn, if the current player is not active goes on
      */
     public void nextTurn() {
-        incrementTurn();
-
+        turn++;
         if(!activePlayers.get((getTurn()) % activePlayers.size()).isActive()) {
             nextTurn();
         }
-
     }
 
     /**
@@ -166,7 +164,7 @@ public class Controller implements Jsonable {
             if (move.getBoardPositions().size() > freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
                 throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
             }
-            if (checkValidMove(move))
+            if (!checkValidMove(move))
                 throw new InvalidMoveException("Tiles selection is not allowed");
 
             List<Position> positions = move.getBoardPositions();
@@ -174,20 +172,29 @@ public class Controller implements Jsonable {
                 Tile t = board.pickTile(p);
                 playerShelf.insertTile(t, move.getColumn());
             }
-            nextTurn();
+            prepareForNextPlayer(); //Fill if necessary
+            nextTurn(); //increment turn
         } catch (InvalidMoveException e) {
             throw new ControllerGenericException("Error invalid move");
         } catch (BadPositionException e) {
             throw new ControllerGenericException("Error invalid get");
         }
     }
-    /**
-     * increment the private variable turn
-     */
-    public void incrementTurn() {
-        turn += 1;
-    }
 
+    /**
+     * Do all the actions to prepare the board for the next player (Fill the board)
+     * It should be manually called before the first and it is called after every
+     * player's move.
+     */
+    public void prepareForNextPlayer(){
+        if(board.toFill()){
+            try {
+                board.fill();
+            } catch (OutOfTilesException e) {
+                //do nothing
+            }
+        }
+    }
 
     /**
      * check if a given move can be done
