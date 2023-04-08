@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -163,7 +164,6 @@ public class Board implements Jsonable {
                         throw new OutOfTilesException("The END is near : No more tiles left in the deck");
                     }
                 }
-
             }
         }
 
@@ -359,6 +359,31 @@ public class Board implements Jsonable {
         }
     }
 
+    /**
+     * Tells if the Controller should call the fill() method
+     * @return true if no valid tile has a valid adjacent
+     */
+    public boolean toFill(){
+        int rows = getNumRows();
+        int columns = getNumColumns();
+        int adjacents = 0;
+        Position current;
+        for(int row = 0; row < rows; row++){
+            for(int col = 0; col < columns; col++) {
+                current = new Position(row, col);
+                if (!isNotValid(current)){
+                    adjacents = (int) current.neighbours().
+                            stream().
+                            filter(pos -> !isOutOfBounds(pos) &&
+                                    !isNotValid(pos)).count();
+                    if (adjacents > 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * Initialize two random goals from CommonGoalsFactory

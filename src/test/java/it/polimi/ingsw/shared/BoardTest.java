@@ -191,4 +191,25 @@ class BoardTest {
         assertTrue(b1.equals(b2));
 
     }
+
+    @Test
+    void toFill() throws JsonBadParsingException {
+        Board b0 = new Board(Jsonable.pathToJsonObject(
+                "src/test/resources/BoardTests/BoardToFill0.json",
+                Board.class),
+                null);
+        assertTrue(b0.toFill()); //empty board is to fill
+
+        Board b1 = new Board(Jsonable.pathToJsonObject(
+                "src/test/resources/BoardTests/BoardToFill1.json",
+                Board.class),
+        null);
+        assertTrue(b1.toFill()); //board with no couple of adjacent is to fill
+
+        Board b2 = new Board(Jsonable.pathToJsonObject(
+                "src/test/resources/BoardTests/BoardToFill2.json",
+                Board.class),
+                null);
+        assertFalse(b2.toFill()); //two adjacent are sufficient non to fill
+    }
 }
