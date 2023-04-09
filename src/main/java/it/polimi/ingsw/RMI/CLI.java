@@ -3,9 +3,7 @@ package it.polimi.ingsw.RMI;
 import it.polimi.ingsw.server.Move;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -16,13 +14,15 @@ public class CLI extends Thread{
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
     private Chat chat;
+    private Queue<String> updates;
 
     CLI(String playerName, LobbyRemoteInterface stub){
         this.playerName = playerName;
         this.stub = stub;
         this.chat = new Chat();
+        this.updates = new PriorityQueue<>();
     }
-    protected void loopCommands(){
+    private void loopCommands(){
         String command;
         while(!exit){ //Receive commands until "exit" command is launched
             try{
@@ -56,10 +56,7 @@ public class CLI extends Thread{
                 printAllMessages();
                 break;
             case Refresh: //refresh updates
-                //TODO do better
-                io.printMessage("Your updates");
-                //give time to others threads to print their status updates
-                sleep(100);
+                showUpdates();
                 break;
             case Secret: //send private message
                 postToPrivateChat();
@@ -101,6 +98,18 @@ public class CLI extends Thread{
         List<String> toPrint = chat.getAllMessages().stream().map(mes -> mes.toString()).collect(Collectors.toList());
         toPrint.add(0, io.messageFormat("Here are all messages"));
         io.multiPrint(toPrint);
+    }
+
+    private void showUpdates(){
+        if(updates.size() == 0){
+            io.printMessage("No updates");
+        }
+        else{
+            io.printMessage("Your updates");
+            while(updates.size() > 0){
+                io.printMessage(updates.poll());
+            }
+        }
     }
 
     public static boolean checkValidReceiver(ChatMessage message, String receiverName){
