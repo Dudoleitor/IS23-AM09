@@ -15,11 +15,12 @@ public class CLI extends Thread{
     private static Concurrent_cli_IO io = new Concurrent_cli_IO(new ReentrantLock());
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
-    private List<ChatMessage> chat = new ArrayList<>();
+    private Chat chat;
 
     CLI(String playerName, LobbyRemoteInterface stub){
         this.playerName = playerName;
         this.stub = stub;
+        this.chat = new Chat();
     }
     protected void loopCommands(){
         String command;
@@ -55,6 +56,7 @@ public class CLI extends Thread{
                 printAllMessages();
                 break;
             case Refresh: //refresh updates
+                //TODO do better
                 io.printMessage("Your updates");
                 //give time to others threads to print their status updates
                 sleep(100);
@@ -85,7 +87,7 @@ public class CLI extends Thread{
      * @throws RemoteException
      */
     public void updateLiveChat() throws RemoteException {
-        chat.addAll(stub.updateLiveChat(playerName, chat.size()));
+        chat = stub.updateLiveChat();
     }
 
     /**
@@ -96,7 +98,7 @@ public class CLI extends Thread{
             io.printMessage("No messages yet");
             return;
         }
-        List<String> toPrint = chat.stream().map(mes -> mes.toString()).collect(Collectors.toList());
+        List<String> toPrint = chat.getAllMessages().stream().map(mes -> mes.toString()).collect(Collectors.toList());
         toPrint.add(0, io.messageFormat("Here are all messages"));
         io.multiPrint(toPrint);
     }

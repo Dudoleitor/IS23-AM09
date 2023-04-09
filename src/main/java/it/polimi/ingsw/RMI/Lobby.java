@@ -15,14 +15,14 @@ public class Lobby implements LobbyRemoteInterface {
     private final List<Client> players = new ArrayList<>();
     private boolean ready = false;
     private boolean started = false;
-    private static final Map<String, Color> colorPlayer = new HashMap<>(); //memorize player color on login
-    private Controller controller; //TODO to initialize
-    private final List<ChatMessage> chatMessages = Collections.synchronizedList(new ArrayList<>());
+    private Chat chat;
+    private Controller controller;
 
     public Lobby(Client firstPlayer, int id){
         this.players.add(firstPlayer);
-        this.colorPlayer.put(firstPlayer.getPlayerName(), Color.getRandomColor());
         this.id = id;
+        this.chat = new Chat();
+        chat.addPlayer(firstPlayer);
     }
 
     /**
@@ -34,8 +34,7 @@ public class Lobby implements LobbyRemoteInterface {
             return;
         if (players.size() < Constants.maxSupportedPlayers) { //checks lobby isn't already full
             players.add(client);
-            if(!colorPlayer.containsKey(client.getPlayerName()))
-                colorPlayer.put(client.getPlayerName(), Color.getRandomColor());
+            chat.addPlayer(client);
         }else
             throw new RuntimeException("Lobby already full");
 
@@ -50,6 +49,9 @@ public class Lobby implements LobbyRemoteInterface {
     public boolean isReady(){
         return ready;
     }
+    public boolean hasStarted(){
+        return started;
+    }
     /**
      * @return list of players in this lobby
      */
@@ -59,8 +61,8 @@ public class Lobby implements LobbyRemoteInterface {
     /**
      * @return every message in that lobby
      */
-    public List<ChatMessage> getChat(){
-        return new ArrayList<>(chatMessages);
+    public Chat getChat(){
+        return new Chat(chat);
     }
 
     public int getId() {
@@ -98,7 +100,7 @@ public class Lobby implements LobbyRemoteInterface {
                         .map(Client::getPlayerName)
                         .collect(Collectors.toList())
         );
-
+        System.out.println("MATCH STARTED IN LOBBY #"+id);
         return true;
     }
 
@@ -113,23 +115,6 @@ public class Lobby implements LobbyRemoteInterface {
     }
 
     /**
-     * @param player  is the sender of the message
-     * @param message is the text content
-     */
-    public void addChatMessage(String player, String message){
-        chatMessages.add(new ChatMessage(player,message, colorPlayer.get(player)));
-        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
-    }
-    /**
-     * @param sender is the sender of the message
-     * @param receiver is the recipient of the message
-     * @param message is the text content
-     */
-    public void addSecretChatMessage(String sender, String receiver, String message){
-        chatMessages.add(new PrivateChatMessage(sender,receiver,message, colorPlayer.get(sender)));
-        System.out.println("Posted:" + chatMessages.get(chatMessages.size()-1));
-    }
-    /**
      *
      * @param playerName is the player that is sending a message
      * @param message is the content
@@ -140,7 +125,7 @@ public class Lobby implements LobbyRemoteInterface {
         if(playerName == null || message == null){
             throw new Exception("Wrong format of message");
         }
-        addChatMessage(playerName, message);
+        chat.addMessage(playerName,message);
     }
 
     /**
@@ -155,26 +140,13 @@ public class Lobby implements LobbyRemoteInterface {
         if(sender == null || receiver == null || message == null){
             throw new Exception("Wrong format of message");
         }
-        addSecretChatMessage(sender, receiver, message);
+        chat.addSecret(sender,receiver,message);
     }
 
-    /**
-     *
-     * @param playerName is the player requesting updated chat
-     * @param alreadyReceived are messages already in client chat
-     * @return list of messages yet to be received
-     * @throws RemoteException when there are connection errors
-     */
-    @Override
-    public List<ChatMessage> updateLiveChat(String playerName, int alreadyReceived) throws RemoteException {
-        List<ChatMessage> lobbyChat = getChat().stream().filter(x-> CLI.checkValidReceiver(x,playerName)).collect(Collectors.toList()); //get chat of that lobby
 
-        List<ChatMessage> livechatUpdate = new ArrayList<>();
-        for(int i = alreadyReceived; i < lobbyChat.size(); i++){
-            livechatUpdate.add(lobbyChat.get(i));
-        }
-        System.out.println("updated client chat");
-        return livechatUpdate;
+    @Override
+    public Chat updateLiveChat() throws RemoteException {
+        return new Chat(chat);
     }
 
     @Override

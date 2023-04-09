@@ -83,7 +83,6 @@ public class ServerMain implements ServerRemoteInterface {
                         .filter(x -> x.getPlayers().contains(nick))
                         .map(Lobby::getId)
                         .collect(Collectors.toList());
-
         return listLobbies;
     }
 
@@ -149,7 +148,7 @@ public class ServerMain implements ServerRemoteInterface {
     public Map<Integer, Integer> showAvailableLobbbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.stream()
-                .filter(x -> !x.isReady())
+                .filter(x -> !x.hasStarted())
                 .forEach(x -> lobbyMap.put(x.getId(), x.getPlayers().size())); //add id lobby + num of players currently in
         return lobbyMap;
     }
