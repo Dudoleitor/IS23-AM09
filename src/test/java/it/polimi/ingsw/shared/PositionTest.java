@@ -121,4 +121,20 @@ class PositionTest {
 
         assertTrue(Position.duplicates(dups));
     }
+    @Test
+    void fromString(){
+        Position p0 = Position.fromString("(0,0)");
+        Position p1 = new Position(0,0);
+        assertEquals(p1,p0);
+
+        Position p2 = Position.fromString("15,1");
+        Position p3 = new Position(15,1);
+        assertEquals(p2,p3);
+
+        Position bad0 = Position.fromString("lala");
+        assertEquals(null,bad0);
+
+        Position bad1 = Position.fromString("15,16,17");
+        assertEquals(null,bad1);
+    }
 }

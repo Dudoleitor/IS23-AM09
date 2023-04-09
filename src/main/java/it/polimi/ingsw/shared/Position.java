@@ -20,6 +20,32 @@ public class Position {
         this.column = column;
     }
 
+    public static Position fromString(String str){
+        int row;
+        int column;
+        if(str == null || "".equals(str)){
+            return null;
+        }
+        else {
+            try {
+                str = str.replace(" ", "");
+                str = str.replace("(", "");
+                str = str.replace(")", "");
+                String[] values = str.split(",");
+                if (values.length != 2) {
+                    return null;
+                } else {
+                    row = Integer.valueOf(values[0]);
+                    column = Integer.valueOf(values[1]);
+                }
+                return new Position(row, column);
+            }
+            catch (Exception e){
+                return null;
+            }
+        }
+    }
+
     /**
      * @return row attribute
      */

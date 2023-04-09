@@ -1,16 +1,18 @@
 package it.polimi.ingsw.RMI;
 
+import it.polimi.ingsw.server.InvalidMoveException;
 import it.polimi.ingsw.server.Move;
+import it.polimi.ingsw.server.PartialMove;
+import it.polimi.ingsw.shared.Position;
 
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class CLI extends Thread{
     private String playerName;
     private LobbyRemoteInterface stub;
-    private static Concurrent_cli_IO io = new Concurrent_cli_IO(new ReentrantLock());
+    private static cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
     private Chat chat;
@@ -138,10 +140,44 @@ public class CLI extends Thread{
                 header.get("message"));
     }
 
-    private Move createMove(){
-        //TODO implement
-        return null;
+    private Move createMove() throws InvalidMoveException {
+        io.printMessage("Write your move");
+        List<String> fields = new ArrayList<>();
+        fields.add("first position");
+        fields.add("second position");
+        fields.add("third position");
+        fields.add("column");
+        Map<String,String> input = io.multiScan(fields);
+
+        List<Position> positions = getPositionsFromInput(input);
+        int column;
+        try{
+            column = Integer.valueOf(input.get("column"));
+        }
+        catch (Exception e){
+            throw new InvalidMoveException("Bad Input for move");
+        }
+
+        if(positions.contains(null)){
+            throw new InvalidMoveException("Bad Input for move");
+        }
+
+        PartialMove pm = new PartialMove();
+        for(Position p : positions){
+            pm.addPosition(p);
+        }
+
+        return new Move(pm, column);
     }
+
+    private List<Position> getPositionsFromInput(Map<String,String> input){
+        List<Position> positions = new ArrayList<>();
+        positions.add(Position.fromString(input.get("first position")));
+        positions.add(Position.fromString(input.get("second position")));
+        positions.add(Position.fromString(input.get("third position")));
+        return positions;
+    }
+
     private void peekElement(){
         io.printMessage("What do you want to see (Board/Shelf)");
         String choice = io.scan();

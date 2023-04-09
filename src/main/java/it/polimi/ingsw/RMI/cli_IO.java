@@ -2,6 +2,9 @@ package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.shared.Color;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class cli_IO {
@@ -40,10 +43,41 @@ public class cli_IO {
     public void printErrorMessage(String s){
         System.out.println(errorFormat(s));
     }
+    /**
+     * Write some Strings on Std out without avoiding concurrent access
+     * @param stringList the strings to print
+     */
+    public void multiPrint(List<String> stringList){
+        for(String s : stringList){
+            System.out.println(s);
+        }
+    }
+    /**
+     * Lock the access to StdOut when you are waiting for strings
+     */
     public String scan(){
         printPlaceHolder();
         String command = scanner.nextLine();
         return command;
+    }
+    public String[] multiScan(int size){
+        String[] result = new String[size];
+        for(int i = 0; i< size; i++){
+            printPlaceHolder();
+            result[i] = scanner.nextLine();
+        }
+        return result;
+    }
+    public Map<String,String> multiScan(List<String> fields){
+        Map<String,String> result = new HashMap();
+        String value;
+        for(String field : fields){
+            printMessage(field+":");
+            printPlaceHolder();
+            value =  scanner.nextLine();
+            result.put(field,value);
+        }
+        return result;
     }
 }
 
