@@ -11,7 +11,7 @@ public class PrivateChatMessage extends ChatMessage{
     }
     @Override
     public String toString(){
-        return Color.coloredString("<PRIVAT&>", Color.Black) + Color.coloredString(getSender(),Color.Black) +
+        return Color.coloredString("<PRIVAT&>", Color.Green) + Color.coloredString(getSender(),Color.Green) +
                 "#: " + getMessage();
     }
     public String getReciever(){

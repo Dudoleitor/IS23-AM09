@@ -133,7 +133,20 @@ public class ServerMain implements ServerRemoteInterface {
      */
     @Override
     public int createLobby(Client client){
-        int nextFreeKey = lobbies.stream().map(Lobby::getId).max(Integer::compareTo).orElse(0) + 1; //find max allocated key and gives back next one
+        boolean free = false;
+        int nextFreeKey = 1;
+        List<Integer> lobbyIDs= lobbies.stream().map(Lobby::getId).collect(Collectors.toList()); // returns list of active lobby ids
+        int nextMaxfreeKey = lobbyIDs.stream().max(Integer::compareTo).orElse(0) + 1; //find max allocated key and gives back next one
+
+        for(int id = 1; !free && id<nextMaxfreeKey; id ++){ //find next available lobby ID starting from the first
+            if(!lobbyIDs.contains(id)){
+                nextFreeKey = id;
+                free = true;
+            }
+        }
+        if(!free){
+            nextFreeKey = nextMaxfreeKey;
+        }
         Lobby lobby = new Lobby(client, nextFreeKey);
         try {
             LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) UnicastRemoteObject.exportObject(lobby, port); //create an interface to export
