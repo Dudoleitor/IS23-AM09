@@ -3,6 +3,7 @@ import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,6 @@ public class Controller implements Jsonable {
     private final Board board;
     private final List<Player> players;
     private int turn;
-    private final List<ActivePlayer> activePlayers = new ArrayList<>();
 
 
     /**
@@ -30,9 +30,6 @@ public class Controller implements Jsonable {
             for (String name : namePlayers) {
                 players.add(new Player(name, new Shelf(Constants.shelfRows,Constants.shelfColumns),
                         new PlayerGoal(jsonPathForPlayerGoals)));
-            }
-            for(Player p : players) {
-                activePlayers.add(new ActivePlayer(p, true));
             }
             board = new Board(players.size());
         } catch (NullPointerException e) {
@@ -63,9 +60,6 @@ public class Controller implements Jsonable {
                 jsonPlayer = (JSONObject) objPlayer;
                 this.players.add(new Player(jsonPlayer));
             }
-            for(Player p : players) {
-                activePlayers.add(new ActivePlayer(p, true));
-            }
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
         }
@@ -91,18 +85,48 @@ public class Controller implements Jsonable {
      * @return the players of the match
      */
     public List<Player> getPlayers() {
-        List<Player> matchPlayers = new ArrayList<>();
-        matchPlayers.addAll(players);
-        return matchPlayers;
+        return players.stream().
+                map(p-> {
+                    try {
+                        return new Player(p);
+                    } catch (JsonBadParsingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).
+                collect(Collectors.toList());
     }
 
     /**
      * @return active players of the match
      */
-    public List<ActivePlayer> getActivePlayers() {
-            List<ActivePlayer> matchActivePlayers = new ArrayList<>();
-            matchActivePlayers.addAll(activePlayers);
-            return matchActivePlayers;
+    public List<Player> getActivePlayers() {
+            return players.stream().
+                    filter(p -> p.isActive()).
+                    map(p-> {
+                        try {
+                            return new Player(p);
+                        } catch (JsonBadParsingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).
+                    collect(Collectors.toList());
+    }
+
+    public void setActivity(String playerName, boolean value) throws ControllerGenericException{
+        if(playerName == null){
+            throw new ControllerGenericException("No player found with that name");
+        }
+        else{
+            Optional<Player> target =  players.stream().
+                    filter(p -> p.getName().equals(playerName)).
+                    findFirst();
+            if(!target.isPresent()){
+                throw new ControllerGenericException("No player found with that name");
+            }
+            else{
+                target.get().setActive(value);
+            }
+        }
     }
 
     /**
@@ -110,6 +134,8 @@ public class Controller implements Jsonable {
      */
     public void nextTurn() {
         turn++;
+        List<Player> activePlayers = getActivePlayers();
+
         if(!activePlayers.get((getTurn()) % activePlayers.size()).isActive()) {
             nextTurn();
         }
@@ -250,27 +276,4 @@ public class Controller implements Jsonable {
 
         return gameStatus;
     }
-
-    public class ActivePlayer {
-        Player player;
-        boolean isActive;
-
-        public ActivePlayer(Player player, boolean isActive) {
-            this.player = player;
-            this.isActive = isActive;
-        }
-
-        public Player getPlayer() {
-            return player;
-        }
-
-        public boolean isActive() {
-            return isActive;
-        }
-
-        public void setActive(boolean active) {
-            isActive = active;
-        }
-    }
-
 }

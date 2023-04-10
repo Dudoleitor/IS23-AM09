@@ -116,13 +116,14 @@ public class ControllerTest {
 
     @Test
     void getCurrentPlayer3Players1Quit(){
-        List<String> players = new ArrayList<>();
-        players.add("fridgeieri");
-        players.add("fridgeoggi");
-        players.add("fridgedomani");
-        Controller c = new Controller(players);
+        List<String> playernames = new ArrayList<>();
+        playernames.add("fridgeieri");
+        playernames.add("fridgeoggi");
+        playernames.add("fridgedomani");
+        Controller c = new Controller(playernames);
 
-        c.getActivePlayers().get(1).setActive(false);
+        List<Player> players = c.getPlayers();
+        c.setActivity(players.get(1).getName(),false);
 
         for (int i = 0; i < 10; i++) {
             assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
@@ -133,23 +134,40 @@ public class ControllerTest {
 
     @Test
     void getCurrentPlayer4Players2Quit(){
-        List<String> players = new ArrayList<>();
-        players.add("fridgeieri");
-        players.add("fridgeoggi");
-        players.add("fridgedomani");
-        players.add("fridgedopodomani");
-        Controller c = new Controller(players);
+        List<String> playerNames = new ArrayList<>();
+        playerNames.add("fridgeieri");
+        playerNames.add("fridgeoggi");
+        playerNames.add("fridgedomani");
+        playerNames.add("fridgedopodomani");
+        Controller c = new Controller(playerNames);
 
-        c.getActivePlayers().get(1).setActive(false);
-        c.getActivePlayers().get(3).setActive(false);
-
+        List<Player> players = c.getPlayers();
+        c.setActivity(players.get(1).getName(),false);
+        c.setActivity(players.get(2).getName(),false);
 
         for (int i = 0; i < 10; i++) {
             assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
-            assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
+            assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(2)));
             c.nextTurn();
         }
 
+    }
+
+    @Test
+    void getByCopy(){
+        List<String> playerNames = new ArrayList<>();
+        playerNames.add("fridgeieri");
+        playerNames.add("fridgeoggi");
+        playerNames.add("fridgedomani");
+        playerNames.add("fridgedopodomani");
+        Controller c = new Controller(playerNames);
+
+        List<Player> players = c.getPlayers();
+        //modify a copy of the list
+        players.get(0).setActive(false);
+        players.get(2).setActive(false);
+        assertTrue(c.getActivePlayers().get(0).isActive());
+        assertTrue(c.getActivePlayers().get(2).isActive());
     }
 
     @Test

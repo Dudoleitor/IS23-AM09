@@ -17,6 +17,7 @@ public class Lobby implements LobbyRemoteInterface {
     private boolean started = false;
     private Chat chat;
     private Controller controller;
+    private InactivityDetector inactivityDetector;
 
     public Lobby(Client firstPlayer, int id){
         this.players.add(firstPlayer);
@@ -73,9 +74,9 @@ public class Lobby implements LobbyRemoteInterface {
                 players.size() == 0;
     }
 
-    public String getLobbyAdmin(){
+    public String getLobbyAdmin() throws Exception {
         if(players == null || players.size() == 0){
-            return "";
+            throw new Exception("No Players");
         }
         else{
             return players.get(0).getPlayerName();
@@ -91,8 +92,13 @@ public class Lobby implements LobbyRemoteInterface {
      */
     @Override
     public boolean startGame(String player){
-        if(!ready  || !getLobbyAdmin().equals(player))
+        try {
+            if(!ready  || !getLobbyAdmin().equals(player))
+                return false;
+        }
+        catch (Exception e){
             return false;
+        }
 
         started = true;
         controller = new Controller(
@@ -101,6 +107,9 @@ public class Lobby implements LobbyRemoteInterface {
                         .collect(Collectors.toList())
         );
         System.out.println("MATCH STARTED IN LOBBY #"+id);
+        inactivityDetector = new InactivityDetector(controller);
+        inactivityDetector.start();
+        System.out.println("Detecting activity in lobby #"+id);
         return true;
     }
 
@@ -157,5 +166,11 @@ public class Lobby implements LobbyRemoteInterface {
     @Override
     public void postMove(String player, Move move) throws RemoteException {
 
+    }
+    @Override
+    public void keepAlive(String player){
+        if(inactivityDetector != null){
+            inactivityDetector.setActivity(player,true);
+        }
     }
 }

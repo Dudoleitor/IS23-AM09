@@ -20,8 +20,8 @@ public class Player implements Jsonable {
     private final List<Integer> checkedCommonGoals;
     private final Shelf shelf;
     private final PlayerGoal goal;
-
     private final VirtualShelf virtualShelf;
+    boolean isActive;
 
     /**
      * This constructor is used to initialize a new player, with no properties
@@ -40,6 +40,8 @@ public class Player implements Jsonable {
         this.goal = goal;
         this.commonGoalPoints = 0;
         this.checkedCommonGoals = new ArrayList<>();
+
+        this.isActive = true;
     }
 
     /**
@@ -68,11 +70,15 @@ public class Player implements Jsonable {
             if (jsonPointsAchieved==null) {throw new JsonBadParsingException("Error while loading player from json: goals achieved not found");}
 
             this.checkedCommonGoals = new ArrayList<>(jsonPointsAchieved);
-
-
+            isActive = true;
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading player from json: " + e.getMessage());
         }
+    }
+
+    public Player(Player toCopy) throws JsonBadParsingException {
+        this(toCopy.toJson());
+        isActive = toCopy.isActive;
     }
 
     public String getName() { return name; }
@@ -203,5 +209,12 @@ public class Player implements Jsonable {
     @Override
     public int hashCode() {
         return Objects.hash(name.toLowerCase());
+    }
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

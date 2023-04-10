@@ -27,8 +27,6 @@ public class ClientMain{
     static cli_IO io = new cli_IO();
     static LobbyRemoteInterface lobbyStub;
     static InputSanitizer inputSanitizer = new InputSanitizer();
-
-
     public static void main(String argv[]) throws NotBoundException, InterruptedException {
         setUserName();
         ClientRMI clientRMI = new ClientRMI(playerName);

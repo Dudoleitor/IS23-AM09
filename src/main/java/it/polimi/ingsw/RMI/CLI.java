@@ -17,12 +17,15 @@ public class CLI extends Thread{
     private boolean exit = false;
     private Chat chat;
     private Queue<String> updates;
+    private KeepAlive keepAlive;
 
     CLI(String playerName, LobbyRemoteInterface stub){
         this.playerName = playerName;
         this.stub = stub;
         this.chat = new Chat();
         this.updates = new PriorityQueue<>();
+        this.keepAlive = new KeepAlive(playerName,stub);
+        keepAlive.start();
     }
     private void loopCommands(){
         String command;
@@ -51,6 +54,7 @@ public class CLI extends Thread{
         switch (com){
             case Exit: //quit game
                 io.printMessage("You quit");
+                keepAlive.interrupt();
                 exit = true;
                 break;
             case Print: //print all messages
