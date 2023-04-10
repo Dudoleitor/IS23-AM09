@@ -15,6 +15,7 @@ public class Lobby implements LobbyRemoteInterface {
     private final List<Client> players = new ArrayList<>();
     private boolean ready = false;
     private boolean started = false;
+    private boolean full = false;
     private Chat chat;
     private Controller controller;
     private InactivityDetector inactivityDetector;
@@ -42,6 +43,8 @@ public class Lobby implements LobbyRemoteInterface {
         //if the lobby has enough players it's ready to start
         if(players.size() >= Constants.minSupportedPlayers)
             ready = true;
+        if(players.size() >= Constants.maxSupportedPlayers)
+            full = true;
     }
 
     /**
@@ -53,11 +56,19 @@ public class Lobby implements LobbyRemoteInterface {
     public boolean hasStarted(){
         return started;
     }
+    public boolean isFull(){
+        return full;
+    }
     /**
      * @return list of players in this lobby
      */
     public ArrayList<Client> getPlayers(){
-        return new ArrayList<>(players);
+        return new ArrayList<>(players); //TODO this is by reference
+    }
+    public List<String> getPlayerNames(){
+        return players.stream().
+                map(p -> p.getPlayerName()).
+                collect(Collectors.toList());
     }
     /**
      * @return every message in that lobby

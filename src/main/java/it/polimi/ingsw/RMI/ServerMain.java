@@ -80,7 +80,7 @@ public class ServerMain implements ServerRemoteInterface {
     public List<Integer> getJoinedLobbies(String nick){
         List<Integer> listLobbies = //get all lobbies already joined by the client
                 lobbies.stream()
-                        .filter(x -> x.getPlayers().contains(nick))
+                        .filter(x -> x.getPlayerNames().contains(nick))
                         .map(Lobby::getId)
                         .collect(Collectors.toList());
         return listLobbies;
@@ -91,10 +91,14 @@ public class ServerMain implements ServerRemoteInterface {
      * @return id of assigned lobby
      */
     @Override
-    public int joinRandomLobby(Client client){ //TODO to handle a re-join of the same player possibility
+    public int joinRandomLobby(Client client){
+        List<Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
+        if(alreadyJoined.size() > 0){
+            joinSelectedLobby(client,alreadyJoined.get(0));
+        }
         int lobbyID;
         Lobby lobby = lobbies.stream()
-                    .filter(l -> !l.isReady()) //keep only not full lobbies
+                    .filter(l -> !l.isFull()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
         if(lobby != null){ //if a lobby exists then add player
@@ -111,7 +115,7 @@ public class ServerMain implements ServerRemoteInterface {
      * @param client requesting to join the lobby
      */
     @Override
-    public boolean joinSelectedLobby(Client client, int id){ //TODO to handle a re-join of the same player possibility
+    public boolean joinSelectedLobby(Client client, int id){
         Lobby lobby = lobbies.stream()
                 .filter(x -> x.getId() == id) //verify lobby exists and is not full
                 .findFirst().orElse(null);
@@ -148,7 +152,7 @@ public class ServerMain implements ServerRemoteInterface {
     public Map<Integer, Integer> showAvailableLobbbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.stream()
-                .filter(x -> !x.hasStarted())
+                .filter(x -> !x.isFull())
                 .forEach(x -> lobbyMap.put(x.getId(), x.getPlayers().size())); //add id lobby + num of players currently in
         return lobbyMap;
     }
