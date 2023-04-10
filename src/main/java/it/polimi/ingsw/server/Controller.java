@@ -163,7 +163,6 @@ public class Controller implements Jsonable {
         Map<String,Shelf> shelves = new HashMap<>();
         for(Player p : getPlayers()) {
             shelves.put(p.getName(), p.getShelf());
-
         }
         return shelves;
     }
@@ -207,8 +206,7 @@ public class Controller implements Jsonable {
 
             List<Position> positions = move.getBoardPositions();
             for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
-                Tile t = board.pickTile(p);
-                playerShelf.insertTile(t, move.getColumn());
+                player.insertTile(board.pickTile(p), move.getColumn());
             }
             prepareForNextPlayer(); //Fill if necessary
             nextTurn(); //increment turn
