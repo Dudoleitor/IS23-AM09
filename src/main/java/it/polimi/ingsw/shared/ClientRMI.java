@@ -1,5 +1,6 @@
 package it.polimi.ingsw.shared;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.Objects;
@@ -75,6 +76,7 @@ public class ClientRMI implements Client, Remote, Serializable {
     public void refreshShelf(String player, String shelf) {
         //TODO
     }
+
 
     @Override
     public boolean equals(Object o) {  // Checking using LOWERCASE name

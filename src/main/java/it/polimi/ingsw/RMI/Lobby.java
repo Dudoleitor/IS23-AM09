@@ -1,6 +1,7 @@
 package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.server.Controller;
+import it.polimi.ingsw.server.ControllerGenericException;
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Client;
 import it.polimi.ingsw.shared.Color;
@@ -176,6 +177,15 @@ public class Lobby implements LobbyRemoteInterface {
 
     @Override
     public void postMove(String player, Move move) throws RemoteException {
+        Client playerInput = null;
+        try{
+            playerInput = players.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
+            if(playerInput != null) {
+                controller.moveTiles(player, move);
+            }
+        } catch (ControllerGenericException e){
+            //playerInput.notifyMessage(e.getMessage()); //TODO player must receive the message in one way or another, preferrable in chat but not as a message
+        }
 
     }
     @Override

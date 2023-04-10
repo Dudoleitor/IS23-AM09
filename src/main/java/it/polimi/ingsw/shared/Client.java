@@ -59,4 +59,5 @@ public interface Client {
      * @param shelf JSONObject.toJsonString
      */
     public void refreshShelf(String player, String shelf);
+
 }

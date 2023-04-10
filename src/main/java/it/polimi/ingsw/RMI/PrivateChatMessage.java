@@ -3,11 +3,11 @@ package it.polimi.ingsw.RMI;
 import it.polimi.ingsw.shared.Color;
 
 public class PrivateChatMessage extends ChatMessage{
-    private String reciever;
+    private String receiver;
 
-    public PrivateChatMessage(String sender, String reciever, String message, Color color ){
+    public PrivateChatMessage(String sender, String receiver, String message, Color color ){
         super(sender, message, color);
-        this.reciever = reciever;
+        this.receiver = receiver;
     }
     @Override
     public String toString(){
@@ -15,7 +15,7 @@ public class PrivateChatMessage extends ChatMessage{
                 "#: " + getMessage();
     }
     public String getReciever(){
-        return reciever;
+        return receiver;
     }
 
 }

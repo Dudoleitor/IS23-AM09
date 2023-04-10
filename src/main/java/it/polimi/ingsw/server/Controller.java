@@ -170,12 +170,24 @@ public class Controller implements Jsonable {
 
     /**
      * insert Tiles in the player shelf according to move coordinates
-     * @param player is the current player
+     * @param playerName is the current player
      * @param move is the move that player wants to do
      * @throws ControllerGenericException if the selected tile is not allowed, if the player is not the current player
      * or if the shelf hasn't enough empty cells
      */
-    public void moveTiles(Player player, Move move) throws ControllerGenericException {
+    public void moveTiles(String playerName, Move move) throws ControllerGenericException {
+        Player player; //doesnt work as an Optional TODO for @Jack
+        if(playerName == null){
+            throw new ControllerGenericException("No player found with that name");
+        }
+        else {
+            player = players.stream().
+                    filter(p -> p.getName().equals(playerName)).
+                    findFirst().orElse(null);
+            if (player == null) {
+                throw new ControllerGenericException("No player found with that name");
+            }
+        }
 
         try {
             if (!player.getName().equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
