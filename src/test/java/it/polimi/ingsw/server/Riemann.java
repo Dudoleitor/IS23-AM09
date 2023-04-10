@@ -69,7 +69,7 @@ public class Riemann { //an integration test
             throw new RuntimeException(e);
         }
         Move m = new Move(pm,0);
-        c.moveTiles(playerList.get(0),m);
+        c.moveTiles(playerList.get(0).getName(),m);
 
         try {
             //The removed tiles are empty
