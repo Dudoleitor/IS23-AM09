@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class Riemann { //an integration test
+    static boolean verbous = false;
     @Test
     void wholeMatch() throws JsonBadParsingException {
         List<String> playerNames = new ArrayList<>();
@@ -70,28 +71,66 @@ public class Riemann { //an integration test
         }
         Move m = new Move(pm,0);
         c.moveTiles(playerList.get(0).getName(),m);
-
+        printAll(c);
         try {
             //The removed tiles are empty
             assertEquals(Tile.Empty,c.getBoard().getTile(0,3));
             assertEquals(Tile.Empty,c.getBoard().getTile(0,4));
             //Next turn has been called
             assertEquals(c.getPlayers().get(1).getName(),c.getCurrentPlayerName());
-            //TODO this shouldnt fail
-            //assertTrue(c.getShelves().get(playerNames.get(0)).allTilesInColumn(0).containsAll(picked));
+            assertTrue(c.getShelves().get(playerNames.get(0)).allTilesInColumn(0).containsAll(picked));
+            assertEquals(picked.get(0),c.getShelves().get(playerNames.get(0)).getTile(5,0));
+            assertEquals(picked.get(1),c.getShelves().get(playerNames.get(0)).getTile(4,0));
         } catch (BadPositionException e) {
             throw new RuntimeException(e);
         }
+
+        //TURN 2
+        c.prepareForNextPlayer();
         printAll(c);
+        assertFalse(c.getBoard().sameBoard(new Board(4)));
+        pm = new PartialMove();
+        picked.clear();
+        try {
+            picked.add(c.getBoard().getTile(1,3));
+            pm.addPosition(new Position(1,3));
+            picked.add(c.getBoard().getTile(1,4));
+            pm.addPosition(new Position(1,4));
+            picked.add(c.getBoard().getTile(1,5));
+            pm.addPosition(new Position(1,5));
+        } catch (InvalidMoveException e) {
+            throw new RuntimeException(e);
+        } catch (BadPositionException e) {
+            throw new RuntimeException(e);
+        }
+        m = new Move(pm,0);
+        c.moveTiles(playerList.get(1).getName(),m);
+        printAll(c);
+        try {
+            //The removed tiles are empty
+            assertEquals(Tile.Empty,c.getBoard().getTile(1,3));
+            assertEquals(Tile.Empty,c.getBoard().getTile(1,4));
+            assertEquals(Tile.Empty,c.getBoard().getTile(1,5));
+            //Next turn has been called
+            assertEquals(c.getPlayers().get(2).getName(),c.getCurrentPlayerName());
+            assertTrue(c.getShelves().get(playerNames.get(1)).allTilesInColumn(0).containsAll(picked));
+            assertEquals(picked.get(0),c.getShelves().get(playerNames.get(1)).getTile(5,0));
+            assertEquals(picked.get(1),c.getShelves().get(playerNames.get(1)).getTile(4,0));
+            assertEquals(picked.get(2),c.getShelves().get(playerNames.get(1)).getTile(3,0));
+        } catch (BadPositionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void printAll(Controller c) throws JsonBadParsingException {
-        List<String> playerNames = c.getPlayers().stream().
-                map(p -> p.getName()).
-                collect(Collectors.toList());
-        for(String p : playerNames){
-            System.out.println(c.getShelves().get(p));
+        if(verbous){
+            List<String> playerNames = c.getPlayers().stream().
+                    map(p -> p.getName()).
+                    collect(Collectors.toList());
+            for(String p : playerNames){
+                System.out.println(c.getShelves().get(p));
+            }
+            System.out.println(c.getBoard());
         }
-        System.out.println(c.getBoard());
     }
 }

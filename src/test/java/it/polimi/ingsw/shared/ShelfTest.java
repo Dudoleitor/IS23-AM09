@@ -202,4 +202,16 @@ public class ShelfTest {
         assertNotEquals(A,nullS);
         assertNotEquals(A,new ArrayList<>());
     }
+
+    @Test
+    void passByCopy() throws BadPositionException {
+        Shelf s1 = new Shelf(4,5);
+        s1.insertTile(Tile.Cat,0);
+        s1.insertTile(Tile.Book,0);
+        s1.insertTile(Tile.Cat,3);
+        Shelf s2 = new Shelf(s1);
+        assertEquals(s1,s2);
+        s1.insertTile(Tile.Cat,0);
+        assertNotEquals(s1,s2);
+    }
 }

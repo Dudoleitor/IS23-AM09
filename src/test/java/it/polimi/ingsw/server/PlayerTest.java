@@ -203,6 +203,20 @@ public class PlayerTest {
         testpl.insertTile(Tile.Cat, 1);
         assertEquals(8, testpl.getAdjacentPoints());
     }
+    @Test
+    void insertion() throws JsonBadParsingException, BadPositionException {
+        String jsonPath = "src/test/resources/PlayerGoalTests/TestGoal.json";
+        String name = "fridgeieri";
+        Shelf shelf = new Shelf(4, 3);
+        PlayerGoal playerGoal = new PlayerGoal(jsonPath);
+        Player testpl = new Player(name, new Shelf(shelf), playerGoal);
+
+        assertEquals(shelf,testpl.getShelf());
+        testpl.insertTile(Tile.Cat,0);
+
+        assertNotEquals(shelf,testpl.getShelf());
+        assertEquals(Tile.Cat,testpl.getShelf().getTile(3,0));
+    }
 }
 class CommonGoalTest extends CommonGoal{
     private boolean achieved = false;

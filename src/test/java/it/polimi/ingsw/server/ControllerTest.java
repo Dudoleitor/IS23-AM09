@@ -189,11 +189,10 @@ public class ControllerTest {
         } catch (Exception e) {
             fail();
         }
-        //TODO end test
-        /*for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 10; i++){
             assertEquals(i,c.getTurn());
             assertEquals(c.getCurrentPlayerName(),players.get(i%3));
-            //increment turn
-        }*/
+            c.nextTurn();
+        }
     }
 }
