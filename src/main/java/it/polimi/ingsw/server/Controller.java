@@ -101,7 +101,7 @@ public class Controller implements Jsonable {
      */
     public List<Player> getActivePlayers() {
             return players.stream().
-                    filter(p -> p.isActive()).
+                    filter(Player::isActive).
                     map(p-> {
                         try {
                             return new Player(p);
@@ -113,20 +113,8 @@ public class Controller implements Jsonable {
     }
 
     public void setActivity(String playerName, boolean value) throws ControllerGenericException{
-        if(playerName == null){
-            throw new ControllerGenericException("No player found with that name");
-        }
-        else{
-            Optional<Player> target =  players.stream().
-                    filter(p -> p.getName().equals(playerName)).
-                    findFirst();
-            if(!target.isPresent()){
-                throw new ControllerGenericException("No player found with that name");
-            }
-            else{
-                target.get().setActive(value);
-            }
-        }
+        getPlayerFromName(playerName)
+                .setActive(value);
     }
 
     /**
@@ -175,18 +163,7 @@ public class Controller implements Jsonable {
      * or if the shelf hasn't enough empty cells
      */
     public void moveTiles(String playerName, Move move) throws ControllerGenericException {
-        Player player; //doesnt work as an Optional TODO for @Jack
-        if(playerName == null){
-            throw new ControllerGenericException("No player found with that name");
-        }
-        else {
-            player = players.stream().
-                    filter(p -> p.getName().equals(playerName)).
-                    findFirst().orElse(null);
-            if (player == null) {
-                throw new ControllerGenericException("No player found with that name");
-            }
-        }
+        Player player = getPlayerFromName(playerName);
 
         try {
             if (!player.getName().equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
@@ -285,5 +262,20 @@ public class Controller implements Jsonable {
         gameStatus.put("commonGoals", commonGoalsJson);
 
         return gameStatus;
+    }
+
+    private Player getPlayerFromName(String playerName) {
+        if (playerName == null) {
+            throw new ControllerGenericException("No player found with that name");
+        } else {
+            Optional<Player> target = players.stream().
+                    filter(p -> p.getName().equals(playerName)).
+                    findFirst();
+            if (target.isEmpty()) {
+                throw new ControllerGenericException("No player found with that name");
+            } else {
+                return target.get();
+            }
+        }
     }
 }
