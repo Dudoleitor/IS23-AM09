@@ -4,7 +4,6 @@ import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.ControllerGenericException;
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.Client;
-import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Constants;
 
 import java.rmi.RemoteException;
@@ -17,7 +16,7 @@ public class Lobby implements LobbyRemoteInterface {
     private boolean ready = false;
     private boolean started = false;
     private boolean full = false;
-    private Chat chat;
+    private final Chat chat;
     private Controller controller;
     private InactivityDetector inactivityDetector;
 
@@ -68,7 +67,7 @@ public class Lobby implements LobbyRemoteInterface {
     }
     public List<String> getPlayerNames(){
         return players.stream().
-                map(p -> p.getPlayerName()).
+                map(Client::getPlayerName).
                 collect(Collectors.toList());
     }
     /**
@@ -82,12 +81,11 @@ public class Lobby implements LobbyRemoteInterface {
         return id;
     }
     public boolean isEmpty(){
-        return players == null ||
-                players.size() == 0;
+        return players.size() == 0;
     }
 
     public String getLobbyAdmin() throws Exception {
-        if(players == null || players.size() == 0){
+        if(players.size() == 0){
             throw new Exception("No Players");
         }
         else{
