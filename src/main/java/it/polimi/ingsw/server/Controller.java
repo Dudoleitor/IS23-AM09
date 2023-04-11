@@ -179,6 +179,9 @@ public class Controller implements Jsonable {
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
         }
+        else if(move == null){
+            throw new ControllerGenericException("Null move");
+        }
         else {
             player = players.stream().
                     filter(p -> p.getName().equals(playerName)).
@@ -241,7 +244,7 @@ public class Controller implements Jsonable {
         List<Position> positions = move.getBoardPositions();
 
         //the number of coordinates is greater than the maximum possible ==> false
-        if (positions.size() > move.getMaxNumMoves())
+        if (positions.size() > move.getMaxNumMoves() || positions.size() <= 0)
             return false;
 
         //duplicate positions are present ==> false

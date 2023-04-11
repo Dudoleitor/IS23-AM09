@@ -120,6 +120,99 @@ public class Riemann { //an integration test
         } catch (BadPositionException e) {
             throw new RuntimeException(e);
         }
+
+        //TURN 3 (malicious player turn)
+        c.prepareForNextPlayer();
+        printAll(c);
+        assertFalse(c.getBoard().sameBoard(new Board(4)));
+        pm = new PartialMove();
+        picked.clear();
+        try {
+            picked.add(c.getBoard().getTile(1,3));
+            pm.addPosition(new Position(1,3));
+            picked.add(c.getBoard().getTile(1,4));
+            pm.addPosition(new Position(1,4));
+            picked.add(c.getBoard().getTile(1,5));
+            pm.addPosition(new Position(1,5));
+        } catch (InvalidMoveException e) {
+            throw new RuntimeException(e);
+        } catch (BadPositionException e) {
+            throw new RuntimeException(e);
+        }
+        m = new Move(pm,0);
+        try{
+            //Wrong player
+            c.moveTiles(playerList.get(1).getName(),m);
+        }
+        catch (Exception e){
+            assertEquals(ControllerGenericException.class, e.getClass());
+            assertEquals("Player is not the current player",e.getMessage());
+        }
+        //no nextTurn
+        assertEquals(playerNames.get(2),c.getCurrentPlayerName());
+        try{
+            //Move with empty Tiles
+            c.moveTiles(playerList.get(2).getName(),m);
+        }
+        catch (Exception e){
+            assertEquals(ControllerGenericException.class, e.getClass());
+            assertEquals("Error invalid move",e.getMessage());
+        }
+        //no nextTurn
+        assertEquals(playerNames.get(2),c.getCurrentPlayerName());
+
+        pm = new PartialMove();
+        picked.clear();
+        try {
+            picked.add(c.getBoard().getTile(2,3));
+            pm.addPosition(new Position(2,3));
+            picked.add(c.getBoard().getTile(2,4));
+            pm.addPosition(new Position(2,4));
+            picked.add(c.getBoard().getTile(2,6));
+            pm.addPosition(new Position(2,6));
+        } catch (InvalidMoveException e) {
+            throw new RuntimeException(e);
+        } catch (BadPositionException e) {
+            throw new RuntimeException(e);
+        }
+        m = new Move(pm,0);
+        try{
+            //Move with non aligned tiles
+            c.moveTiles(playerList.get(2).getName(),m);
+        }
+        catch (Exception e){
+            assertEquals(ControllerGenericException.class, e.getClass());
+            assertEquals("Error invalid move",e.getMessage());
+            System.out.println("Cathed");
+        }
+        //no nextTurn
+        assertEquals(playerNames.get(2),c.getCurrentPlayerName());
+
+        pm = new PartialMove();
+        picked.clear();
+        m = new Move(pm,0);
+        try{
+            //Move with no tiles
+            c.moveTiles(playerList.get(2).getName(),m);
+        }
+        catch (Exception e){
+            assertEquals(ControllerGenericException.class, e.getClass());
+            assertEquals("Error invalid move",e.getMessage());
+        }
+        //no nextTurn
+        printAll(c);
+        assertEquals(playerNames.get(2),c.getCurrentPlayerName());
+
+        try{
+            //Null move
+            c.moveTiles(playerList.get(2).getName(),null);
+        }
+        catch (Exception e){
+            assertEquals(ControllerGenericException.class, e.getClass());
+            assertEquals("Null move",e.getMessage());
+        }
+        //no nextTurn
+        assertEquals(playerNames.get(2),c.getCurrentPlayerName());
     }
 
     private void printAll(Controller c) throws JsonBadParsingException {
