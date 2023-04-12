@@ -13,28 +13,28 @@ public class ControllerTest {
 
     @Test
     void jsonCongruenceTest() throws JsonBadParsingException {
-        List<String> players = new ArrayList<>();
-        players.add("fridgeieri");
-        players.add("fridgeoggi");
-        players.add("fridgedomani");
-        Controller testCont1 = new Controller(players);
-        Controller testCont2 = new Controller(testCont1.toJson());
+        List<Client> clients = new ArrayList<>();
+        clients.add(new ClientStub("fridgeieri"));
+        clients.add(new ClientStub("fridgeoggi"));
+        clients.add(new ClientStub("fridgedomani"));
+        Controller testCont1 = new Controller(clients);
+        Controller testCont2 = new Controller(testCont1.toJson(), clients);
 
         assertEquals(testCont1.toJson().toJSONString(), testCont2.toJson().toJSONString());
         //null list
-        assertThrows(ControllerGenericException.class, () -> new Controller((List<String>) null));
+        assertThrows(ControllerGenericException.class, () -> new Controller((List<Client>) null));
         //no players
         //TODO could be better
-        assertThrows(Exception.class, () ->  new Controller(new ArrayList<String>()));
+        assertThrows(Exception.class, () ->  new Controller(new ArrayList<Client>()));
     }
 
     @Test
     void builderTest(){
         //null list
-        assertThrows(ControllerGenericException.class, () -> new Controller((List<String>) null));
+        assertThrows(ControllerGenericException.class, () -> new Controller((List<Client>) null));
         //no players
         //TODO could be better
-        assertThrows(Exception.class, () ->  new Controller(new ArrayList<String>()));
+        assertThrows(Exception.class, () ->  new Controller(new ArrayList<Client>()));
     }
 
     @Test
@@ -43,7 +43,8 @@ public class ControllerTest {
         players.add("fridgeieri");
         players.add("fridgeoggi");
         players.add("fridgedomani");
-        Controller c = new Controller(players);
+        List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
         List<Player> playerList = new ArrayList<>();
         try{
             playerList = (List<Player>) players.stream().map(p -> {
@@ -76,7 +77,8 @@ public class ControllerTest {
         players.add("fridgeieri");
         players.add("fridgeoggi");
         players.add("fridgedomani");
-        Controller c = new Controller(players);
+        List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
         List<Player> playerList = null;
         try {
             playerList = (List<Player>) players.stream().map(p -> {
@@ -104,7 +106,8 @@ public class ControllerTest {
         players.add("fridgeieri");
         players.add("fridgeoggi");
         players.add("fridgedomani");
-        Controller c = new Controller(players);
+        List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
 
 
         for (int i = 0; i < 100; i++) {
@@ -120,7 +123,8 @@ public class ControllerTest {
         playernames.add("fridgeieri");
         playernames.add("fridgeoggi");
         playernames.add("fridgedomani");
-        Controller c = new Controller(playernames);
+        List<Client> clients = playernames.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
 
         List<Player> players = c.getPlayers();
         c.setActivity(players.get(1).getName(),false);
@@ -139,7 +143,8 @@ public class ControllerTest {
         playerNames.add("fridgeoggi");
         playerNames.add("fridgedomani");
         playerNames.add("fridgedopodomani");
-        Controller c = new Controller(playerNames);
+        List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
 
         List<Player> players = c.getPlayers();
         c.setActivity(players.get(1).getName(),false);
@@ -160,7 +165,8 @@ public class ControllerTest {
         playerNames.add("fridgeoggi");
         playerNames.add("fridgedomani");
         playerNames.add("fridgedopodomani");
-        Controller c = new Controller(playerNames);
+        List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
 
         List<Player> players = c.getPlayers();
         //modify a copy of the list
@@ -176,7 +182,8 @@ public class ControllerTest {
         players.add("fridgeieri");
         players.add("fridgeoggi");
         players.add("fridgedomani");
-        Controller c = new Controller(players);
+        List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
         List<Player> playerList = null;
         try {
             playerList = (List<Player>) players.stream().map(p -> {

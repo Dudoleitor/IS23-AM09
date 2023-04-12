@@ -19,7 +19,8 @@ public class Riemann { //an integration test
         playerNames.add("fridgeoggi");
         playerNames.add("fridgedomani");
         playerNames.add("friededopodomani");
-        Controller c = new Controller(playerNames);
+        List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(clients);
         List<Player> playerList = null;
         try{
             playerList = (List<Player>) playerNames.stream().map(p -> {
