@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.virtualview.VirtualView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -13,30 +14,43 @@ import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
 public class Controller implements Jsonable {
     private final Board board;
     private final List<Player> players;
+    private final List<Client> clients;
+    private final List<VirtualView> virtualViews;
     private int turn;
 
 
     /**
      * Constructor used to initialize the controller
-     * @param namePlayers is a List of the (unique) names of the players
+     * @param clients is a List of Client objects
      */
-    public Controller(List<String> namePlayers){
-        if(namePlayers == null){
-            throw new ControllerGenericException("Error while creating the Controller: namePlayers was null");
+    public Controller(List<Client> clients){
+        if(clients == null){
+            throw new ControllerGenericException("Error while creating the Controller: clients list was null");
         }
+
+        this.virtualViews = new ArrayList<>();
+        this.clients = clients;
+
         try {
             players = new ArrayList<>();
+            Player player;
             turn = 0;
-            for (String name : namePlayers) {
-                players.add(new Player(name, new Shelf(Constants.shelfRows,Constants.shelfColumns),
-                        new PlayerGoal(jsonPathForPlayerGoals)));
+            for (Client client : clients) {
+                player = new Player(client.getPlayerName(),
+                        new Shelf(Constants.shelfRows,Constants.shelfColumns),
+                        new PlayerGoal(jsonPathForPlayerGoals));
+                players.add(player);
+                virtualViews.add(player.getVirtualShelf());
             }
             board = new Board(players.size());
+            virtualViews.add(board.getVirtualBoard());
         } catch (NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : Json file doesn't exists");
         } catch (ClassCastException | JsonBadParsingException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad Json parsing");
         }
+
+        for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
     }
 
     /**
@@ -44,25 +58,49 @@ public class Controller implements Jsonable {
      * @param gameStatus JSONObject with the status
      * @throws JsonBadParsingException when a parsing error happens
      */
-    public Controller(JSONObject gameStatus) throws JsonBadParsingException {
+    public Controller(JSONObject gameStatus, List<Client> clients) throws JsonBadParsingException {
+        virtualViews = new ArrayList<>();
         try {
             JSONArray commonGoalsJson = (JSONArray) gameStatus.get("commonGoals");
+
             this.board = new Board((JSONObject) gameStatus.get("board"), new ArrayList<>(commonGoalsJson));
+            virtualViews.add(board.getVirtualBoard());
+
             this.turn = Math.toIntExact((Long) gameStatus.get("turn"));
 
             // Loading players
             this.players = new ArrayList<>();
+            this.clients = clients;
             JSONArray playersJson = (JSONArray) gameStatus.get("players");
             if (playersJson==null) {throw new JsonBadParsingException("Error while loading game status from json: players field not found");}
 
             JSONObject jsonPlayer;
+            Player player;
             for (Object objPlayer : playersJson) {
                 jsonPlayer = (JSONObject) objPlayer;
-                this.players.add(new Player(jsonPlayer));
+                player = new Player(jsonPlayer);
+                this.players.add(player);
+                virtualViews.add(player.getVirtualShelf());
+
+                if (nameAbsentInClients(player.getName(), clients)) {
+                    throw new JsonBadParsingException("No client with playername " + player.getName() + " provided");
+                }
             }
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
         }
+
+        for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
+    }
+
+    /**
+     * Checking if there is a client with the given player name.
+     * @param name String, name to search for.
+     * @param clients List of Client objects
+     * @return True if the name is NOT present in the list.
+     */
+    private boolean nameAbsentInClients(String name, List<Client> clients) {
+        return clients.stream().map(Client::getPlayerName).filter(x -> x.equals(name)).findAny().isEmpty();
     }
 
     /**

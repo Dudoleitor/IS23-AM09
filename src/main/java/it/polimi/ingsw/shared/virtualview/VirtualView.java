@@ -12,8 +12,7 @@ import java.util.List;
  * will update each one of them.
  */
 public abstract class VirtualView {
-
-    private final List<Client> clientList;
+    private List<Client> clientList;
 
     public VirtualView() {
         this.clientList = new ArrayList<>();
@@ -23,11 +22,7 @@ public abstract class VirtualView {
         return new ArrayList<>(clientList);
     }
 
-    public void addClient(Client client) {
-        clientList.add(client);
-    }
-
-    public void removeClientById(int id) {
-        clientList.remove(id);
+    public void setClientList(List<Client> clientList) {
+        this.clientList = clientList;
     }
 }
