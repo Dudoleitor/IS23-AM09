@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerGoalTest {
 
-    String basePath = "src/test/resources/PlayerGoalTests/";
+    private final String basePath = getClass().getClassLoader().getResource("PlayerGoalTests").getPath() + "/";
     @Test
     void FileNotFoundTest() {
         String jsonPath = "ghost.json";

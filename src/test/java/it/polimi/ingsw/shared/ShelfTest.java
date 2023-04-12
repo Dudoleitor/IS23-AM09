@@ -14,30 +14,32 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ShelfTest {
+    private final String basePath = getClass().getClassLoader().getResource("ShelfTests").getPath() + "/";
+
     final int rows = 6;
     final int columns = 5;
 
     @Test
     void generateShelf() throws JsonBadParsingException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfInsert.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfInsert.json", Shelf.class));
         Shelf s1 = new Shelf(4, 4);
 
         Exception e0 = assertThrows(ShelfRuntimeException.class,() -> new Shelf(0,5));
         assertEquals("Error while generating shelf : dimensions are no valid numbers", e0.getMessage());
-        Exception e1 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfBadJson1.json", Shelf.class)));
+        Exception e1 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfBadJson1.json", Shelf.class)));
         assertEquals("Error while creating Shelf : input Shelf has not a valid configuration", e1.getMessage());
-        Exception e2 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfBadJson2.json", Shelf.class)));
+        Exception e2 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfBadJson2.json", Shelf.class)));
         assertEquals("Error while generating Shelf from JSON : Tile is Invalid type", e2.getMessage());
-        Exception e3 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/notExists.json", Shelf.class)));
+        Exception e3 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject(basePath + "notExists.json", Shelf.class)));
         assertEquals("Error while generating Shelf from JSON : file was not found", e3.getMessage());
-        Exception e4 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfBadJson3.json", Shelf.class)));
+        Exception e4 = assertThrows(JsonBadParsingException.class,() -> new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfBadJson3.json", Shelf.class)));
         assertEquals("Error while creating Shelf : Tile type not found", e4.getMessage());
         Exception e5 = assertThrows(ShelfRuntimeException.class,() -> new Shelf((Shelf) null));
         assertEquals("Error while creating Shelf : input Shelf is null pointer", e5.getMessage());
     }
     @Test
     void insertTest() throws JsonBadParsingException, BadPositionException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfBadTileInsert.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfBadTileInsert.json", Shelf.class));
         s.insertTile(Tile.Trophy,0);
         assertEquals(s.getTile(1, 0), Tile.Trophy);
         Exception e1 = assertThrows(BadPositionException.class,() -> s.insertTile(Tile.Invalid,0));
@@ -66,7 +68,7 @@ public class ShelfTest {
     }
     @Test
     void getTileTest() throws JsonBadParsingException, BadPositionException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfGenericTest.json", Shelf.class));
         assertEquals(Tile.Trophy, s.getTile(3,0));
         Exception e1 = assertThrows(BadPositionException.class, () -> s.getTile(-1,0));
         assertEquals("Error while getting Tile in Shelf : Coordinates are beyond boundaries", e1.getMessage());
@@ -76,23 +78,23 @@ public class ShelfTest {
     @Test
     void checkAdiacentTest() throws JsonBadParsingException {
 
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints1.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfCountPoints1.json", Shelf.class));
         int res = s.countAdjacentPoints();
         assertEquals(16, res);
 
-        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints2.json",Shelf.class));
+        s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfCountPoints2.json",Shelf.class));
         res = s.countAdjacentPoints();
         assertEquals(6, res);
 
-        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints3.json",Shelf.class));
+        s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfCountPoints3.json",Shelf.class));
         res = s.countAdjacentPoints();
         assertEquals(0, res);
 
-        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints4.json", Shelf.class));
+        s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfCountPoints4.json", Shelf.class));
         res = s.countAdjacentPoints();
         assertEquals(8, res);
 
-        s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfCountPoints5.json", Shelf.class));
+        s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfCountPoints5.json", Shelf.class));
         res = s.countAdjacentPoints();
         assertEquals(9, res);
 
@@ -103,7 +105,7 @@ public class ShelfTest {
     }
     @Test
     void getHighestColumnTest() throws JsonBadParsingException, BadPositionException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfGenericTest.json", Shelf.class));
         assertEquals(s.getRows(), s.getHighestColumn());
         s.insertTile(Tile.Book, 2);
         assertEquals(s.getRows()-1, s.getHighestColumn());
@@ -113,7 +115,7 @@ public class ShelfTest {
         JSONParser jsonParser = new JSONParser(); //initialize JSON parser
         Object obj = null; //acquire JSON object file
         try {
-            obj = jsonParser.parse(new FileReader("src/test/resources/ShelfTests/ShelfInsert.json"));
+            obj = jsonParser.parse(new FileReader(basePath + "ShelfInsert.json"));
         } catch (IOException | ParseException e) {
             fail();
         }
@@ -125,7 +127,7 @@ public class ShelfTest {
     }
     @Test
     void validTile() throws JsonBadParsingException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfGenericTest.json", Shelf.class));
         assertTrue(s.isValidTile(0,0));
         assertFalse(s.isValidTile(0,2));
     }
@@ -136,7 +138,7 @@ public class ShelfTest {
     }
     @Test
     void rowTiles() throws JsonBadParsingException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfGenericTest.json", Shelf.class));
         List<Tile> t = s.allTilesInRow(0);
         List<Tile> l = new ArrayList<>();
         l.add(Tile.Cat);
@@ -151,7 +153,7 @@ public class ShelfTest {
     }
     @Test
     void columnTiles() throws JsonBadParsingException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfGenericTest.json", Shelf.class));
         List<Tile> t = s.allTilesInColumn(0);
         List<Tile> l = new ArrayList<>();
         l.add(Tile.Cat);
@@ -165,7 +167,7 @@ public class ShelfTest {
     }
     @Test
     void cornersTiles() throws JsonBadParsingException {
-        Shelf s = new Shelf(Jsonable.pathToJsonObject("src/test/resources/ShelfTests/ShelfGenericTest.json", Shelf.class));
+        Shelf s = new Shelf(Jsonable.pathToJsonObject(basePath + "ShelfGenericTest.json", Shelf.class));
         List<Tile> t = s.getCorners();
         List<Tile> l = new ArrayList<>();
         l.add(Tile.Cat);
@@ -183,7 +185,7 @@ public class ShelfTest {
 
     @Test
     void toJsonTest() throws JsonBadParsingException {
-        String jsonPath = "src/test/resources/CommonGoalTests/TestShelf_1_2Squares.json";
+        String jsonPath = getClass().getClassLoader().getResource("CommonGoalTests").getPath() + "/TestShelf_1_2Squares.json";
         JSONObject jsonShelf = Jsonable.pathToJsonObject(jsonPath, Shelf.class);
         Shelf shelf = new Shelf(Jsonable.pathToJsonObject(jsonPath, Shelf.class));
 

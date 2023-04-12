@@ -12,10 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class VirtualBoardTest {
+    private final String basePath = getClass().getClassLoader().getResource("BoardTests").getPath() +  "/";
+
     @Test
     void pickTest() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
         //partialMove.addPosition(pos3);
-        String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
+        String jsonPath = basePath + "BoardTestInsert.json";
 
         List<Client> clients = new ArrayList<>();
         clients.add(new ClientStub("fridgeieri"));

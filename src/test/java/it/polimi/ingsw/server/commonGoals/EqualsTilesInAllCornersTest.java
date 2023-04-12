@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EqualsTilesInAllCornersTest {
+    private final String basePath = getClass().getClassLoader().getResource("CommonGoalTests").getPath() + "/";
+
     @Test
     void testEmptyShelf() throws JsonBadParsingException {
         Shelf emptyShelf = new Shelf(6,5);
@@ -19,14 +21,14 @@ class EqualsTilesInAllCornersTest {
     }
     @Test
     void testTrue() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_1_EqualCorners.json",Shelf.class));
+        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject(basePath + "TestShelf_1_EqualCorners.json",Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.EqualTilesInAllCorners, 2);
         assertEquals(3, to_test.getID());
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_2_EqualCorners.json",Shelf.class));
+        Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject(basePath + "TestShelf_2_EqualCorners.json",Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.EqualTilesInAllCorners, 2);
         assertEquals(3, to_test.getID());
         assertFalse(to_test.check(falseShelf));

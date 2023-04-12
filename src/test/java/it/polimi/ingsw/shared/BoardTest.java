@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
-
+    private final String basePath = getClass().getClassLoader().getResource("BoardTests").getPath() + "/";
     PartialMove partialMove = new PartialMove();
 
     @Test
@@ -20,30 +20,30 @@ class BoardTest {
         Board b1 = new Board(4);
         List<CommonGoal> cList = b1.getCommonGoals();
         List <JSONObject> jList = cList.stream().map(CommonGoal::toJson).collect(Collectors.toList());
-        Board b2 = new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardTestPlayerIni.json", Board.class), jList);
+        Board b2 = new Board(Jsonable.pathToJsonObject(basePath + "BoardTestPlayerIni.json", Board.class), jList);
         assertEquals(b1,b2);
 
         Exception e1 = assertThrows(BoardRuntimeException.class, () -> new Board(-1));
         assertEquals("Error while creating Board : invalid number of players", e1.getMessage());
-        Exception e2 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/WrongPath.json", Board.class), null));
+        Exception e2 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject(basePath + "WrongPath.json", Board.class), null));
         assertEquals("Error while generating Board from JSON : file was not found", e2.getMessage());
-        Exception e3 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardBadConfiguration.json", Board.class),null));
+        Exception e3 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject(basePath + "BoardBadConfiguration.json", Board.class),null));
         assertEquals("Error while creating Board : board is not a valid configuration for given num player", e3.getMessage());
-        Exception e4 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile.json", Board.class),null));
+        Exception e4 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject(basePath + "BoardBadJsonFile.json", Board.class),null));
         assertEquals("Error while creating Board : bad json parsing", e4.getMessage());
-        Exception e5 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardBadJsonFile2.json", Board.class),null));
+        Exception e5 = assertThrows(JsonBadParsingException.class, () -> new Board(Jsonable.pathToJsonObject(basePath + "BoardBadJsonFile2.json", Board.class),null));
         assertEquals("Error while creating Board : bad json parsing", e5.getMessage());
 
         List<JSONObject> l = new ArrayList<>();
 
-        l.add(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardBadGoals.json", CommonGoal.class));
-        Exception e6 = assertThrows(CommonGoalRuntimeException.class, () -> new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json", Board.class),l ));
+        l.add(Jsonable.pathToJsonObject(basePath + "BoardBadGoals.json", CommonGoal.class));
+        Exception e6 = assertThrows(CommonGoalRuntimeException.class, () -> new Board(Jsonable.pathToJsonObject(basePath + "BoardFillLowTilesTest.json", Board.class),l ));
         assertEquals("Error while creating CommonGoal : file Json not found" , e6.getMessage());
     }
     @Test
     void testFill() throws OutOfTilesException, JsonBadParsingException, BadPositionException {
         Board b1 = new Board(4);
-        Board b2 = new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardFillLowTilesTest.json", Board.class), null);
+        Board b2 = new Board(Jsonable.pathToJsonObject(basePath + "BoardFillLowTilesTest.json", Board.class), null);
         b1.fill();
 
         boolean noEmptyFound = true;
@@ -69,7 +69,7 @@ class BoardTest {
     }
     @Test
     void tileGetPickTest() throws JsonBadParsingException, BadPositionException {
-        Board b = new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json", Board.class), null);
+        Board b = new Board(Jsonable.pathToJsonObject(basePath + "BoardGenericTest.json", Board.class), null);
 
         assertEquals(Tile.Trophy, b.getTile(new Position(4,0)));
         Exception e1 = assertThrows(BadPositionException.class, () -> b.getTile(new Position(-1, 0)));
@@ -89,7 +89,7 @@ class BoardTest {
     }
     @Test
     void freeSideTest() throws JsonBadParsingException, BadPositionException {
-        Board b = new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json", Board.class), null);
+        Board b = new Board(Jsonable.pathToJsonObject(basePath + "BoardGenericTest.json", Board.class), null);
         assertTrue(b.hasFreeSide(4,0));
         assertTrue(b.hasFreeSide(3,1));
         assertFalse(b.hasFreeSide(4,1));
@@ -100,7 +100,7 @@ class BoardTest {
     }
     @Test
     void getValidPositionsTest0() throws JsonBadParsingException, BadPositionException, InvalidMoveException {
-        Board b = new Board(Jsonable.pathToJsonObject("src/test/resources/BoardTests/BoardGenericTest.json", Board.class), null);
+        Board b = new Board(Jsonable.pathToJsonObject(basePath + "BoardGenericTest.json", Board.class), null);
         assertTrue(b.hasFreeSide(4,0));
         assertTrue(b.hasFreeSide(5,5));
         assertFalse(b.hasFreeSide(4,1));
@@ -134,7 +134,7 @@ class BoardTest {
     }
     @Test
     void toJsonTest2() throws JsonBadParsingException, BadPositionException {
-        String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
+        String jsonPath = basePath + "BoardTestInsert.json";
         JSONObject jsonBoard = Jsonable.pathToJsonObject(jsonPath, Board.class);
         Board board = new Board(jsonBoard, new ArrayList<>());
 
@@ -144,7 +144,7 @@ class BoardTest {
     @Test
     void getValidPositionsTest() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
             //partialMove.addPosition(pos3);
-            String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
+            String jsonPath = basePath + "BoardTestInsert.json";
             Board b = new Board(Jsonable.pathToJsonObject(jsonPath, Board.class), new ArrayList<>());
             b.fill();
             Position pos2 = new Position(0, 3);
@@ -155,7 +155,7 @@ class BoardTest {
     @Test
     void getValidPositionsTest1() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
         //partialMove.addPosition(pos3);
-        String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
+        String jsonPath = basePath + "BoardTestInsert.json";
         Board b = new Board(Jsonable.pathToJsonObject(jsonPath, Board.class), new ArrayList<>());
         b.fill();
         Position pos = new Position(0, 3);
@@ -168,7 +168,7 @@ class BoardTest {
     @Test
     void getValidPositionsTest2() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {
 
-            String jsonPath = "src/test/resources/BoardTests/BoardTestInsert.json";
+            String jsonPath = basePath + "BoardTestInsert.json";
             Board b = new Board(Jsonable.pathToJsonObject(jsonPath, Board.class), new ArrayList<>());
             b.fill();
             Position pos1 = new Position(8, 5);
@@ -195,19 +195,19 @@ class BoardTest {
     @Test
     void toFill() throws JsonBadParsingException {
         Board b0 = new Board(Jsonable.pathToJsonObject(
-                "src/test/resources/BoardTests/BoardToFill0.json",
+                basePath + "BoardToFill0.json",
                 Board.class),
                 null);
         assertTrue(b0.toFill()); //empty board is to fill
 
         Board b1 = new Board(Jsonable.pathToJsonObject(
-                "src/test/resources/BoardTests/BoardToFill1.json",
+                basePath + "BoardToFill1.json",
                 Board.class),
         null);
         assertTrue(b1.toFill()); //board with no couple of adjacent is to fill
 
         Board b2 = new Board(Jsonable.pathToJsonObject(
-                "src/test/resources/BoardTests/BoardToFill2.json",
+                basePath + "BoardToFill2.json",
                 Board.class),
                 null);
         assertFalse(b2.toFill()); //two adjacent are sufficient non to fill

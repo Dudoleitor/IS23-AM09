@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LaddersTest {
+    private final String basePath = getClass().getClassLoader().getResource("CommonGoalTests").getPath() + "/";
+
     @Test
     void testEmptyShelf() throws JsonBadParsingException {
         Shelf emptyShelf = new Shelf(6,5);
@@ -19,21 +21,21 @@ class LaddersTest {
     }
     @Test
     void testTrueDescending() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_1_Ladders.json",Shelf.class));
+        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject(basePath + "TestShelf_1_Ladders.json",Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.Ladders, 2);
         assertEquals(7, to_test.getID());
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testTrueAscending() throws JsonBadParsingException {
-        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_2_Ladders.json", Shelf.class));
+        Shelf trueShelf = new Shelf(Jsonable.pathToJsonObject(basePath + "TestShelf_2_Ladders.json", Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.Ladders, 2);
         assertEquals(7, to_test.getID());
         assertTrue(to_test.check(trueShelf));
     }
     @Test
     void testFalse() throws JsonBadParsingException {
-        Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject("src/test/resources/CommonGoalTests/TestShelf_3_Ladders.json", Shelf.class));
+        Shelf falseShelf = new Shelf(Jsonable.pathToJsonObject(basePath + "TestShelf_3_Ladders.json", Shelf.class));
         CommonGoal to_test = new CommonGoal(CommonGoalStrategy.Ladders, 2);
         assertEquals(7, to_test.getID());
         assertFalse(to_test.check(falseShelf));
