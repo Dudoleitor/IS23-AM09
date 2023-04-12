@@ -342,10 +342,11 @@ public class Board implements Jsonable {
             selectedTile = boardTiles[row][column];
             if(selectedTile.equals(Tile.Invalid))
                 throw new BadPositionException("Error while picking Tile : Chosen one is Invalid type");
-            boardTiles[row][column] = Tile.Empty;
+            if (!selectedTile.equals(Tile.Empty)) {
+                boardTiles[row][column] = Tile.Empty;
 
-            virtualBoard.onPickTile(new Position(row, column));  // Updating clients
-
+                virtualBoard.onPickTile(new Position(row, column));  // Updating clients
+            }
             return selectedTile;
         } catch (IndexOutOfBoundsException e){
             throw new BadPositionException("Error while picking tile from Board : illegal coordinates");
@@ -593,6 +594,9 @@ public class Board implements Jsonable {
      * This method is used to get the virtual board,
      * it'll be used to send updates when the
      * status changes.
+     * It is intended to pass the direct reference,
+     * so that the controller can easily manage
+     * all virtual views all together.
      * @return virtualBoard virtual board object
      */
     public VirtualBoard getVirtualBoard() {
