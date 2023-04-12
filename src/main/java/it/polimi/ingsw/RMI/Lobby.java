@@ -111,11 +111,7 @@ public class Lobby implements LobbyRemoteInterface {
         }
 
         started = true;
-        controller = new Controller(
-                players.stream()
-                        .map(Client::getPlayerName)
-                        .collect(Collectors.toList())
-        );
+        controller = new Controller(players);
         System.out.println("MATCH STARTED IN LOBBY #"+id);
         inactivityDetector = new InactivityDetector(controller);
         inactivityDetector.start();
