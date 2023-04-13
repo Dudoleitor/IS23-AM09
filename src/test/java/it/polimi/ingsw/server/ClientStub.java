@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Client;
+import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 
@@ -36,6 +36,11 @@ public class ClientStub implements Client {
     @Override
     public void refreshShelf(String player, String shelf) {
         this.updated = true;
+    }
+
+    @Override
+    public void postChatMessage(String message) {
+
     }
 
     public boolean wasUpdated() {

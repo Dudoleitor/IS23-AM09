@@ -1,6 +1,6 @@
 package it.polimi.ingsw.RMI;
 
-import it.polimi.ingsw.shared.Client;
+import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Color;
 
 import java.io.Serializable;

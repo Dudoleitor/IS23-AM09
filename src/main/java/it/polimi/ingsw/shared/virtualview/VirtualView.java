@@ -1,6 +1,6 @@
 package it.polimi.ingsw.shared.virtualview;
 
-import it.polimi.ingsw.shared.Client;
+import it.polimi.ingsw.server.clientonserver.Client;
 
 import java.util.ArrayList;
 import java.util.List;

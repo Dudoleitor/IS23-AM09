@@ -3,7 +3,7 @@ package it.polimi.ingsw.RMI;
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.ControllerGenericException;
 import it.polimi.ingsw.server.Move;
-import it.polimi.ingsw.shared.Client;
+import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Constants;
 
 import java.rmi.RemoteException;
