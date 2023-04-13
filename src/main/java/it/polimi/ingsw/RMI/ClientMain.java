@@ -1,6 +1,8 @@
 package it.polimi.ingsw.RMI;
 
-import it.polimi.ingsw.shared.ClientRMI;
+import it.polimi.ingsw.server.clientonserver.ClientRMI;
+import it.polimi.ingsw.shared.ClientRemote;
+import it.polimi.ingsw.shared.ClientRemoteObject;
 import it.polimi.ingsw.shared.Constants;
 
 import java.rmi.ConnectException;
@@ -27,9 +29,10 @@ public class ClientMain{
     static cli_IO io = new cli_IO();
     static LobbyRemoteInterface lobbyStub;
     static InputSanitizer inputSanitizer = new InputSanitizer();
-    public static void main(String argv[]) throws NotBoundException, InterruptedException {
+    public static void main(String argv[]) throws NotBoundException, InterruptedException, RemoteException {
         setUserName();
-        ClientRMI clientRMI = new ClientRMI(playerName);
+        ClientRemote clientRemote = new ClientRemoteObject(playerName);
+        ClientRMI clientRMI = new ClientRMI(clientRemote);
         io.printMessage("Hello "+playerName+"!");
         boolean logged = tryLogin(clientRMI);
         if (logged)

@@ -1,22 +1,27 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.Position;
-import it.polimi.ingsw.shared.Tile;
-import org.json.simple.JSONObject;
+import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
- * This object is used to send updates to
- * a specific client.
- * ClientRMI and ClientTCP implement methods properly.
+ * This object is used on the client to receive updates
+ * sent by the model. This object will be wrapped inside
+ * a ClientRMI object.
+ * The server, inside ClientRMI will invoke methods on
+ * this object and the remote execution will be
+ * handled by RMI.
+ * Please note that the interface is superfluous, but it's
+ * needed by RMI to work properly.
  */
-public interface Client {
+public interface ClientRemote extends Remote, Serializable {
 
     /**
      * This method is used to return the name of
      * the players using this client.
      * @return String, player's name.
      */
-    public String getPlayerName();
+    public String getPlayerName() throws RemoteException;
 
     /**
      * This method is used when a player picks a tile
@@ -26,7 +31,7 @@ public interface Client {
      *
      * @param position position
      */
-    public void pickedFromBoard(Position position);
+    public void pickedFromBoard(Position position) throws RemoteException;
 
     /**
      * This method is used to transfer the whole board
@@ -35,7 +40,7 @@ public interface Client {
      *
      * @param board JSONObject.toJsonString
      */
-    public void refreshBoard(String board);
+    public void refreshBoard(String board) throws RemoteException;
 
     /**
      * This method is used when a player inserts a single
@@ -48,7 +53,7 @@ public interface Client {
      * @param column destination column of the shelf
      * @param tile Tile to insert
      */
-    public void putIntoShelf(String player, int column, Tile tile);
+    public void putIntoShelf(String player, int column, Tile tile) throws RemoteException;
 
     /**
      * This method is used to transfer the whole shelf
@@ -58,6 +63,13 @@ public interface Client {
      * @param player name of the player
      * @param shelf JSONObject.toJsonString
      */
-    public void refreshShelf(String player, String shelf);
+    public void refreshShelf(String player, String shelf) throws RemoteException;
 
+    /**
+     * This method is used to send a chat message to clients.
+     * THIS IS TEMPORARY, we'll be updated
+     * @param message
+     */
+    // TODO
+    public void postChatMessage(String message) throws RemoteException;
 }

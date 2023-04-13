@@ -1,7 +1,7 @@
 package it.polimi.ingsw.RMI;
 
-import it.polimi.ingsw.shared.Client;
-import it.polimi.ingsw.shared.ClientRMI;
+import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.Constants;
 
 import java.rmi.AlreadyBoundException;
@@ -67,6 +67,7 @@ public class ServerMain implements ServerRemoteInterface {
 
         clientsWithoutLobby.add(clientRMI);
         System.out.println(clientRMI.getPlayerName() + " has just logged in");
+        clientRMI.postChatMessage("You joined");
 
         return true;
     }

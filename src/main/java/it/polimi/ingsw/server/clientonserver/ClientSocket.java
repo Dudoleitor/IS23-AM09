@@ -1,21 +1,21 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.server.clientonserver;
 
-import java.awt.*;
-import java.io.Serializable;
-import java.rmi.Remote;
+import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.Tile;
+
 import java.util.Objects;
 
 /**
- * This object is used to send updates to
+ * This object is used on the server to send updates to
  * a specific client.
- * This object will reside on the client,
- * remote calls will work thanks to RMI.
+ * This object is used on the server to create the messages
+ * and send them over a tcp tunnel.
  */
-public class ClientRMI implements Client, Remote, Serializable {
+public class ClientSocket implements Client {
     // TODO add board and shelves
     private final String playerName;
 
-    public ClientRMI(String playerName) {
+    public ClientSocket(String playerName) {
         this.playerName = playerName;
     }
 
@@ -43,6 +43,7 @@ public class ClientRMI implements Client, Remote, Serializable {
      * This method is used to transfer the whole board
      * to the remote view,
      * it uses a json string.
+     *
      * @param board JSONObject.toJsonString
      */
     @Override
@@ -56,6 +57,7 @@ public class ClientRMI implements Client, Remote, Serializable {
      * It is used to send the message to the remote view
      * of the client in order to insert the tile
      * into the shelf.
+     *
      * @param player String name of the player that moved the tile
      * @param column destination column of the shelf
      * @param tile Tile to insert
@@ -69,6 +71,7 @@ public class ClientRMI implements Client, Remote, Serializable {
      * This method is used to transfer the whole shelf
      * of a player to the remote view,
      * it uses a json string.
+     *
      * @param player name of the player
      * @param shelf  JSONObject.toJsonString
      */
@@ -77,13 +80,21 @@ public class ClientRMI implements Client, Remote, Serializable {
         //TODO
     }
 
+    /**
+     * This method is used to send a chat message to clients.
+     * THIS IS TEMPORARY, we'll be updated
+     * @param message
+     */
+    // TODO
+    @Override
+    public void postChatMessage(String message) {}
 
     @Override
     public boolean equals(Object o) {  // Checking using LOWERCASE name
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClientRMI clientRMI = (ClientRMI) o;
-        return Objects.equals(playerName.toLowerCase(), clientRMI.playerName.toLowerCase());
+        ClientSocket clientSocket = (ClientSocket) o;
+        return Objects.equals(playerName.toLowerCase(), clientSocket.playerName.toLowerCase());
     }
 
     @Override

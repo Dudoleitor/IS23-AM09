@@ -1,9 +1,6 @@
 package it.polimi.ingsw.RMI;
-import it.polimi.ingsw.server.Move;
-import it.polimi.ingsw.shared.Client;
-import it.polimi.ingsw.shared.ClientRMI;
-import it.polimi.ingsw.shared.JsonBadParsingException;
-import org.json.simple.JSONObject;
+import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.server.clientonserver.ClientRMI;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
