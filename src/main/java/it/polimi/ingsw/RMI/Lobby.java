@@ -77,9 +77,6 @@ public class Lobby implements LobbyRemoteInterface {
         return new Chat(chat);
     }
 
-    public int getId() {
-        return id;
-    }
     public boolean isEmpty(){
         return players.size() == 0;
     }
@@ -178,7 +175,8 @@ public class Lobby implements LobbyRemoteInterface {
                 controller.moveTiles(player, move);
             }
         } catch (ControllerGenericException e){
-            //playerInput.notifyMessage(e.getMessage()); //TODO player must receive the message in one way or another, preferrable in chat but not as a message
+            if(playerInput != null)
+                playerInput.postChatMessage(e.getMessage());
         }
 
     }
@@ -187,5 +185,10 @@ public class Lobby implements LobbyRemoteInterface {
         if(inactivityDetector != null){
             inactivityDetector.setActivity(player,true);
         }
+    }
+
+    @Override
+    public int getID(){
+        return this.id;
     }
 }

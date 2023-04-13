@@ -2,7 +2,6 @@ package it.polimi.ingsw.RMI;
 
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.shared.JsonBadParsingException;
-import org.json.simple.JSONObject;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -18,4 +17,5 @@ public interface LobbyRemoteInterface extends Remote {
     boolean startGame(String player) throws RemoteException;
     boolean isLobbyAdmin(String player) throws RemoteException;
     void keepAlive(String player) throws RemoteException;
+    int getID() throws RemoteException;
 }

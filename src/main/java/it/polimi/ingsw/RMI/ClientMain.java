@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.stream;
-import static org.junit.experimental.theories.internal.ParameterizedAssertionError.join;
 
 public class ClientMain{
     //Variables
@@ -112,27 +111,25 @@ public class ClientMain{
 
     public static void joinLobby(ClientRMI clientRMI) throws RemoteException, NotBoundException {
         boolean lobbySelected = false;
-        int lobbyID = 0;
+        int lobbyID;
         while(!lobbySelected){
             io.printMessage("Choose a Lobby (ENTER for random):");
             String id = io.scan();
             if(id.isEmpty()){
-                lobbyID = stub.joinRandomLobby(clientRMI); //join first available lobby, otherwise creates one
+                lobbyStub = stub.joinRandomLobby(clientRMI); //join first available lobby, otherwise creates one
                 lobbySelected = true;
-            }
-            else if(inputSanitizer.isInteger(id)){
+            } else if(inputSanitizer.isInteger(id)){
                 lobbyID = Integer.parseInt(id);
-                lobbySelected = stub.joinSelectedLobby(clientRMI, lobbyID);
-                if(!lobbySelected){
+                lobbyStub = stub.joinSelectedLobby(clientRMI, lobbyID);
+                if(lobbyStub == null)
                     io.printErrorMessage("Input id not found");
-                }
+                else lobbySelected = true;
             }
             else{
                 io.printErrorMessage("Input a valid id (must be a number)");
             }
         }
-        io.printMessage("You joined #"+lobbyID+" lobby!");
-        lobbyStub = (LobbyRemoteInterface) registry.lookup(String.valueOf(lobbyID));
+        io.printMessage("You joined #"+lobbyStub.getID()+" lobby!");
     }
     public static void showLobbyList(){
         try {

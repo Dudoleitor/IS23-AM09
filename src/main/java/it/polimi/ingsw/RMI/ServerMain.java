@@ -22,7 +22,7 @@ public class ServerMain implements ServerRemoteInterface {
      */
     private final List<Client> clientsWithoutLobby = new ArrayList<>();
 
-    private final List<Lobby> lobbies = new ArrayList<>();
+    private final Map<Lobby, LobbyRemoteInterface> lobbies = new HashMap<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
 
     private static Registry registry = null;
     private static InputSanitizer inputSanitizer;
@@ -80,9 +80,10 @@ public class ServerMain implements ServerRemoteInterface {
     @Override
     public List<Integer> getJoinedLobbies(String nick){
         List<Integer> listLobbies = //get all lobbies already joined by the client
-                lobbies.stream()
+                lobbies.keySet()
+                        .stream()
                         .filter(x -> x.getPlayerNames().contains(nick))
-                        .map(Lobby::getId)
+                        .map(Lobby::getID)
                         .collect(Collectors.toList());
         return listLobbies;
     }
@@ -92,50 +93,55 @@ public class ServerMain implements ServerRemoteInterface {
      * @return id of assigned lobby
      */
     @Override
-    public int joinRandomLobby(Client client){
+    public LobbyRemoteInterface joinRandomLobby(Client client){
+        LobbyRemoteInterface lobbyStub;
         List<Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
         if(alreadyJoined.size() > 0){
-            joinSelectedLobby(client,alreadyJoined.get(0));
-        }
-        int lobbyID;
-        Lobby lobby = lobbies.stream()
+            lobbyStub = joinSelectedLobby(client,alreadyJoined.get(0));
+        } else {
+            Lobby lobby = lobbies.keySet()
+                    .stream()
                     .filter(l -> !l.isFull()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
-        if(lobby != null){ //if a lobby exists then add player
-            lobby.addPlayer(client); //if exists then add player
-            lobbyID = lobby.getId();
-        }else {
-            lobbyID = createLobby(client); //otherwise creates new lobby
+            if (lobby != null) { //if a lobby exists then add player
+                lobby.addPlayer(client); //if exists then add player
+                lobbyStub = lobbies.get(lobby);
+            } else {
+                lobbyStub = createLobby(client); //otherwise creates new lobby
+            }
         }
-
-        return lobbyID;
+        return lobbyStub;
     }
 
     /**
      * @param client requesting to join the lobby
      */
     @Override
-    public boolean joinSelectedLobby(Client client, int id){
-        Lobby lobby = lobbies.stream()
-                .filter(x -> x.getId() == id) //verify lobby exists and is not full
+    public LobbyRemoteInterface joinSelectedLobby(Client client, int id){
+        Lobby lobby = lobbies.keySet()
+                .stream()
+                .filter(x -> x.getID() == id) //verify lobby exists and is not full
                 .findFirst().orElse(null);
         if(lobby == null) //if a lobby exists then add player
-            return false;
+            return null;
         try {
             lobby.addPlayer(client); //if exists then add player
-            return true;
+            return lobbies.get(lobby);
         } catch (RuntimeException e) {
-            return false;
+            return null;
         }
     }
     /**
      * @param client requesting to create the lobby
      */
     @Override
-    public int createLobby(Client client){
+    public LobbyRemoteInterface createLobby(Client client){
         int minFreeKey;
-        List<Integer> lobbyIDs= lobbies.stream().map(Lobby::getId).collect(Collectors.toList()); // returns list of active lobby ids
+        List<Integer> lobbyIDs= lobbies.keySet()
+                .stream()
+                .map(Lobby::getID)
+                .collect(Collectors.toList()); // returns list of active lobby ids
         if(lobbyIDs.contains(1)) { //check if first lobby position is free
             minFreeKey = lobbyIDs.stream()
                     .map(x -> x + 1) //look ahead of one position to each lobby
@@ -146,24 +152,26 @@ public class ServerMain implements ServerRemoteInterface {
         Lobby lobby = new Lobby(client, minFreeKey);
         try {
             LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) UnicastRemoteObject.exportObject(lobby, port); //create an interface to export
-            registry.bind(String.valueOf(lobby.getId()), lobbyStub); //Binds a remote reference to the specified name in this registry
+            lobbies.put(lobby, lobbyStub);
+            return lobbyStub;
 
         } catch (RemoteException e) {
             throw new RuntimeException(e);
-        } catch (AlreadyBoundException e) {
-            throw new RuntimeException(e);
         }
-        lobbies.add(lobby);
-        return lobby.getId();
     }
 
     @Override
     public Map<Integer, Integer> showAvailableLobbbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
-        lobbies.stream()
+        lobbies.keySet()
+                .stream()
                 .filter(x -> !x.isFull())
-                .forEach(x -> lobbyMap.put(x.getId(), x.getPlayers().size())); //add id lobby + num of players currently in
+                .forEach(x -> lobbyMap.put(x.getID(), x.getPlayers().size())); //add id lobby + num of players currently in
         return lobbyMap;
+    }
+
+    public void removeLobby(){
+        //TODO
     }
 
 
