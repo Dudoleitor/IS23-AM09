@@ -1,8 +1,11 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerRemoteInterface;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;

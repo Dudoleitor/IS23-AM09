@@ -1,4 +1,7 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.shared.RemoteInterfaces;
+
+import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.Tile;
 
 import java.io.Serializable;
 import java.rmi.Remote;

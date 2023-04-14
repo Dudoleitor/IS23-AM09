@@ -1,6 +1,4 @@
-package it.polimi.ingsw.RMI;
-
-import it.polimi.ingsw.server.Move;
+package it.polimi.ingsw.client;
 
 import java.util.Arrays;
 
@@ -18,7 +16,7 @@ public enum Command {
         Command(String code){
             this.code = code;
         }
-        static Command stringToCommand(String input){
+        public static Command stringToCommand(String input){
             //return the command that matches the user input.
             //If no match return invalid
             return  Arrays.stream(Command.values()).

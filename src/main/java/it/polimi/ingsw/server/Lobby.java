@@ -1,10 +1,13 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.ControllerGenericException;
+import it.polimi.ingsw.server.InactivityDetector;
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 import java.rmi.RemoteException;
 import java.util.*;

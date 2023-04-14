@@ -1,10 +1,10 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.shared.RemoteInterfaces;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteObject;
 import java.util.List;
 import java.util.Map;
 

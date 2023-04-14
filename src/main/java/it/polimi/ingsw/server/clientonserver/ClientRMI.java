@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.clientonserver;
 
-import it.polimi.ingsw.shared.ClientRemote;
+import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 

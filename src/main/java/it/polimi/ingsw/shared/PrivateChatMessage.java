@@ -1,8 +1,9 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Color;
 
-public class PrivateChatMessage extends ChatMessage{
+public class PrivateChatMessage extends ChatMessage {
     private String receiver;
 
     public PrivateChatMessage(String sender, String receiver, String message, Color color ){

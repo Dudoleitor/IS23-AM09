@@ -1,11 +1,10 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.shared.RemoteInterfaces;
 
+import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.server.Move;
-import it.polimi.ingsw.shared.JsonBadParsingException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 
 public interface LobbyRemoteInterface extends Remote {
     void postToLiveChat(String playerName, String message) throws Exception;

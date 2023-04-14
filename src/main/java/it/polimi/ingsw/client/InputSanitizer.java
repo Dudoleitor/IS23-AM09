@@ -1,4 +1,4 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.client;
 
 import java.util.ArrayList;
 import java.util.List;

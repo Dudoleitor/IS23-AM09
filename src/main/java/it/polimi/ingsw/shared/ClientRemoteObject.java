@@ -1,5 +1,7 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

@@ -1,9 +1,7 @@
 package it.polimi.ingsw.RMI;
 
+import it.polimi.ingsw.client.InputSanitizer;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

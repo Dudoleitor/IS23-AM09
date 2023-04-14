@@ -1,9 +1,10 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.server.InvalidMoveException;
 import it.polimi.ingsw.server.Move;
 import it.polimi.ingsw.server.PartialMove;
-import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 import java.rmi.RemoteException;
 import java.util.*;

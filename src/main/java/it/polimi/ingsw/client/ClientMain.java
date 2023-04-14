@@ -1,9 +1,10 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
-import it.polimi.ingsw.shared.ClientRemote;
-import it.polimi.ingsw.shared.ClientRemoteObject;
-import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerRemoteInterface;
 
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.RMI;
 
+import it.polimi.ingsw.client.Command;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

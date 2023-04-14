@@ -1,4 +1,4 @@
-package it.polimi.ingsw.RMI;
+package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.Controller;
 import it.polimi.ingsw.server.ControllerGenericException;
