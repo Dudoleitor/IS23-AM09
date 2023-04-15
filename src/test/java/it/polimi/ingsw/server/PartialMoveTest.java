@@ -1,5 +1,8 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.shared.InvalidMoveException;
+import it.polimi.ingsw.shared.PartialMove;
+import it.polimi.ingsw.shared.PartialMoveException;
 import it.polimi.ingsw.shared.Position;
 import org.junit.jupiter.api.Test;
 

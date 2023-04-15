@@ -14,7 +14,7 @@ public class cli_IO {
     public static Color errorColor = Color.Red;
     public static Scanner scanner = new Scanner(System.in);
 
-    //Methods to format CLI messages
+    //Methods to format LobbyCLI messages
 
     /**
      * A decorator that formats a message

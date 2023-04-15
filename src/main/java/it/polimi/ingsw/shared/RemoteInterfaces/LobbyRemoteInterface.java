@@ -1,7 +1,7 @@
 package it.polimi.ingsw.shared.RemoteInterfaces;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.server.Move;
+import it.polimi.ingsw.shared.Move;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -15,6 +15,5 @@ public interface LobbyRemoteInterface extends Remote {
     void postMove(String player,Move move) throws RemoteException;
     boolean startGame(String player) throws RemoteException;
     boolean isLobbyAdmin(String player) throws RemoteException;
-    void keepAlive(String player) throws RemoteException;
     int getID() throws RemoteException;
 }

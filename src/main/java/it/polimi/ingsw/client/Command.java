@@ -5,7 +5,6 @@ import java.util.Arrays;
 public enum Command {
         Exit("exit"),
         Print("print"),
-        Refresh(""),
         Secret("secret"),
         Message("message"),
         Start("start"),

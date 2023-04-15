@@ -1,7 +1,4 @@
-package it.polimi.ingsw.server;
-
-import it.polimi.ingsw.shared.Color;
-import it.polimi.ingsw.shared.Position;
+package it.polimi.ingsw.shared;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +15,7 @@ public class PartialMove {
         }
         positions.add(pos);
     }
-    PartialMove(PartialMove to_clone) throws PartialMoveException{ //cloning constructor
+    public PartialMove(PartialMove to_clone) throws PartialMoveException { //cloning constructor
         try {
             positions = new ArrayList<>(to_clone.getBoardPositions());
         } catch (NullPointerException e){

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared;
 
 public class PartialMoveException extends RuntimeException{
     PartialMoveException(String msg){

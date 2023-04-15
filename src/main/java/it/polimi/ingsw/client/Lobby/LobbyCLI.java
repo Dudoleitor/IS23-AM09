@@ -1,34 +1,29 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.client.Lobby;
 
-import it.polimi.ingsw.server.InvalidMoveException;
-import it.polimi.ingsw.server.Move;
-import it.polimi.ingsw.server.PartialMove;
+import it.polimi.ingsw.client.Command;
+import it.polimi.ingsw.client.InputSanitizer;
+import it.polimi.ingsw.client.cli_IO;
+import it.polimi.ingsw.shared.InvalidMoveException;
+import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.PartialMove;
 import it.polimi.ingsw.shared.*;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CLI extends Thread{
-    private String playerName;
-    private LobbyRemoteInterface stub;
+public class LobbyCLI extends LobbyUI {
     private static cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
-    private Chat chat;
-    private Queue<String> updates;
-    private KeepAlive keepAlive;
+    //private KeepAlive keepAlive;
 
-    CLI(String playerName, LobbyRemoteInterface stub){
-        this.playerName = playerName;
-        this.stub = stub;
-        this.chat = new Chat();
-        this.updates = new PriorityQueue<>();
-        this.keepAlive = new KeepAlive(playerName,stub);
-        keepAlive.start();
+    public LobbyCLI(String playerName, LobbyStub stub){
+        super(playerName,stub);
+        //this.keepAlive = new KeepAlive(playerName,stub);
+        //keepAlive.start();
     }
-    private void loopCommands(){
+    protected void loopCommands(){
         String command;
         while(!exit){ //Receive commands until "exit" command is launched
             try{
@@ -50,30 +45,28 @@ public class CLI extends Thread{
             }
         }
     }
+    @Override
     protected void executeUserCommand(Command com) throws Exception {
         //execute action for every command
         switch (com){
             case Exit: //quit game
                 io.printMessage("You quit");
-                keepAlive.interrupt();
+                //keepAlive.interrupt();
                 exit = true;
                 break;
             case Print: //print all messages
                 updateLiveChat();
                 printAllMessages();
                 break;
-            case Refresh: //refresh updates
-                showUpdates();
-                break;
             case Secret: //send private message
                 postToPrivateChat();
                 break;
             case Start:
-                stub.startGame(playerName);
+                lobby.startGame(playerName);
                 break;
             case Move:
                 Move move = createMove();
-                stub.postMove(playerName,move);
+                lobby.postMove(playerName,move);
                 break;
             case Peek:
                 peekElement();
@@ -90,8 +83,8 @@ public class CLI extends Thread{
      * Downloads all the messages that are present on server and missing in local copy
      * @throws RemoteException
      */
-    public void updateLiveChat() throws RemoteException {
-        chat = stub.updateLiveChat();
+    public void updateLiveChat(){
+        chat = lobby.updateLiveChat();
     }
 
     /**
@@ -107,18 +100,6 @@ public class CLI extends Thread{
         io.multiPrint(toPrint);
     }
 
-    private void showUpdates(){
-        if(updates.size() == 0){
-            io.printMessage("No updates");
-        }
-        else{
-            io.printMessage("Your updates");
-            while(updates.size() > 0){
-                io.printMessage(updates.poll());
-            }
-        }
-    }
-
     public static boolean checkValidReceiver(ChatMessage message, String receiverName){
         if (message.getClass().equals(PrivateChatMessage.class)){
             if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
@@ -126,20 +107,20 @@ public class CLI extends Thread{
         }
         return true;
     }
-    public void postToChat() throws Exception {
+    public void postToChat(){
         List<String> fields = new ArrayList<>();
         fields.add("message");
         Map<String,String> header = io.multiScan(fields);
-        stub.postToLiveChat(
+        lobby.postToLiveChat(
                 playerName,
                 header.get("message"));
     }
-    public void postToPrivateChat() throws Exception {
+    public void postToPrivateChat(){
         List<String> fields = new ArrayList<>();
         fields.add("receiver");
         fields.add("message");
         Map<String,String> header = io.multiScan(fields);
-        stub.postSecretToLiveChat(
+        lobby.postSecretToLiveChat(
                 playerName,
                 header.get("receiver"),
                 header.get("message"));

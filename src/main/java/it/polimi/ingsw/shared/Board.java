@@ -1,15 +1,12 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.CommonGoal;
-import it.polimi.ingsw.server.InvalidMoveException;
-import it.polimi.ingsw.server.PartialMove;
 import it.polimi.ingsw.shared.virtualview.VirtualBoard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

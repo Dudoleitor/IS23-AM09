@@ -1,7 +1,10 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.Lobby.LobbyCLI;
+import it.polimi.ingsw.client.Lobby.LobbyRMIStub;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
-import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.ClientRemoteObject;
+import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerRemoteInterface;
@@ -16,7 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
-import static java.util.Arrays.stream;
 
 public class ClientMain{
     //Variables
@@ -27,7 +29,7 @@ public class ClientMain{
     static String playerName;
     static Registry registry;
     static cli_IO io = new cli_IO();
-    static LobbyRemoteInterface lobbyStub;
+    static LobbyRemoteInterface lobbyRemoteInterface;
     static InputSanitizer inputSanitizer = new InputSanitizer();
     public static void main(String argv[]) throws NotBoundException, InterruptedException, RemoteException {
         setUserName();
@@ -44,11 +46,11 @@ public class ClientMain{
         try {
             showLobbyList();
             joinLobby(clientRMI);
-            CLI cli = new CLI(playerName,lobbyStub);
+            LobbyCLI cli = new LobbyCLI(playerName, new LobbyRMIStub(lobbyRemoteInterface));
             cli.start();
             cli.join();
             io.printErrorMessage("You quit the game!");
-            lobbyStub.quitGame(playerName, lobbyStub);
+            lobbyRemoteInterface.quitGame(playerName, lobbyRemoteInterface);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -117,12 +119,12 @@ public class ClientMain{
             io.printMessage("Choose a Lobby (ENTER for random):");
             String id = io.scan();
             if(id.isEmpty()){
-                lobbyStub = stub.joinRandomLobby(clientRMI); //join first available lobby, otherwise creates one
+                lobbyRemoteInterface = stub.joinRandomLobby(clientRMI); //join first available lobby, otherwise creates one
                 lobbySelected = true;
             } else if(inputSanitizer.isInteger(id)){
                 lobbyID = Integer.parseInt(id);
-                lobbyStub = stub.joinSelectedLobby(clientRMI, lobbyID);
-                if(lobbyStub == null)
+                lobbyRemoteInterface = stub.joinSelectedLobby(clientRMI, lobbyID);
+                if(lobbyRemoteInterface == null)
                     io.printErrorMessage("Input id not found");
                 else lobbySelected = true;
             }
@@ -130,7 +132,7 @@ public class ClientMain{
                 io.printErrorMessage("Input a valid id (must be a number)");
             }
         }
-        io.printMessage("You joined #"+lobbyStub.getID()+" lobby!");
+        io.printMessage("You joined #"+ lobbyRemoteInterface.getID()+" lobby!");
     }
     public static void showLobbyList(){
         try {

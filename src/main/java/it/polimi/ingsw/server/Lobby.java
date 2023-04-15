@@ -1,9 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.server.Controller;
-import it.polimi.ingsw.server.ControllerGenericException;
-import it.polimi.ingsw.server.InactivityDetector;
-import it.polimi.ingsw.server.Move;
+import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Constants;
@@ -21,7 +18,6 @@ public class Lobby implements LobbyRemoteInterface {
     private boolean full = false;
     private final Chat chat;
     private Controller controller;
-    private InactivityDetector inactivityDetector;
 
     public Lobby(Client firstPlayer, int id){
         this.players.add(firstPlayer);
@@ -113,9 +109,6 @@ public class Lobby implements LobbyRemoteInterface {
         started = true;
         controller = new Controller(players);
         System.out.println("MATCH STARTED IN LOBBY #"+id);
-        inactivityDetector = new InactivityDetector(controller);
-        inactivityDetector.start();
-        System.out.println("Detecting activity in lobby #"+id);
         return true;
     }
 
@@ -182,12 +175,6 @@ public class Lobby implements LobbyRemoteInterface {
                 playerInput.postChatMessage(e.getMessage());
         }
 
-    }
-    @Override
-    public void keepAlive(String player){
-        if(inactivityDetector != null){
-            inactivityDetector.setActivity(player,true);
-        }
     }
 
     @Override
