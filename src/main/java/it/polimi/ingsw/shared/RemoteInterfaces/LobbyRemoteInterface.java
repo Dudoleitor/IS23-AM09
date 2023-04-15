@@ -10,7 +10,7 @@ public interface LobbyRemoteInterface extends Remote {
     void postToLiveChat(String playerName, String message) throws Exception;
     public void postSecretToLiveChat(String sender, String receiver, String message) throws Exception;
     public Chat updateLiveChat() throws RemoteException;
-    void quitGame(String player, LobbyRemoteInterface stub) throws RemoteException;
+    void quitGame(String player) throws RemoteException;
     boolean matchHasStarted() throws RemoteException;
     void postMove(String player,Move move) throws RemoteException;
     boolean startGame(String player) throws RemoteException;

@@ -1,9 +1,11 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.client.InputSanitizer;
+import it.polimi.ingsw.server.adapters.LobbyRMIAdapter;
+import it.polimi.ingsw.server.adapters.ServerRMIAdapter;
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerRemoteInterface;
 
@@ -15,7 +17,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ServerMain implements ServerRemoteInterface {
+public class ServerMain{
     private static boolean keepOn = true;
     private static final int port = Constants.port;
 
@@ -24,16 +26,15 @@ public class ServerMain implements ServerRemoteInterface {
      * server that did not join a lobby yet.
      */
     private final List<Client> clientsWithoutLobby = new ArrayList<>();
-
-    private final Map<Lobby, LobbyRemoteInterface> lobbies = new HashMap<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
-
+    private final Map<Lobby, LobbyRemoteCouple> lobbies = new HashMap<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
     private static Registry registry = null;
     private static InputSanitizer inputSanitizer;
-    public static void main(String argv[]){
-        ServerMain obj = new ServerMain();
+
+    public static void main(String argv[]){ //in the main it initializes the serverTCP and the Remote stub
+        ServerRMIAdapter remoteServer = new ServerRMIAdapter(new ServerMain());
         ServerRemoteInterface stub;
         try {
-            stub = (ServerRemoteInterface) UnicastRemoteObject.exportObject(obj, port); //create an interface to export
+            stub = (ServerRemoteInterface) UnicastRemoteObject.exportObject(remoteServer, port); //create an interface to export
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -49,8 +50,6 @@ public class ServerMain implements ServerRemoteInterface {
         } catch (AlreadyBoundException e) {
             throw new RuntimeException(e);
         }
-
-
         System.out.println("Server is on");
         while (keepOn) {
             Thread.onSpinWait(); //is used to suspend the process and make it wait
@@ -61,17 +60,14 @@ public class ServerMain implements ServerRemoteInterface {
 
     /**
      *
-     * @param clientRMI is ths object used as RMI interface
+     * @param client is ths object used as interface
      * @return true is login is successful
      * @throws RemoteException is there are problems with connection
      */
-    @Override
-    public boolean login(ClientRMI clientRMI) throws RemoteException {
-
-        clientsWithoutLobby.add(clientRMI);
-        System.out.println(clientRMI.getPlayerName() + " has just logged in");
-        clientRMI.postChatMessage("You joined");
-
+    public boolean login(Client client) throws RemoteException {
+        clientsWithoutLobby.add(client);
+        System.out.println(client.getPlayerName() + " has just logged in");
+        client.postChatMessage("You joined");
         return true;
     }
 
@@ -80,7 +76,6 @@ public class ServerMain implements ServerRemoteInterface {
      * @param nick is the player name
      * @return list of lobby id of matches joined by the player
      */
-    @Override
     public List<Integer> getJoinedLobbies(String nick){
         List<Integer> listLobbies = //get all lobbies already joined by the client
                 lobbies.keySet()
@@ -95,12 +90,11 @@ public class ServerMain implements ServerRemoteInterface {
      * @param client requesting to join the lobby
      * @return id of assigned lobby
      */
-    @Override
-    public LobbyRemoteInterface joinRandomLobby(Client client){
-        LobbyRemoteInterface lobbyStub;
+    public LobbyRemoteCouple joinRandomLobby(Client client){
+        LobbyRemoteCouple lobbyCouple;
         List<Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
         if(alreadyJoined.size() > 0){
-            lobbyStub = joinSelectedLobby(client,alreadyJoined.get(0));
+            lobbyCouple = joinSelectedLobby(client,alreadyJoined.get(0));
         } else {
             Lobby lobby = lobbies.keySet()
                     .stream()
@@ -109,19 +103,18 @@ public class ServerMain implements ServerRemoteInterface {
                     .orElse(null);
             if (lobby != null) { //if a lobby exists then add player
                 lobby.addPlayer(client); //if exists then add player
-                lobbyStub = lobbies.get(lobby);
+                lobbyCouple = lobbies.get(lobby);
             } else {
-                lobbyStub = createLobby(client); //otherwise creates new lobby
+                lobbyCouple = createLobby(client); //otherwise creates new lobby
             }
         }
-        return lobbyStub;
+        return lobbyCouple;
     }
 
     /**
      * @param client requesting to join the lobby
      */
-    @Override
-    public LobbyRemoteInterface joinSelectedLobby(Client client, int id){
+    public LobbyRemoteCouple joinSelectedLobby(Client client, int id){
         Lobby lobby = lobbies.keySet()
                 .stream()
                 .filter(x -> x.getID() == id) //verify lobby exists and is not full
@@ -138,9 +131,9 @@ public class ServerMain implements ServerRemoteInterface {
     /**
      * @param client requesting to create the lobby
      */
-    @Override
-    public LobbyRemoteInterface createLobby(Client client){
+    public LobbyRemoteCouple createLobby(Client client){
         int minFreeKey;
+        int lobbyPort = Constants.port; //TODO to remove after implementation of TODO below
         List<Integer> lobbyIDs= lobbies.keySet()
                 .stream()
                 .map(Lobby::getID)
@@ -152,19 +145,21 @@ public class ServerMain implements ServerRemoteInterface {
                     .min(Integer::compareTo).orElse(1);//find the lowest key number available
         } else
             minFreeKey = 1;
-        Lobby lobby = new Lobby(client, minFreeKey);
+        Lobby lobby = new Lobby(client, minFreeKey); //cretes new lobby
+        LobbyRMIAdapter lobbyRMI = new LobbyRMIAdapter(lobby); //create adapter to lobby
+        //int lobbyPort =  startLobbyServer //TODO
         try {
-            LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) UnicastRemoteObject.exportObject(lobby, port); //create an interface to export
-            lobbies.put(lobby, lobbyStub);
-            return lobbyStub;
+            LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) UnicastRemoteObject.exportObject(lobbyRMI, port); //create stub of adapter of lobby
+            LobbyRemoteCouple lobbyCouple = new LobbyRemoteCouple(lobbyStub, lobbyPort);
+            lobbies.put(lobby, lobbyCouple);
+            return lobbyCouple;
 
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public Map<Integer, Integer> showAvailableLobbbies() throws RemoteException {
+    public Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.keySet()
                 .stream()

@@ -47,7 +47,7 @@ public class LobbyRMIStub extends LobbyStub {
     @Override
     public void quitGame(String player, LobbyRemoteInterface stub) {
         try{
-            lobby.quitGame(player,stub);
+            lobby.quitGame(player);
         } catch (RemoteException e) {
             //TODO
         }
@@ -77,7 +77,7 @@ public class LobbyRMIStub extends LobbyStub {
     public boolean startGame(String player) {
         boolean hasStarted = false;
         try{
-            lobby.startGame(player);
+            hasStarted = lobby.startGame(player);
         } catch (RemoteException e) {
             //TODO
         }
@@ -88,7 +88,7 @@ public class LobbyRMIStub extends LobbyStub {
     public boolean isLobbyAdmin(String player) {
         boolean result = false;
         try{
-            lobby.isLobbyAdmin(player);
+            result = lobby.isLobbyAdmin(player);
         } catch (RemoteException e) {
             //TODO
         }
@@ -99,7 +99,7 @@ public class LobbyRMIStub extends LobbyStub {
     public int getID() {
         int id = 0;
         try {
-            lobby.getID();
+            id = lobby.getID();
         } catch (RemoteException e) {
             //TODO
         }
