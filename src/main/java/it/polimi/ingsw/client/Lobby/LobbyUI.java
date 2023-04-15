@@ -1,12 +1,14 @@
 package it.polimi.ingsw.client.Lobby;
 
 import it.polimi.ingsw.client.Command;
+import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
 
 public abstract class LobbyUI extends Thread{
     protected Chat chat;
     protected LobbyStub lobby;
     protected String playerName;
+    protected Client client;
     LobbyUI(String playerName, LobbyStub stub){
         this.playerName = playerName;
         this.lobby = stub;

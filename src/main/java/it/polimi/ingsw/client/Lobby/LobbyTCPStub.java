@@ -5,7 +5,7 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 //TODO implement
-public class LobbyTCPStub implements LobbyStub {
+public class LobbyTCPStub extends LobbyStub {
     @Override
     public void postToLiveChat(String playerName, String message) {
 

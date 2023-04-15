@@ -16,12 +16,9 @@ public class LobbyCLI extends LobbyUI {
     private static cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
-    //private KeepAlive keepAlive;
 
     public LobbyCLI(String playerName, LobbyStub stub){
         super(playerName,stub);
-        //this.keepAlive = new KeepAlive(playerName,stub);
-        //keepAlive.start();
     }
     protected void loopCommands(){
         String command;

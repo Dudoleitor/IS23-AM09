@@ -1,12 +1,14 @@
 package it.polimi.ingsw.client.Lobby;
 
+import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 import java.rmi.RemoteException;
 
-public class LobbyRMIStub implements LobbyStub {
+public class LobbyRMIStub extends LobbyStub {
     private LobbyRemoteInterface lobby;
     public LobbyRMIStub(LobbyRemoteInterface lobby){
         this.lobby = lobby;

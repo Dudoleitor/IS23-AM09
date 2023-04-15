@@ -5,14 +5,14 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 
-public interface LobbyStub {
-    void postToLiveChat(String playerName, String message);
-    public void postSecretToLiveChat(String sender, String receiver, String message);
-    public Chat updateLiveChat();
-    void quitGame(String player, LobbyRemoteInterface stub);
-    boolean matchHasStarted();
-    void postMove(String player, Move move);
-    boolean startGame(String player);
-    boolean isLobbyAdmin(String player);
-    int getID();
+public abstract class LobbyStub {
+    abstract void postToLiveChat(String playerName, String message);
+    abstract public void postSecretToLiveChat(String sender, String receiver, String message);
+    abstract public Chat updateLiveChat();
+    abstract public void quitGame(String player, LobbyRemoteInterface stub);
+    abstract public boolean matchHasStarted();
+    abstract public void postMove(String player, Move move);
+    abstract public boolean startGame(String player);
+    abstract public boolean isLobbyAdmin(String player);
+    abstract public int getID();
 }
