@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
@@ -19,7 +20,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ServerMain implements ServerInterface{
-    private static final int port = Constants.port;
+    private static final int RMIport = Constants.RMIport;
+    private static final int TCPport = Constants.TCPport;
 
     /**
      * This list contains the clients connected to the
@@ -35,6 +37,7 @@ public class ServerMain implements ServerInterface{
 
         RMIIni(server); //creates server stub and the registry to get it
         System.out.println("Server is on");
+        SocketIni(server);
         while (true) {
             Thread.onSpinWait(); //is used to suspend the process and make it wait
         } //to keep it online
@@ -49,12 +52,12 @@ public class ServerMain implements ServerInterface{
     private static void RMIIni(ServerMain server){
         ServerInterface stub;
         try {
-            stub = (ServerInterface) UnicastRemoteObject.exportObject(server, port); //create an interface to export
+            stub = (ServerInterface) UnicastRemoteObject.exportObject(server, RMIport); //create an interface to export
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
         try {
-            registry = LocateRegistry.createRegistry(port); //create a registry that accepts request on a defined port
+            registry = LocateRegistry.createRegistry(RMIport); //create a registry that accepts request on a defined port
         } catch (RemoteException e) {
             e.printStackTrace(); //TODO to handle correctly
         }
@@ -68,17 +71,17 @@ public class ServerMain implements ServerInterface{
 
     }
 
-    /*private static void SocketIni(ServerMain server){ //TODO to finish
+    private static void SocketIni(ServerMain server){ //TODO WIP
         try {
-            ServerSocket serverSocket = new ServerSocket(Constants.port);
+            ServerSocket serverSocket = new ServerSocket(TCPport);
             while(true){
                 Socket client = serverSocket.accept();
-                new LoginTcpThread(server, client).start();
+                new LoginTcpThread(server, new ClientSocket(client)).start();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
-    }*/
+    }
 
 
     /**
@@ -161,7 +164,7 @@ public class ServerMain implements ServerInterface{
     @Override
     public LobbyRemoteCouple createLobby(Client client){
         int minFreeKey;
-        int lobbyPort = Constants.port; //TODO to remove after implementation of TODO below
+        int lobbyPort = Constants.RMIport; //TODO to remove after implementation of TODO below
         List<Integer> lobbyIDs= lobbies.keySet()
                 .stream()
                 .map(Lobby::getID)
@@ -176,7 +179,7 @@ public class ServerMain implements ServerInterface{
         Lobby lobby = new Lobby(client, minFreeKey); //cretes new lobby
         //int lobbyPort =  startLobbyServer //TODO
         try {
-            LobbyInterface lobbyStub = (LobbyInterface) UnicastRemoteObject.exportObject(lobby, port); //create stub of adapter of lobby
+            LobbyInterface lobbyStub = (LobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
             LobbyRemoteCouple lobbyCouple = new LobbyRemoteCouple(lobbyStub, lobbyPort);
             lobbies.put(lobby, lobbyCouple);
             return lobbyCouple;

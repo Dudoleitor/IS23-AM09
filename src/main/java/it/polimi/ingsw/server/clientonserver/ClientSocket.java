@@ -3,6 +3,11 @@ package it.polimi.ingsw.server.clientonserver;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Objects;
 
 /**
@@ -13,10 +18,50 @@ import java.util.Objects;
  */
 public class ClientSocket implements Client {
     // TODO add board and shelves
-    private final String playerName;
+    private String playerName = null;
+    private final Socket clientSocket;
 
-    public ClientSocket(String playerName) {
-        this.playerName = playerName;
+    private final BufferedReader ClientIn;
+    private final PrintWriter ClientOut;
+
+    public ClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+        try {
+            ClientOut = new PrintWriter(clientSocket.getOutputStream(), true);
+            ClientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * socket input buffer
+     * @return the read line of the buffer
+     */
+    public String in(){
+        try {
+            return ClientIn.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * send a message through socket connection
+     * @param message is the message to send
+     */
+    public void out(String message){
+        ClientOut.println(message);
+    }
+
+    public void setName(String name){
+        if(playerName != null){
+            playerName = name;
+        }
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
     }
 
     /**
