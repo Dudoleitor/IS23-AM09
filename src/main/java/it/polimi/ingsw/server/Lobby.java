@@ -4,12 +4,13 @@ import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Lobby{
+public class Lobby implements LobbyInterface {
     private final int id;
     private final List<Client> players = new ArrayList<>();
     private boolean ready = false;
@@ -29,7 +30,7 @@ public class Lobby{
      * add a player to lobby
      * @param client is the player object to add to the lobby
      */
-    public void addPlayer(Client client) {
+    public void addPlayer(Client client){
         if(players.contains(client)) //if player logged in previously
             return;
         if (players.size() < Constants.maxSupportedPlayers) { //checks lobby isn't already full
@@ -78,7 +79,6 @@ public class Lobby{
     public boolean isEmpty(){
         return players.size() == 0;
     }
-
     public String getLobbyAdmin() throws Exception {
         if(players.size() == 0){
             throw new Exception("No Players");
@@ -88,12 +88,14 @@ public class Lobby{
         }
     }
 
+    @Override
     public boolean matchHasStarted(){
         return started;
     }
     /**
      * start the lobby when it's full of players
      */
+    @Override
     public boolean startGame(String player){
         try {
             if(!ready  || !getLobbyAdmin().equals(player))
@@ -109,6 +111,7 @@ public class Lobby{
         return true;
     }
 
+    @Override
     public boolean isLobbyAdmin(String playerName) throws RemoteException {
         if(isEmpty()){
             return false;
@@ -124,6 +127,7 @@ public class Lobby{
      * @param message is the content
      * @throws Exception when message format is wrong
      */
+    @Override
     public void postToLiveChat(String playerName, String message) throws Exception {
         if(playerName == null || message == null){
             throw new Exception("Wrong format of message");
@@ -138,6 +142,7 @@ public class Lobby{
      * @param message is the content
      * @throws Exception when message format is wrong
      */
+    @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws Exception {
         if(sender == null || receiver == null || message == null){
             throw new Exception("Wrong format of message");
@@ -146,14 +151,17 @@ public class Lobby{
     }
 
 
+    @Override
     public Chat updateLiveChat() throws RemoteException {
         return new Chat(chat);
     }
 
+    @Override
     public void quitGame(String player) throws RemoteException {
 
     }
 
+    @Override
     public void postMove(String player, Move move) throws RemoteException {
         Client playerInput = null;
         try{
@@ -168,6 +176,7 @@ public class Lobby{
 
     }
 
+    @Override
     public int getID(){
         return this.id;
     }

@@ -13,10 +13,10 @@ public class ClientMain{
 
         switch (connection){
             case RMI:
-                server = new ServerStubRMI(Constants.serverIp,Constants.port);
+                server = new ServerStubRMI(Constants.serverIp,Constants.RMIport);
                 break;
             case TCP:
-                server = new ServerStubTCP(Constants.serverIp,Constants.port);
+                server = new ServerStubTCP(Constants.serverIp,Constants.RMIport);
                 break;
         }
 

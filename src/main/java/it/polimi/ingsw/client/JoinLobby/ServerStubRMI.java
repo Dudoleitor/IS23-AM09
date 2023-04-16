@@ -26,7 +26,7 @@ public class ServerStubRMI extends ServerStub{
         try {
             if(server == null){
                 //get remote registry that points to 127.0.0.1:port
-                Registry registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port);
+                Registry registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.RMIport);
                 //get interface from remote registry
                 server = (ServerInterface) registry.lookup("interface");
                 //try to log in
@@ -98,7 +98,7 @@ public class ServerStubRMI extends ServerStub{
     public Map<Integer, Integer> showAvailableLobbbies() {
         Map<Integer, Integer> availableLobbies = null;
         try{
-            availableLobbies = server.showAvailableLobbbies();
+            availableLobbies = server.showAvailableLobbies();
         } catch (Exception e) {
             //TODO
         }
