@@ -98,7 +98,7 @@ public class ServerStubRMI extends ServerStub{
     public Map<Integer, Integer> showAvailableLobbbies() {
         Map<Integer, Integer> availableLobbies = null;
         try{
-            availableLobbies = server.showAvailableLobbbies();
+            availableLobbies = server.showAvailableLobbies();
         } catch (Exception e) {
             //TODO
         }

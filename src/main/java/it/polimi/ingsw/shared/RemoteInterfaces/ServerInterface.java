@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface ServerInterface extends Remote {
-    boolean login(ClientRMI clientRMI) throws Exception;
+    boolean login(Client client) throws Exception;
     List<Integer> getJoinedLobbies(String nick) throws Exception;
     LobbyRemoteCouple joinRandomLobby(Client client) throws Exception;
     LobbyRemoteCouple createLobby(Client client) throws Exception;
-    Map<Integer,Integer> showAvailableLobbbies() throws Exception;
+    Map<Integer,Integer> showAvailableLobbies() throws Exception;
     LobbyRemoteCouple joinSelectedLobby(Client client, int id) throws Exception;
 
 }
