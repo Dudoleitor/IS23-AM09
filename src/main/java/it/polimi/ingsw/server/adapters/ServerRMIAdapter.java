@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.ServerMain;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
 import java.rmi.RemoteException;
@@ -26,13 +27,13 @@ public class ServerRMIAdapter implements ServerInterface {
     }
 
     @Override
-    public LobbyInterface joinRandomLobby(Client client) throws RemoteException {
-        return server.joinRandomLobby(client).getStub();
+    public LobbyRemoteCouple joinRandomLobby(Client client) throws RemoteException {
+        return server.joinRandomLobby(client);
     }
 
     @Override
-    public LobbyInterface createLobby(Client client) throws RemoteException {
-        return server.createLobby(client).getStub();
+    public LobbyRemoteCouple createLobby(Client client) throws RemoteException {
+        return server.createLobby(client);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ServerRMIAdapter implements ServerInterface {
     }
 
     @Override
-    public LobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException {
-        return server.joinSelectedLobby(client, id).getStub();
+    public LobbyRemoteCouple joinSelectedLobby(Client client, int id) throws RemoteException {
+        return server.joinSelectedLobby(client, id);
     }
 }

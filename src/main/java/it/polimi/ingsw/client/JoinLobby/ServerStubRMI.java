@@ -53,9 +53,9 @@ public class ServerStubRMI extends ServerStub{
     public LobbyStub joinRandomLobby(Client client) {
         LobbyInterface lobbyRMI = null;
         try{
-            lobbyRMI = server.joinRandomLobby(client);
+            lobbyRMI = server.joinRandomLobby(client).getStub();
         } catch (Exception e) {
-            throw new RuntimeException();
+            System.out.println(e.getMessage());
             //TODO
         }
         return new LobbyRMIStub(lobbyRMI);
@@ -65,7 +65,7 @@ public class ServerStubRMI extends ServerStub{
     public LobbyStub joinSelectedLobby(Client client, int id) {
         LobbyInterface lobbyRMI = null;
         try{
-            lobbyRMI = server.joinSelectedLobby(client,id);
+            lobbyRMI = server.joinSelectedLobby(client,id).getStub();
         } catch (Exception e) {
             //TODO
         }
@@ -87,7 +87,7 @@ public class ServerStubRMI extends ServerStub{
     public LobbyStub createLobby(Client client) {
         LobbyInterface lobbyRMI = null;
         try{
-            lobbyRMI = server.createLobby(client);
+            lobbyRMI = server.createLobby(client).getStub();
         } catch (Exception e) {
             //TODO
         }

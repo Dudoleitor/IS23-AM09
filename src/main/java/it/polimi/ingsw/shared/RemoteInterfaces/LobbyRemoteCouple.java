@@ -1,6 +1,9 @@
 package it.polimi.ingsw.shared.RemoteInterfaces;
 
-public class LobbyRemoteCouple {
+import java.io.Serializable;
+import java.rmi.Remote;
+
+public class LobbyRemoteCouple implements Serializable {
     private final LobbyInterface stub;
     private final int port;
 
