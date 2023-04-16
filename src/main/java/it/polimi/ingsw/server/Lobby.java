@@ -4,7 +4,6 @@ import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Constants;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
 
 import java.rmi.RemoteException;
 import java.util.*;

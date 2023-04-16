@@ -7,18 +7,16 @@ import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.ClientRemoteObject;
 import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.IpAddressV4;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
-import it.polimi.ingsw.shared.RemoteInterfaces.ServerRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 
 public class ServerStubRMI extends ServerStub{
-    private ServerRemoteInterface server;
+    private ServerInterface server;
     public ServerStubRMI(IpAddressV4 ip, int port){
         super(ip,port);
     }
@@ -30,12 +28,12 @@ public class ServerStubRMI extends ServerStub{
                 //get remote registry that points to 127.0.0.1:port
                 Registry registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.port);
                 //get interface from remote registry
-                server = (ServerRemoteInterface) registry.lookup("interface");
+                server = (ServerInterface) registry.lookup("interface");
                 //try to log in
             }
             server.login((ClientRMI) client);
             return true;
-        } catch (RemoteException | NotBoundException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -45,7 +43,7 @@ public class ServerStubRMI extends ServerStub{
         List<Integer> lobbies = null;
         try {
             lobbies = server.getJoinedLobbies(nick);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return lobbies;
@@ -53,10 +51,10 @@ public class ServerStubRMI extends ServerStub{
 
     @Override
     public LobbyStub joinRandomLobby(Client client) {
-        LobbyRemoteInterface lobbyRMI = null;
+        LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinRandomLobby(client);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             throw new RuntimeException();
             //TODO
         }
@@ -65,10 +63,10 @@ public class ServerStubRMI extends ServerStub{
 
     @Override
     public LobbyStub joinSelectedLobby(Client client, int id) {
-        LobbyRemoteInterface lobbyRMI = null;
+        LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinSelectedLobby(client,id);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return new LobbyRMIStub(lobbyRMI);
@@ -80,17 +78,17 @@ public class ServerStubRMI extends ServerStub{
             ClientRemoteObject remoteObject = new ClientRemoteObject(playerName);
             ClientRMI client = new ClientRMI(remoteObject);
             return client;
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public LobbyStub createLobby(Client client) {
-        LobbyRemoteInterface lobbyRMI = null;
+        LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.createLobby(client);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return new LobbyRMIStub(lobbyRMI);
@@ -101,7 +99,7 @@ public class ServerStubRMI extends ServerStub{
         Map<Integer, Integer> availableLobbies = null;
         try{
             availableLobbies = server.showAvailableLobbbies();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return availableLobbies;

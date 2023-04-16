@@ -3,44 +3,46 @@ package it.polimi.ingsw.server.adapters;
 import it.polimi.ingsw.server.ServerMain;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-public class ServerSocketAdapter { //TODO it will implement an interface
+public class ServerSocketAdapter implements ServerInterface { //TODO it will implement an interface
     private ServerMain server;
     public ServerSocketAdapter(ServerMain server){
         this.server = server;
     }
 
-    public boolean login(ClientRMI clientRMI) {
+    @Override
+    public boolean login(ClientRMI clientRMI) throws Exception{
         return false;
         //TODO
     }
-
-    public List<Integer> getJoinedLobbies(String nick) throws RemoteException {
+    @Override
+    public List<Integer> getJoinedLobbies(String nick) throws Exception {
         return null;
         //TODO
     }
-
-    public LobbyRemoteInterface joinRandomLobby(Client client) throws RemoteException {
+    @Override
+    public LobbyInterface joinRandomLobby(Client client) throws Exception {
         return null;
         //TODO
     }
-
-    public LobbyRemoteInterface createLobby(Client client) throws RemoteException {
+    @Override
+    public LobbyInterface createLobby(Client client) throws Exception {
         return null;
         //TODO
     }
-
-    public Map<Integer, Integer> showAvailableLobbbies() throws RemoteException {
+    @Override
+    public Map<Integer, Integer> showAvailableLobbbies() throws Exception {
         return null;
         //TODO
     }
-
-    public LobbyRemoteInterface joinSelectedLobby(Client client, int id) throws RemoteException {
+    @Override
+    public LobbyInterface joinSelectedLobby(Client client, int id) throws Exception {
         return null;
         //TODO
     }

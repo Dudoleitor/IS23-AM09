@@ -1,16 +1,12 @@
 package it.polimi.ingsw.client.Lobby;
 
-import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
-
-import java.rmi.RemoteException;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 public class LobbyRMIStub extends LobbyStub {
-    private LobbyRemoteInterface lobby;
-    public LobbyRMIStub(LobbyRemoteInterface lobby){
+    private LobbyInterface lobby;
+    public LobbyRMIStub(LobbyInterface lobby){
         this.lobby = lobby;
     }
     @Override
@@ -45,10 +41,10 @@ public class LobbyRMIStub extends LobbyStub {
     }
 
     @Override
-    public void quitGame(String player, LobbyRemoteInterface stub) {
+    public void quitGame(String player, LobbyInterface stub) {
         try{
             lobby.quitGame(player);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
     }
@@ -58,7 +54,7 @@ public class LobbyRMIStub extends LobbyStub {
         boolean started = false;
         try{
             started=  lobby.matchHasStarted();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return started;
@@ -68,7 +64,7 @@ public class LobbyRMIStub extends LobbyStub {
     public void postMove(String player, Move move) {
         try {
             lobby.postMove(player,move);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
     }
@@ -78,7 +74,7 @@ public class LobbyRMIStub extends LobbyStub {
         boolean hasStarted = false;
         try{
             hasStarted = lobby.startGame(player);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return hasStarted;
@@ -89,7 +85,7 @@ public class LobbyRMIStub extends LobbyStub {
         boolean result = false;
         try{
             result = lobby.isLobbyAdmin(player);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return result;
@@ -100,7 +96,7 @@ public class LobbyRMIStub extends LobbyStub {
         int id = 0;
         try {
             id = lobby.getID();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             //TODO
         }
         return id;

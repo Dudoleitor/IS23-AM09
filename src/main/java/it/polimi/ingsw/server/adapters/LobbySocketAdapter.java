@@ -3,59 +3,61 @@ package it.polimi.ingsw.server.adapters;
 import it.polimi.ingsw.server.Lobby;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Move;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 import java.rmi.RemoteException;
 
-public class LobbySocketAdapter { //TODO it will implement an interface
+public class LobbySocketAdapter implements LobbyInterface { //TODO it will implement an interface
     private Lobby lobby;
+
     public LobbySocketAdapter(Lobby lobby){
         this.lobby = lobby;
     }
+    @Override
     public void postToLiveChat(String playerName, String message) throws Exception {
         //TODO
     }
 
-
+    @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws Exception {
         //TODO
     }
-
-    public Chat updateLiveChat() throws RemoteException {
+    @Override
+    public Chat updateLiveChat() throws Exception {
         return null;
         //TODO
     }
 
-
-    public void quitGame(String player) throws RemoteException {
+    @Override
+    public void quitGame(String player) throws Exception {
         //TODO
     }
 
-
-    public boolean matchHasStarted() throws RemoteException {
+    @Override
+    public boolean matchHasStarted() throws Exception {
         return false;
         //TODO
     }
 
-
-    public void postMove(String player, Move move) throws RemoteException {
+    @Override
+    public void postMove(String player, Move move) throws Exception {
         //TODO
     }
 
-
-    public boolean startGame(String player) throws RemoteException {
+    @Override
+    public boolean startGame(String player) throws Exception {
         return false;
         //TODO
     }
 
-
-    public boolean isLobbyAdmin(String player) throws RemoteException {
+    @Override
+    public boolean isLobbyAdmin(String player) throws Exception {
         return false;
         //TODO
     }
 
-
-    public int getID() throws RemoteException {
+    @Override
+    public int getID() throws Exception {
         return 0;
         //TODO
     }

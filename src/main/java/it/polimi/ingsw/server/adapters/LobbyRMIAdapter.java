@@ -3,11 +3,11 @@ package it.polimi.ingsw.server.adapters;
 import it.polimi.ingsw.server.Lobby;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Move;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 import java.rmi.RemoteException;
 
-public class LobbyRMIAdapter implements LobbyRemoteInterface {
+public class LobbyRMIAdapter implements LobbyInterface {
     private final Lobby lobby;
     public LobbyRMIAdapter(Lobby lobby){
         this.lobby = lobby;

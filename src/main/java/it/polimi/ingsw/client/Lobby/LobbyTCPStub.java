@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.Lobby;
 
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 //TODO implement
 public class LobbyTCPStub extends LobbyStub {
@@ -22,7 +22,7 @@ public class LobbyTCPStub extends LobbyStub {
     }
 
     @Override
-    public void quitGame(String player, LobbyRemoteInterface stub) {
+    public void quitGame(String player, LobbyInterface stub) {
 
     }
 

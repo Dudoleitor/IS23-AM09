@@ -6,8 +6,8 @@ import it.polimi.ingsw.server.adapters.ServerRMIAdapter;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Constants;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteInterface;
-import it.polimi.ingsw.shared.RemoteInterfaces.ServerRemoteInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -32,9 +32,9 @@ public class ServerMain{
 
     public static void main(String argv[]){ //in the main it initializes the serverTCP and the Remote stub
         ServerRMIAdapter remoteServer = new ServerRMIAdapter(new ServerMain());
-        ServerRemoteInterface stub;
+        ServerInterface stub;
         try {
-            stub = (ServerRemoteInterface) UnicastRemoteObject.exportObject(remoteServer, port); //create an interface to export
+            stub = (ServerInterface) UnicastRemoteObject.exportObject(remoteServer, port); //create an interface to export
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -149,7 +149,7 @@ public class ServerMain{
         LobbyRMIAdapter lobbyRMI = new LobbyRMIAdapter(lobby); //create adapter to lobby
         //int lobbyPort =  startLobbyServer //TODO
         try {
-            LobbyRemoteInterface lobbyStub = (LobbyRemoteInterface) UnicastRemoteObject.exportObject(lobbyRMI, port); //create stub of adapter of lobby
+            LobbyInterface lobbyStub = (LobbyInterface) UnicastRemoteObject.exportObject(lobbyRMI, port); //create stub of adapter of lobby
             LobbyRemoteCouple lobbyCouple = new LobbyRemoteCouple(lobbyStub, lobbyPort);
             lobbies.put(lobby, lobbyCouple);
             return lobbyCouple;
