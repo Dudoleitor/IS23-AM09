@@ -6,15 +6,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class cli_IO {
     //Default Colors
-    public static Color messageColor = Color.Yellow;
-    public static Color GAMEColor = Color.Purple;
-    public static Color errorColor = Color.Red;
-    public static Scanner scanner = new Scanner(System.in);
+    private Color messageColor = Color.Yellow;
+    private Color GAMEColor = Color.Purple;
+    private Color errorColor = Color.Red;
 
-    //Methods to format LobbyCLI messages
+    private Scanner scanner;
+    private static Lock cli_Lock = null;
+
+    public cli_IO(){
+        scanner = new Scanner(System.in);
+        if(cli_Lock == null){
+            cli_Lock = new ReentrantLock();
+        }
+    }
+
+    //String decorators
 
     /**
      * A decorator that formats a message
@@ -37,24 +48,39 @@ public class cli_IO {
     public String errorFormat(String s){
         return ">"+ Color.coloredString("GAME",GAMEColor)+": " + Color.coloredString(s,errorColor);
     }
+
+    //Print methods
     public void printMessage(String s){
-        System.out.println(messageFormat(s));
+        synchronized (cli_Lock) {
+            System.out.println(messageFormat(s));
+        }
     }
     public void printErrorMessage(String s){
-        System.out.println(errorFormat(s));
+        synchronized (cli_Lock) {
+            System.out.println(errorFormat(s));
+        }
     }
     /**
      * Write some Strings on Std out without avoiding concurrent access
      * @param stringList the strings to print
      */
     public void multiPrint(List<String> stringList){
-        for(String s : stringList){
-            System.out.println(s);
+        synchronized (cli_Lock){
+            for(String s : stringList){
+                System.out.println(s);
+            }
         }
     }
-    /**
-     * Lock the access to StdOut when you are waiting for strings
-     */
+
+    //Scan methods
+    public String scanSync(){
+        String command = "";
+        synchronized (cli_Lock){
+            printPlaceHolder();
+            command = scanner.nextLine();
+        }
+        return command;
+    }
     public String scan(){
         printPlaceHolder();
         String command = scanner.nextLine();
@@ -62,22 +88,27 @@ public class cli_IO {
     }
     public String[] multiScan(int size){
         String[] result = new String[size];
-        for(int i = 0; i< size; i++){
-            printPlaceHolder();
-            result[i] = scanner.nextLine();
+        synchronized (cli_Lock){
+            for(int i = 0; i< size; i++){
+                printPlaceHolder();
+                result[i] = scanner.nextLine();
+            }
         }
         return result;
     }
     public Map<String,String> multiScan(List<String> fields){
         Map<String,String> result = new HashMap();
-        String value;
-        for(String field : fields){
-            printMessage(field+":");
-            printPlaceHolder();
-            value =  scanner.nextLine();
-            result.put(field,value);
+        synchronized (cli_Lock){
+            String value;
+            for(String field : fields){
+                printMessage(field+":");
+                printPlaceHolder();
+                value =  scanner.nextLine();
+                result.put(field,value);
+            }
         }
         return result;
     }
+
 }
 

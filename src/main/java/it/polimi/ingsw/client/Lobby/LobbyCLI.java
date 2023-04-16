@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.Lobby;
 import it.polimi.ingsw.client.Command;
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.client.cli_IO;
-import it.polimi.ingsw.shared.InvalidMoveException;
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.PartialMove;
 import it.polimi.ingsw.shared.*;
@@ -48,7 +47,6 @@ public class LobbyCLI extends LobbyUI {
         switch (com){
             case Exit: //quit game
                 io.printMessage("You quit");
-                //keepAlive.interrupt();
                 exit = true;
                 break;
             case Print: //print all messages
@@ -62,8 +60,7 @@ public class LobbyCLI extends LobbyUI {
                 lobby.startGame(playerName);
                 break;
             case Move:
-                Move move = createMove();
-                lobby.postMove(playerName,move);
+                postMove();
                 break;
             case Peek:
                 peekElement();
@@ -123,34 +120,43 @@ public class LobbyCLI extends LobbyUI {
                 header.get("message"));
     }
 
-    private Move createMove() throws InvalidMoveException {
-        io.printMessage("Write your move");
-        List<String> fields = new ArrayList<>();
-        fields.add("first position");
-        fields.add("second position");
-        fields.add("third position");
-        fields.add("column");
-        Map<String,String> input = io.multiScan(fields);
-
-        List<Position> positions = getPositionsFromInput(input);
-        int column;
-        try{
-            column = Integer.valueOf(input.get("column"));
-        }
-        catch (Exception e){
-            throw new InvalidMoveException("Bad Input for move");
-        }
-
-        if(positions.contains(null)){
-            throw new InvalidMoveException("Bad Input for move");
-        }
-
+    private void postMove(){
+        boolean validInput = false;List<Position> positions = null;
+        int column = 0;
         PartialMove pm = new PartialMove();
-        for(Position p : positions){
-            pm.addPosition(p);
+
+        if(!lobby.matchHasStarted()){
+            io.printErrorMessage("You cannot make moves now, match has not started");
+            return;
         }
 
-        return new Move(pm, column);
+        while(!validInput){
+            validInput = true;
+            io.printMessage("Write your move");
+            List<String> fields = new ArrayList<>();
+            fields.add("first position");
+            fields.add("second position");
+            fields.add("third position");
+            fields.add("column");
+            Map<String,String> input = io.multiScan(fields);
+            try{
+                positions = getPositionsFromInput(input);
+                column = Integer.valueOf(input.get("column"));
+                if(positions == null ||  positions.contains(null)){
+                    throw new Exception();
+                }
+                for(Position p : positions){
+                    pm.addPosition(p);
+                }
+            }
+            catch (Exception e){
+                io.printErrorMessage("Invalid format");
+                validInput = false;
+            }
+        }
+        Move move = new Move(pm, column);
+        io.printMessage("Your move:\n "+move);
+        lobby.postMove(playerName,move);
     }
 
     private List<Position> getPositionsFromInput(Map<String,String> input){

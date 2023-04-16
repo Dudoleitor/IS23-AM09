@@ -24,8 +24,8 @@ public class JoinLobbyCLI extends JoinLobbyUI{
         setUserName();
         client = server.generateClient(playerName);
         tryLogin(client,30);
-        showJoinedLobbies();
         showLobbyList();
+        showJoinedLobbies();
         joinLobby(client);
     }
 
