@@ -2,10 +2,11 @@ package it.polimi.ingsw.client;
 
 
 import it.polimi.ingsw.client.LobbySelection.*;
+import it.polimi.ingsw.client.gui.HelloApplication;
 import it.polimi.ingsw.shared.NetworkSettings;
 
 public class ClientMain{
-    public static void main(String argv[]){
+    public static void startClient(Client_Settings.UI uiOption){
 
         Server server = null;
 
@@ -19,12 +20,13 @@ public class ClientMain{
         }
 
         LobbySelection lobbySelection = null;
-        switch (Client_Settings.ui){
+        switch (uiOption){
             case CLI:
-                lobbySelection = new LobbySelection(server,new LobbySelectionCLI());
+                lobbySelection = new LobbySelection(server, new LobbySelectionCLI());
                 break;
             case GUI:
-                //joinLobbyUI = new JoinLobbyGUI(server);
+                //lobbySelection = new JoinLobbyGUI(server);
+                HelloApplication.startApp();
                 break;
         }
 
