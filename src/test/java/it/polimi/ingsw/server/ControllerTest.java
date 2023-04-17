@@ -50,7 +50,7 @@ public class ControllerTest {
         try{
             playerList = (List<Player>) players.stream().map(p -> {
                 try {
-                    return new Player(p,new Shelf(Constants.shelfRows,Constants.shelfColumns), new PlayerGoal(Constants.jsonPathForPlayerGoals));
+                    return new Player(p,new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns), new PlayerGoal(JSONFilePath.PlayerGoals));
                 } catch (JsonBadParsingException e) {
                     throw new RuntimeException(e);
                 }
@@ -66,7 +66,7 @@ public class ControllerTest {
         assertEquals(players.get(0),c.getCurrentPlayerName());
 
         //all shelves are empty
-        Shelf emptyShelf = new Shelf(Constants.shelfRows,Constants.shelfColumns);
+        Shelf emptyShelf = new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns);
 
         for(Player p : c.getPlayers()) {
             assertTrue(c.getShelves().get(p.getName()).equals(emptyShelf));
@@ -84,7 +84,7 @@ public class ControllerTest {
         try {
             playerList = (List<Player>) players.stream().map(p -> {
                 try {
-                    return new Player(p, new Shelf(Constants.shelfRows, Constants.shelfColumns), new PlayerGoal(Constants.jsonPathForPlayerGoals));
+                    return new Player(p, new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns), new PlayerGoal(JSONFilePath.PlayerGoals));
                 } catch (JsonBadParsingException e) {
                     throw new RuntimeException(e);
                 }
@@ -189,7 +189,7 @@ public class ControllerTest {
         try {
             playerList = (List<Player>) players.stream().map(p -> {
                 try {
-                    return new Player(p, new Shelf(Constants.shelfRows, Constants.shelfColumns), new PlayerGoal(Constants.jsonPathForPlayerGoals));
+                    return new Player(p, new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns), new PlayerGoal(JSONFilePath.PlayerGoals));
                 } catch (JsonBadParsingException e) {
                     throw new RuntimeException(e);
                 }

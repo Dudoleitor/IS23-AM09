@@ -5,8 +5,9 @@ import it.polimi.ingsw.client.Lobby.LobbyStub;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.ClientRemoteObject;
-import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.IpAddressV4;
+import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
@@ -26,7 +27,7 @@ public class ServerStubRMI extends ServerStub{
         try {
             if(server == null){
                 //get remote registry that points to 127.0.0.1:port
-                Registry registry = LocateRegistry.getRegistry(Constants.serverIp.toString(), Constants.RMIport);
+                Registry registry = LocateRegistry.getRegistry(NetworkSettings.serverIp.toString(), NetworkSettings.RMIport);
                 //get interface from remote registry
                 server = (ServerInterface) registry.lookup("interface");
                 //try to log in

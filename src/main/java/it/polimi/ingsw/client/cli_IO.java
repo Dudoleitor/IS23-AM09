@@ -9,11 +9,9 @@ import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static it.polimi.ingsw.client.Client_Settings.*;
+
 public class cli_IO {
-    //Default Colors
-    private Color messageColor = Color.Yellow;
-    private Color GAMEColor = Color.Purple;
-    private Color errorColor = Color.Red;
 
     private Scanner scanner;
     private static Lock cli_Lock = null;

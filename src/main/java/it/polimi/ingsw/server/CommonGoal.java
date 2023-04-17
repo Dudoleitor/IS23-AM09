@@ -7,6 +7,8 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static it.polimi.ingsw.server.JSONFilePath.CommonGoals;
+
 public class CommonGoal implements Jsonable{
     //VARIABLES
     /**
@@ -85,9 +87,9 @@ public class CommonGoal implements Jsonable{
     private static JSONObject getJsonObject(int number_of_players, CommonGoalStrategy strategy) throws JsonBadParsingException {
         JSONObject jsonObject;
         String path;
-        if(number_of_players <= Constants.maxSupportedPlayers &&
-                number_of_players >= Constants.minSupportedPlayers){
-            path = Constants.jsonPathForCommonGoals.replace("?",String.valueOf(number_of_players));
+        if(number_of_players <= GameSettings.maxSupportedPlayers &&
+                number_of_players >= GameSettings.minSupportedPlayers){
+            path = CommonGoals.replace("?",String.valueOf(number_of_players));
         }
         else{
             throw new CommonGoalRuntimeException("Error while creating CommonGoal: Invalid number of Players");

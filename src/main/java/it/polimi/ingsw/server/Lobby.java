@@ -3,7 +3,7 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 import java.rmi.RemoteException;
@@ -33,16 +33,16 @@ public class Lobby implements LobbyInterface {
     public void addPlayer(Client client){
         if(players.contains(client)) //if player logged in previously
             return;
-        if (players.size() < Constants.maxSupportedPlayers) { //checks lobby isn't already full
+        if (players.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
             players.add(client);
             chat.addPlayer(client);
         }else
             throw new RuntimeException("Lobby already full");
 
         //if the lobby has enough players it's ready to start
-        if(players.size() >= Constants.minSupportedPlayers)
+        if(players.size() >= GameSettings.minSupportedPlayers)
             ready = true;
-        if(players.size() >= Constants.maxSupportedPlayers)
+        if(players.size() >= GameSettings.maxSupportedPlayers)
             full = true;
     }
 

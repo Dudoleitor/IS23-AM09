@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
+import static it.polimi.ingsw.server.JSONFilePath.PlayerGoals;
 
 
 public class Controller implements Jsonable {
@@ -38,8 +38,8 @@ public class Controller implements Jsonable {
             turn = 0;
             for (Client client : clients) {
                 player = new Player(client.getPlayerName(),
-                        new Shelf(Constants.shelfRows,Constants.shelfColumns),
-                        new PlayerGoal(jsonPathForPlayerGoals));
+                        new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns),
+                        new PlayerGoal(PlayerGoals));
                 players.add(player);
                 virtualViews.add(player.getVirtualShelf());
             }

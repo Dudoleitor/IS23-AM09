@@ -2,26 +2,25 @@ package it.polimi.ingsw.client;
 
 
 import it.polimi.ingsw.client.JoinLobby.*;
-import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.GameSettings;
+import it.polimi.ingsw.shared.NetworkSettings;
 
 public class ClientMain{
     public static void main(String argv[]){
-        Connection connection = Connection.RMI;
-        UI ui = UI.CLI;
 
         ServerStub server = null;
 
-        switch (connection){
+        switch (Client_Settings.connection){
             case RMI:
-                server = new ServerStubRMI(Constants.serverIp,Constants.RMIport);
+                server = new ServerStubRMI(NetworkSettings.serverIp, NetworkSettings.RMIport);
                 break;
             case TCP:
-                server = new ServerStubTCP(Constants.serverIp,Constants.RMIport);
+                server = new ServerStubTCP(NetworkSettings.serverIp, NetworkSettings.RMIport);
                 break;
         }
 
         JoinLobbyUI joinLobbyUI = null;
-        switch (ui){
+        switch (Client_Settings.ui){
             case CLI:
                 joinLobbyUI = new JoinLobbyCLI(server);
                 break;
@@ -34,29 +33,5 @@ public class ClientMain{
         try {
             joinLobbyUI.join();
         } catch (InterruptedException e) {}
-    }
-
-    private enum Connection{
-        TCP("tcp"),
-        RMI("rmi");
-        String tag;
-        Connection(String tag){
-            this.tag = tag;
-        }
-        String getTag(){
-            return tag;
-        }
-    }
-
-    private enum UI{
-        CLI("cli"),
-        GUI("gui");
-        String tag;
-        UI(String tag){
-            this.tag = tag;
-        }
-        String getTag(){
-            return tag;
-        }
     }
 }

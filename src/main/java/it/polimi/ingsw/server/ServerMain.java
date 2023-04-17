@@ -3,7 +3,8 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
-import it.polimi.ingsw.shared.Constants;
+import it.polimi.ingsw.shared.GameSettings;
+import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
@@ -20,8 +21,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ServerMain implements ServerInterface{
-    private static final int RMIport = Constants.RMIport;
-    private static final int TCPport = Constants.TCPport;
+    private static final int RMIport = NetworkSettings.RMIport;
+    private static final int TCPport = NetworkSettings.TCPport;
 
     /**
      * This list contains the clients connected to the
@@ -164,7 +165,7 @@ public class ServerMain implements ServerInterface{
     @Override
     public LobbyRemoteCouple createLobby(Client client){
         int minFreeKey;
-        int lobbyPort = Constants.RMIport; //TODO to remove after implementation of TODO below
+        int lobbyPort = NetworkSettings.RMIport; //TODO to remove after implementation of TODO below
         List<Integer> lobbyIDs= lobbies.keySet()
                 .stream()
                 .map(Lobby::getID)

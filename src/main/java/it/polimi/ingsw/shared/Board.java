@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static it.polimi.ingsw.server.JSONFilePath.Board;
+
 
 public class Board implements Jsonable {
 
@@ -69,9 +71,9 @@ public class Board implements Jsonable {
 
     public static String boardPathForNumberOfPlayers(int number_of_players){
         String path;
-        if(number_of_players <= Constants.maxSupportedPlayers &&
-                number_of_players >= Constants.minSupportedPlayers){
-            path = Constants.jsonPathForBoard.replace("?",String.valueOf(number_of_players));
+        if(number_of_players <= GameSettings.maxSupportedPlayers &&
+                number_of_players >= GameSettings.minSupportedPlayers){
+            path = Board.replace("?",String.valueOf(number_of_players));
         }
         else{
             throw new BoardRuntimeException("Error while creating Board : invalid number of players");

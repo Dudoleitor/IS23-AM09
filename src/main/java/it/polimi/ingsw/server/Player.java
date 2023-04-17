@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static it.polimi.ingsw.shared.Constants.jsonPathForPlayerGoals;
+import static it.polimi.ingsw.server.JSONFilePath.PlayerGoals;
+
 
 /**
  * This class implements the player inside the model.
@@ -59,7 +60,7 @@ public class Player implements Jsonable {
             this.shelf.setVirtualShelf(this.virtualShelf);
 
             // Loading player goal
-            this.goal = new PlayerGoal(jsonPathForPlayerGoals,
+            this.goal = new PlayerGoal(PlayerGoals,
                     Math.toIntExact((Long) playerJson.get("PersonalGoalId")));
 
             // Loading common goals points
