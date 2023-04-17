@@ -7,7 +7,6 @@ import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.PartialMove;
 import it.polimi.ingsw.shared.*;
 
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,68 +18,30 @@ public class LobbyCLI extends LobbyUI {
     public LobbyCLI(String playerName, Lobby stub){
         super(playerName,stub);
     }
-    protected void loopCommands(){
-        String command;
-        while(!exit){ //Receive commands until "exit" command is launched
-            try{
-                command = io.scan();
-                //Invalid command
-                if(!inputSanitizer.isValidMessage(command)){
-                    io.printErrorMessage("Invalid format");
-                }
-                else{
-                    Command toExecute = Command.stringToCommand(command);
-                    executeUserCommand(toExecute);
-                }
-            }
-            catch (RemoteException e){
-                io.printErrorMessage("Error in RMI");
-            } catch (Exception e) {
-                e.printStackTrace();
-                io.printErrorMessage("Error in Message Format");
-            }
-        }
-    }
+
     @Override
-    protected void executeUserCommand(Command com) throws Exception {
-        //execute action for every command
-        switch (com){
-            case Exit: //quit game
-                io.printMessage("You quit");
-                exit = true;
-                break;
-            case Print: //print all messages
-                updateLiveChat();
-                printAllMessages();
-                break;
-            case Secret: //send private message
-                postToPrivateChat();
-                break;
-            case Start:
-                lobby.startGame(playerName);
-                break;
-            case Move:
-                postMove();
-                break;
-            case Peek:
-                peekElement();
-                break;
-            case Message:
-                postToChat();
-                break;
-            default: //post message to chat
-                io.printErrorMessage("Invalid Command");
+    protected Command askCommand(){
+        String input;
+        input = io.scan();
+        //Invalid command
+        if(!inputSanitizer.isValidMessage(input)){
+            io.printErrorMessage("Invalid format");
+            return Command.Invalid;
+        }
+        else{
+            return Command.stringToCommand(input);
         }
     }
 
-    /**
-     * Downloads all the messages that are present on server and missing in local copy
-     * @throws RemoteException
-     */
-    public void updateLiveChat(){
-        chat = lobby.updateLiveChat();
+    @Override
+    protected void notifyExit() {
+        io.printErrorMessage("You quit!");
     }
 
+    @Override
+    public void greet() {
+        io.printMessage("Hello "+playerName+"!");
+    }
     /**
      * Print all messages in local copy of chat. If none is present "No message yet" will be printed
      */
@@ -93,43 +54,23 @@ public class LobbyCLI extends LobbyUI {
         toPrint.add(0, io.messageFormat("Here are all messages"));
         io.multiPrint(toPrint);
     }
-
-    public static boolean checkValidReceiver(ChatMessage message, String receiverName){
-        if (message.getClass().equals(PrivateChatMessage.class)){
-            if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
-                return false;
-        }
-        return true;
-    }
-    public void postToChat(){
+    public Map<String,String> getMessageFromUser(){
         List<String> fields = new ArrayList<>();
         fields.add("message");
-        Map<String,String> header = io.multiScan(fields);
-        lobby.postToLiveChat(
-                playerName,
-                header.get("message"));
+        return io.multiScan(fields);
     }
-    public void postToPrivateChat(){
+
+    public Map<String,String> getPrivateMessageFromUser(){
         List<String> fields = new ArrayList<>();
         fields.add("receiver");
         fields.add("message");
-        Map<String,String> header = io.multiScan(fields);
-        lobby.postSecretToLiveChat(
-                playerName,
-                header.get("receiver"),
-                header.get("message"));
+        return io.multiScan(fields);
     }
 
-    private void postMove(){
+    protected Move getMoveFromUser(){
         boolean validInput = false;List<Position> positions = null;
         int column = 0;
         PartialMove pm = new PartialMove();
-
-        if(!lobby.matchHasStarted()){
-            io.printErrorMessage("You cannot make moves now, match has not started");
-            return;
-        }
-
         while(!validInput){
             validInput = true;
             io.printMessage("Write your move");
@@ -154,9 +95,7 @@ public class LobbyCLI extends LobbyUI {
                 validInput = false;
             }
         }
-        Move move = new Move(pm, column);
-        io.printMessage("Your move:\n "+move);
-        lobby.postMove(playerName,move);
+        return new Move(pm, column);
     }
 
     private List<Position> getPositionsFromInput(Map<String,String> input){
@@ -167,7 +106,7 @@ public class LobbyCLI extends LobbyUI {
         return positions;
     }
 
-    private void peekElement(){
+    protected void showElement(){
         io.printMessage("What do you want to see (Board/Shelf)");
         String choice = io.scan();
         if(!inputSanitizer.isValidMessage(choice)){
@@ -191,9 +130,7 @@ public class LobbyCLI extends LobbyUI {
                 io.printErrorMessage("Not valid element");
         }
     }
-    @Override
-    public void run(){
-        io.printMessage("Make your moves! Tell your unrequested opinions!"); //introduction message after login
-        loopCommands();
+    protected void notifyInvalidCommand(){
+        io.printErrorMessage("Invalid Command!");
     }
 }
