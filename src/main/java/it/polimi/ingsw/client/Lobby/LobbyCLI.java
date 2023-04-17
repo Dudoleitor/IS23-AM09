@@ -16,7 +16,7 @@ public class LobbyCLI extends LobbyUI {
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
 
-    public LobbyCLI(String playerName, LobbyStub stub){
+    public LobbyCLI(String playerName, Lobby stub){
         super(playerName,stub);
     }
     protected void loopCommands(){

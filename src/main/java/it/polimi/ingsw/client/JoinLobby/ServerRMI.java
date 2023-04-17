@@ -1,11 +1,10 @@
 package it.polimi.ingsw.client.JoinLobby;
 
-import it.polimi.ingsw.client.Lobby.LobbyRMIStub;
-import it.polimi.ingsw.client.Lobby.LobbyStub;
+import it.polimi.ingsw.client.Lobby.LobbyRMI;
+import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.ClientRemoteObject;
-import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
@@ -16,9 +15,9 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 
-public class ServerStubRMI extends ServerStub{
+public class ServerRMI extends Server {
     private ServerInterface server;
-    public ServerStubRMI(IpAddressV4 ip, int port){
+    public ServerRMI(IpAddressV4 ip, int port){
         super(ip,port);
     }
 
@@ -51,7 +50,7 @@ public class ServerStubRMI extends ServerStub{
     }
 
     @Override
-    public LobbyStub joinRandomLobby(Client client) {
+    public Lobby joinRandomLobby(Client client) {
         LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinRandomLobby(client).getStub();
@@ -59,18 +58,18 @@ public class ServerStubRMI extends ServerStub{
             System.out.println(e.getMessage());
             //TODO
         }
-        return new LobbyRMIStub(lobbyRMI);
+        return new LobbyRMI(lobbyRMI);
     }
 
     @Override
-    public LobbyStub joinSelectedLobby(Client client, int id) {
+    public Lobby joinSelectedLobby(Client client, int id) {
         LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinSelectedLobby(client,id).getStub();
         } catch (Exception e) {
             //TODO
         }
-        return new LobbyRMIStub(lobbyRMI);
+        return new LobbyRMI(lobbyRMI);
     }
 
     @Override
@@ -85,14 +84,14 @@ public class ServerStubRMI extends ServerStub{
     }
 
     @Override
-    public LobbyStub createLobby(Client client) {
+    public Lobby createLobby(Client client) {
         LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.createLobby(client).getStub();
         } catch (Exception e) {
             //TODO
         }
-        return new LobbyRMIStub(lobbyRMI);
+        return new LobbyRMI(lobbyRMI);
     }
 
     @Override

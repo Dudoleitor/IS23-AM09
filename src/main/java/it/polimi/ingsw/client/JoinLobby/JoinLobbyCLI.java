@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.JoinLobby;
 
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.client.Lobby.LobbyCLI;
-import it.polimi.ingsw.client.Lobby.LobbyStub;
+import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.client.cli_IO;
 import it.polimi.ingsw.server.clientonserver.Client;
 
@@ -15,7 +15,7 @@ public class JoinLobbyCLI extends JoinLobbyUI{
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private Client client;
 
-    public JoinLobbyCLI(ServerStub server) {
+    public JoinLobbyCLI(Server server) {
         super(server);
     }
 
@@ -78,17 +78,17 @@ public class JoinLobbyCLI extends JoinLobbyUI{
     public void joinLobby(Client client){
         boolean lobbySelected = false;
         int lobbyID;
-        LobbyStub lobbyStub = null;
+        Lobby lobby = null;
         while(!lobbySelected){
             io.printMessage("Choose a Lobby (ENTER for random):");
             String id = io.scan();
             if(id.isEmpty()){
-                lobbyStub = server.joinRandomLobby(client); //join first available lobby, otherwise creates one
+                lobby = server.joinRandomLobby(client); //join first available lobby, otherwise creates one
                 lobbySelected = true;
             } else if(inputSanitizer.isInteger(id)){
                 lobbyID = Integer.parseInt(id);
-                lobbyStub = server.joinSelectedLobby(client, lobbyID);
-                if(lobbyStub == null)
+                lobby = server.joinSelectedLobby(client, lobbyID);
+                if(lobby == null)
                     io.printErrorMessage("Input id not found");
                 else lobbySelected = true;
             }
@@ -96,10 +96,10 @@ public class JoinLobbyCLI extends JoinLobbyUI{
                 io.printErrorMessage("Input a valid id (must be a number)");
             }
         }
-        io.printMessage("You joined #"+ lobbyStub.getID()+" lobby!");
+        io.printMessage("You joined #"+ lobby.getID()+" lobby!");
 
         //Create the lobbyUI object and start the match
-        LobbyCLI lobbyCLI = new LobbyCLI(playerName,lobbyStub);
+        LobbyCLI lobbyCLI = new LobbyCLI(playerName, lobby);
         lobbyCLI.run();
     }
 

@@ -4,9 +4,9 @@ import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
-public class LobbyRMIStub extends LobbyStub {
+public class LobbyRMI extends Lobby {
     private LobbyInterface lobby;
-    public LobbyRMIStub(LobbyInterface lobby){
+    public LobbyRMI(LobbyInterface lobby){
         this.lobby = lobby;
     }
     @Override

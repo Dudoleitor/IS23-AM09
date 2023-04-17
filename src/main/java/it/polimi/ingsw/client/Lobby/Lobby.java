@@ -5,7 +5,7 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 
-public abstract class LobbyStub {
+public abstract class Lobby {
     abstract void postToLiveChat(String playerName, String message);
     abstract public void postSecretToLiveChat(String sender, String receiver, String message);
     abstract public Chat updateLiveChat();

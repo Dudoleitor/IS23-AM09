@@ -5,11 +5,11 @@ import it.polimi.ingsw.server.clientonserver.Client;
 public abstract class JoinLobbyUI extends Thread{
     //Variables
     protected String playerName;
-    protected ServerStub server;
+    protected Server server;
     protected Client client;
 
     //Constructor
-    JoinLobbyUI(ServerStub server){
+    JoinLobbyUI(Server server){
         this.server = server;
     }
 

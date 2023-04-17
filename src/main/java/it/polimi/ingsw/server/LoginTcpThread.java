@@ -1,11 +1,8 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.InputSanitizer;
-import it.polimi.ingsw.client.Lobby.LobbyStub;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 
 import java.io.*;
-import java.net.Socket;
 
 public class LoginTcpThread extends Thread{ //TODO WIP
     private final ClientSocket client;
