@@ -33,7 +33,7 @@ public class ServerMain implements ServerInterface{
     private static Registry registry = null;
     private static InputSanitizer inputSanitizer;
 
-    public static void main(String argv[]){ //in the main it initializes the serverTCP and the Remote stub
+    public static void startServer(){ //in the main it initializes the serverTCP and the Remote stub
         ServerMain server = new ServerMain();
 
         RMIIni(server); //creates server stub and the registry to get it
