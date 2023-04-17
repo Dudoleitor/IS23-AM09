@@ -8,6 +8,7 @@ public class LoginTcpThread extends Thread{ //TODO WIP
     private final ClientSocket client;
     private final ServerMain server;
 
+
     public LoginTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
         this.client= client;
@@ -16,34 +17,31 @@ public class LoginTcpThread extends Thread{ //TODO WIP
     }
 
     public void run(){
-        if(!tryLogin(30)) {
-            client.out("Error while trying to login");
-            this.interrupt();
+        while(!tryLogin()) {
+
         }
         int lobbyPort = tryJoin(client);
         client.out(String.valueOf(lobbyPort));
     }
 
-    private boolean tryLogin(int tries){
-        boolean logged = false;
-        String name = "";
-        //Try to log in for 30s (1 try each second)
-        for(int attempt = 0; attempt < tries && !logged; tries++) {
-            try {
-                name = client.in();
-                synchronized (server) {
-                    logged = server.login(client); //get previous sessions if present
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    private boolean tryLogin(){
+        boolean logged;
+        String name;
+        try {
+            name = client.in();
+            client.setName(name);
+            synchronized (server) {
+                logged = server.login(client); //get previous sessions if present
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         if (logged){
-            client.setName(name);
+            client.out("true");
             synchronized (server) {
                 client.out(server.getJoinedLobbies(name).toString()); //TODO to convert to JSON or others
             }
-            }
+        }
 
         return logged;
     }

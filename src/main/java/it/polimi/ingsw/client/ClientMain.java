@@ -14,7 +14,7 @@ public class ClientMain{
                 server = new ServerRMI(NetworkSettings.serverIp, NetworkSettings.RMIport);
                 break;
             case TCP:
-                server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.RMIport);
+                server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport);
                 break;
         }
 

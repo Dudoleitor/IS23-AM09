@@ -26,11 +26,16 @@ public class ClientSocket implements Client {
 
     public ClientSocket(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        try {
-            ClientOut = new PrintWriter(clientSocket.getOutputStream(), true);
-            ClientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(clientSocket != null) {
+            try {
+                ClientOut = new PrintWriter(clientSocket.getOutputStream(), true);
+                ClientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            ClientOut = null;
+            ClientIn = null;
         }
     }
 
@@ -39,7 +44,12 @@ public class ClientSocket implements Client {
      * @return the read line of the buffer
      */
     public String in(){
+        boolean ready = false;
         try {
+            while(!ready){
+                if(ClientIn.ready())
+                    ready = true;
+            }
             return ClientIn.readLine();
         } catch (IOException e) {
             throw new RuntimeException(e);

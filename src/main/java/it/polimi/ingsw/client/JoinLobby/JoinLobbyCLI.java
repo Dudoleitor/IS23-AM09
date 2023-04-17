@@ -30,7 +30,7 @@ public class JoinLobbyCLI extends JoinLobbyUI{
         return name;
     }
     @Override
-    public boolean tryLogin(int tries){
+    public boolean tryLogin(int tries){ //TODO @JACK how is the username passed in this function? I keep receiving null as username
         boolean logged = false;
         //Try to log in for 30s (1 try each second)
         for(int attempt = 0; attempt < tries && !logged; tries++){
