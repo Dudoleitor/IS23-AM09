@@ -1,8 +1,9 @@
 package it.polimi.ingsw.client.LobbySelection;
 
 import it.polimi.ingsw.client.Lobby.Lobby;
-import it.polimi.ingsw.client.Lobby.LobbyCLI;
-import it.polimi.ingsw.client.Lobby.LobbyUI;
+import it.polimi.ingsw.client.Lobby.MatchCLI;
+import it.polimi.ingsw.client.Lobby.Match;
+import it.polimi.ingsw.client.Lobby.MatchView;
 import it.polimi.ingsw.server.clientonserver.Client;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class LobbySelection extends Thread{
     private String playerName;
     private Server server;
     private Client client;
-    private LobbyUI match;
+    private Match match;
     private LobbySelectionView view;
 
     //Constructor
@@ -60,7 +61,7 @@ public class LobbySelection extends Thread{
         return server.showAvailableLobbbies();
     }
 
-    private LobbyUI getLobbyUI(){
+    private Match getLobbyUI(){
         LobbySelectionCommand command = LobbySelectionCommand.Invalid;
         Lobby lobby = null;
         while(command == LobbySelectionCommand.Invalid){
@@ -72,7 +73,7 @@ public class LobbySelection extends Thread{
         }
         view.message("You joined #"+ lobby.getID()+" lobby!");
         //Create the lobbyUI object and start the match
-        return new LobbyCLI(playerName,lobby);
+        return new Match(playerName, lobby, new MatchCLI());
     }
 
     @Override
@@ -84,7 +85,7 @@ public class LobbySelection extends Thread{
             tryLogin(30);
             view.showJoinedLobbies(getPreviousSessions());
             view.showLobbyList(getAvailableLobbies());
-            LobbyUI match = getLobbyUI();
+            Match match = getLobbyUI();
             match.start();
             try {
                 match.join();

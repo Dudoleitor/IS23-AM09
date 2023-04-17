@@ -10,14 +10,10 @@ import it.polimi.ingsw.shared.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LobbyCLI extends LobbyUI {
+public class MatchCLI extends MatchView {
     private static cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
     private boolean exit = false;
-
-    public LobbyCLI(String playerName, Lobby stub){
-        super(playerName,stub);
-    }
 
     @Override
     protected Command askCommand(){
@@ -39,13 +35,13 @@ public class LobbyCLI extends LobbyUI {
     }
 
     @Override
-    public void greet() {
+    public void greet(String playerName) {
         io.printMessage("Hello "+playerName+"!");
     }
     /**
      * Print all messages in local copy of chat. If none is present "No message yet" will be printed
      */
-    public void printAllMessages(){
+    public void printAllMessages(Chat chat){
         if(chat == null || chat.size() == 0){
             io.printMessage("No messages yet");
             return;
