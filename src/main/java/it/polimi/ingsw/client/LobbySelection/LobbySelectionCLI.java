@@ -1,22 +1,15 @@
-package it.polimi.ingsw.client.JoinLobby;
+package it.polimi.ingsw.client.LobbySelection;
 
 import it.polimi.ingsw.client.InputSanitizer;
-import it.polimi.ingsw.client.Lobby.Lobby;
-import it.polimi.ingsw.client.Lobby.LobbyCLI;
-import it.polimi.ingsw.client.Lobby.LobbyUI;
 import it.polimi.ingsw.client.cli_IO;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JoinLobbyCLI extends JoinLobbyUI{
+public class LobbySelectionCLI extends LobbySelectionView {
     private cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
-
-    public JoinLobbyCLI(Server server) {
-        super(server);
-    }
     @Override
     public String askUserName(){
         String name = "";
@@ -29,29 +22,7 @@ public class JoinLobbyCLI extends JoinLobbyUI{
         }
         return name;
     }
-    @Override
-    public boolean tryLogin(int tries){ //TODO @JACK how is the username passed in this function? I keep receiving null as username
-        boolean logged = false;
-        //Try to log in for 30s (1 try each second)
-        for(int attempt = 0; attempt < tries && !logged; tries++){
-            logged = login(); //get previous sessions if present
-            if(logged) {
-                showJoinedLobbies();
-            }
-            else{
-                io.printErrorMessage("Connection Error, retying in 1 second");
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    return false;
-                }
-            }
-        }
-        return logged;
-    }
-    @Override
-    public void showJoinedLobbies(){
-        List<Integer> previousSessions = server.getJoinedLobbies(playerName);
+    public void showJoinedLobbies(List<Integer> previousSessions){
         if (previousSessions != null && !previousSessions.isEmpty()) { //if some previous session is available
             io.printMessage("Welcome back!");
             String message = "Here are your already joined lobbies";
@@ -64,10 +35,8 @@ public class JoinLobbyCLI extends JoinLobbyUI{
             io.printMessage(message);
         }
     }
-    @Override
-    public void showLobbyList(){
-        Map availableLobbies = server.showAvailableLobbbies();
-        if (!availableLobbies.isEmpty()) {
+    public void showLobbyList(Map availableLobbies){
+        if (!(availableLobbies == null) && !availableLobbies.isEmpty()) {
             String lobbyMessage = "Here are the active lobbies:";
             List<String> lobbyList = (List<String>)
                     availableLobbies.keySet().stream().
@@ -80,21 +49,6 @@ public class JoinLobbyCLI extends JoinLobbyUI{
         } else {
             io.printMessage("No other active lobby is available, you might want to create one");
         }
-    }
-    @Override
-    public LobbyUI getLobbyUI(){
-        LobbySelectionCommand command = LobbySelectionCommand.Invalid;
-        Lobby lobby = null;
-        while(command == LobbySelectionCommand.Invalid){
-            command = askLobby();
-            lobby = joinLobby(command);
-            if(command == LobbySelectionCommand.Invalid){
-                io.printErrorMessage("Input a valid id (must be a number)");
-            }
-        }
-        io.printMessage("You joined #"+ lobby.getID()+" lobby!");
-        //Create the lobbyUI object and start the match
-        return new LobbyCLI(playerName,lobby);
     }
     @Override
     public LobbySelectionCommand askLobby(){
@@ -118,7 +72,7 @@ public class JoinLobbyCLI extends JoinLobbyUI{
     @Override
     public boolean playAgain(){
         String answer;
-        io.printMessage("Do you want to play again?");
+        message("Do you want to play again?");
         answer = io.scan();
         if(answer.equals("yes") || answer.equals("y")){
             return true;
@@ -126,5 +80,15 @@ public class JoinLobbyCLI extends JoinLobbyUI{
         else {
             return false;
         }
+    }
+
+    @Override
+    public void errorMessage(String message) {
+        io.printErrorMessage(message);
+    }
+
+    @Override
+    public void message(String message) {
+        io.printMessage(message);
     }
 }

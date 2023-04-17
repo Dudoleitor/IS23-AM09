@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client;
 
 
-import it.polimi.ingsw.client.JoinLobby.*;
+import it.polimi.ingsw.client.LobbySelection.*;
 import it.polimi.ingsw.shared.NetworkSettings;
 
 public class ClientMain{
@@ -18,19 +18,19 @@ public class ClientMain{
                 break;
         }
 
-        JoinLobbyUI joinLobbyUI = null;
+        LobbySelection lobbySelection = null;
         switch (Client_Settings.ui){
             case CLI:
-                joinLobbyUI = new JoinLobbyCLI(server);
+                lobbySelection = new LobbySelection(server,new LobbySelectionCLI());
                 break;
             case GUI:
                 //joinLobbyUI = new JoinLobbyGUI(server);
                 break;
         }
 
-        joinLobbyUI.start();
+        lobbySelection.start();
         try {
-            joinLobbyUI.join();
+            lobbySelection.join();
         } catch (InterruptedException e) {}
     }
 }

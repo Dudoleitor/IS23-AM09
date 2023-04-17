@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.JoinLobby;
+package it.polimi.ingsw.client.LobbySelection;
 
 import it.polimi.ingsw.client.Lobby.LobbyRMI;
 import it.polimi.ingsw.client.Lobby.Lobby;
