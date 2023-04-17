@@ -10,7 +10,6 @@ public class Client_Settings {
     /**
      * View Type
      */
-    public static final UI ui = UI.CLI;
 
     //Default color theme for CLI
     public static final Color messageColor = Color.Yellow;
