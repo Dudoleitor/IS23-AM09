@@ -4,6 +4,8 @@ import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.IpAddressV4;
+import it.polimi.ingsw.shared.Jsonable;
+import it.polimi.ingsw.shared.MessageTcp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,8 +52,15 @@ public class ServerTCP extends Server {
     }
     @Override
     boolean login(Client client) {
-        out(client.getPlayerName());
-        return Boolean.parseBoolean(in());
+        MessageTcp login = new MessageTcp();
+        login.setCommand(MessageTcp.MessageCommand.Login); //set command
+        login.setContent(Jsonable.string2json(client.getPlayerName())); //set playername as JsonObject
+        out(login.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+
+        return Jsonable.json2boolean(response.getContent());
+
+
     }
 
 

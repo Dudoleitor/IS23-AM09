@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class MessageTcp {
     private MessageCommand messageCommand;
-    private Object content;
+    private JSONObject content;
 
     public MessageTcp(){
         super();
@@ -27,14 +27,15 @@ public class MessageTcp {
             throw new RuntimeException(e);
         }
         this.messageCommand = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
-        this.content = getObject((JSONObject) jsonMessage.get("content"));
+        this.content = (JSONObject) jsonMessage.get("content");
     }
     public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP
-        SetUsername("Username"),
-        AvailableLobbies("AvailableLobbies")
+        Login("login"),
+        GetJoinedLobbies("getJoinedLobbies"),
+
         ;
 
-        private String label;
+        private final String label;
         MessageCommand(String tag){this.label = tag;}
         public static MessageCommand valueOfLabel(String label) {
             for (MessageCommand e : values()) {
@@ -48,11 +49,12 @@ public class MessageTcp {
         @Override
         public String toString() {return label;}
     }
-    //here starts commands to format the object
+
+
     public void setCommand(MessageCommand messageCommand){
         this.messageCommand = messageCommand;
     }
-    public void setContent(Object content) {
+    public void setContent(JSONObject content) {
         this.content = content;
     }
 
@@ -64,73 +66,13 @@ public class MessageTcp {
         return message.toJSONString();
     }
 
-    public Object getContent(){
-        return content;
-
-
+    public MessageCommand getCommand(){
+        return messageCommand;
     }
 
+    public String getContent(){
+        return content.toJSONString();
 
 
-
-
-    //here start static commands used to support obj creation
-    private Object getObject(JSONObject obj){
-        switch (messageCommand) {
-            case AvailableLobbies:
-                return json2Map(obj);
-
-
-            default:
-                throw new RuntimeException("Illegal content for command");
-        }
-
-    }
-
-    private JSONObject createPayload(){
-        switch (messageCommand) {
-            case AvailableLobbies:
-                return map2json((Map<Integer, Integer>) content);
-
-
-            default:
-                throw new RuntimeException("Illegal content for command");
-        }
-    }
-
-    /**
-     *
-     * @param map of <Integer,Integer>
-     * @return JsonObject that corresponds to that map
-     */
-    private JSONObject map2json(Map<Integer,Integer> map) {
-        JSONObject jsonMap = new JSONObject();
-        map.keySet()
-                .stream()
-                .forEach(x ->
-                        jsonMap.put(
-                                x,
-                                map.get(x)
-                        )
-                );
-        return jsonMap;
-    }
-
-    /**
-     *
-     * @param jsonMap is the JsonObject of the data structure
-     * @return a map of availableLobbies
-     */
-    private Map<Integer,Integer> json2Map (JSONObject jsonMap){
-        Map<Integer,Integer> map = new HashMap<>();
-        jsonMap.keySet()
-                .stream()
-                .forEach(x ->
-                        map.put(
-                                Integer.parseInt(x.toString()),
-                                Integer.parseInt(jsonMap.get(x).toString())
-                        )
-                );
-        return map;
     }
 }
