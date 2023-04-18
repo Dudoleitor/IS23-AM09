@@ -35,11 +35,32 @@ public class Controller implements Jsonable {
         try {
             players = new ArrayList<>();
             Player player;
+
+            List<PlayerGoal> playerGoals = new ArrayList<>();
+            PlayerGoal playerGoal;
+
             turn = 0;
+
+            // Generating players' goals
+            if (PlayerGoal.playerGoalsAmount(PlayerGoals) < clients.size()) {
+                throw new RuntimeException("Unable to generate players goals: not enough goals in file!");
+            }
+            for (int goalToGen = 0; goalToGen < clients.size(); goalToGen++) {
+                playerGoal = new PlayerGoal(PlayerGoals);
+                while (playerGoals.contains(playerGoal)) {
+                    playerGoal = new PlayerGoal(PlayerGoals);
+                }
+                playerGoals.add(playerGoal);
+            }
+
             for (Client client : clients) {
+                playerGoal = playerGoals.get(0);
+                playerGoals.remove(playerGoal);
+
                 player = new Player(client.getPlayerName(),
                         new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns),
-                        new PlayerGoal(PlayerGoals));
+                        playerGoal);
+
                 players.add(player);
                 virtualViews.add(player.getVirtualShelf());
             }
