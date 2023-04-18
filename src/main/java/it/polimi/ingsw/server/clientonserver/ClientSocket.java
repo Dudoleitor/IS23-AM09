@@ -69,7 +69,7 @@ public class ClientSocket implements Client {
         }
     }
     public void setName(String name){
-        if(playerName != null){
+        if(playerName == null){
             playerName = name;
         }
     }

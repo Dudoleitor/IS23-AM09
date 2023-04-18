@@ -28,9 +28,7 @@ public class LobbySelection extends Thread{
      * Login client to server
      * @return true if successful
      */
-    private boolean login(){
-        return server.login(client);
-    }
+    private boolean login(){return server.login(client);}
 
     /**
      * Join a lobby accordingly to the player command
