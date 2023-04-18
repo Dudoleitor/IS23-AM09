@@ -90,6 +90,30 @@ public class PlayerGoal {
     }
 
     /**
+     * This method is used to get the amount of players goals available
+     * in the provided json file.
+     * @param jsonPath Path to the json file containing the goals
+     * @return integer with the amount
+     * @throws JsonBadParsingException when a parsing error happens
+     */
+    public static int playerGoalsAmount(String jsonPath) throws JsonBadParsingException {
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+
+            JSONObject goals = (JSONObject) (obj).get("goals");
+            if (goals == null) {
+                throw new JsonBadParsingException("Error while parsing json: goals not found");}
+
+            return goals.size();  // Choosing a random objective
+        } catch (IOException e) {
+            throw new JsonBadParsingException("Error while loading json: file not found");
+        } catch (ParseException | ClassCastException e) {
+            throw new JsonBadParsingException("Error while parsing json");
+        }
+    }
+
+    /**
      * This function builds an integer-integer map from a json object to
      * map the amount of tiles in the correct position to the points
      * achieved by the player.
@@ -233,8 +257,16 @@ public class PlayerGoal {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlayerGoal that = (PlayerGoal) o;
+        return goalId == that.goalId;
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(positionList, pointsMap, goalId);
+        return Objects.hash(goalId);
     }
 }
 

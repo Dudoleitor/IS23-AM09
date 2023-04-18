@@ -117,4 +117,16 @@ public class PlayerGoalTest {
         shelf.insertTile(Tile.Plant, 1);  // Wrong tile
         assertEquals(8, goal.check(shelf));  // Nothing changes
     }
+
+    @Test
+    void playerGoalsAmountTest() throws JsonBadParsingException {
+        String jsonPath = basePath + "MultipleGoals.json";
+        assertEquals(4, PlayerGoal.playerGoalsAmount(jsonPath));
+    }
+
+    @Test
+    void playerGoalsAmountFailureTest() throws JsonBadParsingException {
+        String jsonPath = basePath + "RandomFileTest.json";
+        assertThrows(JsonBadParsingException.class, () -> PlayerGoal.playerGoalsAmount(jsonPath));
+    }
 }
