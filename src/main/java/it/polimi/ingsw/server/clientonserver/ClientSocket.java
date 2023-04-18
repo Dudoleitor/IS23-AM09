@@ -22,25 +22,12 @@ public class ClientSocket implements Client {
     // TODO add board and shelves
     private String playerName = null;
     private Chat chat;
-    private final Socket clientSocket;
+    private Socket clientSocket;
 
-    private final BufferedReader ClientIn;
-    private final PrintWriter ClientOut;
+    private BufferedReader ClientIn;
+    private PrintWriter ClientOut;
 
-    public ClientSocket(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-        if(clientSocket != null) {
-            try {
-                ClientOut = new PrintWriter(clientSocket.getOutputStream(), true);
-                ClientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            ClientOut = null;
-            ClientIn = null;
-        }
-    }
+    public ClientSocket() {}
 
     /**
      * socket input buffer
@@ -67,6 +54,20 @@ public class ClientSocket implements Client {
         ClientOut.println(message);
     }
 
+    public void setClientSocket(Socket clientSocket){
+        this.clientSocket = clientSocket;
+        if(clientSocket != null) {
+            try {
+                ClientOut = new PrintWriter(clientSocket.getOutputStream(), true);
+                ClientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            ClientOut = null;
+            ClientIn = null;
+        }
+    }
     public void setName(String name){
         if(playerName != null){
             playerName = name;
