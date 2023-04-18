@@ -42,4 +42,9 @@ public class LobbySelectionGUI extends LobbySelectionView {
     public void message(String message) {
 
     }
+
+    @Override
+    public void greet(String playerName) {
+
+    }
 }

@@ -41,7 +41,7 @@ public class LobbyRMI extends Lobby {
     }
 
     @Override
-    public void quitGame(String player, LobbyInterface stub) {
+    public void quitGame(String player) {
         try{
             lobby.quitGame(player);
         } catch (Exception e) {

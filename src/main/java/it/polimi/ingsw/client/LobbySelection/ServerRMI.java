@@ -39,10 +39,10 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public List<Integer> getJoinedLobbies(String nick) {
+    public List<Integer> getJoinedLobbies(String playerName) {
         List<Integer> lobbies = null;
         try {
-            lobbies = server.getJoinedLobbies(nick);
+            lobbies = server.getJoinedLobbies(playerName);
         } catch (Exception e) {
             //TODO
         }

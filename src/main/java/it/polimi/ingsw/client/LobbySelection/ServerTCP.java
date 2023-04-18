@@ -56,7 +56,7 @@ public class ServerTCP extends Server {
 
 
     @Override
-    List<Integer> getJoinedLobbies(String nick) {
+    List<Integer> getJoinedLobbies(String playerName) {
         return null;
     }
 

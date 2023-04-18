@@ -22,7 +22,7 @@ public class LobbyTCP extends Lobby {
     }
 
     @Override
-    public void quitGame(String player, LobbyInterface stub) {
+    public void quitGame(String player) {
 
     }
 

@@ -21,9 +21,14 @@ public class Match extends Thread{
         this.chat = new Chat();
         this.view = view;
     }
-    private void executeUserCommand(Command com){
+
+    /**
+     * Execute a command received from view
+     * @param command the command to execute
+     */
+    private void executeUserCommand(Command command){
         //execute action for every command
-        switch (com){
+        switch (command){
             case Exit: //quit game
                 view.notifyExit();
                 exit = true;
@@ -64,12 +69,20 @@ public class Match extends Thread{
         }
         return true;
     }
+
+    /**
+     * Get message from user and post to Server Chat
+     */
     private void postToChat(){
         Map<String,String> message = view.getMessageFromUser();
         lobby.postToLiveChat(
                 playerName,
                 message.get("message"));
     }
+
+    /**
+     * Get private message from user and post to Server Chat
+     */
     private void postToPrivateChat(){
         Map<String,String> privateMessage = view.getPrivateMessageFromUser();
         lobby.postSecretToLiveChat(
@@ -77,6 +90,10 @@ public class Match extends Thread{
                 privateMessage.get("receiver"),
                 privateMessage.get("message"));
     }
+
+    /**
+     * Get move from user and post to server
+     */
     private void postMove(){
         if(!lobby.matchHasStarted()){
             return;
@@ -87,7 +104,6 @@ public class Match extends Thread{
 
     @Override
     public void run(){
-        view.greet(playerName);
         while(!exit){ //Receive commands until "exit" command is launched
             Command command = view.askCommand();
             try {

@@ -34,13 +34,10 @@ public class MatchCLI extends MatchView {
         io.printErrorMessage("You quit!");
     }
 
-    @Override
-    public void greet(String playerName) {
-        io.printMessage("Hello "+playerName+"!");
-    }
     /**
      * Print all messages in local copy of chat. If none is present "No message yet" will be printed
      */
+    @Override
     public void printAllMessages(Chat chat){
         if(chat == null || chat.size() == 0){
             io.printMessage("No messages yet");

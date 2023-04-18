@@ -91,4 +91,9 @@ public class LobbySelectionCLI extends LobbySelectionView {
     public void message(String message) {
         io.printMessage(message);
     }
+
+    @Override
+    public void greet(String playerName) {
+        io.printMessage("Hello "+playerName+"!");
+    }
 }

@@ -24,11 +24,6 @@ public class MatchGUI extends MatchView {
     }
 
     @Override
-    public void greet(String playerName) {
-
-    }
-
-    @Override
     public Map<String, String> getMessageFromUser() {
         return null;
     }
