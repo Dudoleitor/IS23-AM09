@@ -1,32 +1,21 @@
-package it.polimi.ingsw.shared.RemoteInterfaces;
+package it.polimi.ingsw.client.controller;
 
-import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Position;
-import it.polimi.ingsw.shared.Tile;
+import it.polimi.ingsw.shared.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-/**
- * This object is used on the client to receive updates
- * sent by the model. This object will be wrapped inside
- * a ClientRMI object.
- * The server, inside ClientRMI, will invoke methods on
- * this object and the remote execution will be
- * handled by RMI.
- * Please note that the interface is superfluous, but it's
- * needed by RMI to work properly.
- */
-public interface ClientRemote extends Remote, Serializable {
-
+public interface ClientController {
     /**
      * This method is used to return the name of
      * the players using this client.
+     *
      * @return String, player's name.
      */
     public String getPlayerName() throws RemoteException;
+
 
     /**
      * This method is used when a player picks a tile
@@ -37,6 +26,7 @@ public interface ClientRemote extends Remote, Serializable {
      * @param position position
      */
     public void pickedFromBoard(Position position) throws RemoteException;
+
 
     /**
      * This method is used to transfer the whole board
@@ -56,7 +46,7 @@ public interface ClientRemote extends Remote, Serializable {
      *
      * @param player String name of the player that moved the tile
      * @param column destination column of the shelf
-     * @param tile Tile to insert
+     * @param tile   Tile to insert
      */
     public void putIntoShelf(String player, int column, Tile tile) throws RemoteException;
 
@@ -66,7 +56,7 @@ public interface ClientRemote extends Remote, Serializable {
      * it uses a json string.
      *
      * @param player name of the player
-     * @param shelf JSONObject.toJsonString
+     * @param shelf  JSONObject.toJsonString
      */
     public void refreshShelf(String player, String shelf) throws RemoteException;
 

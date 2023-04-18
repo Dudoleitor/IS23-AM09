@@ -4,15 +4,14 @@ import it.polimi.ingsw.client.Lobby.LobbyRMI;
 import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
-import it.polimi.ingsw.shared.ClientRemoteObject;
+import it.polimi.ingsw.client.controller.ClientControllerCLI;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.NetworkSettings;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.List;
 import java.util.Map;
 
 public class ServerRMI extends Server {
@@ -51,7 +50,7 @@ public class ServerRMI extends Server {
 
     @Override
     public Lobby joinRandomLobby(Client client) throws ServerException{
-        LobbyInterface lobbyRMI = null;
+        ServerLobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinRandomLobby(client).getStub();
         } catch (Exception e) {
@@ -62,7 +61,7 @@ public class ServerRMI extends Server {
 
     @Override
     public Lobby joinSelectedLobby(Client client, int id) throws ServerException{
-        LobbyInterface lobbyRMI = null;
+        ServerLobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinSelectedLobby(client,id).getStub();
         } catch (Exception e) {
@@ -74,7 +73,7 @@ public class ServerRMI extends Server {
     @Override
     Client generateClient(String playerName){
         try {
-            ClientRemoteObject remoteObject = new ClientRemoteObject(playerName);
+            ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
             ClientRMI client = new ClientRMI(remoteObject);
             return client;
         } catch (Exception e) {
@@ -84,7 +83,7 @@ public class ServerRMI extends Server {
 
     @Override
     public Lobby createLobby(Client client) throws ServerException{
-        LobbyInterface lobbyRMI = null;
+        ServerLobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.createLobby(client).getStub();
         } catch (Exception e) {
