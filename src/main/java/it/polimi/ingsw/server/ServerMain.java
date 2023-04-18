@@ -3,6 +3,8 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
+import it.polimi.ingsw.shared.ChatMessage;
+import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
@@ -95,7 +97,7 @@ public class ServerMain implements ServerInterface{
     public boolean login(Client client) throws RemoteException {
         clientsWithoutLobby.add(client);
         System.out.println(client.getPlayerName() + " has just logged in");
-        client.postChatMessage("You joined");
+        client.postChatMessage(new ChatMessage("Server", "You joined", Color.Green));
         return true;
     }
 
