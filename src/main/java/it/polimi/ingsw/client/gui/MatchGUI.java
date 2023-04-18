@@ -19,7 +19,7 @@ public class MatchGUI extends MatchView {
     }
 
     @Override
-    public void printAllMessages(Chat chat) {
+    public void showAllMessages(Chat chat) {
 
     }
 
@@ -40,6 +40,11 @@ public class MatchGUI extends MatchView {
 
     @Override
     protected void showElement() {
+
+    }
+
+    @Override
+    protected void showHelp() {
 
     }
 

@@ -38,7 +38,7 @@ public class MatchCLI extends MatchView {
      * Print all messages in local copy of chat. If none is present "No message yet" will be printed
      */
     @Override
-    public void printAllMessages(Chat chat){
+    public void showAllMessages(Chat chat){
         if(chat == null || chat.size() == 0){
             io.printMessage("No messages yet");
             return;
@@ -123,6 +123,20 @@ public class MatchCLI extends MatchView {
                 io.printErrorMessage("Not valid element");
         }
     }
+
+    @Override
+    protected void showHelp() {
+        String help = "Here are all the commands:\n";
+        List<String> commandList = Arrays.stream(Command.values()).
+                filter(c -> c != Command.Help && c != Command.Invalid).
+                map(c -> "       -" + c.getCode().toUpperCase() + ": "+c.getDescription()+"\n").
+                collect(Collectors.toList());
+        for(String command : commandList){
+            help = help.concat(command);
+        }
+        io.printMessage(help);
+    }
+
     protected void notifyInvalidCommand(){
         io.printErrorMessage("Invalid Command!");
     }

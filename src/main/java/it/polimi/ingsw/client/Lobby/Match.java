@@ -35,7 +35,7 @@ public class Match extends Thread{
                 break;
             case Print: //print all messages
                 updateLiveChat();
-                view.printAllMessages(chat);
+                view.showAllMessages(chat);
                 break;
             case Secret: //send private message
                 postToPrivateChat();
@@ -52,6 +52,9 @@ public class Match extends Thread{
             case Message:
                 postToChat();
                 break;
+            case Help:
+                view.showHelp();
+                break;
             default: //post message to chat
                 view.notifyInvalidCommand();
         }
@@ -59,6 +62,7 @@ public class Match extends Thread{
     /**
      * Downloads all the messages that are present on server and missing in local copy
      */
+    //TODO delete when useless
     private void updateLiveChat(){
         chat = lobby.updateLiveChat();
     }
