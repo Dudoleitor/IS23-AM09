@@ -5,10 +5,9 @@ import it.polimi.ingsw.shared.Move;
 
 import java.rmi.Remote;
 
-public interface LobbyInterface extends Remote {
+public interface ServerLobbyInterface extends Remote {
     void postToLiveChat(String playerName, String message) throws Exception;
     public void postSecretToLiveChat(String sender, String receiver, String message) throws Exception;
-    public Chat updateLiveChat() throws Exception;
     void quitGame(String player) throws Exception;
     boolean matchHasStarted() throws Exception;
     void postMove(String player,Move move) throws Exception;

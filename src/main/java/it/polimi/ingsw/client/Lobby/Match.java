@@ -6,7 +6,6 @@ import it.polimi.ingsw.shared.*;
 import java.util.Map;
 
 public class Match extends Thread{
-    private Chat chat;
     private Lobby lobby;
     private String playerName;
     private Client client;
@@ -17,7 +16,6 @@ public class Match extends Thread{
     public Match(String playerName, Lobby stub, MatchView view){
         this.playerName = playerName;
         this.lobby = stub;
-        this.chat = new Chat();
         this.view = view;
     }
 
@@ -34,8 +32,8 @@ public class Match extends Thread{
                     exit = true;
                     break;
                 case Print: //print all messages
-                    updateLiveChat();
-                    view.showAllMessages(chat);
+                    //view.showAllMessages(chat);
+                    // TODO Here we should use ClientControllerCLI
                     break;
                 case Secret: //send private message
                     postToPrivateChat();
@@ -63,13 +61,6 @@ public class Match extends Thread{
             //TODO handle better
             e.printStackTrace();
         }
-    }
-    /**
-     * Downloads all the messages that are present on server and missing in local copy
-     */
-    //TODO delete when useless
-    private void updateLiveChat() throws LobbyException {
-        chat = lobby.updateLiveChat();
     }
     private static boolean checkValidReceiver(ChatMessage message, String receiverName){
         if (message.getClass().equals(PrivateChatMessage.class)){

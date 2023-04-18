@@ -1,6 +1,6 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.client.controller;
 
-import it.polimi.ingsw.server.CommonGoal;
+import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,18 +16,18 @@ import java.util.Map;
  * This object is used on the client to receive updates
  * sent by the model. This object will be wrapped inside
  * a ClientRMI object.
- * The server, inside ClientRMI will invoke methods on
+ * The server, inside ClientRMI, will invoke methods on
  * this object and the remote execution will be
  * handled by RMI.
  */
-public class ClientRemoteObject extends UnicastRemoteObject implements ClientRemote {
+public class ClientControllerCLI extends UnicastRemoteObject implements ClientRemote, ClientController {
 
     private final String playerName;
     private Chat chat;
     private Board board;
     private final Map<String, Shelf> playersShelves;
 
-    public ClientRemoteObject(String playerName) throws RemoteException {
+    public ClientControllerCLI(String playerName) throws RemoteException {
         super();
         this.playerName = playerName;
         this.chat = new Chat();
@@ -155,10 +155,11 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
 
     /**
      * This method is used to send a chat message to clients.
-     * @param message ChatMessage object
+     * @param sender Player's name
+     * @param message String message
      */
-    public void postChatMessage(ChatMessage message) throws RemoteException {
-        chat.addMessage(message);
+    public void postChatMessage(String sender, String message) throws RemoteException {
+        chat.addMessage(sender, message);
     }
 
     /**
@@ -166,7 +167,7 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
      * it is used when a refresh is needed.
      * @param chat Chat object
      */
-    public void refreshChat(Chat chat) {
+    public void refreshChat(Chat chat) throws RemoteException {
         this.chat = chat;
     }
 }

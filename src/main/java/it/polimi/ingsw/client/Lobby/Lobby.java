@@ -23,12 +23,6 @@ public abstract class Lobby {
     abstract public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException;
 
     /**
-     * Get updated livechat
-     * @return the updated chat
-     */
-    abstract public Chat updateLiveChat() throws LobbyException;
-
-    /**
      * Disconnect the player
      * @param player
      */
