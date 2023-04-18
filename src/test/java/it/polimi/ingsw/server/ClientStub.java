@@ -1,6 +1,8 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 
@@ -39,7 +41,12 @@ public class ClientStub implements Client {
     }
 
     @Override
-    public void postChatMessage(String message) {
+    public void postChatMessage(ChatMessage message) {
+
+    }
+
+    @Override
+    public void refreshChat(Chat chat) {
 
     }
 
