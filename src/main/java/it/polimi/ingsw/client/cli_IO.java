@@ -34,6 +34,9 @@ public class cli_IO {
         return ">"+ Color.coloredString("GAME",GAMEColor)+": " + Color.coloredString(s,messageColor);
     }
 
+    /**
+     * Prints the placeholder
+     */
     public void printPlaceHolder(){
         System.out.print("$:");
     }
@@ -48,18 +51,28 @@ public class cli_IO {
     }
 
     //Print methods
+
+    /**
+     * Prints the string (decorated as a message) in a synchronous way
+     * @param s the message string
+     */
     public void printMessage(String s){
         synchronized (cli_Lock) {
             System.out.println(messageFormat(s));
         }
     }
+
+    /**
+     * Prints the string (decorated as an error message) in a synchronous way
+     * @param s the message string
+     */
     public void printErrorMessage(String s){
         synchronized (cli_Lock) {
             System.out.println(errorFormat(s));
         }
     }
     /**
-     * Write some Strings on Std out without avoiding concurrent access
+     * Write some Strings on Std out (no decorator) in a synchronous way
      * @param stringList the strings to print
      */
     public void multiPrint(List<String> stringList){
@@ -71,6 +84,11 @@ public class cli_IO {
     }
 
     //Scan methods
+
+    /**
+     * Locks the IO and waits for input to scan
+     * @return the user input
+     */
     public String scanSync(){
         String command = "";
         synchronized (cli_Lock){
@@ -79,11 +97,21 @@ public class cli_IO {
         }
         return command;
     }
+    /**
+     * Scans the input without locking IO
+     * @return the user input
+     */
     public String scan(){
         printPlaceHolder();
         String command = scanner.nextLine();
         return command;
     }
+
+    /**
+     * Scans n Strings while locking IO
+     * @param size
+     * @return the scanned Stings
+     */
     public String[] multiScan(int size){
         String[] result = new String[size];
         synchronized (cli_Lock){
@@ -94,6 +122,11 @@ public class cli_IO {
         }
         return result;
     }
+    /**
+     * Lock the IO and scans for all the fields
+     * @param fields
+     * @return a map that associates each field with the scanned String
+     */
     public Map<String,String> multiScan(List<String> fields){
         Map<String,String> result = new HashMap();
         synchronized (cli_Lock){

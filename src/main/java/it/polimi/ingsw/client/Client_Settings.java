@@ -15,7 +15,14 @@ public class Client_Settings {
     public static final Color messageColor = Color.Yellow;
     public static final Color GAMEColor = Color.Purple;
     public static final Color errorColor = Color.Red;
-
+    public static final String gameLogo = Color.coloredString(
+                    "\n\n"+
+                            "███    ███ ██    ██     ███████ ██   ██ ███████ ██      ███████ ██ ███████ \n" +
+                            "████  ████  ██  ██      ██      ██   ██ ██      ██      ██      ██ ██      \n" +
+                            "██ ████ ██   ████       ███████ ███████ █████   ██      █████   ██ █████   \n" +
+                            "██  ██  ██    ██             ██ ██   ██ ██      ██      ██      ██ ██      \n" +
+                            "██      ██    ██        ███████ ██   ██ ███████ ███████ ██      ██ ███████ \n\n",
+                    Client_Settings.messageColor);
 
     public enum Connection{
         TCP("tcp"),

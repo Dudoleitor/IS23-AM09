@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static it.polimi.ingsw.client.Client_Settings.*;
+
 public class LobbySelectionCLI extends LobbySelectionView {
     private cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
@@ -22,32 +24,21 @@ public class LobbySelectionCLI extends LobbySelectionView {
         }
         return name;
     }
-    public void showJoinedLobbies(List<Integer> previousSessions){
-        if (previousSessions != null && !previousSessions.isEmpty()) { //if some previous session is available
-            io.printMessage("Welcome back!");
-            String message = "Here are your already joined lobbies";
-            List<String> previousLobbies = previousSessions.stream().
-                    map(x -> "\n   --> Lobby " + x).
-                    collect(Collectors.toList());
-            for(String s : previousLobbies){
-                message = message.concat(s);
-            }
-            io.printMessage(message);
-        }
-    }
-    public void showLobbyList(Map availableLobbies){
+    @Override
+    public void showLobbies(Map<Integer,Integer> availableLobbies, String description){
+        io.printMessage(description);
         if (!(availableLobbies == null) && !availableLobbies.isEmpty()) {
-            String lobbyMessage = "Here are the active lobbies:";
+            String lobbyMessage = "";
             List<String> lobbyList = (List<String>)
                     availableLobbies.keySet().stream().
-                            map(x -> "\n   --> Lobby " + x + ":  " + availableLobbies.get(x) + " players in").
+                            map(x -> "   --> Lobby " + x + ":  " + availableLobbies.get(x) + " players in\n").
                             collect(Collectors.toList());
             for(String mes : lobbyList){
                 lobbyMessage = lobbyMessage.concat(mes);
             }
             io.printMessage(lobbyMessage);
         } else {
-            io.printMessage("No other active lobby is available, you might want to create one");
+            io.printMessage("None");
         }
     }
     @Override
@@ -74,7 +65,7 @@ public class LobbySelectionCLI extends LobbySelectionView {
         String answer;
         message("Do you want to play again?");
         answer = io.scan();
-        if(answer.equals("yes") || answer.equals("y")){
+        if(answer.toLowerCase().equals("yes") || answer.toLowerCase().equals("y")){
             return true;
         }
         else {
@@ -90,5 +81,11 @@ public class LobbySelectionCLI extends LobbySelectionView {
     @Override
     public void message(String message) {
         io.printMessage(message);
+    }
+
+    @Override
+    public void greet(String playerName) {
+        System.out.println(gameLogo);
+        io.printMessage("Hello "+playerName+"!");
     }
 }

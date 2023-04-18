@@ -107,14 +107,13 @@ public class ServerMain implements ServerInterface{
      * @return list of lobby id of matches joined by the player
      */
     @Override
-    public List<Integer> getJoinedLobbies(String nick){
-        List<Integer> listLobbies = //get all lobbies already joined by the client
+    public Map<Integer,Integer> getJoinedLobbies(String nick){
+        Map<Integer,Integer> lobbyList = new HashMap<>();//get all lobbies already joined by the client
                 lobbies.keySet()
                         .stream()
                         .filter(x -> x.getPlayerNames().contains(nick))
-                        .map(Lobby::getID)
-                        .collect(Collectors.toList());
-        return listLobbies;
+                        .forEach(x -> lobbyList.put(x.getID(),x.getPlayerNames().size()));
+        return lobbyList;
     }
 
     /**
@@ -124,9 +123,14 @@ public class ServerMain implements ServerInterface{
     @Override
     public LobbyRemoteCouple joinRandomLobby(Client client){
         LobbyRemoteCouple lobbyCouple;
-        List<Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
+        Map<Integer,Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
         if(alreadyJoined.size() > 0){
-            lobbyCouple = joinSelectedLobby(client,alreadyJoined.get(0));
+            int alreadyJoinedID = alreadyJoined.
+                    keySet().
+                    stream().
+                    findFirst().
+                    orElse(-1);
+            lobbyCouple = joinSelectedLobby(client,alreadyJoinedID);
         } else {
             Lobby lobby = lobbies.keySet()
                     .stream()

@@ -1,9 +1,9 @@
 package it.polimi.ingsw.client.LobbySelection;
 
 import it.polimi.ingsw.client.Lobby.Lobby;
+import it.polimi.ingsw.client.Lobby.LobbyException;
 import it.polimi.ingsw.client.Lobby.MatchCLI;
 import it.polimi.ingsw.client.Lobby.Match;
-import it.polimi.ingsw.client.Lobby.MatchView;
 import it.polimi.ingsw.server.clientonserver.Client;
 
 import java.util.List;
@@ -14,7 +14,6 @@ public class LobbySelection extends Thread{
     private String playerName;
     private Server server;
     private Client client;
-    private Match match;
     private LobbySelectionView view;
 
     //Constructor
@@ -24,9 +23,21 @@ public class LobbySelection extends Thread{
     }
 
     //Methods
+
+    /**
+     * Login client to server
+     * @return true if successful
+     */
     private boolean login(){
         return server.login(client);
     }
+
+    /**
+     * Join a lobby accordingly to the player command
+     * @param command
+     * @return the Lobby object that will handle the connection to the
+     * Lobby on the server
+     */
     private Lobby joinLobby(LobbySelectionCommand command){
         switch (command){
             case Random:
@@ -37,6 +48,12 @@ public class LobbySelection extends Thread{
                 return null;
         }
     }
+
+    /**
+     * Try login tries times
+     * @param tries
+     * @return true if successful
+     */
     private boolean tryLogin(int tries){
         boolean logged = false;
         //Try to log in for 30s (1 try each second)
@@ -54,14 +71,27 @@ public class LobbySelection extends Thread{
         return logged;
     }
 
-    private List<Integer> getPreviousSessions(){
+    /**
+     * Get a List of the lobby IDs where the player is in
+     * @return the list of lobby IDs
+     */
+    private Map<Integer,Integer> getPreviousSessions(){
         return server.getJoinedLobbies(playerName);
     }
+
+    /**
+     * Get all the lobbies that are available for the client to join
+     * @return a map of the lobby IDs to the Number of player present
+     */
     private Map getAvailableLobbies(){
-        return server.showAvailableLobbbies();
+        return server.getAvailableLobbies();
     }
 
-    private Match getLobbyUI(){
+    /**
+     * Get the match thread to start in order to play
+     * @return the Match object
+     */
+    private Match getMatch(){
         LobbySelectionCommand command = LobbySelectionCommand.Invalid;
         Lobby lobby = null;
         while(command == LobbySelectionCommand.Invalid){
@@ -71,7 +101,12 @@ public class LobbySelection extends Thread{
                 view.errorMessage("Input a valid id (must be a number)");
             }
         }
-        view.message("You joined #"+ lobby.getID()+" lobby!");
+        try{
+            view.message("You joined #"+ lobby.getID()+" lobby!");
+        }
+        catch (LobbyException e){
+            //TODO
+        }
         //Create the lobbyUI object and start the match
         return new Match(playerName, lobby, new MatchCLI());
     }
@@ -82,10 +117,11 @@ public class LobbySelection extends Thread{
         while(play){
             playerName = view.askUserName();
             client = server.generateClient(playerName);
+            view.greet(playerName);
             tryLogin(30);
-            view.showJoinedLobbies(getPreviousSessions());
-            view.showLobbyList(getAvailableLobbies());
-            Match match = getLobbyUI();
+            view.showLobbies(getPreviousSessions(),"The lobbies you already joined");
+            view.showLobbies(getAvailableLobbies(), "The lobbies that are available");
+            Match match = getMatch();
             match.start();
             try {
                 match.join();

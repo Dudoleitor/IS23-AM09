@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.Lobby;
 
-import it.polimi.ingsw.client.Command;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
 
@@ -21,40 +20,55 @@ public class Match extends Thread{
         this.chat = new Chat();
         this.view = view;
     }
-    private void executeUserCommand(Command com){
-        //execute action for every command
-        switch (com){
-            case Exit: //quit game
-                view.notifyExit();
-                exit = true;
-                break;
-            case Print: //print all messages
-                updateLiveChat();
-                view.printAllMessages(chat);
-                break;
-            case Secret: //send private message
-                postToPrivateChat();
-                break;
-            case Start:
-                lobby.startGame(playerName);
-                break;
-            case Move:
-                postMove();
-                break;
-            case Peek:
-                view.showElement();
-                break;
-            case Message:
-                postToChat();
-                break;
-            default: //post message to chat
-                view.notifyInvalidCommand();
+
+    /**
+     * Execute a lobbyCommand received from view
+     * @param lobbyCommand the lobbyCommand to execute
+     */
+    private void executeUserCommand(LobbyCommand lobbyCommand){
+        //execute action for every lobbyCommand
+        try {
+            switch (lobbyCommand) {
+                case Exit: //quit game
+                    view.notifyExit();
+                    exit = true;
+                    break;
+                case Print: //print all messages
+                    updateLiveChat();
+                    view.showAllMessages(chat);
+                    break;
+                case Secret: //send private message
+                    postToPrivateChat();
+                    break;
+                case Start:
+                    lobby.startGame(playerName);
+                    break;
+                case Move:
+                    postMove();
+                    break;
+                case Peek:
+                    view.showElement();
+                    break;
+                case Message:
+                    postToChat();
+                    break;
+                case Help:
+                    view.showHelp();
+                    break;
+                default: //post message to chat
+                    view.notifyInvalidCommand();
+            }
+        }
+        catch (LobbyException e){
+            //TODO handle better
+            e.printStackTrace();
         }
     }
     /**
      * Downloads all the messages that are present on server and missing in local copy
      */
-    private void updateLiveChat(){
+    //TODO delete when useless
+    private void updateLiveChat() throws LobbyException {
         chat = lobby.updateLiveChat();
     }
     private static boolean checkValidReceiver(ChatMessage message, String receiverName){
@@ -64,20 +78,32 @@ public class Match extends Thread{
         }
         return true;
     }
-    private void postToChat(){
+
+    /**
+     * Get message from user and post to Server Chat
+     */
+    private void postToChat() throws LobbyException {
         Map<String,String> message = view.getMessageFromUser();
         lobby.postToLiveChat(
                 playerName,
                 message.get("message"));
     }
-    private void postToPrivateChat(){
+
+    /**
+     * Get private message from user and post to Server Chat
+     */
+    private void postToPrivateChat() throws LobbyException {
         Map<String,String> privateMessage = view.getPrivateMessageFromUser();
         lobby.postSecretToLiveChat(
                 playerName,
                 privateMessage.get("receiver"),
                 privateMessage.get("message"));
     }
-    private void postMove(){
+
+    /**
+     * Get move from user and post to server
+     */
+    private void postMove() throws LobbyException {
         if(!lobby.matchHasStarted()){
             return;
         }
@@ -87,14 +113,9 @@ public class Match extends Thread{
 
     @Override
     public void run(){
-        view.greet(playerName);
-        while(!exit){ //Receive commands until "exit" command is launched
-            Command command = view.askCommand();
-            try {
-                executeUserCommand(command);
-            } catch (Exception e) {
-                //TODO hanlde
-            }
+        while(!exit){ //Receive commands until "exit" lobbyCommand is launched
+            LobbyCommand lobbyCommand = view.askCommand();
+            executeUserCommand(lobbyCommand);
         }
     }
 }

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.gui;
 
-import it.polimi.ingsw.client.Command;
+import it.polimi.ingsw.client.Lobby.LobbyCommand;
 import it.polimi.ingsw.client.Lobby.MatchView;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Move;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class MatchGUI extends MatchView {
     @Override
-    protected Command askCommand() {
+    protected LobbyCommand askCommand() {
         return null;
     }
 
@@ -19,12 +19,7 @@ public class MatchGUI extends MatchView {
     }
 
     @Override
-    public void printAllMessages(Chat chat) {
-
-    }
-
-    @Override
-    public void greet(String playerName) {
+    public void showAllMessages(Chat chat) {
 
     }
 
@@ -45,6 +40,11 @@ public class MatchGUI extends MatchView {
 
     @Override
     protected void showElement() {
+
+    }
+
+    @Override
+    protected void showHelp() {
 
     }
 

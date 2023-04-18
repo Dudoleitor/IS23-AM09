@@ -19,12 +19,7 @@ public class LobbySelectionGUI extends LobbySelectionView {
     }
 
     @Override
-    public void showJoinedLobbies(List<Integer> previousSessions) {
-
-    }
-
-    @Override
-    public void showLobbyList(Map availableLobbies) {
+    public void showLobbies(Map availableLobbies, String description) {
 
     }
 
@@ -40,6 +35,11 @@ public class LobbySelectionGUI extends LobbySelectionView {
 
     @Override
     public void message(String message) {
+
+    }
+
+    @Override
+    public void greet(String playerName) {
 
     }
 }
