@@ -128,7 +128,10 @@ public class ControllerTest {
         Controller c = new Controller(clients);
 
         List<Player> players = c.getPlayers();
-        c.setActivity(players.get(1).getName(),false);
+        assertEquals("fridgeieri", c.getCurrentPlayerName());
+        c.setActivity("fridgeoggi",false);
+        c.nextTurn();
+        assertEquals("fridgedomani", c.getCurrentPlayerName());
 
         for (int i = 0; i < 10; i++) {
             assertFalse(c.getCurrentPlayerName().equals(c.getPlayers().get(1)));
@@ -173,8 +176,8 @@ public class ControllerTest {
         //modify a copy of the list
         players.get(0).setActive(false);
         players.get(2).setActive(false);
-        assertTrue(c.getActivePlayers().get(0).isActive());
-        assertTrue(c.getActivePlayers().get(2).isActive());
+        assertTrue(c.getPlayers().get(0).isActive());
+        assertTrue(c.getPlayers().get(2).isActive());
     }
 
     @Test
