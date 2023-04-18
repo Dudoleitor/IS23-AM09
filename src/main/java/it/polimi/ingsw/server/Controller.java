@@ -14,6 +14,9 @@ import static it.polimi.ingsw.server.JSONFilePath.PlayerGoals;
 
 public class Controller implements Jsonable {
     private final Board board;
+
+    // This list MUST always have the same size
+    // When a player disconnects it's marked as unactive
     private final List<Player> players;
     private final List<Client> clients;
     private final List<VirtualView> virtualViews;
@@ -156,22 +159,6 @@ public class Controller implements Jsonable {
                 collect(Collectors.toList());
     }
 
-    /**
-     * @return active players of the match
-     */
-    public List<Player> getActivePlayers() {
-            return players.stream().
-                    filter(p -> p.isActive()).
-                    map(p-> {
-                        try {
-                            return new Player(p);
-                        } catch (JsonBadParsingException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).
-                    collect(Collectors.toList());
-    }
-
     public void setActivity(String playerName, boolean value) throws ControllerGenericException{
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
@@ -194,9 +181,8 @@ public class Controller implements Jsonable {
      */
     public void nextTurn() {
         turn++;
-        List<Player> activePlayers = getActivePlayers();
 
-        if(!activePlayers.get((getTurn()) % activePlayers.size()).isActive()) {
+        if(!players.get( getTurn() % players.size() ) .isActive()) {
             nextTurn();
         }
     }
@@ -206,7 +192,7 @@ public class Controller implements Jsonable {
      */
     public String getCurrentPlayerName() {
 
-        return getPlayers().get(getTurn() % getActivePlayers().size()).getName();
+        return players.get(getTurn() % players.size()).getName();
     }
 
     /**

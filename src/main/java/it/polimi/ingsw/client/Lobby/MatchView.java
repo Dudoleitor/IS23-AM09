@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.Lobby;
 
-import it.polimi.ingsw.client.Command;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Move;
 
@@ -9,9 +8,9 @@ import java.util.Map;
 public abstract class MatchView {
     /**
      * Ask the user for a command
-     * @return the selected Command
+     * @return the selected LobbyCommand
      */
-    protected abstract Command askCommand();
+    protected abstract LobbyCommand askCommand();
     /**
      * Notify the user that they entered an ivalid command
      */
@@ -26,7 +25,7 @@ public abstract class MatchView {
      * Show the user all chat messages
      * @param chat the Chat to print
      */
-    public abstract void printAllMessages(Chat chat);
+    public abstract void showAllMessages(Chat chat);
 
     /**
      * Ask the player to input a message
@@ -50,5 +49,10 @@ public abstract class MatchView {
      * Show the user an object from the model
      */
     protected abstract void showElement();
+
+    /**
+     * Show the list of commands that the client can execute
+     */
+    protected abstract void showHelp();
 
 }

@@ -7,47 +7,47 @@ import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 //TODO implement
 public class LobbyTCP extends Lobby {
     @Override
-    public void postToLiveChat(String playerName, String message) {
+    public void postToLiveChat(String playerName, String message) throws LobbyException{
 
     }
 
     @Override
-    public void postSecretToLiveChat(String sender, String receiver, String message) {
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
 
     }
 
     @Override
-    public Chat updateLiveChat() {
+    public Chat updateLiveChat() throws LobbyException {
         return null;
     }
 
     @Override
-    public void quitGame(String player) {
+    public void quitGame(String player) throws LobbyException{
 
     }
 
     @Override
-    public boolean matchHasStarted() {
+    public boolean matchHasStarted() throws LobbyException {
         return false;
     }
 
     @Override
-    public void postMove(String player, Move move) {
+    public void postMove(String player, Move move) throws LobbyException {
 
     }
 
     @Override
-    public boolean startGame(String player) {
+    public boolean startGame(String player)throws LobbyException {
         return false;
     }
 
     @Override
-    public boolean isLobbyAdmin(String player) {
+    public boolean isLobbyAdmin(String player)throws LobbyException {
         return false;
     }
 
     @Override
-    public int getID() {
+    public int getID()throws LobbyException {
         return 0;
     }
 }

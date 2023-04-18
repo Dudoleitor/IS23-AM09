@@ -1,9 +1,7 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 import java.rmi.RemoteException;
@@ -171,7 +169,7 @@ public class Lobby implements LobbyInterface {
             }
         } catch (ControllerGenericException e){
             if(playerInput != null)
-                playerInput.postChatMessage(e.getMessage());
+                playerInput.postChatMessage(new ChatMessage("Server", e.getMessage(), Color.Red));
         }
 
     }

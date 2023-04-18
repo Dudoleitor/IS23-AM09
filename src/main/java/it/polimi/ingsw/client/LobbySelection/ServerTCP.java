@@ -56,27 +56,27 @@ public class ServerTCP extends Server {
 
 
     @Override
-    Map<Integer,Integer> getJoinedLobbies(String playerName) {
+    Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
         return null;
     }
 
     @Override
-    Lobby joinRandomLobby(Client client) {
+    Lobby joinRandomLobby(Client client) throws ServerException {
         return null;
     }
 
     @Override
-    Lobby createLobby(Client client) {
+    Lobby createLobby(Client client) throws ServerException {
         return null;
     }
 
     @Override
-    Map<Integer, Integer> getAvailableLobbies() {
+    Map<Integer, Integer> getAvailableLobbies()throws ServerException {
         return null;
     }
 
     @Override
-    Lobby joinSelectedLobby(Client client, int id) {
+    Lobby joinSelectedLobby(Client client, int id)throws ServerException {
         return null;
     }
 

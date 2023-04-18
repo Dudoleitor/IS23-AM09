@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static it.polimi.ingsw.client.Client_Settings.*;
+
 public class LobbySelectionCLI extends LobbySelectionView {
     private cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
@@ -63,7 +65,7 @@ public class LobbySelectionCLI extends LobbySelectionView {
         String answer;
         message("Do you want to play again?");
         answer = io.scan();
-        if(answer.equals("yes") || answer.equals("y")){
+        if(answer.toLowerCase().equals("yes") || answer.toLowerCase().equals("y")){
             return true;
         }
         else {
@@ -83,6 +85,7 @@ public class LobbySelectionCLI extends LobbySelectionView {
 
     @Override
     public void greet(String playerName) {
+        System.out.println(gameLogo);
         io.printMessage("Hello "+playerName+"!");
     }
 }

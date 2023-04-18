@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.clientonserver;
 
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 
@@ -19,6 +21,7 @@ import java.util.Objects;
 public class ClientSocket implements Client {
     // TODO add board and shelves
     private String playerName = null;
+    private Chat chat;
     private final Socket clientSocket;
 
     private final BufferedReader ClientIn;
@@ -137,12 +140,21 @@ public class ClientSocket implements Client {
 
     /**
      * This method is used to send a chat message to clients.
-     * THIS IS TEMPORARY, we'll be updated
-     * @param message
+     * @param message ChatMessage object
      */
-    // TODO
-    @Override
-    public void postChatMessage(String message) {}
+    public void postChatMessage(ChatMessage message) {
+
+    }
+
+    /**
+     * This method is used to send the whole chat to the client,
+     * it is used when a refresh is needed.
+     * @param chat Chat object
+     */
+    public void refreshChat(Chat chat) {
+
+    }
+
 
     @Override
     public boolean equals(Object o) {  // Checking using LOWERCASE name

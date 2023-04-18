@@ -1,5 +1,7 @@
 package it.polimi.ingsw.shared.RemoteInterfaces;
 
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 
@@ -70,9 +72,14 @@ public interface ClientRemote extends Remote, Serializable {
 
     /**
      * This method is used to send a chat message to clients.
-     * THIS IS TEMPORARY, we'll be updated
-     * @param message
+     * @param message ChatMessage object
      */
-    // TODO
-    public void postChatMessage(String message) throws RemoteException;
+    public void postChatMessage(ChatMessage message) throws RemoteException;
+
+    /**
+     * This method is used to send the whole chat to the client,
+     * it is used when a refresh is needed.
+     * @param chat Chat object
+     */
+    public void refreshChat(Chat chat);
 }

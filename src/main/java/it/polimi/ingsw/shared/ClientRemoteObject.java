@@ -1,9 +1,16 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.server.CommonGoal;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This object is used on the client to receive updates
@@ -15,11 +22,17 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ClientRemoteObject extends UnicastRemoteObject implements ClientRemote {
 
-    // TODO add board and shelves
     private final String playerName;
+    private Chat chat;
+    private Board board;
+    private final Map<String, Shelf> playersShelves;
+
     public ClientRemoteObject(String playerName) throws RemoteException {
         super();
         this.playerName = playerName;
+        this.chat = new Chat();
+        this.board = null;
+        this.playersShelves = new HashMap<>();
     }
 
     /**
@@ -34,6 +47,39 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
     }
 
     /**
+     * This method is used (by match) to get the board and
+     * pass it to the view.
+     * @return Board object, by copy
+     */
+    public Board getBoard() {
+        if (board==null) {
+            throw new RuntimeException("The client contains an invalid board: null");
+        }
+        try {
+            return new Board(this.board);
+        } catch (JsonBadParsingException e) {
+            throw new RuntimeException("The client contains an invalid board: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method is used (by match) to get the map containing
+     * players and their shelf.
+     * @return Map (by copy): String is playerName, Shelf is a Shelf object
+     */
+    public Map<String, Shelf> getPlayersShelves() {
+        return new HashMap<>(playersShelves);
+    }
+
+    /**
+     * This method is used (by match) to get the chat and print it.
+     * @return Chat object, by copy
+     */
+    public Chat getChat() {
+        return new Chat(this.chat);
+    }
+
+    /**
      * This method is used when a player picks a tile
      * from the board. It sends the message
      * to the remote view to remove the tile
@@ -43,7 +89,11 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
      */
     @Override
     public void pickedFromBoard(Position position) throws RemoteException {
-        //TODO
+        try {
+            board.pickTile(position);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
     }
 
     /**
@@ -55,7 +105,12 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
      */
     @Override
     public void refreshBoard(String board) throws RemoteException {
-        // TODO
+        try {
+            JSONObject jsonBoard = (JSONObject) (new JSONParser()).parse(board);
+            this.board = new Board(jsonBoard, new ArrayList<>());
+        } catch (ParseException | ClassCastException | JsonBadParsingException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
     }
 
     /**
@@ -71,7 +126,13 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
      */
     @Override
     public void putIntoShelf(String player, int column, Tile tile) throws RemoteException {
-        // TODO
+        try{
+            Shelf shelf = playersShelves.get(player);
+            shelf.insertTile(tile, column);
+            playersShelves.replace(player, shelf);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
     }
 
     /**
@@ -84,16 +145,28 @@ public class ClientRemoteObject extends UnicastRemoteObject implements ClientRem
      */
     @Override
     public void refreshShelf(String player, String shelf) throws RemoteException {
-        // TODO
+        try {
+            JSONObject jsonShelf = (JSONObject) (new JSONParser()).parse(shelf);
+            this.playersShelves.replace(player, new Shelf(jsonShelf));
+        } catch (ParseException | ClassCastException | JsonBadParsingException e) {
+            throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
+        }
     }
 
     /**
      * This method is used to send a chat message to clients.
-     * THIS IS TEMPORARY, we'll be updated
-     * @param message
+     * @param message ChatMessage object
      */
-    // TODO
-    public void postChatMessage(String message) throws RemoteException {
-        System.out.println(message);
+    public void postChatMessage(ChatMessage message) throws RemoteException {
+        chat.addMessage(message);
+    }
+
+    /**
+     * This method is used to send the whole chat to the client,
+     * it is used when a refresh is needed.
+     * @param chat Chat object
+     */
+    public void refreshChat(Chat chat) {
+        this.chat = chat;
     }
 }

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.clientonserver;
 
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
@@ -18,6 +20,7 @@ import java.util.Objects;
 public class ClientRMI implements Client, Remote, Serializable {
     private final String playerName;
     private final ClientRemote clientRemote;
+    private Chat chat;
 
     public ClientRMI(ClientRemote clientRemote) throws RemoteException {
         this.playerName = clientRemote.getPlayerName();
@@ -104,18 +107,27 @@ public class ClientRMI implements Client, Remote, Serializable {
 
     /**
      * This method is used to send a chat message to clients.
-     * THIS IS TEMPORARY, we'll be updated
-     * @param message
+     * @param message ChatMessage object
      */
-    // TODO
     @Override
-    public void postChatMessage(String message) {
+    public void postChatMessage(ChatMessage message) {
         try {
             clientRemote.postChatMessage(message);
         } catch (RemoteException e) {
             e.printStackTrace();
             // TODO Handle exception
         }
+    }
+
+
+    /**
+     * This method is used to send the whole chat to the client,
+     * it is used when a refresh is needed.
+     * @param chat Chat object
+     */
+    @Override
+    public void refreshChat(Chat chat) {
+
     }
 
     @Override

@@ -27,6 +27,11 @@ public class Chat implements Serializable {
                 MapColorPlayer.get(sender));
         chatMessages.add(message);
     }
+
+    public void addMessage(ChatMessage message) {
+        this.addMessage(message.getSender(), message.getMessage());
+    }
+
     public void add(PrivateChatMessage newSecret){
         chatMessages.add(newSecret);
     }

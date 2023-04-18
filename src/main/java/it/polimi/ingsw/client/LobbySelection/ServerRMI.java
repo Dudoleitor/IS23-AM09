@@ -39,41 +39,40 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public Map<Integer,Integer> getJoinedLobbies(String playerName) {
+    public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException{
         Map<Integer,Integer> lobbies = null;
         try {
             lobbies = server.getJoinedLobbies(playerName);
         } catch (Exception e) {
-            //TODO
+            throw new ServerException("Error in Server");
         }
         return lobbies;
     }
 
     @Override
-    public Lobby joinRandomLobby(Client client) {
+    public Lobby joinRandomLobby(Client client) throws ServerException{
         LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinRandomLobby(client).getStub();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            //TODO
+            throw new ServerException("Error in Server");
         }
         return new LobbyRMI(lobbyRMI);
     }
 
     @Override
-    public Lobby joinSelectedLobby(Client client, int id) {
+    public Lobby joinSelectedLobby(Client client, int id) throws ServerException{
         LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.joinSelectedLobby(client,id).getStub();
         } catch (Exception e) {
-            //TODO
+            throw new ServerException("Error in Server");
         }
         return new LobbyRMI(lobbyRMI);
     }
 
     @Override
-    Client generateClient(String playerName) {
+    Client generateClient(String playerName){
         try {
             ClientRemoteObject remoteObject = new ClientRemoteObject(playerName);
             ClientRMI client = new ClientRMI(remoteObject);
@@ -84,23 +83,23 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public Lobby createLobby(Client client) {
+    public Lobby createLobby(Client client) throws ServerException{
         LobbyInterface lobbyRMI = null;
         try{
             lobbyRMI = server.createLobby(client).getStub();
         } catch (Exception e) {
-            //TODO
+            throw new ServerException("Error in Server");
         }
         return new LobbyRMI(lobbyRMI);
     }
 
     @Override
-    public Map<Integer, Integer> getAvailableLobbies() {
+    public Map<Integer, Integer> getAvailableLobbies() throws ServerException{
         Map<Integer, Integer> availableLobbies = null;
         try{
             availableLobbies = server.showAvailableLobbies();
         } catch (Exception e) {
-            //TODO
+            throw new ServerException("Error in Server");
         }
         return availableLobbies;
     }

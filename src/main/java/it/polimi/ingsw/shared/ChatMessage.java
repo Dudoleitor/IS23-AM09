@@ -12,7 +12,7 @@ public class ChatMessage implements Serializable {
     private Timestamp timestamp;
     private Color color;
 
-    ChatMessage(String playerName, String message, Color color){
+    public ChatMessage(String playerName, String message, Color color){
         this.message = message;
         this.playerName = playerName;
         Date date = new Date();

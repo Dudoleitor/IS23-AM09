@@ -12,7 +12,7 @@ public abstract class LobbySelectionView {
 
     /**
      * Ask the player what lobby they want to join
-     * @return a LobbySelection Command corresponding to the user request
+     * @return a LobbySelection LobbyCommand corresponding to the user request
      */
     public abstract LobbySelectionCommand askLobby();
 
