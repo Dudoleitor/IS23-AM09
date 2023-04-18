@@ -140,9 +140,11 @@ public class ClientSocket implements Client {
 
     /**
      * This method is used to send a chat message to clients.
-     * @param message ChatMessage object
+     * @param sender Player's name
+     * @param message String message
      */
-    public void postChatMessage(ChatMessage message) {
+    @Override
+    public void postChatMessage(String sender, String message) {
 
     }
 

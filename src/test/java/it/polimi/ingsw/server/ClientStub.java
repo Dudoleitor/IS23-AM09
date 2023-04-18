@@ -41,7 +41,7 @@ public class ClientStub implements Client {
     }
 
     @Override
-    public void postChatMessage(ChatMessage message) {
+    public void postChatMessage(String sender, String message) {
 
     }
 
