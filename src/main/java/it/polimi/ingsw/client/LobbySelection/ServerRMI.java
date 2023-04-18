@@ -39,8 +39,8 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public List<Integer> getJoinedLobbies(String playerName) {
-        List<Integer> lobbies = null;
+    public Map<Integer,Integer> getJoinedLobbies(String playerName) {
+        Map<Integer,Integer> lobbies = null;
         try {
             lobbies = server.getJoinedLobbies(playerName);
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public Map<Integer, Integer> showAvailableLobbbies() {
+    public Map<Integer, Integer> getAvailableLobbies() {
         Map<Integer, Integer> availableLobbies = null;
         try{
             availableLobbies = server.showAvailableLobbies();

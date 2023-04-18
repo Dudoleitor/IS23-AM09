@@ -17,12 +17,10 @@ public abstract class LobbySelectionView {
     public abstract LobbySelectionCommand askLobby();
 
     /**
-     * Show the user the lobbies he already joined
-     * @param previousSessions the list of lobbies he already joined
+     * Show the user the lobbies passed as parameter
+     * @param lobbies the list of lobbies
      */
-    public abstract void showJoinedLobbies(List<Integer> previousSessions);
-
-    public abstract void showLobbyList(Map availableLobbies);
+    public abstract void showLobbies(Map<Integer,Integer> lobbies, String description);
 
     /**
      * Ask the player if they want to play again

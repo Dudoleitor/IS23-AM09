@@ -74,7 +74,7 @@ public class LobbySelection extends Thread{
      * Get a List of the lobby IDs where the player is in
      * @return the list of lobby IDs
      */
-    private List<Integer> getPreviousSessions(){
+    private Map<Integer,Integer> getPreviousSessions(){
         return server.getJoinedLobbies(playerName);
     }
 
@@ -83,7 +83,7 @@ public class LobbySelection extends Thread{
      * @return a map of the lobby IDs to the Number of player present
      */
     private Map getAvailableLobbies(){
-        return server.showAvailableLobbbies();
+        return server.getAvailableLobbies();
     }
 
     /**
@@ -113,8 +113,8 @@ public class LobbySelection extends Thread{
             client = server.generateClient(playerName);
             view.greet(playerName);
             tryLogin(30);
-            view.showJoinedLobbies(getPreviousSessions());
-            view.showLobbyList(getAvailableLobbies());
+            view.showLobbies(getPreviousSessions(),"The lobbies you already joined");
+            view.showLobbies(getAvailableLobbies(), "The lobbies that are available");
             Match match = getMatch();
             match.start();
             try {

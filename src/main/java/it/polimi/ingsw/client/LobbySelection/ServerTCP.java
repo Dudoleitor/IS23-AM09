@@ -56,7 +56,7 @@ public class ServerTCP extends Server {
 
 
     @Override
-    List<Integer> getJoinedLobbies(String playerName) {
+    Map<Integer,Integer> getJoinedLobbies(String playerName) {
         return null;
     }
 
@@ -71,7 +71,7 @@ public class ServerTCP extends Server {
     }
 
     @Override
-    Map<Integer, Integer> showAvailableLobbbies() {
+    Map<Integer, Integer> getAvailableLobbies() {
         return null;
     }
 

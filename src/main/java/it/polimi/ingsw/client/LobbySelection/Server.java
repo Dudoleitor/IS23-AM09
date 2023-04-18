@@ -4,7 +4,6 @@ import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 
-import java.util.List;
 import java.util.Map;
 
 public abstract class Server {
@@ -21,13 +20,6 @@ public abstract class Server {
      * @return true if login was successful
      */
     abstract boolean login(Client client);
-
-    /**
-     * Get all lobbies in which the client is present
-     * @param playerName playerName of client
-     * @return
-     */
-    abstract List<Integer> getJoinedLobbies(String playerName);
 
     /**
      * Join the first available Lobby
@@ -49,7 +41,14 @@ public abstract class Server {
      * Get all the lobbies in which the player can log
      * @return a map of LobbyID - Number of Players in lobby
      */
-    abstract Map<Integer,Integer> showAvailableLobbbies();
+    abstract Map<Integer,Integer> getAvailableLobbies();
+
+    /**
+     * Get all lobbies in which the client is present
+     * @param playerName playerName of client
+     * @return
+     */
+    abstract Map<Integer,Integer> getJoinedLobbies(String playerName);
 
     /**
      * Join a specific lobby

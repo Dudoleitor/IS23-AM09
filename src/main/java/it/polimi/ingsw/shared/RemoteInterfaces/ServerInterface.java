@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface ServerInterface extends Remote {
     boolean login(Client client) throws Exception;
-    List<Integer> getJoinedLobbies(String nick) throws Exception;
+    Map<Integer,Integer> getJoinedLobbies(String nick) throws Exception;
     LobbyRemoteCouple joinRandomLobby(Client client) throws Exception;
     LobbyRemoteCouple createLobby(Client client) throws Exception;
     Map<Integer,Integer> showAvailableLobbies() throws Exception;
