@@ -3,12 +3,9 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
-import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Color;
-import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
 import java.io.IOException;
@@ -97,7 +94,7 @@ public class ServerMain implements ServerInterface{
     public boolean login(Client client) throws RemoteException {
         clientsWithoutLobby.add(client);
         System.out.println(client.getPlayerName() + " has just logged in");
-        client.postChatMessage(new ChatMessage("Server", "You joined", Color.Green));
+        client.postChatMessage("Server", "You joined");
         return true;
     }
 
@@ -186,7 +183,7 @@ public class ServerMain implements ServerInterface{
         Lobby lobby = new Lobby(client, minFreeKey); //cretes new lobby
         //int lobbyPort =  startLobbyServer //TODO
         try {
-            LobbyInterface lobbyStub = (LobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
+            ServerLobbyInterface lobbyStub = (ServerLobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
             LobbyRemoteCouple lobbyCouple = new LobbyRemoteCouple(lobbyStub, lobbyPort);
             lobbies.put(lobby, lobbyCouple);
             return lobbyCouple;
@@ -202,7 +199,7 @@ public class ServerMain implements ServerInterface{
         lobbies.keySet()
                 .stream()
                 .filter(x -> !x.isFull())
-                .forEach(x -> lobbyMap.put(x.getID(), x.getPlayers().size())); //add id lobby + num of players currently in
+                .forEach(x -> lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in
         return lobbyMap;
     }
 

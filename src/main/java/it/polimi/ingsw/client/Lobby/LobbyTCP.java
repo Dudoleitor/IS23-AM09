@@ -2,7 +2,6 @@ package it.polimi.ingsw.client.Lobby;
 
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
 
 //TODO implement
 public class LobbyTCP extends Lobby {
@@ -14,11 +13,6 @@ public class LobbyTCP extends Lobby {
     @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
 
-    }
-
-    @Override
-    public Chat updateLiveChat() throws LobbyException {
-        return null;
     }
 
     @Override

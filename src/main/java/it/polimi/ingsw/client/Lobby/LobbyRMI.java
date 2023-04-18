@@ -2,11 +2,11 @@ package it.polimi.ingsw.client.Lobby;
 
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 
 public class LobbyRMI extends Lobby {
-    private LobbyInterface lobby;
-    public LobbyRMI(LobbyInterface lobby){
+    private ServerLobbyInterface lobby;
+    public LobbyRMI(ServerLobbyInterface lobby){
         this.lobby = lobby;
     }
     @Override
@@ -26,18 +26,6 @@ public class LobbyRMI extends Lobby {
         catch (Exception e){
             throw new LobbyException("Error in Lobby");
         }
-    }
-
-    @Override
-    public Chat updateLiveChat() throws LobbyException{
-        Chat updatedChat = null;
-        try{
-            updatedChat = lobby.updateLiveChat();
-        }
-        catch (Exception e){
-            throw new LobbyException("Error in Lobby");
-        }
-        return updatedChat;
     }
 
     @Override

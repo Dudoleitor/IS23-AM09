@@ -2,15 +2,15 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Lobby implements LobbyInterface {
+public class Lobby implements ServerLobbyInterface {
     private final int id;
-    private final List<Client> players = new ArrayList<>();
+    private final List<Client> clients = new ArrayList<>();
     private boolean ready = false;
     private boolean started = false;
     private boolean full = false;
@@ -18,7 +18,7 @@ public class Lobby implements LobbyInterface {
     private Controller controller;
 
     public Lobby(Client firstPlayer, int id){
-        this.players.add(firstPlayer);
+        this.clients.add(firstPlayer);
         this.id = id;
         this.chat = new Chat();
         chat.addPlayer(firstPlayer);
@@ -29,18 +29,18 @@ public class Lobby implements LobbyInterface {
      * @param client is the player object to add to the lobby
      */
     public void addPlayer(Client client){
-        if(players.contains(client)) //if player logged in previously
+        if(clients.contains(client)) //if player logged in previously
             return;
-        if (players.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
-            players.add(client);
+        if (clients.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
+            clients.add(client);
             chat.addPlayer(client);
         }else
             throw new RuntimeException("Lobby already full");
 
         //if the lobby has enough players it's ready to start
-        if(players.size() >= GameSettings.minSupportedPlayers)
+        if(clients.size() >= GameSettings.minSupportedPlayers)
             ready = true;
-        if(players.size() >= GameSettings.maxSupportedPlayers)
+        if(clients.size() >= GameSettings.maxSupportedPlayers)
             full = true;
     }
 
@@ -59,11 +59,11 @@ public class Lobby implements LobbyInterface {
     /**
      * @return list of players in this lobby
      */
-    public ArrayList<Client> getPlayers(){
-        return new ArrayList<>(players); //TODO this is by reference
+    public ArrayList<Client> getClients(){
+        return new ArrayList<>(clients); //TODO this is by reference
     }
     public List<String> getPlayerNames(){
-        return players.stream().
+        return clients.stream().
                 map(Client::getPlayerName).
                 collect(Collectors.toList());
     }
@@ -75,14 +75,14 @@ public class Lobby implements LobbyInterface {
     }
 
     public boolean isEmpty(){
-        return players.size() == 0;
+        return clients.size() == 0;
     }
     public String getLobbyAdmin() throws Exception {
-        if(players.size() == 0){
+        if(clients.size() == 0){
             throw new Exception("No Players");
         }
         else{
-            return players.get(0).getPlayerName();
+            return clients.get(0).getPlayerName();
         }
     }
 
@@ -104,7 +104,7 @@ public class Lobby implements LobbyInterface {
         }
 
         started = true;
-        controller = new Controller(players);
+        controller = new Controller(clients);
         System.out.println("MATCH STARTED IN LOBBY #"+id);
         return true;
     }
@@ -115,7 +115,7 @@ public class Lobby implements LobbyInterface {
             return false;
         }
         else{
-            return players.get(0).getPlayerName().equals(playerName);
+            return clients.get(0).getPlayerName().equals(playerName);
         }
     }
 
@@ -131,6 +131,9 @@ public class Lobby implements LobbyInterface {
             throw new Exception("Wrong format of message");
         }
         chat.addMessage(playerName,message);
+        for (Client client : clients) {
+            client.postChatMessage(playerName, message);
+        }
     }
 
     /**
@@ -148,12 +151,6 @@ public class Lobby implements LobbyInterface {
         chat.addSecret(sender,receiver,message);
     }
 
-
-    @Override
-    public Chat updateLiveChat() throws RemoteException {
-        return new Chat(chat);
-    }
-
     @Override
     public void quitGame(String player) throws RemoteException {
 
@@ -163,13 +160,13 @@ public class Lobby implements LobbyInterface {
     public void postMove(String player, Move move) throws RemoteException {
         Client playerInput = null;
         try{
-            playerInput = players.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
+            playerInput = clients.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
             if(playerInput != null) {
                 controller.moveTiles(player, move);
             }
         } catch (ControllerGenericException e){
             if(playerInput != null)
-                playerInput.postChatMessage(new ChatMessage("Server", e.getMessage(), Color.Red));
+                playerInput.postChatMessage("Server", e.getMessage());
         }
 
     }
