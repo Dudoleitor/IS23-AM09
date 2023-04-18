@@ -1,8 +1,8 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.client.Lobby;
 
 import java.util.Arrays;
 
-public enum Command {
+public enum LobbyCommand {
         Exit("exit","Quit the game"),
         Print("print","Print all messages in chat"),
         Secret("secret","Send a private message to a user"),
@@ -14,18 +14,18 @@ public enum Command {
         Invalid("Invalid","");
         private String code;
         private String description;
-        Command(String code,String description){
+        LobbyCommand(String code, String description){
             this.code = code;
             this.description = description;
         }
-        public static Command stringToCommand(String input){
+        public static LobbyCommand stringToCommand(String input){
             //return the command that matches the user input.
             //If no match return invalid
-            return  Arrays.stream(Command.values()).
+            return  Arrays.stream(LobbyCommand.values()).
                     filter(com -> com.getCode()
                             .equals(input.toLowerCase())).
                     findFirst().
-                    orElse(Command.Invalid);
+                    orElse(LobbyCommand.Invalid);
         }
         public String getCode(){
                 return code;

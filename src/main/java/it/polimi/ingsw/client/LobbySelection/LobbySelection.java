@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.LobbySelection;
 
 import it.polimi.ingsw.client.Lobby.Lobby;
+import it.polimi.ingsw.client.Lobby.LobbyException;
 import it.polimi.ingsw.client.Lobby.MatchCLI;
 import it.polimi.ingsw.client.Lobby.Match;
 import it.polimi.ingsw.server.clientonserver.Client;
@@ -100,7 +101,12 @@ public class LobbySelection extends Thread{
                 view.errorMessage("Input a valid id (must be a number)");
             }
         }
-        view.message("You joined #"+ lobby.getID()+" lobby!");
+        try{
+            view.message("You joined #"+ lobby.getID()+" lobby!");
+        }
+        catch (LobbyException e){
+            //TODO
+        }
         //Create the lobbyUI object and start the match
         return new Match(playerName, lobby, new MatchCLI());
     }

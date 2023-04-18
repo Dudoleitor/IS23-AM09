@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.Lobby;
 
-import it.polimi.ingsw.client.Command;
 import it.polimi.ingsw.client.InputSanitizer;
 import it.polimi.ingsw.client.cli_IO;
 import it.polimi.ingsw.shared.Move;
@@ -16,16 +15,16 @@ public class MatchCLI extends MatchView {
     private boolean exit = false;
 
     @Override
-    protected Command askCommand(){
+    protected LobbyCommand askCommand(){
         String input;
         input = io.scan();
         //Invalid command
         if(!inputSanitizer.isValidMessage(input)){
             io.printErrorMessage("Invalid format");
-            return Command.Invalid;
+            return LobbyCommand.Invalid;
         }
         else{
-            return Command.stringToCommand(input);
+            return LobbyCommand.stringToCommand(input);
         }
     }
 
@@ -127,8 +126,8 @@ public class MatchCLI extends MatchView {
     @Override
     protected void showHelp() {
         String help = "Here are all the commands:\n";
-        List<String> commandList = Arrays.stream(Command.values()).
-                filter(c -> c != Command.Help && c != Command.Invalid).
+        List<String> commandList = Arrays.stream(LobbyCommand.values()).
+                filter(c -> c != LobbyCommand.Help && c != LobbyCommand.Invalid).
                 map(c -> "       -" + c.getCode().toUpperCase() + ": "+c.getDescription()+"\n").
                 collect(Collectors.toList());
         for(String command : commandList){
@@ -138,6 +137,6 @@ public class MatchCLI extends MatchView {
     }
 
     protected void notifyInvalidCommand(){
-        io.printErrorMessage("Invalid Command!");
+        io.printErrorMessage("Invalid LobbyCommand!");
     }
 }

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.Lobby;
 
-import it.polimi.ingsw.client.Command;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Move;
 
@@ -9,9 +8,9 @@ import java.util.Map;
 public abstract class MatchView {
     /**
      * Ask the user for a command
-     * @return the selected Command
+     * @return the selected LobbyCommand
      */
-    protected abstract Command askCommand();
+    protected abstract LobbyCommand askCommand();
     /**
      * Notify the user that they entered an ivalid command
      */
