@@ -79,7 +79,9 @@ public class ServerMain implements ServerInterface{
             ServerSocket serverSocket = new ServerSocket(TCPport);
             while(true){
                 Socket client = serverSocket.accept();
-                new LoginTcpThread(server, new ClientSocket(client)).start();
+                ClientSocket clientSocket = new ClientSocket();
+                clientSocket.setClientSocket(client);
+                new LoginTcpThread(server, clientSocket).start();
             }
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());

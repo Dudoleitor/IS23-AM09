@@ -82,7 +82,7 @@ public class ServerTCP extends Server {
 
     @Override
     Client generateClient(String playerName) {
-        ClientSocket client = new ClientSocket(null); //I know it's bad, but for now it reamains as it is, because it is need locally
+        ClientSocket client = new ClientSocket(); //I know it's bad, but for now it reamains as it is, because it is need locally
         client.setName(playerName);
         return client;
     }
