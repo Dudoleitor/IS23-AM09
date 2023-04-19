@@ -1,12 +1,14 @@
 package it.polimi.ingsw.client;
 
 
-import it.polimi.ingsw.client.Lobby.*;
-import it.polimi.ingsw.client.LobbySelection.*;
+import it.polimi.ingsw.client.Connection.*;
+import it.polimi.ingsw.client.View.LobbyCommand;
+import it.polimi.ingsw.client.View.LobbySelectionCommand;
+import it.polimi.ingsw.client.View.View;
+import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.client.controller.ClientControllerCLI;
-import it.polimi.ingsw.client.gui.HelloApplication;
-import it.polimi.ingsw.client.gui.LobbySelectionGUI;
-import it.polimi.ingsw.client.gui.MatchGUI;
+import it.polimi.ingsw.client.View.gui.HelloApplication;
+import it.polimi.ingsw.client.View.gui.GUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
@@ -35,10 +37,9 @@ public class ClientMain{
     static Lobby lobby;
     static Client client;
     /**
-     * UI View Objects
+     * UI View
      */
-    static LobbySelectionView lobbySelectionView;
-    static MatchView matchView;
+    static View view;
 
     /**
      * state of the match
@@ -56,7 +57,7 @@ public class ClientMain{
         for(int attempt = 0; attempt < tries && !logged; attempt++){
             logged = server.login(client); //get previous sessions if present
             if(!logged){
-                lobbySelectionView.errorMessage("Connection Error, retying in "+seconds+" seconds");
+                view.errorMessage("Connection Error, retying in "+seconds+" seconds");
                 try {
                     sleep(seconds*1000);
                 } catch (InterruptedException e) {
@@ -90,7 +91,7 @@ public class ClientMain{
     private static void joinLobby() throws ServerException {
         LobbySelectionCommand command = LobbySelectionCommand.Invalid;
         while(command == LobbySelectionCommand.Invalid){
-            command = lobbySelectionView.askLobby();
+            command = view.askLobby();
             switch (command){
                 case Random:
                     lobby = server.joinRandomLobby(client);
@@ -99,12 +100,12 @@ public class ClientMain{
                     lobby = server.joinSelectedLobby(client,command.getID());
                     break;
                 default:
-                    lobbySelectionView.errorMessage("Input a valid id");
+                    view.errorMessage("Input a valid id");
                     break;
             }
         }
         try{
-            lobbySelectionView.message("You joined #"+ lobby.getID()+" lobby!");
+            view.message("You joined #"+ lobby.getID()+" lobby!");
         }
         catch (LobbyException e){
             throw new ServerException("Error in Server");
@@ -120,7 +121,7 @@ public class ClientMain{
         try {
             switch (lobbyCommand) {
                 case Exit: //quit game
-                    matchView.notifyExit();
+                    view.notifyExit();
                     exit = true;
                     break;
                 case Print: //print all messages
@@ -137,16 +138,16 @@ public class ClientMain{
                     postMove();
                     break;
                 case Peek:
-                    matchView.showElement();
+                    view.showElement();
                     break;
                 case Message:
                     postToChat();
                     break;
                 case Help:
-                    matchView.showHelp();
+                    view.showHelp();
                     break;
                 default: //post message to chat
-                    matchView.notifyInvalidCommand();
+                    view.notifyInvalidCommand();
             }
         }
         catch (LobbyException e){
@@ -166,7 +167,7 @@ public class ClientMain{
      * Get message from user and post to Server Chat
      */
     private static void postToChat() throws LobbyException {
-        Map<String,String> message = matchView.getMessageFromUser();
+        Map<String,String> message = view.getMessageFromUser();
         lobby.postToLiveChat(
                 playerName,
                 message.get("message"));
@@ -176,7 +177,7 @@ public class ClientMain{
      * Get private message from user and post to Server Chat
      */
     private static void postToPrivateChat() throws LobbyException {
-        Map<String,String> privateMessage = matchView.getPrivateMessageFromUser();
+        Map<String,String> privateMessage = view.getPrivateMessageFromUser();
         lobby.postSecretToLiveChat(
                 playerName,
                 privateMessage.get("receiver"),
@@ -190,7 +191,7 @@ public class ClientMain{
         if(!lobby.matchHasStarted()){
             return;
         }
-        Move move = matchView.getMoveFromUser();
+        Move move = view.getMoveFromUser();
         lobby.postMove(playerName,move);
     }
 
@@ -201,12 +202,10 @@ public class ClientMain{
     private static void initView(Client_Settings.UI uiOption){
         switch (uiOption){
             case CLI:
-                lobbySelectionView = new LobbySelectionCLI();
-                matchView = new MatchCLI();
+                view = new CLI();
                 break;
             case GUI:
-                lobbySelectionView = new LobbySelectionGUI();
-                matchView = new MatchGUI();
+                view = new GUI();
                 HelloApplication.startApp();
                 break;
         }
@@ -236,8 +235,8 @@ public class ClientMain{
         initView(uiOption);
 
         //ask for username
-        playerName = lobbySelectionView.askUserName();
-        lobbySelectionView.greet(playerName);
+        playerName = view.askUserName();
+        view.greet(playerName);
 
         //Initiate the server connection interfaces according to settings
         initConnectionInterface();
@@ -249,8 +248,8 @@ public class ClientMain{
             if(successfulLogin){
                 try{
                     //show the client the lobbies they can join
-                    lobbySelectionView.showLobbies(getPreviousSessions(),"The lobbies you already joined");
-                    lobbySelectionView.showLobbies(getAvailableLobbies(), "The lobbies that are available");
+                    view.showLobbies(getPreviousSessions(),"The lobbies you already joined");
+                    view.showLobbies(getAvailableLobbies(), "The lobbies that are available");
 
                     //ask the client what lobby to join
                     joinLobby();
@@ -258,18 +257,18 @@ public class ClientMain{
                     //game starts
                     //Receive and execute commands until "exit" lobbyCommand is launched
                     while(!exit){
-                        LobbyCommand lobbyCommand = matchView.askCommand();
+                        LobbyCommand lobbyCommand = view.askCommand();
                         executeUserCommand(lobbyCommand);
                     }
                 } catch (ServerException e) {
-                    lobbySelectionView.errorMessage("Something went wrong connecting to server");
+                    view.errorMessage("Something went wrong connecting to server");
                     play = false;
                 }
                 //ask the player if they want to play again
-                play = lobbySelectionView.playAgain();
+                play = view.playAgain();
             }
             else{
-                lobbySelectionView.errorMessage("It was impossible to connect to server");
+                view.errorMessage("It was impossible to connect to server");
                 play = false;
             }
         }

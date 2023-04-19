@@ -1,9 +1,6 @@
-package it.polimi.ingsw.client.LobbySelection;
+package it.polimi.ingsw.client.Connection;
 
-import it.polimi.ingsw.client.Lobby.Lobby;
-import it.polimi.ingsw.client.Lobby.LobbyTCP;
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
@@ -14,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.List;
 import java.util.Map;
 
 public class ServerTCP extends Server {

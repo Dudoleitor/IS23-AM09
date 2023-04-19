@@ -1,11 +1,11 @@
-package it.polimi.ingsw.client.Lobby;
+package it.polimi.ingsw.client.View;
 
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Move;
 
 import java.util.Map;
 
-public abstract class MatchView {
+public abstract class View {
     /**
      * Ask the user for a command
      * @return the selected LobbyCommand
@@ -54,5 +54,46 @@ public abstract class MatchView {
      * Show the list of commands that the client can execute
      */
     public abstract void showHelp();
+    /**
+     * Ask the player for his username
+     * @return the username
+     */
+    public abstract String askUserName();
+
+    /**
+     * Ask the player what lobby they want to join
+     * @return a LobbySelection LobbyCommand corresponding to the user request
+     */
+    public abstract LobbySelectionCommand askLobby();
+
+    /**
+     * Show the user the lobbies passed as parameter
+     * @param lobbies the list of lobbies
+     */
+    public abstract void showLobbies(Map<Integer,Integer> lobbies, String description);
+
+    /**
+     * Ask the player if they want to play again
+     * @return
+     */
+    public abstract boolean playAgain();
+
+    /**
+     * Show the user an error message
+     * @param message
+     */
+    public abstract void errorMessage(String message);
+
+    /**
+     * Show a message to user
+     * @param message
+     */
+    public abstract void message(String message);
+
+    /**
+     * Greet the player when he joins. It's nice to do so :-)
+     * @param playerName
+     */
+    public abstract void greet(String playerName);
 
 }

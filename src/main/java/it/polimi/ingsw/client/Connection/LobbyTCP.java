@@ -1,8 +1,7 @@
-package it.polimi.ingsw.client.Lobby;
+package it.polimi.ingsw.client.Connection;
 
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.Move;
-import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.NetworkSettings;
 
 import java.io.BufferedReader;

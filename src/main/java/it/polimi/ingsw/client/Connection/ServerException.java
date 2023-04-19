@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.LobbySelection;
+package it.polimi.ingsw.client.Connection;
 
 public class ServerException extends Exception{
     public ServerException(String msg){

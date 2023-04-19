@@ -1,6 +1,5 @@
-package it.polimi.ingsw.client.LobbySelection;
+package it.polimi.ingsw.client.Connection;
 
-import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 

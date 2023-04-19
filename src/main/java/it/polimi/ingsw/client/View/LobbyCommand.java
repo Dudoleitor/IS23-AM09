@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.Lobby;
+package it.polimi.ingsw.client.View;
 
 import java.util.Arrays;
 

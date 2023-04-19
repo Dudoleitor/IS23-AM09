@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.client.View.cli;
 
 import java.util.ArrayList;
 import java.util.List;

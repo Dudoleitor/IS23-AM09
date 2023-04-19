@@ -1,10 +1,7 @@
-package it.polimi.ingsw.client.LobbySelection;
+package it.polimi.ingsw.client.Connection;
 
-import it.polimi.ingsw.client.Lobby.LobbyRMI;
-import it.polimi.ingsw.client.Lobby.Lobby;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
-import it.polimi.ingsw.client.controller.ClientControllerCLI;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;

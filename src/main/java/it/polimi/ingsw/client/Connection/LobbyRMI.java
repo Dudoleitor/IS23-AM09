@@ -1,7 +1,6 @@
-package it.polimi.ingsw.client.Lobby;
+package it.polimi.ingsw.client.Connection;
 
 import it.polimi.ingsw.shared.Move;
-import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 
 public class LobbyRMI extends Lobby {

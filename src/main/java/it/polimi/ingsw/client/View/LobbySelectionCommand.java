@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.LobbySelection;
+package it.polimi.ingsw.client.View;
 
 public enum LobbySelectionCommand{
     Invalid(),
