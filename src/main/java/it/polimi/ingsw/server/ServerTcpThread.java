@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
+import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
@@ -9,17 +10,20 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginTcpThread extends Thread{ //TODO
-    private ClientSocket client;
+public class ServerTcpThread extends Thread{ //TODO
+    private final ClientSocket client;
     private final ServerMain server;
-    private boolean  lobbyAssigned;
-    private LobbyTcpThread selectedLobby;
+    private  Lobby lobby;
+    private boolean lobbyAssigned;
+    private boolean exit;
 
-    public LoginTcpThread(ServerMain server, ClientSocket client){
+
+
+    public ServerTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
         this.client= client;
         this.lobbyAssigned = false;
-
+        this.exit = false;
 
     }
 
@@ -28,17 +32,20 @@ public class LoginTcpThread extends Thread{ //TODO
      */
 
     public void run() {
-        while(!lobbyAssigned){
-            String string = client.in();
+        while(!exit){
+            String string = client.in(); //TODO to make it wait on input ready
             MessageTcp message = new MessageTcp(string);
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
             String content = message.getContent(); //content in JSON
-            executeCommand(command,content);
+            if(!lobbyAssigned)
+                exectuteServerCommand(command,content); //execute if still searching for a lobby
+            else
+                executeLobbyCommnad(command,content); //execute if lobby was assigned
         }
-        selectedLobby.start();
+
 
     }
-    private void executeCommand(MessageTcp.MessageCommand command, String content){
+    private void exectuteServerCommand(MessageTcp.MessageCommand command, String content){
         switch (command){
             case Login:
                 login(content);
@@ -64,6 +71,20 @@ public class LoginTcpThread extends Thread{ //TODO
         }
 
     }
+    private void executeLobbyCommnad(MessageTcp.MessageCommand command, String content){
+        switch (command){
+            case PostToLiveChat:
+                postToLiveChat(content);
+                break;
+
+            default:
+                client.out("Command does not exists");
+                break;
+        }
+
+    }
+
+    //SERVER METHODS
 
     private void login(String message){
         client.setName(Jsonable.json2string(message));
@@ -163,20 +184,40 @@ public class LoginTcpThread extends Thread{ //TODO
 
     private int LobbyIni(ServerLobbyInterface lobbyInterface){
         int lobbyID;
-        Lobby lobby;
+        Lobby lobbyGet;
         try {
             lobbyID = lobbyInterface.getID(); //TODO to find better solution that doesn't rely on this interface
             synchronized (server){
-                lobby = server.getLobbybyID(lobbyID);
+                lobbyGet = server.getLobbybyID(lobbyID);
             }
-            if(lobby != null) {
-                lobbyAssigned = true;
-                selectedLobby = new LobbyTcpThread(client, lobby);
-            }
+            lobbyAssigned = true;
+            this.lobby = lobbyGet;
         } catch (Exception e) {
             lobbyID = 0;
         }
         return lobbyID;
+    }
+
+    //LOBBY METHODS
+
+    private void postToLiveChat(String message){
+        boolean foundErrors = false;
+        ChatMessage chatMessage = new ChatMessage(Jsonable.parseString(message));
+        System.out.println(chatMessage);
+        String sender = chatMessage.getSender();
+        String content = chatMessage.getMessage();
+        synchronized (lobby) {
+            try {
+                lobby.postToLiveChat(sender, content);
+            } catch (Exception e) {
+                foundErrors = true;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set message command
+            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            client.out(feedback.toString()); //send object to client
+
+        }
     }
 
 
