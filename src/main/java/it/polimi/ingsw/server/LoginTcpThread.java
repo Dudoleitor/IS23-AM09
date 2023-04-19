@@ -3,6 +3,7 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
+import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -37,6 +38,8 @@ public class LoginTcpThread extends Thread{ //TODO
                     login(content);
                 case GetJoinedLobbies:
                     getJoinedLobbies(content);
+                case JoinRandomLobby:
+                    joinRandomLobby();
             }
         }
     }
@@ -69,6 +72,23 @@ public class LoginTcpThread extends Thread{ //TODO
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set message command
         feedback.setContent(Jsonable.map2json(lobbies)); //set message content
+        client.out(feedback.toString()); //send object to client
+    }
+
+    private void joinRandomLobby(){
+        int lobbyPort;
+        LobbyRemoteCouple lobbyCouple = null;
+        synchronized (server){
+            try {
+                lobbyCouple = server.joinRandomLobby(client);
+            } catch (NullPointerException e) {
+                 //TODO to send back error message to set username first
+            }
+        }
+        lobbyPort = lobbyCouple.getPort();
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
+        feedback.setContent(Jsonable.int2json(lobbyPort)); //set message content
         client.out(feedback.toString()); //send object to client
     }
 

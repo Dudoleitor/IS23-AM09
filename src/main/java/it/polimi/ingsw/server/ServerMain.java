@@ -170,7 +170,7 @@ public class ServerMain implements ServerInterface{
     @Override
     public LobbyRemoteCouple createLobby(Client client){
         int minFreeKey;
-        int lobbyPort = NetworkSettings.RMIport; //TODO to remove after implementation of TODO below
+        int lobbyPort;
         List<Integer> lobbyIDs= lobbies.keySet()
                 .stream()
                 .map(Lobby::getID)
@@ -183,11 +183,12 @@ public class ServerMain implements ServerInterface{
         } else
             minFreeKey = 1;
         Lobby lobby = new Lobby(client, minFreeKey); //cretes new lobby
-        //int lobbyPort =  startLobbyServer //TODO
+        lobbyPort =  NetworkSettings.TCPport+minFreeKey;
         try {
             ServerLobbyInterface lobbyStub = (ServerLobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
             LobbyRemoteCouple lobbyCouple = new LobbyRemoteCouple(lobbyStub, lobbyPort);
             lobbies.put(lobby, lobbyCouple);
+
             return lobbyCouple;
 
         } catch (RemoteException e) {

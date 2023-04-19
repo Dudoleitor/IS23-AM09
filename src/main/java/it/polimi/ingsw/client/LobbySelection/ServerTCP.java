@@ -1,11 +1,13 @@
 package it.polimi.ingsw.client.LobbySelection;
 
 import it.polimi.ingsw.client.Lobby.Lobby;
+import it.polimi.ingsw.client.Lobby.LobbyTCP;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
+import it.polimi.ingsw.shared.NetworkSettings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,12 +68,23 @@ public class ServerTCP extends Server {
 
     @Override
     Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
-        return null;
+        MessageTcp requestLobbies = new MessageTcp();
+        requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set command
+        requestLobbies.setContent(Jsonable.string2json(playerName)); //set playername as JsonObject
+        out(requestLobbies.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+
+        return Jsonable.json2mapInt(response.getContent());
     }
 
     @Override
     Lobby joinRandomLobby(Client client) throws ServerException {
-        return null;
+        MessageTcp requestLobbies = new MessageTcp();
+        requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
+        out(requestLobbies.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        int port = Jsonable.json2int(response.getContent());
+        return new LobbyTCP(NetworkSettings.serverIp, port); //create a local Lobby socket with server given port
     }
 
     @Override
