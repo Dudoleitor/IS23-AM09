@@ -33,6 +33,9 @@ public class MessageTcp {
         Login("login"),
         GetJoinedLobbies("getJoined"),
         JoinRandomLobby("joinRandom"),
+        CreateLobby("createLobby"),
+        GetAvailableLobbies("availableLobbies"),
+        JoinSelectedLobby("joinSelected"),
 
         ;
 

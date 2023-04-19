@@ -72,6 +72,14 @@ public class ServerTCP extends Server {
 
         return Jsonable.json2mapInt(response.getContent());
     }
+    @Override
+    public Map<Integer, Integer> getAvailableLobbies()throws ServerException {
+        MessageTcp requestLobbies = new MessageTcp();
+        requestLobbies.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set command
+        out(requestLobbies.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        return Jsonable.json2mapInt(response.getContent());
+    }
 
     @Override
     public Lobby joinRandomLobby(Client client) throws ServerException {
@@ -88,16 +96,29 @@ public class ServerTCP extends Server {
 
     @Override
     Lobby createLobby(Client client) throws ServerException {
-        return null;
+        MessageTcp requestLobbies = new MessageTcp();
+        requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command
+        out(requestLobbies.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        int lobbyID = Jsonable.json2int(response.getContent());
+        if (lobbyID > 0)
+            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, lobbyID); //create a local Lobby socket with server given port
+        else
+            return null;
     }
 
-    @Override
-    public Map<Integer, Integer> getAvailableLobbies()throws ServerException {
-        return null;
-    }
 
     @Override
     public Lobby joinSelectedLobby(Client client, int id)throws ServerException {
-        return null;
+        MessageTcp requestLobbies = new MessageTcp();
+        requestLobbies.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set command
+        requestLobbies.setContent(Jsonable.int2json(id));
+        out(requestLobbies.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        int lobbyID = Jsonable.json2int(response.getContent());
+        if (lobbyID > 0)
+            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, lobbyID); //create a local Lobby socket with server given port
+        else
+            return null;
     }
 }

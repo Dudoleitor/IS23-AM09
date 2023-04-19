@@ -47,6 +47,8 @@ public interface Jsonable {
      * @return JsonObject corresponding to the String format
      */
     public static JSONObject parseString(String string){
+        if (string == null)
+            return null;
         JSONParser parser = new JSONParser();
         JSONObject jsonObj;
         try {
@@ -62,6 +64,8 @@ public interface Jsonable {
      * @return JsonObject that corresponds to that boolean
      */
     public static JSONObject map2json(Map<Integer,Integer> map) {
+        if (map == null)
+            return null;
         JSONObject jsonMap = new JSONObject();
         map.keySet()
                 .stream()
@@ -79,8 +83,12 @@ public interface Jsonable {
      * @return a boolean corresponding to the Object
      */
     public static Map<Integer,Integer> json2mapInt (String jsonString){
+        if (jsonString == null)
+            return null;
         Map<Integer,Integer> map = new HashMap<>();
         JSONObject jsonMap = parseString(jsonString);
+        if(jsonMap == null)
+            return null;
         jsonMap.keySet()
                 .stream()
                 .forEach(x ->

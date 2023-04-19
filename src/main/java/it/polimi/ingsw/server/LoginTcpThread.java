@@ -12,7 +12,7 @@ import java.util.Map;
 public class LoginTcpThread extends Thread{ //TODO
     private final ClientSocket client;
     private final ServerMain server;
-
+    boolean lobbyAssigned = false;
 
     public LoginTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
@@ -26,7 +26,6 @@ public class LoginTcpThread extends Thread{ //TODO
      */
 
     public void run() {
-        boolean lobbyAssigned = false;
         while(!lobbyAssigned){
             String string = client.in();
             MessageTcp message = new MessageTcp(string);
@@ -39,6 +38,14 @@ public class LoginTcpThread extends Thread{ //TODO
                     getJoinedLobbies(content);
                 case JoinRandomLobby:
                     joinRandomLobby();
+                case CreateLobby:
+                    createLobby();
+                case GetAvailableLobbies:
+                    getAvailableLobbies();
+                case JoinSelectedLobby:
+                    joinSelectedLobby(content);
+                default:
+                    client.out("Command does not exists");
             }
         }
     }
@@ -73,10 +80,23 @@ public class LoginTcpThread extends Thread{ //TODO
         feedback.setContent(Jsonable.map2json(lobbies)); //set message content
         client.out(feedback.toString()); //send object to client
     }
+    private void getAvailableLobbies(){
+        Map<Integer,Integer> lobbies;
+        synchronized (server){
+            try {
+                lobbies = server.showAvailableLobbies();
+            } catch (NullPointerException | RemoteException e) {
+                lobbies = new HashMap<>();
+            }
+        }
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set message command
+        feedback.setContent(Jsonable.map2json(lobbies)); //set message content
+        client.out(feedback.toString()); //send object to client
+    }
 
     private void joinRandomLobby(){
         int lobbyID;
-        Lobby lobby;
         ServerLobbyInterface lobbyInterface = null;
         synchronized (server){
             try {
@@ -85,20 +105,63 @@ public class LoginTcpThread extends Thread{ //TODO
                  //TODO to send back error message to set username first
             }
         }
+        lobbyID = LobbyIni(lobbyInterface);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
+        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
+        client.out(feedback.toString()); //send object to client
+    }
+
+    private void createLobby(){
+        int lobbyID;
+        ServerLobbyInterface lobbyInterface = null;
+        synchronized (server){
+            try {
+                lobbyInterface = server.createLobby(client);
+            } catch (NullPointerException e) {
+                //TODO to send back error message to set username first
+            }
+        }
+        lobbyID = LobbyIni(lobbyInterface);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.CreateLobby); //set message command
+        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
+        client.out(feedback.toString()); //send object to client
+    }
+    private void joinSelectedLobby(String message){
+        int lobbyID = Jsonable.json2int(message);
+        ServerLobbyInterface lobbyInterface = null;
+        synchronized (server){
+            try {
+                lobbyInterface = server.joinSelectedLobby(client,lobbyID);
+            } catch (NullPointerException e) {
+                //TODO to send back error message to set username first
+            }
+        }
+        lobbyID = LobbyIni(lobbyInterface);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set message command
+        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
+        client.out(feedback.toString()); //send object to client
+    }
+
+
+    private int LobbyIni(ServerLobbyInterface lobbyInterface){
+        int lobbyID;
+        Lobby lobby;
         try {
             lobbyID = lobbyInterface.getID(); //TODO to find better solution that doesn't rely on this interface
             synchronized (server){
                 lobby = server.getLobbybyID(lobbyID);
             }
-            new LobbyTcpThread(client, lobby).run();
+            if(lobby != null) {
+                new LobbyTcpThread(client, lobby).run();
+                lobbyAssigned = true;
+            }
         } catch (Exception e) {
             lobbyID = 0;
         }
-
-        MessageTcp feedback = new MessageTcp(); //message to send back
-        feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
-        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
-        client.out(feedback.toString()); //send object to client
+        return lobbyID;
     }
 
 
