@@ -4,7 +4,6 @@ import it.polimi.ingsw.client.View.cli.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.NetworkSettings;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
@@ -28,7 +27,7 @@ public class ServerMain implements ServerInterface{
      * server that did not join a lobby yet.
      */
     private final List<Client> clientsWithoutLobby = new ArrayList<>();
-    private final Map<Lobby, LobbyRemoteCouple> lobbies = new HashMap<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
+    private final Map<Lobby, ServerLobbyInterface> lobbies = new HashMap<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
     private static Registry registry = null;
     private static InputSanitizer inputSanitizer;
 
@@ -120,8 +119,8 @@ public class ServerMain implements ServerInterface{
      * @return id of assigned lobby
      */
     @Override
-    public LobbyRemoteCouple joinRandomLobby(Client client){
-        LobbyRemoteCouple lobbyCouple;
+    public ServerLobbyInterface joinRandomLobby(Client client){
+        ServerLobbyInterface lobbyInterface;
         Map<Integer,Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
         if(alreadyJoined.size() > 0){
             int alreadyJoinedID = alreadyJoined.
@@ -129,7 +128,7 @@ public class ServerMain implements ServerInterface{
                     stream().
                     findFirst().
                     orElse(-1);
-            lobbyCouple = joinSelectedLobby(client,alreadyJoinedID);
+            lobbyInterface = joinSelectedLobby(client,alreadyJoinedID);
         } else {
             Lobby lobby = lobbies.keySet()
                     .stream()
@@ -138,19 +137,19 @@ public class ServerMain implements ServerInterface{
                     .orElse(null);
             if (lobby != null) { //if a lobby exists then add player
                 lobby.addPlayer(client); //if exists then add player
-                lobbyCouple = lobbies.get(lobby);
+                lobbyInterface = lobbies.get(lobby);
             } else {
-                lobbyCouple = createLobby(client); //otherwise creates new lobby
+                lobbyInterface = createLobby(client); //otherwise creates new lobby
             }
         }
-        return lobbyCouple;
+        return lobbyInterface;
     }
 
     /**
      * @param client requesting to join the lobby
      */
     @Override
-    public LobbyRemoteCouple joinSelectedLobby(Client client, int id){
+    public ServerLobbyInterface joinSelectedLobby(Client client, int id){
         Lobby lobby = lobbies.keySet()
                 .stream()
                 .filter(x -> x.getID() == id) //verify lobby exists and is not full
@@ -168,7 +167,7 @@ public class ServerMain implements ServerInterface{
      * @param client requesting to create the lobby
      */
     @Override
-    public LobbyRemoteCouple createLobby(Client client){
+    public ServerLobbyInterface createLobby(Client client){
         int minFreeKey;
         int lobbyPort;
         List<Integer> lobbyIDs= lobbies.keySet()
@@ -186,10 +185,10 @@ public class ServerMain implements ServerInterface{
         lobbyPort =  NetworkSettings.TCPport+minFreeKey;
         try {
             ServerLobbyInterface lobbyStub = (ServerLobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
-            LobbyRemoteCouple lobbyCouple = new LobbyRemoteCouple(lobbyStub, lobbyPort);
-            lobbies.put(lobby, lobbyCouple);
 
-            return lobbyCouple;
+            lobbies.put(lobby, lobbyStub);
+
+            return lobbyStub;
 
         } catch (RemoteException e) {
             throw new RuntimeException(e);

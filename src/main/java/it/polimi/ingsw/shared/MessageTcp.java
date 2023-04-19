@@ -72,8 +72,10 @@ public class MessageTcp {
     }
 
     public String getContent(){
-        return content.toJSONString();
-
+        if (content != null)
+            return content.toJSONString();
+        else
+            return null;
 
     }
 }

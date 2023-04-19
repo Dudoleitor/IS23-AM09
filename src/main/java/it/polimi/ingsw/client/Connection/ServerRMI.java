@@ -49,7 +49,7 @@ public class ServerRMI extends Server {
     public Lobby joinRandomLobby(Client client) throws ServerException{
         ServerLobbyInterface lobbyRMI = null;
         try{
-            lobbyRMI = server.joinRandomLobby(client).getStub();
+            lobbyRMI = server.joinRandomLobby(client);
         } catch (Exception e) {
             throw new ServerException("Error in Server");
         }
@@ -60,7 +60,7 @@ public class ServerRMI extends Server {
     public Lobby joinSelectedLobby(Client client, int id) throws ServerException{
         ServerLobbyInterface lobbyRMI = null;
         try{
-            lobbyRMI = server.joinSelectedLobby(client,id).getStub();
+            lobbyRMI = server.joinSelectedLobby(client,id);
         } catch (Exception e) {
             throw new ServerException("Error in Server");
         }
@@ -71,7 +71,7 @@ public class ServerRMI extends Server {
     public Lobby createLobby(Client client) throws ServerException{
         ServerLobbyInterface lobbyRMI = null;
         try{
-            lobbyRMI = server.createLobby(client).getStub();
+            lobbyRMI = server.createLobby(client);
         } catch (Exception e) {
             throw new ServerException("Error in Server");
         }

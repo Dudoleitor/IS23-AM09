@@ -3,9 +3,8 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
-import it.polimi.ingsw.shared.RemoteInterfaces.LobbyRemoteCouple;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 
-import java.io.*;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,19 +75,20 @@ public class LoginTcpThread extends Thread{ //TODO
     }
 
     private void joinRandomLobby(){
-        int lobbyPort;
-        LobbyRemoteCouple lobbyCouple = null;
+        boolean lobbyFound = false;
+        ServerLobbyInterface lobbyInterface = null;
         synchronized (server){
             try {
-                lobbyCouple = server.joinRandomLobby(client);
+                lobbyInterface = server.joinRandomLobby(client);
             } catch (NullPointerException e) {
                  //TODO to send back error message to set username first
             }
         }
-        lobbyPort = lobbyCouple.getPort();
+        if(lobbyInterface != null)
+            lobbyFound = true;
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
-        feedback.setContent(Jsonable.int2json(lobbyPort)); //set message content
+        feedback.setContent(Jsonable.boolean2json(lobbyFound)); //set message content
         client.out(feedback.toString()); //send object to client
     }
 

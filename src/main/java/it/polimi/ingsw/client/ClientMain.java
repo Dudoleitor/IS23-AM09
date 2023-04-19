@@ -225,6 +225,7 @@ public class ClientMain{
             case TCP:
                 server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport);
                 client = new ClientSocket();
+                ((ClientSocket) client).setName(playerName);
                 break;
         }
     }
@@ -238,9 +239,9 @@ public class ClientMain{
         playerName = view.askUserName();
         view.greet(playerName);
 
+
         //Initiate the server connection interfaces according to settings
         initConnectionInterface();
-
         //login
         boolean successfulLogin = tryLogin(3,2);
 
