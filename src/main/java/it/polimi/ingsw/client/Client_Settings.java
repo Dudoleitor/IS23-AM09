@@ -6,7 +6,7 @@ public class Client_Settings {
     /**
      * Connection Type
      */
-    public static final Connection connection = Connection.RMI;
+    public static final Connection connection = Connection.TCP;
     /**
      * View Type
      */

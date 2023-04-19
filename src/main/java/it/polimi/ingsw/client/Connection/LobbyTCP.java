@@ -18,9 +18,9 @@ public class LobbyTCP extends Lobby {
     private PrintWriter serverOut;
     private BufferedReader serverIn;
 
-    public LobbyTCP(IpAddressV4 ip, int port) {
+    public LobbyTCP(IpAddressV4 ip, int port, int id) {
         this.port = port;
-        this.id = port- NetworkSettings.TCPport; //calculate id by reversing creation lobbyPort criteria;
+        this.id = id; //calculate id by reversing creation lobbyPort criteria;
         try {
             Socket lobby = new Socket(ip.toString(), port);
             serverOut = new PrintWriter(lobby.getOutputStream(), true);
@@ -28,6 +28,27 @@ public class LobbyTCP extends Lobby {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String in(){
+        boolean ready = false;
+        try {
+            while(!ready){
+                if(serverIn.ready())
+                    ready = true;
+            }
+            return serverIn.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * send a message through socket connection
+     * @param message is the message to send
+     */
+    public void out(String message){
+        serverOut.println(message);
     }
 
     @Override

@@ -75,7 +75,8 @@ public class LoginTcpThread extends Thread{ //TODO
     }
 
     private void joinRandomLobby(){
-        boolean lobbyFound = false;
+        int lobbyID;
+        Lobby lobby;
         ServerLobbyInterface lobbyInterface = null;
         synchronized (server){
             try {
@@ -84,11 +85,19 @@ public class LoginTcpThread extends Thread{ //TODO
                  //TODO to send back error message to set username first
             }
         }
-        if(lobbyInterface != null)
-            lobbyFound = true;
+        try {
+            lobbyID = lobbyInterface.getID();
+            synchronized (server){
+                lobby = server.getLobbybyID(lobbyID);
+            }
+            new LobbyTcpThread(client, lobby).run();
+        } catch (Exception e) {
+            lobbyID = 0;
+        }
+
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
-        feedback.setContent(Jsonable.boolean2json(lobbyFound)); //set message content
+        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
         client.out(feedback.toString()); //send object to client
     }
 

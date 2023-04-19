@@ -204,6 +204,14 @@ public class ServerMain implements ServerInterface{
                 .forEach(x -> lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in
         return lobbyMap;
     }
+    public Lobby getLobbybyID(int id){
+        Lobby lobby = lobbies.keySet()
+                .stream()
+                .filter(x->x.getID()!=id)
+                .findFirst()
+                .orElse(null);
+        return lobby;
+    }
 
     public void removeLobby(){
         //TODO

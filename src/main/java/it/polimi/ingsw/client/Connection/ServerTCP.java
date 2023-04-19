@@ -79,9 +79,9 @@ public class ServerTCP extends Server {
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        boolean lobbyFound = Jsonable.json2boolean(response.getContent());
-        if (lobbyFound)
-            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport); //create a local Lobby socket with server given port
+        int lobbyID = Jsonable.json2int(response.getContent());
+        if (lobbyID > 0)
+            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, lobbyID); //create a local Lobby socket with server given port
         else
             return null;
     }
