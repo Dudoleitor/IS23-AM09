@@ -86,7 +86,7 @@ public class LoginTcpThread extends Thread{ //TODO
             }
         }
         try {
-            lobbyID = lobbyInterface.getID();
+            lobbyID = lobbyInterface.getID(); //TODO to find better solution that doesn't rely on this interface
             synchronized (server){
                 lobby = server.getLobbybyID(lobbyID);
             }
