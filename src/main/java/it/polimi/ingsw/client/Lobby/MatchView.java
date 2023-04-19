@@ -10,16 +10,16 @@ public abstract class MatchView {
      * Ask the user for a command
      * @return the selected LobbyCommand
      */
-    protected abstract LobbyCommand askCommand();
+    public abstract LobbyCommand askCommand();
     /**
      * Notify the user that they entered an ivalid command
      */
-    protected abstract void notifyInvalidCommand();
+    public abstract void notifyInvalidCommand();
 
     /**
      * Notify the player that he quit
      */
-    protected abstract void notifyExit();
+    public abstract void notifyExit();
 
     /**
      * Show the user all chat messages
@@ -43,16 +43,16 @@ public abstract class MatchView {
      * Ask the user for a move
      * @return the chosen move
      */
-    protected abstract Move getMoveFromUser();
+    public abstract Move getMoveFromUser();
 
     /**
      * Show the user an object from the model
      */
-    protected abstract void showElement();
+    public abstract void showElement();
 
     /**
      * Show the list of commands that the client can execute
      */
-    protected abstract void showHelp();
+    public abstract void showHelp();
 
 }

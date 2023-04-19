@@ -15,7 +15,7 @@ public class MatchCLI extends MatchView {
     private boolean exit = false;
 
     @Override
-    protected LobbyCommand askCommand(){
+    public LobbyCommand askCommand(){
         String input;
         input = io.scan();
         //Invalid command
@@ -29,7 +29,7 @@ public class MatchCLI extends MatchView {
     }
 
     @Override
-    protected void notifyExit() {
+    public void notifyExit() {
         io.printErrorMessage("You quit!");
     }
 
@@ -59,7 +59,7 @@ public class MatchCLI extends MatchView {
         return io.multiScan(fields);
     }
 
-    protected Move getMoveFromUser(){
+    public Move getMoveFromUser(){
         boolean validInput = false;List<Position> positions = null;
         int column = 0;
         PartialMove pm = new PartialMove();
@@ -98,7 +98,7 @@ public class MatchCLI extends MatchView {
         return positions;
     }
 
-    protected void showElement(){
+    public void showElement(){
         io.printMessage("What do you want to see (Board/Shelf)");
         String choice = io.scan();
         if(!inputSanitizer.isValidMessage(choice)){
@@ -124,7 +124,7 @@ public class MatchCLI extends MatchView {
     }
 
     @Override
-    protected void showHelp() {
+    public void showHelp() {
         String help = "Here are all the commands:\n";
         List<String> commandList = Arrays.stream(LobbyCommand.values()).
                 filter(c -> c != LobbyCommand.Help && c != LobbyCommand.Invalid).
@@ -136,7 +136,7 @@ public class MatchCLI extends MatchView {
         io.printMessage(help);
     }
 
-    protected void notifyInvalidCommand(){
+    public void notifyInvalidCommand(){
         io.printErrorMessage("Invalid LobbyCommand!");
     }
 }

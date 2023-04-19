@@ -53,7 +53,7 @@ public class ServerTCP extends Server {
         serverOut.println(message);
     }
     @Override
-    boolean login(Client client) {
+    public boolean login(Client client) {
         MessageTcp login = new MessageTcp();
         login.setCommand(MessageTcp.MessageCommand.Login); //set command
         login.setContent(Jsonable.string2json(client.getPlayerName())); //set playername as JsonObject
@@ -67,7 +67,7 @@ public class ServerTCP extends Server {
 
 
     @Override
-    Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
+    public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set command
         requestLobbies.setContent(Jsonable.string2json(playerName)); //set playername as JsonObject
@@ -78,7 +78,7 @@ public class ServerTCP extends Server {
     }
 
     @Override
-    Lobby joinRandomLobby(Client client) throws ServerException {
+    public Lobby joinRandomLobby(Client client) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
         out(requestLobbies.toString());
@@ -93,19 +93,12 @@ public class ServerTCP extends Server {
     }
 
     @Override
-    Map<Integer, Integer> getAvailableLobbies()throws ServerException {
+    public Map<Integer, Integer> getAvailableLobbies()throws ServerException {
         return null;
     }
 
     @Override
-    Lobby joinSelectedLobby(Client client, int id)throws ServerException {
+    public Lobby joinSelectedLobby(Client client, int id)throws ServerException {
         return null;
-    }
-
-    @Override
-    Client generateClient(String playerName) {
-        ClientSocket client = new ClientSocket(); //I know it's bad, but for now it reamains as it is, because it is need locally
-        client.setName(playerName);
-        return client;
     }
 }

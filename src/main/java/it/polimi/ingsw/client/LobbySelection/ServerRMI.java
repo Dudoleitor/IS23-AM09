@@ -71,17 +71,6 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    Client generateClient(String playerName){
-        try {
-            ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
-            ClientRMI client = new ClientRMI(remoteObject);
-            return client;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public Lobby createLobby(Client client) throws ServerException{
         ServerLobbyInterface lobbyRMI = null;
         try{

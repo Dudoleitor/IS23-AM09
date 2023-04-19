@@ -9,12 +9,12 @@ import java.util.Map;
 
 public class MatchGUI extends MatchView {
     @Override
-    protected LobbyCommand askCommand() {
+    public LobbyCommand askCommand() {
         return null;
     }
 
     @Override
-    protected void notifyExit() {
+    public void notifyExit() {
 
     }
 
@@ -34,22 +34,22 @@ public class MatchGUI extends MatchView {
     }
 
     @Override
-    protected Move getMoveFromUser() {
+    public Move getMoveFromUser() {
         return null;
     }
 
     @Override
-    protected void showElement() {
+    public void showElement() {
 
     }
 
     @Override
-    protected void showHelp() {
+    public void showHelp() {
 
     }
 
     @Override
-    protected void notifyInvalidCommand() {
+    public void notifyInvalidCommand() {
 
     }
 }

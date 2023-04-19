@@ -19,7 +19,7 @@ public abstract class Server {
      * @param client
      * @return true if login was successful
      */
-    abstract boolean login(Client client);
+    public abstract boolean login(Client client);
 
     /**
      * Join the first available Lobby
@@ -27,7 +27,7 @@ public abstract class Server {
      * @return the Lobby object that will handle the connection with
      * the joined lobby
      */
-    abstract Lobby joinRandomLobby(Client client) throws ServerException;
+    public abstract Lobby joinRandomLobby(Client client) throws ServerException;
 
     /**
      * Create a lobby on server
@@ -41,14 +41,14 @@ public abstract class Server {
      * Get all the lobbies in which the player can log
      * @return a map of LobbyID - Number of Players in lobby
      */
-    abstract Map<Integer,Integer> getAvailableLobbies() throws ServerException;
+    public abstract Map<Integer,Integer> getAvailableLobbies() throws ServerException;
 
     /**
      * Get all lobbies in which the client is present
      * @param playerName playerName of client
      * @return
      */
-    abstract Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException;
+    public abstract Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException;
 
     /**
      * Join a specific lobby
@@ -57,13 +57,5 @@ public abstract class Server {
      * @return the Lobby object that will handle the connection with
      * the joined lobby
      */
-    abstract Lobby joinSelectedLobby(Client client, int id) throws ServerException;
-
-    /**
-     * Generate a client object that is compatible with the
-     * connection type of server
-     * @param playerName
-     * @return the compatible client object
-     */
-    abstract Client generateClient(String playerName);
+    public abstract Lobby joinSelectedLobby(Client client, int id) throws ServerException;
 }

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.Lobby;
 
 import it.polimi.ingsw.shared.Move;
-import it.polimi.ingsw.shared.Chat;
 
 /**
  * This class is used to interface the Client with the lobby handler in the server
@@ -12,7 +11,7 @@ public abstract class Lobby {
      * @param playerName
      * @param message
      */
-    abstract void postToLiveChat(String playerName, String message) throws LobbyException;
+    public abstract void postToLiveChat(String playerName, String message) throws LobbyException;
 
     /**
      * Post to private chat
