@@ -19,13 +19,8 @@ public class MessageTcp {
      * @param message is the message to parse
      */
     public MessageTcp(String message){
-        JSONParser parser = new JSONParser();
-        JSONObject jsonMessage;
-        try {
-            jsonMessage = (JSONObject) parser.parse(message);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        JSONObject jsonMessage = Jsonable.parseString(message);
+
         this.messageCommand = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
         this.content = (JSONObject) jsonMessage.get("content");
     }
@@ -36,6 +31,7 @@ public class MessageTcp {
         CreateLobby("createLobby"),
         GetAvailableLobbies("availableLobbies"),
         JoinSelectedLobby("joinSelected"),
+        PostToLiveChat("postChat"),
 
         ;
 

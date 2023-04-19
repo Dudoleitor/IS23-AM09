@@ -148,6 +148,7 @@ public class ClientMain{
                     break;
                 default: //post message to chat
                     view.notifyInvalidCommand();
+                    break;
             }
         }
         catch (LobbyException e){

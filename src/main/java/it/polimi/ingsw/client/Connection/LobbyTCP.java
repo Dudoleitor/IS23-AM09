@@ -1,8 +1,6 @@
 package it.polimi.ingsw.client.Connection;
 
-import it.polimi.ingsw.shared.IpAddressV4;
-import it.polimi.ingsw.shared.Move;
-import it.polimi.ingsw.shared.NetworkSettings;
+import it.polimi.ingsw.shared.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,7 +51,16 @@ public class LobbyTCP extends Lobby {
 
     @Override
     public void postToLiveChat(String playerName, String message) throws LobbyException{
-
+        MessageTcp postMessage = new MessageTcp();
+        ChatMessage chatMessage = new ChatMessage(playerName,message, Color.Black); //TODO maybe create a constructor that doesn't need color
+        postMessage.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set command
+        postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
+        out(postMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
     }
 
     @Override

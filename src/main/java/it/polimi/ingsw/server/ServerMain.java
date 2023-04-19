@@ -207,7 +207,7 @@ public class ServerMain implements ServerInterface{
     public Lobby getLobbybyID(int id){
         Lobby lobby = lobbies.keySet()
                 .stream()
-                .filter(x->x.getID()!=id)
+                .filter(x->x.getID()==id)
                 .findFirst()
                 .orElse(null);
         return lobby;

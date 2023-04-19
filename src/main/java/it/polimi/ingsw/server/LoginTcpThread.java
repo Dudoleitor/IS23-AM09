@@ -10,13 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginTcpThread extends Thread{ //TODO
-    private final ClientSocket client;
+    private ClientSocket client;
     private final ServerMain server;
-    boolean lobbyAssigned = false;
+    private boolean  lobbyAssigned;
+    private LobbyTcpThread selectedLobby;
 
     public LoginTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
         this.client= client;
+        this.lobbyAssigned = false;
 
 
     }
@@ -33,6 +35,8 @@ public class LoginTcpThread extends Thread{ //TODO
             String content = message.getContent(); //content in JSON
             executeCommand(command,content);
         }
+        selectedLobby.start();
+
     }
     private void executeCommand(MessageTcp.MessageCommand command, String content){
         switch (command){
@@ -166,8 +170,8 @@ public class LoginTcpThread extends Thread{ //TODO
                 lobby = server.getLobbybyID(lobbyID);
             }
             if(lobby != null) {
-                new LobbyTcpThread(client, lobby).run();
                 lobbyAssigned = true;
+                selectedLobby = new LobbyTcpThread(client, lobby);
             }
         } catch (Exception e) {
             lobbyID = 0;
