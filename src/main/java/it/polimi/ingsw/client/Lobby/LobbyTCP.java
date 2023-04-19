@@ -1,10 +1,36 @@
 package it.polimi.ingsw.client.Lobby;
 
+import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.NetworkSettings;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 //TODO implement
 public class LobbyTCP extends Lobby {
+
+    private int port;
+    private int id;
+    private PrintWriter serverOut;
+    private BufferedReader serverIn;
+
+    public LobbyTCP(IpAddressV4 ip, int port) {
+        this.port = port;
+        this.id = port- NetworkSettings.TCPport; //calculate id by reversing creation lobbyPort criteria;
+        try {
+            Socket lobby = new Socket(ip.toString(), port);
+            serverOut = new PrintWriter(lobby.getOutputStream(), true);
+            serverIn = new BufferedReader(new InputStreamReader(lobby.getInputStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void postToLiveChat(String playerName, String message) throws LobbyException{
 
@@ -42,6 +68,6 @@ public class LobbyTCP extends Lobby {
 
     @Override
     public int getID()throws LobbyException {
-        return 0;
+        return this.id;
     }
 }

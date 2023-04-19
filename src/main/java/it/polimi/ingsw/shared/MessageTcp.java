@@ -31,7 +31,8 @@ public class MessageTcp {
     }
     public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP
         Login("login"),
-        GetJoinedLobbies("getJoinedLobbies"),
+        GetJoinedLobbies("getJoined"),
+        JoinRandomLobby("joinRandom"),
 
         ;
 
