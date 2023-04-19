@@ -80,7 +80,7 @@ public class ClientMain{
      * Get all the lobbies that are available for the client to join
      * @return a map of the lobby IDs to the Number of player present
      */
-    private static Map getAvailableLobbies() throws ServerException {
+    private static Map<Integer,Integer> getAvailableLobbies() throws ServerException {
         return server.getAvailableLobbies();
     }
 

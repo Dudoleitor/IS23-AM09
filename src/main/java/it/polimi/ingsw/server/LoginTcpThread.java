@@ -31,23 +31,34 @@ public class LoginTcpThread extends Thread{ //TODO
             MessageTcp message = new MessageTcp(string);
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
             String content = message.getContent(); //content in JSON
-            switch (command){
-                case Login:
-                    login(content);
-                case GetJoinedLobbies:
-                    getJoinedLobbies(content);
-                case JoinRandomLobby:
-                    joinRandomLobby();
-                case CreateLobby:
-                    createLobby();
-                case GetAvailableLobbies:
-                    getAvailableLobbies();
-                case JoinSelectedLobby:
-                    joinSelectedLobby(content);
-                default:
-                    client.out("Command does not exists");
-            }
+            executeCommand(command,content);
         }
+    }
+    private void executeCommand(MessageTcp.MessageCommand command, String content){
+        switch (command){
+            case Login:
+                login(content);
+                break;
+            case GetJoinedLobbies:
+                getJoinedLobbies(content);
+                break;
+            case JoinRandomLobby:
+                joinRandomLobby();
+                break;
+            case CreateLobby:
+                createLobby();
+                break;
+            case GetAvailableLobbies:
+                getAvailableLobbies();
+                break;
+            case JoinSelectedLobby:
+                joinSelectedLobby(content);
+                break;
+            default:
+                client.out("Command does not exists");
+                break;
+        }
+
     }
 
     private void login(String message){
