@@ -1,29 +1,27 @@
 package it.polimi.ingsw.client.controller;
 
-import it.polimi.ingsw.shared.*;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.Tile;
 
 import java.rmi.RemoteException;
 
 /**
- * This object is used to receive updates coming from
- * the server, it resides on the client. When RMI is
- * used, the object is wrapped inside ClientRMI and
- * methods are called directly from the server.
- * With TCP, proper adapters parse messages coming
- * from the network and call the methods.
+ * For the general behaviour please refer to the javadoc of ClientController.
+ * This object is used to wrap the GUI and call the proper methods of JavaFX.
+ * Here a copy of the model is not needed.
  */
-public interface ClientController {
+//TODO everything
+public class ClientControllerGUI implements ClientController {
     /**
      * This method is used to return the name of
      * the players using this client.
      *
      * @return String, player's name.
      */
-    public String getPlayerName() throws RemoteException;
-
+    public String getPlayerName() throws RemoteException {
+        return "";
+    }
 
     /**
      * This method is used when a player picks a tile
@@ -33,8 +31,9 @@ public interface ClientController {
      *
      * @param position position
      */
-    public void pickedFromBoard(Position position) throws RemoteException;
+    public void pickedFromBoard(Position position) throws RemoteException {
 
+    }
 
     /**
      * This method is used to transfer the whole board
@@ -43,7 +42,9 @@ public interface ClientController {
      *
      * @param board JSONObject.toJsonString
      */
-    public void refreshBoard(String board) throws RemoteException;
+    public void refreshBoard(String board) throws RemoteException {
+
+    }
 
     /**
      * This method is used when a player inserts a single
@@ -56,7 +57,9 @@ public interface ClientController {
      * @param column destination column of the shelf
      * @param tile   Tile to insert
      */
-    public void putIntoShelf(String player, int column, Tile tile) throws RemoteException;
+    public void putIntoShelf(String player, int column, Tile tile) throws RemoteException {
+
+    }
 
     /**
      * This method is used to transfer the whole shelf
@@ -66,19 +69,27 @@ public interface ClientController {
      * @param player name of the player
      * @param shelf  JSONObject.toJsonString
      */
-    public void refreshShelf(String player, String shelf) throws RemoteException;
+    public void refreshShelf(String player, String shelf) throws RemoteException {
+
+    }
 
     /**
      * This method is used to send a chat message to clients.
-     * @param sender Player's name
+     *
+     * @param sender  Player's name
      * @param message String message
      */
-    public void postChatMessage(String sender, String message) throws RemoteException;
+    public void postChatMessage(String sender, String message) throws RemoteException {
+
+    }
 
     /**
      * This method is used to send the whole chat to the client,
      * it is used when a refresh is needed.
+     *
      * @param chat Chat object
      */
-    public void refreshChat(Chat chat) throws RemoteException;
+    public void refreshChat(Chat chat) throws RemoteException {
+
+    }
 }

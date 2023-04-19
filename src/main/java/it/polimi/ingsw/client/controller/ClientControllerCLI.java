@@ -13,12 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This object is used on the client to receive updates
- * sent by the model. This object will be wrapped inside
- * a ClientRMI object.
- * The server, inside ClientRMI, will invoke methods on
- * this object and the remote execution will be
- * handled by RMI.
+ * For the general behaviour please refer to the javadoc of ClientController.
+ * This object contains a copy of the model and uses the CLI
+ * to print the entire model each time.
  */
 public class ClientControllerCLI extends UnicastRemoteObject implements ClientRemote, ClientController {
 
