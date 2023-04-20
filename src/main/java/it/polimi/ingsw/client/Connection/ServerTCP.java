@@ -1,10 +1,7 @@
 package it.polimi.ingsw.client.Connection;
 
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.shared.IpAddressV4;
-import it.polimi.ingsw.shared.Jsonable;
-import it.polimi.ingsw.shared.MessageTcp;
-import it.polimi.ingsw.shared.NetworkSettings;
+import it.polimi.ingsw.shared.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +11,7 @@ import java.net.Socket;
 import java.util.Map;
 
 public class ServerTCP extends Server {
+    private int id;
     private Socket serverSocket;
     private PrintWriter serverOut;
     private BufferedReader serverIn;
@@ -83,43 +81,100 @@ public class ServerTCP extends Server {
     }
 
     @Override
-    public Lobby joinRandomLobby(Client client) throws ServerException {
+    public void joinRandomLobby(Client client) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        int lobbyID = Jsonable.json2int(response.getContent());
-        if (lobbyID > 0)
-            return new LobbyTCP(serverSocket, lobbyID); //create a local Lobby socket with server given port
-        else
-            return null;
+        this.id = Jsonable.json2int(response.getContent());
     }
 
     @Override
-    Lobby createLobby(Client client) throws ServerException {
+    void createLobby(Client client) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        int lobbyID = Jsonable.json2int(response.getContent());
-        if (lobbyID > 0)
-            return new LobbyTCP(serverSocket, lobbyID); //create a local Lobby socket with server given port
-        else
-            return null;
+        this.id = Jsonable.json2int(response.getContent());
+
     }
 
 
     @Override
-    public Lobby joinSelectedLobby(Client client, int id)throws ServerException {
+    public void joinSelectedLobby(Client client, int id)throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set command
         requestLobbies.setContent(Jsonable.int2json(id));
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        int lobbyID = Jsonable.json2int(response.getContent());
-        if (lobbyID > 0)
-            return new LobbyTCP(serverSocket, lobbyID); //create a local Lobby socket with server given port
-        else
-            return null;
+        this.id= Jsonable.json2int(response.getContent());
+    }
+
+    @Override
+    public void postToLiveChat(String playerName, String message) throws LobbyException{
+        MessageTcp postMessage = new MessageTcp();
+        ChatMessage chatMessage = new ChatMessage(playerName,message, Color.Black); //TODO maybe create a constructor that doesn't need color
+        postMessage.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set command
+        postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
+        out(postMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
+    }
+
+    @Override
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
+        MessageTcp postMessage = new MessageTcp();
+        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black); //TODO maybe create a constructor that doesn't need color
+        postMessage.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set command
+        postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
+        out(postMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
+
+    }
+
+    @Override
+    public void quitGame(String player) throws LobbyException{
+        MessageTcp quitMessage = new MessageTcp();
+        quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
+        quitMessage.setContent(Jsonable.string2json(player));
+        out(quitMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
+
+    }
+
+    @Override
+    public boolean matchHasStarted() throws LobbyException {
+        return false;
+    }
+
+    @Override
+    public void postMove(String player, Move move) throws LobbyException {
+
+    }
+
+    @Override
+    public boolean startGame(String player)throws LobbyException {
+        return false;
+    }
+
+    @Override
+    public boolean isLobbyAdmin(String player)throws LobbyException {
+        return false;
+    }
+
+    @Override
+    public int getLobbyID()throws LobbyException {
+        return this.id;
     }
 }

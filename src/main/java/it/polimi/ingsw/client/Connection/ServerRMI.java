@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.Connection;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.IpAddressV4;
+import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
@@ -15,6 +16,10 @@ public class ServerRMI extends Server {
     private ServerInterface server;
     public ServerRMI(IpAddressV4 ip, int port){
         super(ip,port);
+    }
+    private ServerLobbyInterface lobby;
+    public void initLobby(ServerLobbyInterface lobby){
+        this.lobby = lobby;
     }
 
     @Override
@@ -46,36 +51,30 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public Lobby joinRandomLobby(Client client) throws ServerException{
-        ServerLobbyInterface lobbyRMI = null;
+    public void joinRandomLobby(Client client) throws ServerException{
         try{
-            lobbyRMI = server.joinRandomLobby(client);
+            lobby = server.joinRandomLobby(client);
         } catch (Exception e) {
             throw new ServerException("Error in Server");
         }
-        return new LobbyRMI(lobbyRMI);
     }
 
     @Override
-    public Lobby joinSelectedLobby(Client client, int id) throws ServerException{
-        ServerLobbyInterface lobbyRMI = null;
+    public void joinSelectedLobby(Client client, int id) throws ServerException{
         try{
-            lobbyRMI = server.joinSelectedLobby(client,id);
+            lobby = server.joinSelectedLobby(client,id);
         } catch (Exception e) {
             throw new ServerException("Error in Server");
         }
-        return new LobbyRMI(lobbyRMI);
     }
 
     @Override
-    public Lobby createLobby(Client client) throws ServerException{
-        ServerLobbyInterface lobbyRMI = null;
+    public void createLobby(Client client) throws ServerException{
         try{
-            lobbyRMI = server.createLobby(client);
+            lobby = server.createLobby(client);
         } catch (Exception e) {
             throw new ServerException("Error in Server");
         }
-        return new LobbyRMI(lobbyRMI);
     }
 
     @Override
@@ -87,5 +86,85 @@ public class ServerRMI extends Server {
             throw new ServerException("Error in Server");
         }
         return availableLobbies;
+    }
+    @Override
+    public void postToLiveChat(String playerName, String message) throws LobbyException {
+        try {
+            lobby.postToLiveChat(playerName,message);
+        } catch (Exception e) {
+            throw new LobbyException("Error in Lobby");
+        }
+    }
+
+    @Override
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
+        try{
+            lobby.postSecretToLiveChat(sender,receiver,message);
+        }
+        catch (Exception e){
+            throw new LobbyException("Error in Lobby");
+        }
+    }
+
+    @Override
+    public void quitGame(String player){
+        try{
+            lobby.quitGame(player);
+        } catch (Exception e) {
+            //do nothing and quit anyway
+        }
+    }
+
+    @Override
+    public boolean matchHasStarted() throws LobbyException{
+        boolean started = false;
+        try{
+            started=  lobby.matchHasStarted();
+        } catch (Exception e) {
+            throw new LobbyException("Error in Lobby");
+        }
+        return started;
+    }
+
+    @Override
+    public void postMove(String player, Move move) throws LobbyException{
+        try {
+            lobby.postMove(player,move);
+        } catch (Exception e) {
+            throw new LobbyException("Error in Lobby");
+        }
+    }
+
+    @Override
+    public boolean startGame(String player) throws LobbyException{
+        boolean hasStarted = false;
+        try{
+            hasStarted = lobby.startGame(player);
+        } catch (Exception e) {
+            throw new LobbyException("Error in Lobby");
+        }
+        return hasStarted;
+    }
+
+    @Override
+    public boolean isLobbyAdmin(String player) throws LobbyException{
+        boolean result = false;
+        try{
+            result = lobby.isLobbyAdmin(player);
+        } catch (Exception e) {
+            throw new LobbyException("Error in Lobby");
+        }
+        return result;
+    }
+
+    @Override
+    public int getLobbyID() throws LobbyException{
+        int id = 0;
+        try {
+            id = lobby.getID();
+        } catch (Exception e) {
+            throw new LobbyException("Error in Lobby");
+        }
+        return id;
     }
 }

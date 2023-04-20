@@ -32,7 +32,6 @@ public class ClientMain{
     static String playerName;
     //Objects that handle connection with server
     static Server server;
-    static Lobby lobby;
     static Client client;
     /**
      * UI View
@@ -68,17 +67,17 @@ public class ClientMain{
             command = view.askLobby();
             switch (command){
                 case Random:
-                    lobby = server.joinRandomLobby(client);
+                    server.joinRandomLobby(client);
                     break;
                 case Number:
-                    lobby = server.joinSelectedLobby(client,command.getID());
+                    server.joinSelectedLobby(client,command.getID());
                     break;
                 default:
                     view.errorMessage("Input a valid id");
                     break;
             }
             try{
-                view.message("You joined #"+ lobby.getID()+" lobby!");
+                view.message("You joined #"+ server.getLobbyID()+" lobby!");
             }
             catch (LobbyException e){
                 view.errorMessage("Lobby does not exist");
@@ -95,7 +94,7 @@ public class ClientMain{
         //execute action for every lobbyCommand
             switch (lobbyCommand) {
                 case Exit: //quit game
-                    lobby.quitGame(playerName);
+                    server.quitGame(playerName);
                     view.notifyExit();
                     exit = true;
                     break;
@@ -107,7 +106,7 @@ public class ClientMain{
                     postToPrivateChat();
                     break;
                 case Start:
-                    lobby.startGame(playerName);
+                    server.startGame(playerName);
                     break;
                 case Move:
                     postMove();
@@ -146,7 +145,7 @@ public class ClientMain{
      */
     private static void postToChat() throws LobbyException {
         Map<String,String> message = view.getMessageFromUser();
-        lobby.postToLiveChat(
+        server.postToLiveChat(
                 playerName,
                 message.get("message"));
     }
@@ -156,7 +155,7 @@ public class ClientMain{
      */
     private static void postToPrivateChat() throws LobbyException {
         Map<String,String> privateMessage = view.getPrivateMessageFromUser();
-        lobby.postSecretToLiveChat(
+        server.postSecretToLiveChat(
                 playerName,
                 privateMessage.get("receiver"),
                 privateMessage.get("message"));
@@ -166,11 +165,11 @@ public class ClientMain{
      * Get move from user and post to server
      */
     private static void postMove() throws LobbyException {
-        if(!lobby.matchHasStarted()){
+        if(!server.matchHasStarted()){
             return;
         }
         Move move = view.getMoveFromUser();
-        lobby.postMove(playerName,move);
+        server.postMove(playerName,move);
     }
 
     /**
