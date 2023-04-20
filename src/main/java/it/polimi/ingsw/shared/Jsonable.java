@@ -10,14 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface Jsonable {
-    public abstract JSONObject toJson();
+    JSONObject toJson();
     /**
      * This static method returns the JSONObject from a json file,
      * it uses the "board" attribute.
      * @param jsonPath path to the json file
      * @return JSONObject with the content
      */
-    public static JSONObject pathToJsonObject(String jsonPath, Class<?> cls) throws JsonBadParsingException{
+    static JSONObject pathToJsonObject(String jsonPath, Class<?> cls) throws JsonBadParsingException{
         try {
             JSONParser jsonParser = new JSONParser(); //initialize parser
             Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
@@ -46,7 +46,7 @@ public interface Jsonable {
      * @param string is the input to parse
      * @return JsonObject corresponding to the String format
      */
-    public static JSONObject parseString(String string){
+    static JSONObject parseString(String string){
         if (string == null)
             return null;
         JSONParser parser = new JSONParser();
@@ -63,7 +63,7 @@ public interface Jsonable {
      * @param map is the boolean
      * @return JsonObject that corresponds to that boolean
      */
-    public static JSONObject map2json(Map<Integer,Integer> map) {
+    static JSONObject map2json(Map<Integer,Integer> map) {
         if (map == null)
             return null;
         JSONObject jsonMap = new JSONObject();
@@ -79,14 +79,13 @@ public interface Jsonable {
     }
     /**
      * transform a jsonString to a map<Integer><Integer>
-     * @param jsonString is the string of JsonObject
+     * @param jsonMap is the string of JsonObject
      * @return a boolean corresponding to the Object
      */
-    public static Map<Integer,Integer> json2mapInt (String jsonString){
-        if (jsonString == null)
+    static Map<Integer,Integer> json2mapInt (JSONObject jsonMap){
+        if (jsonMap == null)
             return null;
         Map<Integer,Integer> map = new HashMap<>();
-        JSONObject jsonMap = parseString(jsonString);
         if(jsonMap == null)
             return null;
         jsonMap.keySet()
@@ -105,60 +104,54 @@ public interface Jsonable {
      * @param value is the boolean
      * @return JsonObject that corresponds to that boolean
      */
-    public static JSONObject boolean2json(boolean value) {
+    static JSONObject boolean2json(boolean value) {
         JSONObject jsonBool = new JSONObject();
         jsonBool.put("boolean",value);
         return jsonBool;
     }
     /**
      * transform a jsonString to a boolean
-     * @param jsonString is the string of JsonObject
+     * @param jsonBool is the string of JsonObject
      * @return a boolean corresponding to the Object
      */
-    public static boolean json2boolean (String jsonString){
-        JSONObject jsonBool = parseString(jsonString);
-        boolean value = Boolean.parseBoolean(jsonBool.get("boolean").toString());
-        return value;
+    static boolean json2boolean (JSONObject jsonBool){
+        return Boolean.parseBoolean(jsonBool.get("boolean").toString());
     }
     /**
      * transform an int to a jsonString
      * @param value is the int
      * @return JsonObject that corresponds to that int
      */
-    public static JSONObject int2json(int value) {
+    static JSONObject int2json(int value) {
         JSONObject jsonInt = new JSONObject();
         jsonInt.put("int",value);
         return jsonInt;
     }
     /**
      * transform a jsonString to an int
-     * @param jsonString is the string of JsonObject
-     * @return a int corresponding to the Object
+     * @param jsonInt is the string of JsonObject
+     * @return an int corresponding to the Object
      */
-    public static int json2int (String jsonString){
-        JSONObject jsonInt = parseString(jsonString);
-        int value = Integer.parseInt(jsonInt.get("int").toString());
-        return value;
+    static int json2int (JSONObject jsonInt){;
+        return Integer.parseInt(jsonInt.get("int").toString());
     }
     /**
      * transform a string to a jsonString
      * @param value is the string
      * @return JsonObject that corresponds to that string
      */
-    public static JSONObject string2json(String value) {
+    static JSONObject string2json(String value) {
         JSONObject jsonString = new JSONObject();
         jsonString.put("string",value);
         return jsonString;
     }
     /**
      * transform a jsonString to a string
-     * @param jsonString is the string of JsonObject
+     * @param jsonS is the string of JsonObject
      * @return a string corresponding to the Object
      */
-    public static String json2string (String jsonString){
-        JSONObject jsonS = parseString(jsonString);
-        String value = jsonS.get("string").toString();
-        return value;
+    static String json2string (JSONObject jsonS){
+        return jsonS.get("string").toString();
     }
 
 }

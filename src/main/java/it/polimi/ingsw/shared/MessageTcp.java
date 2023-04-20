@@ -20,9 +20,12 @@ public class MessageTcp {
      */
     public MessageTcp(String message){
         JSONObject jsonMessage = Jsonable.parseString(message);
-
-        this.messageCommand = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
-        this.content = (JSONObject) jsonMessage.get("content");
+        MessageCommand command = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
+        JSONObject content = (JSONObject) jsonMessage.get("content");
+        this.messageCommand = command;
+        if(content != null) {
+            this.content = Jsonable.parseString(content.toString());
+        }
     }
     public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP
         Login("login"),
@@ -75,9 +78,9 @@ public class MessageTcp {
         return messageCommand;
     }
 
-    public String getContent(){
+    public JSONObject getContent(){
         if (content != null)
-            return content.toJSONString();
+            return content;
         else
             return null;
 

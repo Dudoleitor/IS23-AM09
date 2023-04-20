@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.Connection;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
+import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -166,6 +167,18 @@ public class ServerTCP extends Server {
 
     @Override
     public void postMove(String player, Move move) throws LobbyException {
+        MessageTcp postMoveMessage = new MessageTcp();
+        JSONObject content = new JSONObject();
+        content.put("player",player);
+        content.put("move",move.toJson());
+        postMoveMessage.setCommand(MessageTcp.MessageCommand.PostMove); //set command
+        postMoveMessage.setContent(content);
+        out(postMoveMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
 
 
     }

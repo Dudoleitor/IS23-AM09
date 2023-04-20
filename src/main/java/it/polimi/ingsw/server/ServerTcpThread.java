@@ -1,11 +1,9 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
-import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Jsonable;
-import it.polimi.ingsw.shared.MessageTcp;
-import it.polimi.ingsw.shared.PrivateChatMessage;
+import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+import org.json.simple.JSONObject;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -37,7 +35,7 @@ public class ServerTcpThread extends Thread{ //TODO
             String string = client.in(); //TODO to make it wait on input ready
             MessageTcp message = new MessageTcp(string);
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
-            String content = message.getContent(); //content in JSON
+            JSONObject content = message.getContent(); //content in JSON
             if(!lobbyAssigned)
                 exectuteServerCommand(command,content); //execute if still searching for a lobby
             else
@@ -46,7 +44,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
 
     }
-    private void exectuteServerCommand(MessageTcp.MessageCommand command, String content){
+    private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content){
         switch (command){
             case Login:
                 login(content);
@@ -72,7 +70,7 @@ public class ServerTcpThread extends Thread{ //TODO
         }
 
     }
-    private void executeLobbyCommnad(MessageTcp.MessageCommand command, String content){
+    private void executeLobbyCommnad(MessageTcp.MessageCommand command, JSONObject content){
         switch (command){
             case PostToLiveChat:
                 postToLiveChat(content);
@@ -86,6 +84,9 @@ public class ServerTcpThread extends Thread{ //TODO
             case MatchHasStarted:
                 matchHasStarted();
                 break;
+            case PostMove:
+                postMove(content);
+                break;
 
             default:
                 client.out("Command does not exists");
@@ -96,7 +97,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
     //SERVER METHODS
 
-    private void login(String message){
+    private void login(JSONObject message){
         client.setName(Jsonable.json2string(message));
         boolean logged;
         synchronized (server){
@@ -111,7 +112,7 @@ public class ServerTcpThread extends Thread{ //TODO
         feedback.setContent(Jsonable.boolean2json(logged)); //set message content
         client.out(feedback.toString()); //send object to client
     }
-    private void getJoinedLobbies(String message){
+    private void getJoinedLobbies(JSONObject message){
         Map<Integer,Integer> lobbies;
         String username = Jsonable.json2string(message);
         synchronized (server){
@@ -174,7 +175,7 @@ public class ServerTcpThread extends Thread{ //TODO
         feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
         client.out(feedback.toString()); //send object to client
     }
-    private void joinSelectedLobby(String message){
+    private void joinSelectedLobby(JSONObject message){
         int lobbyID = Jsonable.json2int(message);
         ServerLobbyInterface lobbyInterface = null;
         synchronized (server){
@@ -211,9 +212,9 @@ public class ServerTcpThread extends Thread{ //TODO
 
     //LOBBY METHODS
 
-    private void postToLiveChat(String message){
+    private void postToLiveChat(JSONObject message){
         boolean foundErrors = false;
-        ChatMessage chatMessage = new ChatMessage(Jsonable.parseString(message));
+        ChatMessage chatMessage = new ChatMessage(message);
         String sender = chatMessage.getSender();
         String content = chatMessage.getMessage();
         synchronized (lobby) {
@@ -229,9 +230,9 @@ public class ServerTcpThread extends Thread{ //TODO
 
         }
     }
-    public void postSecretToLiveChat(String message){
+    public void postSecretToLiveChat(JSONObject message){
         boolean foundErrors = false;
-        PrivateChatMessage chatMessage = new PrivateChatMessage(Jsonable.parseString(message));
+        PrivateChatMessage chatMessage = new PrivateChatMessage(message);
         String sender = chatMessage.getSender();
         String content = chatMessage.getMessage();
         String receiver = chatMessage.getReciever();
@@ -248,7 +249,7 @@ public class ServerTcpThread extends Thread{ //TODO
         }
 
     }
-    public void quit(String message){
+    public void quit(JSONObject message){
         boolean foundErrors = false;
         String playername = Jsonable.json2string(message);
         synchronized (lobby) {
@@ -275,6 +276,23 @@ public class ServerTcpThread extends Thread{ //TODO
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set message command
             feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
+            client.out(feedback.toString()); //send object to client
+        }
+
+    }
+    public void postMove(JSONObject message){
+        boolean foundErrors = false;;
+        String player = message.get("player").toString(); //TODO for myself, to find a more clean way
+        Move move = new Move((JSONObject) message.get("move"));
+        synchronized (lobby) {
+            try {
+                lobby.postMove(player,move);
+            } catch (Exception e) {
+                foundErrors = true;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.PostMove); //set message command
+            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
             client.out(feedback.toString()); //send object to client
         }
 
