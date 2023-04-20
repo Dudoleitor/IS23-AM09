@@ -6,10 +6,19 @@ public class Client_Settings {
     /**
      * Connection Type
      */
-    public static final Connection connection = Connection.TCP;
+    public static Connection connection = Connection.RMI;
     /**
      * View Type
      */
+    public static UI ui;
+
+    public void setUI(Client_Settings.UI ui){
+        this.ui = ui;
+    }
+
+    public void setConnection(Client_Settings.Connection connection){
+        this.connection = connection;
+    }
 
     //Default color theme for CLI
     public static final Color messageColor = Color.Yellow;
@@ -26,7 +35,8 @@ public class Client_Settings {
 
     public enum Connection{
         TCP("tcp"),
-        RMI("rmi");
+        RMI("rmi"),
+        TEST("test");
         String tag;
         Connection(String tag){
             this.tag = tag;
@@ -38,7 +48,8 @@ public class Client_Settings {
 
     public enum UI{
         CLI("cli"),
-        GUI("gui");
+        GUI("gui"),
+        TEST("test");
         String tag;
         UI(String tag){
             this.tag = tag;

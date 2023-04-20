@@ -174,10 +174,9 @@ public class ClientMain{
 
     /**
      * Initiate the view according to the selected option
-     * @param uiOption
      */
-    private static void initView(Client_Settings.UI uiOption){
-        switch (uiOption){
+    private static void initView(){
+        switch (Client_Settings.ui){
             case CLI:
                 view = new CLI();
                 break;
@@ -267,12 +266,11 @@ public class ClientMain{
 
     /**
      * the main method that handles the client side application logic
-     * @param uiOption the option for the UI format
      */
-    public static void startClient(Client_Settings.UI uiOption){
+    public static void startClient(){
 
         //Initiate the view according to the settings
-        initView(uiOption);
+        initView();
 
         //ask for username
         playerName = view.askUserName();
