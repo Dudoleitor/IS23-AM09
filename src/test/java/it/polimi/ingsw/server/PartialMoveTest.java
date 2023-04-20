@@ -44,7 +44,7 @@ class PartialMoveTest {
     void nullPointerExceptionTest(){
         PartialMove pm = new PartialMove();
         assertThrows(InvalidMoveException.class, () -> pm.addPosition(null));
-        assertThrows(PartialMoveException.class, () -> new PartialMove(null));
+        assertThrows(PartialMoveException.class, () -> new PartialMove((PartialMove) null));
 
     }
 

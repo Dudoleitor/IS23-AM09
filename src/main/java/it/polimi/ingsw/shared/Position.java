@@ -1,12 +1,14 @@
 package it.polimi.ingsw.shared;
 
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Position {
+public class Position implements Jsonable {
     private final int row;
     private final int column;
 
@@ -18,6 +20,10 @@ public class Position {
     public Position(int row, int column) {
         this.row = row;
         this.column = column;
+    }
+    public Position(JSONObject jsonChat){
+        this.row = Integer.parseInt(jsonChat.get("row").toString());
+        this.column = Integer.parseInt(jsonChat.get("column").toString());
     }
 
     public static Position fromString(String str){
@@ -161,5 +167,18 @@ public class Position {
         square.add(new Position(getRow(),getColumn()+1));
         square.add(new Position(getRow()+1,getColumn()+1));
         return square;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonPos = new JSONObject();  // Object to return
+
+        // Saving parameters
+        jsonPos.put("row", row);
+        jsonPos.put("column", column);
+
+
+
+        return jsonPos;
     }
 }

@@ -1,9 +1,12 @@
 package it.polimi.ingsw.shared;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class PartialMove {
+public class PartialMove implements Jsonable {
     protected List<Position> positions;
     private final int maxNumMoves = 3;
     public List<Position> getBoardPositions(){
@@ -22,10 +25,17 @@ public class PartialMove {
             throw new PartialMoveException("Error while cloning PartialMove  : to_clone is null pointer");
         }
     }
+
     public PartialMove(){ //default constructor
         positions = new ArrayList<>();
     }
 
+    public PartialMove(JSONObject jsonMove){
+        JSONArray posArray = (JSONArray) jsonMove.get("posArray");
+        positions = new ArrayList<>();
+        posArray.stream().
+                forEach(p -> positions.add(new Position((JSONObject) p)));
+    }
     public int getMaxNumMoves() {
         return maxNumMoves;
     }
@@ -36,5 +46,17 @@ public class PartialMove {
             s = s.concat(p+"\n");
         }
         return s;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonMove = new JSONObject();  // Object to return
+        JSONArray jsonPositions = new JSONArray();
+        // Saving parameters
+        positions.stream()
+                .forEach(p -> jsonPositions.add(p.toJson()));
+        jsonMove.put("posArray",jsonPositions);
+
+        return jsonMove;
     }
 }

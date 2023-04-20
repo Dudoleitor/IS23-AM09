@@ -35,6 +35,7 @@ public class MessageTcp {
         PostSecretToLiveChat("postSecret"),
         Quit("quit"),
         MatchHasStarted("matchStarted"),
+        PostMove("move"),
 
 
         ;
