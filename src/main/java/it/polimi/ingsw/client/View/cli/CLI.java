@@ -146,6 +146,7 @@ public class CLI extends View {
     }
     @Override
     public String askUserName(){
+        System.out.println(gameLogo);
         String name = "";
         while(!inputSanitizer.isValidName(name)){
             io.printMessage("Enter your username");
@@ -154,6 +155,7 @@ public class CLI extends View {
                 io.printErrorMessage("Please enter a valid name");
             }
         }
+        io.printMessage("Hello "+name+"!");
         return name;
     }
     @Override
@@ -213,11 +215,5 @@ public class CLI extends View {
     @Override
     public void message(String message) {
         io.printMessage(message);
-    }
-
-    @Override
-    public void greet(String playerName) {
-        System.out.println(gameLogo);
-        io.printMessage("Hello "+playerName+"!");
     }
 }

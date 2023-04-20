@@ -90,10 +90,4 @@ public abstract class View {
      */
     public abstract void message(String message);
 
-    /**
-     * Greet the player when he joins. It's nice to do so :-)
-     * @param playerName
-     */
-    public abstract void greet(String playerName);
-
 }

@@ -238,7 +238,6 @@ public class ClientMain{
 
         //ask for username
         playerName = view.askUserName();
-        view.greet(playerName);
 
 
         //Initiate the server connection interfaces according to settings

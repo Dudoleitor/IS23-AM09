@@ -80,11 +80,6 @@ public class GUI extends View {
     }
 
     @Override
-    public void greet(String playerName) {
-
-    }
-
-    @Override
     public void notifyInvalidCommand() {
 
     }
