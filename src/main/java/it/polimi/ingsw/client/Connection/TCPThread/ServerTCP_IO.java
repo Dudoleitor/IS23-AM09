@@ -38,7 +38,9 @@ public class ServerTCP_IO{
         MessageTcp message;
         while (input.isEmpty()){
             try {
-                serverListener.wait();
+                synchronized (serverListener) {
+                    serverListener.wait();
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -46,7 +48,9 @@ public class ServerTCP_IO{
         }
         synchronized (input) {
             message = input.get(0);
+            input.remove(0);
         }
+
 
         return message;
 

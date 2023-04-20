@@ -23,7 +23,9 @@ public class ServerTCPListener extends Thread{
             if(incomingMessage.isReplyMessage()) {
                 synchronized (input){
                     input.add(incomingMessage);
-                    notifyAll();
+                }
+                synchronized (this) {
+                    this.notifyAll();
                 }
             } else if (incomingMessage.isUpdateMessage()){
                 //TODO Waiting for ClientSocket
