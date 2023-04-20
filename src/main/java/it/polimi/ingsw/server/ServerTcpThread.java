@@ -80,6 +80,9 @@ public class ServerTcpThread extends Thread{ //TODO
             case PostSecretToLiveChat:
                 postSecretToLiveChat(content);
                 break;
+            case Quit:
+                quit(content);
+                break;
 
             default:
                 client.out("Command does not exists");
@@ -237,6 +240,22 @@ public class ServerTcpThread extends Thread{ //TODO
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set message command
+            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            client.out(feedback.toString()); //send object to client
+        }
+
+    }
+    public void quit(String message){
+        boolean foundErrors = false;
+        String playername = Jsonable.json2string(message);
+        synchronized (lobby) {
+            try {
+                lobby.quitGame(playername);
+            } catch (Exception e) {
+                foundErrors = true;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.Quit); //set message command
             feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
             client.out(feedback.toString()); //send object to client
         }

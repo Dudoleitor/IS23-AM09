@@ -80,6 +80,15 @@ public class LobbyTCP extends Lobby {
 
     @Override
     public void quitGame(String player) throws LobbyException{
+        MessageTcp quitMessage = new MessageTcp();
+        quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
+        quitMessage.setContent(Jsonable.string2json(player));
+        out(quitMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
 
     }
 

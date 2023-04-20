@@ -33,6 +33,8 @@ public class MessageTcp {
         JoinSelectedLobby("joinSelected"),
         PostToLiveChat("postChat"),
         PostSecretToLiveChat("postSecret"),
+        Quit("quit"),
+
 
         ;
 
