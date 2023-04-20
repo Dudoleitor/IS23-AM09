@@ -133,7 +133,7 @@ public class CLI extends View {
         String help = "Here are all the commands:\n";
         List<String> commandList = Arrays.stream(LobbyCommand.values()).
                 filter(c -> c != LobbyCommand.Help && c != LobbyCommand.Invalid).
-                map(c -> "       -" + c.getCode().toUpperCase() + ": "+c.getDescription()+"\n").
+                map(c -> "    -> " + c.getCode().toUpperCase() + " ["+c.getShortcut()+"] :"+c.getDescription()+"\n").
                 collect(Collectors.toList());
         for(String command : commandList){
             help = help.concat(command);
@@ -160,20 +160,19 @@ public class CLI extends View {
     }
     @Override
     public void showLobbies(Map<Integer,Integer> availableLobbies, String description){
-        io.printMessage(description);
+        String lobbyMessage = description;
         if (!(availableLobbies == null) && !availableLobbies.isEmpty()) {
-            String lobbyMessage = "";
             List<String> lobbyList = (List<String>)
                     availableLobbies.keySet().stream().
-                            map(x -> "   --> Lobby " + x + ":  " + availableLobbies.get(x) + " players in\n").
+                            map(x -> "\n    -> Lobby " + x + ":  " + availableLobbies.get(x) + " players in").
                             collect(Collectors.toList());
             for(String mes : lobbyList){
                 lobbyMessage = lobbyMessage.concat(mes);
             }
-            io.printMessage(lobbyMessage);
         } else {
-            io.printMessage("None");
+            lobbyMessage = lobbyMessage + "\n       None";
         }
+        io.printMessage(lobbyMessage);
     }
     @Override
     public LobbySelectionCommand askLobby(){

@@ -40,27 +40,6 @@ public class ClientMain{
     static View view;
 
     /**
-     * Try login tries times
-     * @param tries
-     * @return true if successful
-     */
-    private static boolean tryLogin(int tries, int seconds){
-        boolean logged = false;
-        for(int attempt = 0; attempt < tries && !logged; attempt++){
-            logged = server.login(client); //get previous sessions if present
-            if(!logged){
-                view.errorMessage("Connection Error, retying in "+seconds+" seconds");
-                try {
-                    sleep(seconds*1000);
-                } catch (InterruptedException e) {
-                    return false;
-                }
-            }
-        }
-        return logged;
-    }
-
-    /**
      * Get a List of the lobby IDs where the player is in
      * @return the list of lobby IDs
      */
@@ -98,12 +77,13 @@ public class ClientMain{
                     view.errorMessage("Input a valid id");
                     break;
             }
-        }
-        try{
-            view.message("You joined #"+ lobby.getID()+" lobby!");
-        }
-        catch (LobbyException e){
-            throw new ServerException("Error in Server");
+            try{
+                view.message("You joined #"+ lobby.getID()+" lobby!");
+            }
+            catch (LobbyException e){
+                view.errorMessage("Lobby does not exist");
+                command = LobbySelectionCommand.Invalid;
+            }
         }
     }
 
@@ -243,6 +223,27 @@ public class ClientMain{
         } catch (ServerException e) {
             return false;
         }
+    }
+
+    /**
+     * Try login tries times
+     * @param tries
+     * @return true if successful
+     */
+    private static boolean tryLogin(int tries, int seconds){
+        boolean logged = false;
+        for(int attempt = 0; attempt < tries && !logged; attempt++){
+            logged = server.login(client); //get previous sessions if present
+            if(!logged){
+                view.errorMessage("Connection Error, retying in "+seconds+" seconds");
+                try {
+                    sleep(seconds*1000);
+                } catch (InterruptedException e) {
+                    return false;
+                }
+            }
+        }
+        return logged;
     }
 
     /**
