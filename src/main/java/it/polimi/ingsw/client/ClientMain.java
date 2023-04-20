@@ -30,9 +30,7 @@ public class ClientMain{
      * The player name
      */
     static String playerName;
-    /**
-     * Objects that handle connection with server
-     */
+    //Objects that handle connection with server
     static Server server;
     static Lobby lobby;
     static Client client;
@@ -40,12 +38,6 @@ public class ClientMain{
      * UI View
      */
     static View view;
-
-    /**
-     * state of the match
-     */
-    static boolean play = true;
-    static boolean exit = false;
 
     /**
      * Try login tries times
@@ -85,10 +77,13 @@ public class ClientMain{
     }
 
     /**
-     * Get the match thread to start in order to play
-     * @return the Match object
+     * Join the lobby by creating a Lobby connection object and connecting it to server
      */
     private static void joinLobby() throws ServerException {
+        //show the client the lobbies they can join
+        view.showLobbies(getPreviousSessions(),"The lobbies you already joined");
+        view.showLobbies(getAvailableLobbies(), "The lobbies that are available");
+        //ask the user
         LobbySelectionCommand command = LobbySelectionCommand.Invalid;
         while(command == LobbySelectionCommand.Invalid){
             command = view.askLobby();
@@ -116,9 +111,8 @@ public class ClientMain{
      * Execute a lobbyCommand received from view
      * @param lobbyCommand the lobbyCommand to execute
      */
-    private static void executeUserCommand(LobbyCommand lobbyCommand){
+    private static void executeUserCommand(LobbyCommand lobbyCommand) throws LobbyException {
         //execute action for every lobbyCommand
-        try {
             switch (lobbyCommand) {
                 case Exit: //quit game
                     view.notifyExit();
@@ -150,12 +144,14 @@ public class ClientMain{
                     view.notifyInvalidCommand();
                     break;
             }
-        }
-        catch (LobbyException e){
-            //TODO handle better
-            e.printStackTrace();
-        }
     }
+
+    /**
+     * Check if the reciever of private message is valid
+     * @param message the message
+     * @param receiverName the receiver name
+     * @return true if valid
+     */
     private static boolean checkValidReceiver(ChatMessage message, String receiverName){
         if (message.getClass().equals(PrivateChatMessage.class)){
             if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
@@ -212,7 +208,10 @@ public class ClientMain{
         }
     }
 
-    private static void initConnectionInterface(){
+    /**
+     * Initiate all the objects that will handle the connection to serer
+     */
+    private static void initConnectionInterface() throws ServerException {
         switch (Client_Settings.connection){
             case RMI:
                 server = new ServerRMI(NetworkSettings.serverIp, NetworkSettings.RMIport);
@@ -220,7 +219,7 @@ public class ClientMain{
                     ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
                     client = new ClientRMI(remoteObject);
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e); //TODO handle (do we really need exceptions?)
+                    throw new ServerException("Impossible to create RMI client object");
                 }
                 break;
             case TCP:
@@ -231,6 +230,44 @@ public class ClientMain{
         }
     }
 
+    /**
+     * Initiate the connection interface and attempt a login
+     * @return true if login was successful
+     */
+    private static boolean connect(){
+        try{
+            //Initiate the server connection interfaces according to settings
+            initConnectionInterface();
+            //login
+            return tryLogin(3,2);
+        } catch (ServerException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Play a match in the lobby
+     */
+    private static void playMatch() throws LobbyException {
+        //Receive and execute commands until "exit" lobbyCommand is launched
+        while(!exit){
+            LobbyCommand lobbyCommand = view.askCommand();
+            executeUserCommand(lobbyCommand);
+        }
+    }
+    /**
+     * True when the client wants to keep playing
+     */
+    static boolean play = true;
+    /**
+     * True when the match has entered or the client has quit
+     */
+    static boolean exit = false;
+
+    /**
+     * the main method that handles the client side application logic
+     * @param uiOption the option for the UI format
+     */
     public static void startClient(Client_Settings.UI uiOption){
 
         //Initiate the view according to the settings
@@ -239,29 +276,19 @@ public class ClientMain{
         //ask for username
         playerName = view.askUserName();
 
-
-        //Initiate the server connection interfaces according to settings
-        initConnectionInterface();
-        //login
-        boolean successfulLogin = tryLogin(3,2);
+        //initiate the connection interface and attempt a login
+        boolean successfulLogin = connect();
 
         while(play){
             if(successfulLogin){
                 try{
-                    //show the client the lobbies they can join
-                    view.showLobbies(getPreviousSessions(),"The lobbies you already joined");
-                    view.showLobbies(getAvailableLobbies(), "The lobbies that are available");
-
                     //ask the client what lobby to join
                     joinLobby();
 
                     //game starts
-                    //Receive and execute commands until "exit" lobbyCommand is launched
-                    while(!exit){
-                        LobbyCommand lobbyCommand = view.askCommand();
-                        executeUserCommand(lobbyCommand);
-                    }
-                } catch (ServerException e) {
+                    playMatch();
+
+                } catch (ServerException | LobbyException e) {
                     view.errorMessage("Something went wrong connecting to server");
                     play = false;
                 }
