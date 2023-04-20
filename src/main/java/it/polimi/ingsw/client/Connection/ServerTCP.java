@@ -87,7 +87,9 @@ public class ServerTCP extends Server {
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        this.id = Jsonable.json2int(response.getContent());
+        int Lobbyid = Jsonable.json2int(response.getContent());
+        if(Lobbyid > 0)
+            this.id = Lobbyid;
     }
 
     @Override
@@ -96,7 +98,9 @@ public class ServerTCP extends Server {
         requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        this.id = Jsonable.json2int(response.getContent());
+        int Lobbyid = Jsonable.json2int(response.getContent());
+        if(Lobbyid > 0)
+            this.id = Lobbyid;
 
     }
 
@@ -108,7 +112,9 @@ public class ServerTCP extends Server {
         requestLobbies.setContent(Jsonable.int2json(id));
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-        this.id= Jsonable.json2int(response.getContent());
+        int Lobbyid = Jsonable.json2int(response.getContent());
+        if(Lobbyid > 0)
+            this.id = Lobbyid;
     }
 
     @Override
@@ -195,6 +201,9 @@ public class ServerTCP extends Server {
 
     @Override
     public int getLobbyID()throws LobbyException {
-        return this.id;
+        if(id >0)
+            return this.id;
+        else
+            throw new LobbyException("lobby doesn't exists");
     }
 }
