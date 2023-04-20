@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
+import it.polimi.ingsw.shared.PrivateChatMessage;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 
 import java.rmi.RemoteException;
@@ -75,6 +76,9 @@ public class ServerTcpThread extends Thread{ //TODO
         switch (command){
             case PostToLiveChat:
                 postToLiveChat(content);
+                break;
+            case PostSecretToLiveChat:
+                postSecretToLiveChat(content);
                 break;
 
             default:
@@ -204,7 +208,6 @@ public class ServerTcpThread extends Thread{ //TODO
     private void postToLiveChat(String message){
         boolean foundErrors = false;
         ChatMessage chatMessage = new ChatMessage(Jsonable.parseString(message));
-        System.out.println(chatMessage);
         String sender = chatMessage.getSender();
         String content = chatMessage.getMessage();
         synchronized (lobby) {
@@ -219,6 +222,25 @@ public class ServerTcpThread extends Thread{ //TODO
             client.out(feedback.toString()); //send object to client
 
         }
+    }
+    public void postSecretToLiveChat(String message){
+        boolean foundErrors = false;
+        PrivateChatMessage chatMessage = new PrivateChatMessage(Jsonable.parseString(message));
+        String sender = chatMessage.getSender();
+        String content = chatMessage.getMessage();
+        String receiver = chatMessage.getReciever();
+        synchronized (lobby) {
+            try {
+                lobby.postSecretToLiveChat(sender,receiver,content);
+            } catch (Exception e) {
+                foundErrors = true;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set message command
+            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            client.out(feedback.toString()); //send object to client
+        }
+
     }
 
 

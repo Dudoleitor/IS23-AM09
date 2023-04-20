@@ -65,6 +65,16 @@ public class LobbyTCP extends Lobby {
 
     @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
+        MessageTcp postMessage = new MessageTcp();
+        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black); //TODO maybe create a constructor that doesn't need color
+        postMessage.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set command
+        postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
+        out(postMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        boolean errorFound = Jsonable.json2boolean(response.getContent());
+        if(errorFound) {
+            //TODO to implement
+        }
 
     }
 

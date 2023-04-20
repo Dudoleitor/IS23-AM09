@@ -32,6 +32,7 @@ public class MessageTcp {
         GetAvailableLobbies("availableLobbies"),
         JoinSelectedLobby("joinSelected"),
         PostToLiveChat("postChat"),
+        PostSecretToLiveChat("postSecret"),
 
         ;
 
