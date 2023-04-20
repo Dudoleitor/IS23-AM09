@@ -55,7 +55,8 @@ public class ServerTCP extends Server {
         login.setContent(Jsonable.string2json(client.getPlayerName())); //set playername as JsonObject
         out(login.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.Login))
+            throw new RuntimeException("Command different from expected");
         return Jsonable.json2boolean(response.getContent());
 
 
@@ -69,7 +70,8 @@ public class ServerTCP extends Server {
         requestLobbies.setContent(Jsonable.string2json(playerName)); //set playername as JsonObject
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
-
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobbies))
+            throw new RuntimeException("Command different from expected");
         return Jsonable.json2mapInt(response.getContent());
     }
     @Override
@@ -78,6 +80,8 @@ public class ServerTCP extends Server {
         requestLobbies.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.GetAvailableLobbies))
+            throw new RuntimeException("Command different from expected");
         return Jsonable.json2mapInt(response.getContent());
     }
 
@@ -87,6 +91,8 @@ public class ServerTCP extends Server {
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.JoinRandomLobby))
+            throw new RuntimeException("Command different from expected");
         int Lobbyid = Jsonable.json2int(response.getContent());
         if(Lobbyid > 0)
             this.id = Lobbyid;
@@ -98,6 +104,8 @@ public class ServerTCP extends Server {
         requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.CreateLobby))
+            throw new RuntimeException("Command different from expected");
         int Lobbyid = Jsonable.json2int(response.getContent());
         if(Lobbyid > 0)
             this.id = Lobbyid;
@@ -112,6 +120,8 @@ public class ServerTCP extends Server {
         requestLobbies.setContent(Jsonable.int2json(id));
         out(requestLobbies.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.JoinSelectedLobby))
+            throw new RuntimeException("Command different from expected");
         int Lobbyid = Jsonable.json2int(response.getContent());
         if(Lobbyid > 0)
             this.id = Lobbyid;
@@ -125,6 +135,8 @@ public class ServerTCP extends Server {
         postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
         out(postMessage.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.PostToLiveChat))
+            throw new RuntimeException("Command different from expected");
         boolean errorFound = Jsonable.json2boolean(response.getContent());
         if(errorFound) {
             //TODO to implement
@@ -139,6 +151,8 @@ public class ServerTCP extends Server {
         postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
         out(postMessage.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.PostSecretToLiveChat))
+            throw new RuntimeException("Command different from expected");
         boolean errorFound = Jsonable.json2boolean(response.getContent());
         if(errorFound) {
             //TODO to implement
@@ -153,6 +167,8 @@ public class ServerTCP extends Server {
         quitMessage.setContent(Jsonable.string2json(player));
         out(quitMessage.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.Quit))
+            throw new RuntimeException("Command different from expected");
         boolean errorFound = Jsonable.json2boolean(response.getContent());
         if(errorFound) {
             //TODO to implement
@@ -166,7 +182,8 @@ public class ServerTCP extends Server {
         hasStartedMessage.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set command
         out(hasStartedMessage.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
-
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.MatchHasStarted))
+            throw new RuntimeException("Command different from expected");
         return Jsonable.json2boolean(response.getContent());
 
     }
@@ -181,6 +198,8 @@ public class ServerTCP extends Server {
         postMoveMessage.setContent(content);
         out(postMoveMessage.toString());
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.PostMove))
+            throw new RuntimeException("Command different from expected");
         boolean errorFound = Jsonable.json2boolean(response.getContent());
         if(errorFound) {
             //TODO to implement
@@ -191,12 +210,26 @@ public class ServerTCP extends Server {
 
     @Override
     public boolean startGame(String player)throws LobbyException {
-        return false;
+        MessageTcp startGame = new MessageTcp();
+        startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command
+        startGame.setContent(Jsonable.string2json(player)); //set playername as JsonObject
+        out(startGame.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.StartGame))
+            throw new RuntimeException("Command different from expected");
+        return Jsonable.json2boolean(response.getContent());
     }
 
     @Override
     public boolean isLobbyAdmin(String player)throws LobbyException {
-        return false;
+        MessageTcp isAdmin = new MessageTcp();
+        isAdmin.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set command
+        isAdmin.setContent(Jsonable.string2json(player)); //set playername as JsonObject
+        out(isAdmin.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
+        if (!response.getCommand().equals(MessageTcp.MessageCommand.IsLobbyAdmin))
+            throw new RuntimeException("Command different from expected");
+        return Jsonable.json2boolean(response.getContent());
     }
 
     @Override

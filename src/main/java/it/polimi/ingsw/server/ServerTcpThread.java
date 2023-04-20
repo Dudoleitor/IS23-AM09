@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.client.Connection.LobbyException;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
@@ -87,6 +88,10 @@ public class ServerTcpThread extends Thread{ //TODO
             case PostMove:
                 postMove(content);
                 break;
+            case StartGame:
+                startGame(content);
+            case IsLobbyAdmin:
+                isLobbyAdmin(content);
 
             default:
                 client.out("Command does not exists");
@@ -293,6 +298,40 @@ public class ServerTcpThread extends Thread{ //TODO
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.PostMove); //set message command
             feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            client.out(feedback.toString()); //send object to client
+        }
+
+    }
+
+    public void startGame(JSONObject player){
+        boolean hasStarted;
+        String username = Jsonable.json2string(player);
+        synchronized (lobby) {
+            try {
+                hasStarted = lobby.startGame(username);
+            } catch (Exception e) {
+                hasStarted = false;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command
+            feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
+            client.out(feedback.toString()); //send object to client
+        }
+
+    }
+
+    public void isLobbyAdmin(JSONObject player){
+        boolean isAdmin;
+        String username = Jsonable.json2string(player);
+        synchronized (lobby) {
+            try {
+                isAdmin = lobby.isLobbyAdmin(username);
+            } catch (Exception e) {
+                isAdmin = false;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command
+            feedback.setContent(Jsonable.boolean2json(isAdmin)); //set message content
             client.out(feedback.toString()); //send object to client
         }
 

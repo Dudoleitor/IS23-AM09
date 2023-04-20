@@ -106,7 +106,7 @@ public class ClientMain{
                     postToPrivateChat();
                     break;
                 case Start:
-                    server.startGame(playerName);
+                    start();
                     break;
                 case Move:
                     postMove();
@@ -170,6 +170,17 @@ public class ClientMain{
         }
         Move move = view.getMoveFromUser();
         server.postMove(playerName,move);
+    }
+
+    private static void start(){
+        boolean admin = false;
+        try {
+            admin = server.startGame(playerName);
+        } catch (LobbyException e) {
+            view.errorMessage("You are not lobby admin");
+        }
+        if(!admin)
+            view.errorMessage("You are not lobby admin");
     }
 
     /**

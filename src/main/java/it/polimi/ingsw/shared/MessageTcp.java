@@ -39,8 +39,8 @@ public class MessageTcp {
         Quit("quit"),
         MatchHasStarted("matchStarted"),
         PostMove("move"),
-
-
+        StartGame("start"),
+        IsLobbyAdmin("isAdmin"),
         ;
 
         private final String label;
