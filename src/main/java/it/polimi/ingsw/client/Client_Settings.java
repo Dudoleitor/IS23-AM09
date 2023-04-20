@@ -36,7 +36,7 @@ public class Client_Settings {
     public enum Connection{
         TCP("tcp"),
         RMI("rmi"),
-        TEST("test");
+        STUB("test");
         String tag;
         Connection(String tag){
             this.tag = tag;
@@ -49,7 +49,7 @@ public class Client_Settings {
     public enum UI{
         CLI("cli"),
         GUI("gui"),
-        TEST("test");
+        DRIVER("test");
         String tag;
         UI(String tag){
             this.tag = tag;

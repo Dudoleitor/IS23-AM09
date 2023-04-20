@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.client.View;
 
 import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;

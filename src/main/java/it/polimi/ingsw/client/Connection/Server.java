@@ -9,7 +9,7 @@ import java.util.Map;
 public abstract class Server {
     IpAddressV4 ip;
     int port;
-    Server(IpAddressV4 ip, int port){
+    public Server(IpAddressV4 ip, int port){
         this.ip = ip;
         this.port = port;
     }
@@ -35,7 +35,7 @@ public abstract class Server {
      * @return the Lobby object that will handle the connection with
      * the joined lobby
      */
-    abstract void createLobby(Client client) throws ServerException;
+    public abstract void createLobby(Client client) throws ServerException;
 
     /**
      * Get all the lobbies in which the player can log

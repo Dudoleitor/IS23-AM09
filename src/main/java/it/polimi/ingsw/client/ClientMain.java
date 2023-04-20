@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.Connection.*;
 import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.client.View.View;
+import it.polimi.ingsw.client.View.ViewDriver;
 import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.client.controller.ClientControllerCLI;
 import it.polimi.ingsw.client.View.gui.HelloApplication;
@@ -195,6 +196,8 @@ public class ClientMain{
                 view = new GUI();
                 HelloApplication.startApp();
                 break;
+            case DRIVER:
+                view = new ViewDriver();
         }
     }
 
@@ -217,6 +220,14 @@ public class ClientMain{
                 client = new ClientSocket();
                 ((ClientSocket) client).setName(playerName);
                 break;
+            case STUB:
+                server = new ConnectionStub();
+                try {
+                    ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
+                    client = new ClientRMI(remoteObject);
+                } catch (RemoteException e) {
+                    throw new ServerException("Impossible to create RMI client object");
+                } //TODO create stub when completed the real one
         }
     }
 

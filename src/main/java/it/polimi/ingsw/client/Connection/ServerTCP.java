@@ -99,7 +99,7 @@ public class ServerTCP extends Server {
     }
 
     @Override
-    void createLobby(Client client) throws ServerException {
+    public void createLobby(Client client) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command
         out(requestLobbies.toString());
