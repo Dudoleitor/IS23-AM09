@@ -14,15 +14,16 @@ import java.net.Socket;
 import java.util.Map;
 
 public class ServerTCP extends Server {
+    private Socket serverSocket;
     private PrintWriter serverOut;
     private BufferedReader serverIn;
 
     public ServerTCP(IpAddressV4 ip, int port) {
         super(ip, port);
         try {
-            Socket server = new Socket(ip.toString(), port);
-            serverOut = new PrintWriter(server.getOutputStream(), true);
-            serverIn = new BufferedReader(new InputStreamReader(server.getInputStream()));
+            serverSocket = new Socket(ip.toString(), port);
+            serverOut = new PrintWriter(serverSocket.getOutputStream(), true);
+            serverIn = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -89,7 +90,7 @@ public class ServerTCP extends Server {
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
         int lobbyID = Jsonable.json2int(response.getContent());
         if (lobbyID > 0)
-            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, lobbyID); //create a local Lobby socket with server given port
+            return new LobbyTCP(serverSocket, lobbyID); //create a local Lobby socket with server given port
         else
             return null;
     }
@@ -102,7 +103,7 @@ public class ServerTCP extends Server {
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
         int lobbyID = Jsonable.json2int(response.getContent());
         if (lobbyID > 0)
-            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, lobbyID); //create a local Lobby socket with server given port
+            return new LobbyTCP(serverSocket, lobbyID); //create a local Lobby socket with server given port
         else
             return null;
     }
@@ -117,7 +118,7 @@ public class ServerTCP extends Server {
         MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object response
         int lobbyID = Jsonable.json2int(response.getContent());
         if (lobbyID > 0)
-            return new LobbyTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, lobbyID); //create a local Lobby socket with server given port
+            return new LobbyTCP(serverSocket, lobbyID); //create a local Lobby socket with server given port
         else
             return null;
     }

@@ -16,11 +16,11 @@ public class LobbyTCP extends Lobby {
     private PrintWriter serverOut;
     private BufferedReader serverIn;
 
-    public LobbyTCP(IpAddressV4 ip, int port, int id) {
+    public LobbyTCP(Socket server, int id) {
         this.port = port;
         this.id = id; //calculate id by reversing creation lobbyPort criteria;
         try {
-            Socket lobby = new Socket(ip.toString(), port);
+            Socket lobby = server;
             serverOut = new PrintWriter(lobby.getOutputStream(), true);
             serverIn = new BufferedReader(new InputStreamReader(lobby.getInputStream()));
         } catch (IOException e) {

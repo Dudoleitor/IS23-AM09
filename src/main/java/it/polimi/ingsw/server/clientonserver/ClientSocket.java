@@ -36,7 +36,7 @@ public class ClientSocket implements Client {
     public String in(){
         boolean ready = false;
         try {
-            while(!ready){
+            while(!ready){ //TODO this is a bad way to wait, look for better options
                 if(ClientIn.ready())
                     ready = true;
             }

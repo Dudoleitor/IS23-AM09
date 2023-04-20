@@ -73,11 +73,12 @@ public class ServerMain implements ServerInterface{
     private static void SocketIni(ServerMain server){ //TODO WIP
         try {
             ServerSocket serverSocket = new ServerSocket(TCPport);
-            while(true){
+            while(true) {
                 Socket client = serverSocket.accept();
                 ClientSocket clientSocket = new ClientSocket();
                 clientSocket.setClientSocket(client);
                 new ServerTcpThread(server, clientSocket).start();
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());

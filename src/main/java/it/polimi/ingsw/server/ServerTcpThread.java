@@ -30,7 +30,7 @@ public class ServerTcpThread extends Thread{ //TODO
     /**
      * this method wait for user input and send the message to the correct server method
      */
-
+    @Override
     public void run() {
         while(!exit){
             String string = client.in(); //TODO to make it wait on input ready
@@ -190,8 +190,9 @@ public class ServerTcpThread extends Thread{ //TODO
             synchronized (server){
                 lobbyGet = server.getLobbybyID(lobbyID);
             }
-            lobbyAssigned = true;
+            this.lobbyAssigned = true;
             this.lobby = lobbyGet;
+
         } catch (Exception e) {
             lobbyID = 0;
         }
