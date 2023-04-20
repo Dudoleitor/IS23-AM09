@@ -95,6 +95,7 @@ public class ClientMain{
         //execute action for every lobbyCommand
             switch (lobbyCommand) {
                 case Exit: //quit game
+                    lobby.quitGame(playerName);
                     view.notifyExit();
                     exit = true;
                     break;
