@@ -83,6 +83,9 @@ public class ServerTcpThread extends Thread{ //TODO
             case Quit:
                 quit(content);
                 break;
+            case MatchHasStarted:
+                matchHasStarted();
+                break;
 
             default:
                 client.out("Command does not exists");
@@ -257,6 +260,21 @@ public class ServerTcpThread extends Thread{ //TODO
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.Quit); //set message command
             feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            client.out(feedback.toString()); //send object to client
+        }
+
+    }
+    public void matchHasStarted(){
+        boolean hasStarted;
+        synchronized (lobby) {
+            try {
+                hasStarted = lobby.matchHasStarted();
+            } catch (Exception e) {
+                hasStarted = false;
+            }
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set message command
+            feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
             client.out(feedback.toString()); //send object to client
         }
 

@@ -50,9 +50,6 @@ public class Lobby implements ServerLobbyInterface {
     public boolean isReady(){
         return ready;
     }
-    public boolean hasStarted(){
-        return started;
-    }
     public boolean isFull(){
         return full;
     }

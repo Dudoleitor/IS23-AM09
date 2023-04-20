@@ -155,7 +155,13 @@ public class ServerTCP extends Server {
 
     @Override
     public boolean matchHasStarted() throws LobbyException {
-        return false;
+        MessageTcp hasStartedMessage = new MessageTcp();
+        hasStartedMessage.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set command
+        out(hasStartedMessage.toString());
+        MessageTcp response = new MessageTcp(in()); //wait for response by server and create an object responses
+
+        return Jsonable.json2boolean(response.getContent());
+
     }
 
     @Override
