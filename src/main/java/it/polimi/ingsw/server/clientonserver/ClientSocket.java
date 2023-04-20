@@ -63,9 +63,6 @@ public class ClientSocket implements Client {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            ClientOut = null;
-            ClientIn = null;
         }
     }
     public void setName(String name){

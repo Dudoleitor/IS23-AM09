@@ -1,10 +1,5 @@
 package it.polimi.ingsw.shared;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MessageTcp {
     private MessageCommand messageCommand;
@@ -28,23 +23,27 @@ public class MessageTcp {
         }
     }
     public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP
-        Login("login"),
-        GetJoinedLobbies("getJoined"),
-        JoinRandomLobby("joinRandom"),
-        CreateLobby("createLobby"),
-        GetAvailableLobbies("availableLobbies"),
-        JoinSelectedLobby("joinSelected"),
-        PostToLiveChat("postChat"),
-        PostSecretToLiveChat("postSecret"),
-        Quit("quit"),
-        MatchHasStarted("matchStarted"),
-        PostMove("move"),
-        StartGame("start"),
-        IsLobbyAdmin("isAdmin"),
+        Login("login","ReplyWait"),
+        GetJoinedLobbies("getJoined", "ReplyWait"),
+        JoinRandomLobby("joinRandom", "ReplyWait"),
+        CreateLobby("createLobby", "ReplyWait"),
+        GetAvailableLobbies("availableLobbies", "ReplyWait"),
+        JoinSelectedLobby("joinSelected", "ReplyWait"),
+        PostToLiveChat("postChat", "ReplyWait"),
+        PostSecretToLiveChat("postSecret", "ReplyWait"),
+        Quit("quit", "ReplyWait"),
+        MatchHasStarted("matchStarted", "ReplyWait"),
+        PostMove("move", "ReplyWait"),
+        StartGame("start", "ReplyWait"),
+        IsLobbyAdmin("isAdmin", "ReplyWait"),
         ;
 
         private final String label;
-        MessageCommand(String tag){this.label = tag;}
+        private final String type;
+        MessageCommand(String tag, String type){
+            this.label = tag;
+            this.type = type;
+        }
         public static MessageCommand valueOfLabel(String label) {
             for (MessageCommand e : values()) {
                 if (e.label.equals(label)) {
@@ -52,6 +51,9 @@ public class MessageTcp {
                 }
             }
             throw new RuntimeException("command not found");
+        }
+        public String typeOfCommand(){
+            return type;
         }
 
         @Override
@@ -64,6 +66,27 @@ public class MessageTcp {
     }
     public void setContent(JSONObject content) {
         this.content = content;
+    }
+    public boolean isReplyMessage(){
+        boolean result;
+        if(messageCommand == null){
+            result = false;
+        } else {
+            result = messageCommand.typeOfCommand().equals("ReplyWait");
+
+        }
+        return result;
+    }
+    public boolean isUpdateMessage(){
+        boolean result;
+        if(messageCommand == null){
+            result = false;
+        } else {
+            result = messageCommand.typeOfCommand().equals("Update");
+
+        }
+        return result;
+
     }
 
     @Override
