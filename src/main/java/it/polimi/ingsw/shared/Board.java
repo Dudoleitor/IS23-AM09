@@ -180,16 +180,33 @@ public class Board implements Jsonable {
         String str = "Board:\n";
         int rows = getNumRows();
         int columns = getNumColumns();
+        String boardTiles = "";
+        String upperBorder = "╔═";
+        String lowerBorder = "╚═";
+
         for(int row = 0; row < rows; row++){
             for(int col = 0; col < columns; col++){
+                if(row == 0){
+                    lowerBorder = lowerBorder.concat("═══");
+                    upperBorder = upperBorder.concat("═══");
+                }
+                if(col == 0 ){
+                    boardTiles = boardTiles.concat(Color.coloredString("║ ",Color.Yellow));
+                }
                 try {
-                    str = str.concat(getTile(row,col).toColorFulString()+" ");
+                    boardTiles = boardTiles.concat(getTile(row,col).toColorFulString()+" ");
                 } catch (BadPositionException e) {
                     //Will never be executed
                 }
             }
-            str = str.concat("\n");
+            boardTiles = boardTiles.concat(Color.coloredString("║\n",Color.Yellow));
         }
+        lowerBorder = lowerBorder.concat("╝\n");
+        upperBorder = upperBorder.concat("╗\n");
+        str = str.concat(
+                Color.coloredString(upperBorder,Color.Yellow)+
+                    boardTiles+
+                    Color.coloredString(lowerBorder,Color.Yellow));
         str = str.concat("Common Goals:\n");
         if(getCommonGoals().size() == 0){
             str = str.concat(Color.coloredString("None",Color.Yellow));

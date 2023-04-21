@@ -120,4 +120,9 @@ public class ViewDriver extends View {
     public void message(String message) {
         //do nothing
     }
+
+    @Override
+    public void setLobbyAdmin(boolean isAdmin) {
+        //do nothing
+    }
 }

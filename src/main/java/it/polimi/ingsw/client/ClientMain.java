@@ -82,6 +82,7 @@ public class ClientMain{
             }
             try{
                 view.message("You joined #"+ server.getLobbyID()+" lobby!");
+                view.setLobbyAdmin(server.isLobbyAdmin(playerName));
             }
             catch (LobbyException e){
                 view.errorMessage("Lobby does not exist");

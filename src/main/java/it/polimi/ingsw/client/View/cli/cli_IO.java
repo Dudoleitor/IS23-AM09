@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.View.cli;
 
+import it.polimi.ingsw.client.Client_Settings;
 import it.polimi.ingsw.shared.Color;
 
 import java.util.HashMap;
@@ -15,6 +16,8 @@ public class cli_IO {
 
     private Scanner scanner;
     private static Lock cli_Lock = null;
+
+    private String placeHolder = stdPlaceHolder;
 
     public cli_IO(){
         scanner = new Scanner(System.in);
@@ -38,7 +41,11 @@ public class cli_IO {
      * Prints the placeholder
      */
     public void printPlaceHolder(){
-        System.out.print("$:");
+        System.out.print(placeHolder);
+    }
+
+    public void setPlaceHolder(String placeHolder){
+        this.placeHolder = placeHolder;
     }
 
     /**

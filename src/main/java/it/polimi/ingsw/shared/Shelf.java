@@ -374,14 +374,35 @@ public class Shelf implements Jsonable {
      */
     @Override
     public String toString(){
-        String s = "";
-        for(int i = 0; i < rows; i++){
-            for(int j = 0; j < columns; j++){
-                s = s.concat(tiles[i][j].toColorFulString() + " ");
+        String str = "";
+        String shelfTiles = "";
+        String upperBorder = "╔═";
+        String lowerBorder = "╚═";
+
+        for(int row = 0; row < rows; row++){
+            for(int col = 0; col < columns; col++){
+                if(row == 0){
+                    lowerBorder = lowerBorder.concat("═══");
+                    upperBorder = upperBorder.concat("═══");
+                }
+                if(col == 0 ){
+                    shelfTiles = shelfTiles.concat(Color.coloredString("║ ",Color.Yellow));
+                }
+                try {
+                    shelfTiles = shelfTiles.concat(getTile(row,col).toColorFulString()+" ");
+                } catch (BadPositionException e) {
+                    //Will never be executed
+                }
             }
-            s = s.concat("\n");
+            shelfTiles = shelfTiles.concat(Color.coloredString("║\n",Color.Yellow));
         }
-        return s;
+        lowerBorder = lowerBorder.concat("╝\n");
+        upperBorder = upperBorder.concat("╗\n");
+        str = str.concat(
+                Color.coloredString(upperBorder,Color.Yellow)+
+                        shelfTiles+
+                        Color.coloredString(lowerBorder,Color.Yellow));
+        return str;
     }
 
     /**

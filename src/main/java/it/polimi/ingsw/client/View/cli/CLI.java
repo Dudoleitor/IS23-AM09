@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.View.cli;
 
+import it.polimi.ingsw.client.Client_Settings;
 import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.View;
 import it.polimi.ingsw.client.View.cli.InputSanitizer;
@@ -12,12 +13,11 @@ import it.polimi.ingsw.shared.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.client.Client_Settings.gameLogo;
+import static it.polimi.ingsw.client.Client_Settings.*;
 
 public class CLI extends View {
     private static cli_IO io = new cli_IO();
     private InputSanitizer inputSanitizer = new InputSanitizer();
-    private boolean exit = false;
 
     @Override
     public LobbyCommand askCommand(){
@@ -217,4 +217,16 @@ public class CLI extends View {
     public void message(String message) {
         io.printMessage(message);
     }
+
+    @Override
+    public void setLobbyAdmin(boolean isAdmin){
+        if(isAdmin){
+            message("You are the lobby admin! (we got you a crown)");
+            io.setPlaceHolder(Client_Settings.adminPlaceHolder);
+        }
+        else{
+            io.setPlaceHolder(Client_Settings.stdPlaceHolder);
+        }
+    }
+
 }

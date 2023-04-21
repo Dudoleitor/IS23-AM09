@@ -6,6 +6,7 @@ import it.polimi.ingsw.shared.Move;
 import java.util.Map;
 
 public abstract class View {
+
     /**
      * Ask the user for a command
      * @return the selected LobbyCommand
@@ -89,5 +90,10 @@ public abstract class View {
      * @param message
      */
     public abstract void message(String message);
+
+    /**
+     * Set isLobbyAdmin variable in View
+     */
+    public abstract void setLobbyAdmin(boolean isAdmin);
 
 }
