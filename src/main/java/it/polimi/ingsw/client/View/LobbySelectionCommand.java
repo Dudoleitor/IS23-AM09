@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.View;
 public enum LobbySelectionCommand{
     Invalid(),
     Number(),
+    Create(),
     Random();
     private int id = -1;
     public void setId(int id){

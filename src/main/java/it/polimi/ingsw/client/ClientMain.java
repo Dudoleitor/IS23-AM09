@@ -73,6 +73,9 @@ public class ClientMain{
                 case Number:
                     server.joinSelectedLobby(client,command.getID());
                     break;
+                case Create:
+                    server.createLobby(client);
+                    break;
                 default:
                     view.errorMessage("Input a valid id");
                     break;
