@@ -36,16 +36,17 @@ public class ServerTCP_IO{
      */
     public MessageTcp in(){
         MessageTcp message;
-        while (input.isEmpty()){
-            try {
-                synchronized (serverListener) {
+        try {
+            synchronized (serverListener) {
+                while (input.isEmpty()) {
                     serverListener.wait();
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
-
+        } catch (InterruptedException e) {
+                throw new RuntimeException(e);
         }
+
+
         synchronized (input) {
             message = input.get(0);
             input.remove(0);
