@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class Riemann { //an integration test
-    static boolean verbous = true;
+    static boolean verbous = false;
     @Test
     void wholeMatch() throws JsonBadParsingException {
         List<String> playerNames = new ArrayList<>();

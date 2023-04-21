@@ -40,28 +40,12 @@ public class ClientMain{
     static View view;
 
     /**
-     * Get a List of the lobby IDs where the player is in
-     * @return the list of lobby IDs
-     */
-    private static Map<Integer,Integer> getPreviousSessions() throws ServerException {
-        return server.getJoinedLobbies(playerName);
-    }
-
-    /**
-     * Get all the lobbies that are available for the client to join
-     * @return a map of the lobby IDs to the Number of player present
-     */
-    private static Map<Integer,Integer> getAvailableLobbies() throws ServerException {
-        return server.getAvailableLobbies();
-    }
-
-    /**
      * Join the lobby by creating a Lobby connection object and connecting it to server
      */
     private static void joinLobby() throws ServerException {
         //show the client the lobbies they can join
-        view.showLobbies(getPreviousSessions(),"The lobbies you already joined");
-        view.showLobbies(getAvailableLobbies(), "The lobbies that are available");
+        view.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+        view.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
         //ask the user
         LobbySelectionCommand command = LobbySelectionCommand.Invalid;
         while(command == LobbySelectionCommand.Invalid){

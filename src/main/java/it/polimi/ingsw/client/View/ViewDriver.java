@@ -4,30 +4,33 @@ import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.client.View.View;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.Move;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class ViewDriver extends View {
     String username;
-    static Queue<LobbyCommand> commands = new PriorityQueue<>();
-    static Queue<LobbySelectionCommand> lobbySelectionCommands = new PriorityQueue<>();
-    static Queue<Move> moves = new PriorityQueue<>();
+    static LinkedList<LobbyCommand> commands = new LinkedList<>();
+    static LinkedList<LobbySelectionCommand> lobbySelectionCommands = new LinkedList<>();
+    static LinkedList<Move> moves = new LinkedList<>();
+    private boolean verbous = false;
 
     @Override
     public LobbyCommand askCommand() {
         if (commands.isEmpty()) {
-            return LobbyCommand.Invalid;
+            if(verbous)
+                System.out.println(Color.coloredString("FORCED EXIT",Color.Red));
+            return LobbyCommand.Exit;
         } else {
-            return commands.poll();
+            if(verbous)
+                System.out.println(Color.coloredString(commands.peek().toString(),Color.Green));
+            return commands.pollFirst();
         }
     }
 
     public void putCommand(LobbyCommand command) {
-        commands.add(command);
+        commands.addLast(command);
     }
 
     @Override
@@ -35,12 +38,12 @@ public class ViewDriver extends View {
         if (lobbySelectionCommands.isEmpty()) {
             return LobbySelectionCommand.Invalid;
         } else {
-            return lobbySelectionCommands.poll();
+            return lobbySelectionCommands.pollFirst();
         }
     }
 
     public void putLobbySelectionCommand(LobbySelectionCommand command) {
-        lobbySelectionCommands.add(command);
+        lobbySelectionCommands.addLast(command);
     }
 
     @Override
@@ -48,12 +51,12 @@ public class ViewDriver extends View {
         if (moves.isEmpty()) {
             return null;
         } else {
-            return moves.poll();
+            return moves.pollFirst();
         }
     }
 
     public void putMove(Move move) {
-        moves.add(move);
+        moves.addLast(move);
     }
 
     @Override
@@ -113,12 +116,14 @@ public class ViewDriver extends View {
 
     @Override
     public void errorMessage(String message) {
-        //do nothing
+        if(verbous)
+            System.out.println(Color.coloredString(message,Color.Red));
     }
 
     @Override
     public void message(String message) {
-        //do nothing
+        if(verbous)
+            System.out.println(Color.coloredString(message,Color.Green));
     }
 
     @Override
