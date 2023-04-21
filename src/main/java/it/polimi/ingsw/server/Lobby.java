@@ -45,11 +45,14 @@ public class Lobby implements ServerLobbyInterface {
     }
 
     /**
-     * @return true is the lobby is full of players for it's capacity
+     * @return true is the lobby is ready to start
      */
     public boolean isReady(){
         return ready;
     }
+    /**
+     * @return true is the lobby is full of players for it's capacity
+     */
     public boolean isFull(){
         return full;
     }
@@ -71,9 +74,18 @@ public class Lobby implements ServerLobbyInterface {
         return new Chat(chat);
     }
 
+    /**
+     * @return true if no players are in lobby
+     */
     public boolean isEmpty(){
         return clients.size() == 0;
     }
+
+    /**
+     * Tells who the lobby admin is
+     * @return the name of the lobby admin
+     * @throws Exception when the lobby is empty
+     */
     public String getLobbyAdmin() throws Exception {
         if(clients.size() == 0){
             throw new Exception("No Players");
@@ -83,12 +95,16 @@ public class Lobby implements ServerLobbyInterface {
         }
     }
 
+    /**
+     * @return true if match has startd
+     */
     @Override
     public boolean matchHasStarted(){
         return started;
     }
     /**
-     * start the lobby when it's full of players
+     * start the lobby if it is ready and the player who has asked is admin
+     * @return true if successful
      */
     @Override
     public boolean startGame(String player){
@@ -106,6 +122,11 @@ public class Lobby implements ServerLobbyInterface {
         return true;
     }
 
+    /**
+     * @param playerName
+     * @return true if playerName is the name of the lobby admin
+     * @throws RemoteException
+     */
     @Override
     public boolean isLobbyAdmin(String playerName) throws RemoteException {
         if(isEmpty()){
@@ -150,7 +171,7 @@ public class Lobby implements ServerLobbyInterface {
 
     @Override
     public void quitGame(String player) throws RemoteException {
-
+        //TODO
     }
 
     @Override
@@ -165,7 +186,6 @@ public class Lobby implements ServerLobbyInterface {
             if(playerInput != null)
                 playerInput.postChatMessage("Server", e.getMessage());
         }
-
     }
 
     @Override

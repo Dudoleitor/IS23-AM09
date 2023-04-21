@@ -179,13 +179,23 @@ public class ClientMain{
 
     private static void start(){
         boolean admin = false;
+        boolean started = false;
         try {
-            admin = server.startGame(playerName);
+            admin = server.isLobbyAdmin(playerName);
+            if(!admin){
+                view.errorMessage("You are not lobby admin");
+                return;
+            }
+            started = server.startGame(playerName);
         } catch (LobbyException e) {
-            view.errorMessage("You are not lobby admin");
+            started = false;
         }
-        if(!admin)
-            view.errorMessage("You are not lobby admin");
+        if(started){
+            view.message("Game has started!");
+        }
+        else{
+            view.errorMessage("You can not start lobby now");
+        }
     }
 
     /**
