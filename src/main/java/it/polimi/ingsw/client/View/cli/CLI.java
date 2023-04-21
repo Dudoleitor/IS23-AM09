@@ -178,10 +178,12 @@ public class CLI extends View {
     public LobbySelectionCommand askLobby(){
         int lobbyID;
         LobbySelectionCommand command;
-        io.printMessage("Choose a Lobby (ENTER for random):");
+        io.printMessage("Choose a Lobby (ENTER for random, NEW to create a new one):");
         String id = io.scan();
         if(id.isEmpty()){
             return LobbySelectionCommand.Random;
+        } else if (id.toLowerCase().equals("new")) {
+            return LobbySelectionCommand.Create;
         } else if(inputSanitizer.isInteger(id)){
             lobbyID = Integer.parseInt(id);
             command = LobbySelectionCommand.Number;
@@ -189,7 +191,7 @@ public class CLI extends View {
         }
         else{
             command = LobbySelectionCommand.Invalid;
-            io.printErrorMessage("Input a valid id (must be a number)");
+            io.printErrorMessage("Input a valid id or command");
         }
         return command;
     }
