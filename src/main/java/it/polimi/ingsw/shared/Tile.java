@@ -8,7 +8,7 @@ public enum Tile {
     Trophy("T",Color.Cyan),
     Plant("P",Color.Purple),
     Empty("E",Color.Black),
-    Invalid("I",Color.Red);
+    Invalid("I",Color.Black);
 
     public final String label;
     public final Color color;
@@ -63,7 +63,8 @@ public enum Tile {
     }
 
     public String toColorFulString(){
-        return Color.coloredString(this.label,this.color);
+        //return Color.coloredString(this.label,this.color);
+        return Color.coloredString("██",this.color);
     }
 }
 

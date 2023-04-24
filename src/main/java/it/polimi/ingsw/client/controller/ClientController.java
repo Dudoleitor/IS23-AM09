@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controller;
 
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,7 +16,7 @@ import java.rmi.RemoteException;
  * With TCP, proper adapters parse messages coming
  * from the network and call the methods.
  */
-public interface ClientController {
+public interface ClientController extends ClientRemote {
     /**
      * This method is used to return the name of
      * the players using this client.

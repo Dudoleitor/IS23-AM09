@@ -221,7 +221,7 @@ public class Riemann { //an integration test
                     map(p -> p.getName()).
                     collect(Collectors.toList());
             for(String p : playerNames){
-                System.out.println(c.getShelves().get(p));
+                System.out.println(c.getShelves().get(p)+p+"'s shelf\n");
             }
             System.out.println(c.getBoard());
         }

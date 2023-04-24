@@ -80,6 +80,11 @@ public class GUI extends View {
     }
 
     @Override
+    public void setLobbyAdmin(boolean isAdmin) {
+
+    }
+
+    @Override
     public void notifyInvalidCommand() {
 
     }

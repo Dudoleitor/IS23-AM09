@@ -17,7 +17,7 @@ import java.util.Objects;
  * It is a wrapper for ClientRemoteObject: it's
  * needed to handle RemoteExceptions.
  */
-public class ClientRMI implements Client, Remote, Serializable {
+public class ClientRMI implements Client, Serializable {
     private final String playerName;
     private final ClientRemote clientRemote;
     private Chat chat;

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LobbyCommandTest {
     @Test
     void match(){
-        assertEquals(LobbyCommand.Peek, LobbyCommand.stringToCommand("PEEK"));
-        assertEquals(LobbyCommand.Invalid, LobbyCommand.stringToCommand("Peeka"));
+        assertEquals(LobbyCommand.Help, LobbyCommand.stringToCommand("Help"));
+        assertEquals(LobbyCommand.Invalid, LobbyCommand.stringToCommand("helpa"));
     }
 }

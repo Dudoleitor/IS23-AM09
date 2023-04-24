@@ -4,22 +4,20 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.Move;
 
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 
 public class ConnectionStub extends Server {
-    static Queue<String> callsToStub;
-    boolean verbous;
+    static LinkedList<String> callsToStub;
+    boolean verbous = false;
     public ConnectionStub(){
         super(new IpAddressV4((byte) 127, (byte) 0, (byte) 0, (byte) 1),80);
-        callsToStub = new PriorityQueue<>();
-        verbous = true;
+        callsToStub = new LinkedList<>();
     }
     @Override
     public boolean login(Client client) {
-        callsToStub.add(client.getPlayerName()+" login");
+        callsToStub.addLast(client.getPlayerName()+" login");
         if(verbous)
             System.out.println(client.getPlayerName()+" login");
         return true;
@@ -27,21 +25,21 @@ public class ConnectionStub extends Server {
 
     @Override
     public void joinRandomLobby(Client client) throws ServerException {
-        callsToStub.add(client.getPlayerName()+" random login");
+        callsToStub.addLast(client.getPlayerName()+" random login");
         if(verbous)
             System.out.println(client.getPlayerName()+" random login");
     }
 
     @Override
     public void createLobby(Client client) throws ServerException {
-        callsToStub.add(client.getPlayerName()+" create lobby");
+        callsToStub.addLast(client.getPlayerName()+" create lobby");
         if(verbous)
             System.out.println(client.getPlayerName()+" create lobby");
     }
 
     @Override
     public Map<Integer, Integer> getAvailableLobbies() throws ServerException {
-        callsToStub.add("available lobbies");
+        callsToStub.addLast("available lobbies");
         if(verbous)
             System.out.println("available lobbies");
         return null;
@@ -49,7 +47,7 @@ public class ConnectionStub extends Server {
 
     @Override
     public Map<Integer, Integer> getJoinedLobbies(String playerName) throws ServerException {
-        callsToStub.add("joined lobbies");
+        callsToStub.addLast("joined lobbies");
         if(verbous)
             System.out.println("joined lobbies");
         return null;
@@ -57,7 +55,7 @@ public class ConnectionStub extends Server {
 
     @Override
     public void joinSelectedLobby(Client client, int id) throws ServerException {
-        callsToStub.add(client.getPlayerName()+" specific lobby "+id);
+        callsToStub.addLast(client.getPlayerName()+" specific lobby "+id);
         if(verbous)
             System.out.println(client.getPlayerName()+" specific lobby "+id);
     }
@@ -66,21 +64,21 @@ public class ConnectionStub extends Server {
     public void postToLiveChat(String playerName, String message) throws LobbyException {
         if(verbous)
             System.out.println(playerName+" posted "+message);
-        callsToStub.add(playerName+" posted "+message);
+        callsToStub.addLast(playerName+" posted "+message);
     }
 
     @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException {
         if(verbous)
             System.out.println(sender+" posted secret "+message+ " for "+receiver);
-        callsToStub.add(sender+" posted secret "+message+ " for "+receiver);
+        callsToStub.addLast(sender+" posted secret "+message+ " for "+receiver);
     }
 
     @Override
     public void quitGame(String player) throws LobbyException {
         if(verbous)
             System.out.println(player + " quit");
-        callsToStub.add(player + " quit");
+        callsToStub.addLast(player + " quit");
     }
 
     @Override
@@ -90,7 +88,7 @@ public class ConnectionStub extends Server {
 
     @Override
     public void postMove(String player, Move move) throws LobbyException {
-        callsToStub.add(player + " posted move " + move);
+        callsToStub.addLast(player + " posted move " + move);
         if(verbous)
             System.out.println(player + " posted move " + move);
     }
@@ -98,7 +96,8 @@ public class ConnectionStub extends Server {
     @Override
     public boolean startGame(String player) throws LobbyException {
         if(verbous)
-            System.out.println(player + " posted started game");
+            System.out.println(player + " started game");
+        callsToStub.addLast(player + " started game");
         return true;
     }
 
@@ -106,16 +105,17 @@ public class ConnectionStub extends Server {
     public boolean isLobbyAdmin(String player) throws LobbyException {
         if(verbous)
             System.out.println(player + " asked lobby admin");
+        callsToStub.addLast(player + " asked lobby admin");
         return true;
     }
 
     @Override
     public int getLobbyID() throws LobbyException {
-        return 0;
+        return 1;
     }
 
-    public Queue<String> getCallsToStub() {
-        return new PriorityQueue<>(callsToStub);
+    public LinkedList<String> getCallsToStub() {
+        return new LinkedList<>(callsToStub);
     }
 }
 

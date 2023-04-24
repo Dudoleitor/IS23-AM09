@@ -9,7 +9,7 @@ public enum LobbyCommand {
         Message("message","-msg","Send a message to all members of lobby"),
         Start("start","-s","Start the game"),
         Move("move","-m","Make your move"),
-        Peek("peek","-p","See an element of the board"),
+        Show("show","-sh","See an element of the board"),
         Help("help","-h",""),
         Invalid("Invalid","","");
         private String code;
