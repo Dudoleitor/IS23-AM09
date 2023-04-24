@@ -205,7 +205,7 @@ public class ClientMain{
     /**
      * Initiate all the objects that will handle the connection to serer
      */
-    private static void initConnectionInterface() throws ServerException {
+    private static void initConnectionInterface() throws ServerException{
         try{
             initController();
         }
@@ -253,20 +253,42 @@ public class ClientMain{
      * Initiate the connection interface and attempt a login
      * @return true if login was successful
      */
-    private static boolean connect(){
+    private static boolean connect() {
         try{
             //Initiate the server connection interfaces according to settings
-            initConnectionInterface();
+            tryConnect(10,1);
             //login
             return tryLogin(3,2);
         } catch (ServerException e) {
             return false;
         }
     }
+    /**
+     * Try login tries times
+     * @param tries available to connect
+     * @param seconds to wait in case of failure
+     */
+    private static void tryConnect(int tries, int seconds) throws ServerException {
+        try {
+            initConnectionInterface();
+        } catch (ServerException e) {
+            view.errorMessage("Connection Error, retying in "+seconds+" seconds");
+            try {
+                sleep(seconds * 1000);
+            } catch (InterruptedException i) {
+                return;
+            }
+            if (tries > 1)
+                tryConnect(tries - 1, seconds);
+            else throw new ServerException("Can't connect to the server");
+        }
+    }
+
 
     /**
      * Try login tries times
-     * @param tries
+     * @param tries available to login
+     * @param seconds to wait in case of failure
      * @return true if successful
      */
     private static boolean tryLogin(int tries, int seconds){

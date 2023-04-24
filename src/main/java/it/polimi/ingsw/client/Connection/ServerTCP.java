@@ -10,19 +10,20 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+
 public class ServerTCP extends Server {
     private int id;
     private Socket serverSocket;
 
     private final ServerTCP_IO serverIO;
 
-    public ServerTCP(IpAddressV4 ip, int port) {
+    public ServerTCP(IpAddressV4 ip, int port) throws ServerException {
         super(ip, port);
         try {
             serverSocket = new Socket(ip.toString(), port);
             serverIO = new ServerTCP_IO(serverSocket);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ServerException(e.getMessage());
         }
     }
     /**
