@@ -199,6 +199,7 @@ public class ClientMain{
                 break;
             case DRIVER:
                 view = new ViewDriver();
+                break;
         }
     }
 

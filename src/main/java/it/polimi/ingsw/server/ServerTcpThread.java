@@ -90,9 +90,10 @@ public class ServerTcpThread extends Thread{ //TODO
                 break;
             case StartGame:
                 startGame(content);
+                break;
             case IsLobbyAdmin:
                 isLobbyAdmin(content);
-
+                break;
             default:
                 client.out("Command does not exists");
                 break;
@@ -330,7 +331,7 @@ public class ServerTcpThread extends Thread{ //TODO
                 isAdmin = false;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
-            feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command
+            feedback.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set message command
             feedback.setContent(Jsonable.boolean2json(isAdmin)); //set message content
             client.out(feedback.toString()); //send object to client
         }

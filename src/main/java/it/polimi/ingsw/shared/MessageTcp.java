@@ -2,6 +2,7 @@ package it.polimi.ingsw.shared;
 import org.json.simple.JSONObject;
 
 import javax.management.remote.JMXServerErrorException;
+import java.rmi.RemoteException;
 
 public class MessageTcp {
     private MessageCommand messageCommand;
@@ -16,7 +17,6 @@ public class MessageTcp {
      * @param message is the message to parse
      */
     public MessageTcp(String message){
-        System.out.println(message);
         JSONObject jsonMessage = Jsonable.parseString(message);
         MessageCommand command = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
         JSONObject content = (JSONObject) jsonMessage.get("content");
