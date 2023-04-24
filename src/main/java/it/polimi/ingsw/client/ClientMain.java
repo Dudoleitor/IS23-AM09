@@ -7,9 +7,11 @@ import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.client.View.View;
 import it.polimi.ingsw.client.View.ViewDriver;
 import it.polimi.ingsw.client.View.cli.CLI;
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.ClientControllerCLI;
 import it.polimi.ingsw.client.View.gui.HelloApplication;
 import it.polimi.ingsw.client.View.gui.GUI;
+import it.polimi.ingsw.client.controller.ClientControllerGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
@@ -34,6 +36,7 @@ public class ClientMain{
     //Objects that handle connection with server
     static Server server;
     static Client client;
+    static ClientController controller;
     /**
      * UI View
      */
@@ -100,7 +103,7 @@ public class ClientMain{
                 case Move:
                     postMove();
                     break;
-                case Peek:
+                case Show:
                     view.showElement();
                     break;
                 case Message:
@@ -203,12 +206,18 @@ public class ClientMain{
      * Initiate all the objects that will handle the connection to serer
      */
     private static void initConnectionInterface() throws ServerException {
+        try{
+            initController();
+        }
+        catch (RemoteException e){
+            throw new ServerException("Error while creating controller:"+e.getMessage());
+        }
+
         switch (Client_Settings.connection){
             case RMI:
                 server = new ServerRMI(NetworkSettings.serverIp, NetworkSettings.RMIport);
                 try {
-                    ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
-                    client = new ClientRMI(remoteObject);
+                    client = new ClientRMI(controller);
                 } catch (RemoteException e) {
                     throw new ServerException("Impossible to create RMI client object");
                 }
@@ -222,10 +231,21 @@ public class ClientMain{
                 server = new ConnectionStub();
                 try {
                     ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
-                    client = new ClientRMI(remoteObject);
+                    client = new ClientRMI(remoteObject); //TODO create stub when completed the real one
                 } catch (RemoteException e) {
                     throw new ServerException("Impossible to create RMI client object");
-                } //TODO create stub when completed the real one
+                }
+        }
+    }
+
+    private static void initController() throws RemoteException {
+        switch(Client_Settings.ui){
+            case GUI:
+                controller = new ClientControllerGUI();
+                break;
+            default:
+                controller = new ClientControllerCLI(playerName);
+                break;
         }
     }
 

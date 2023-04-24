@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.View.View;
 import it.polimi.ingsw.client.View.cli.InputSanitizer;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.client.View.cli.cli_IO;
+import it.polimi.ingsw.client.controller.ClientControllerCLI;
 import it.polimi.ingsw.shared.Move;
 import it.polimi.ingsw.shared.PartialMove;
 import it.polimi.ingsw.shared.*;

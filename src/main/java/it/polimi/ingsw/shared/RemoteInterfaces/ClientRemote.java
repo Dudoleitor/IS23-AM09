@@ -1,7 +1,6 @@
 package it.polimi.ingsw.shared.RemoteInterfaces;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 
