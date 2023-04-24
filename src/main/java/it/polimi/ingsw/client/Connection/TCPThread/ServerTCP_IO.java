@@ -1,12 +1,14 @@
 package it.polimi.ingsw.client.Connection.TCPThread;
 
 import it.polimi.ingsw.shared.MessageTcp;
+import it.polimi.ingsw.shared.NetworkSettings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class ServerTCP_IO{
@@ -34,16 +36,18 @@ public class ServerTCP_IO{
      * socket input buffer
      * @return the read line of the buffer
      */
-    public MessageTcp in(){
+    public MessageTcp in() throws RemoteException {
         MessageTcp message;
         try {
             synchronized (serverListener) {
                 while (input.isEmpty()) {
-                    serverListener.wait();
+                    serverListener.wait(NetworkSettings.WaitingTime);
+                    if(input.isEmpty())
+                        throw new RemoteException("Waited too much");
                 }
             }
-        } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        } catch (InterruptedException | RemoteException e) {
+                throw new RemoteException(e.getMessage());
         }
 
 

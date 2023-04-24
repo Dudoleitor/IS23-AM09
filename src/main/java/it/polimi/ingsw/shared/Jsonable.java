@@ -63,7 +63,7 @@ public interface Jsonable {
      * @param map is the boolean
      * @return JsonObject that corresponds to that boolean
      */
-    static JSONObject map2json(Map<Integer,Integer> map) {
+    static JSONObject map2json(Map<?,?> map) {
         if (map == null)
             return null;
         JSONObject jsonMap = new JSONObject();
@@ -71,8 +71,8 @@ public interface Jsonable {
                 .stream()
                 .forEach(x ->
                         jsonMap.put(
-                                x,
-                                map.get(x)
+                                x.toString(),
+                                map.get(x).toString()
                         )
                 );
         return jsonMap;
