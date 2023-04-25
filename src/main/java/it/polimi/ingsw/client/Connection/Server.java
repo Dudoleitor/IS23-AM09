@@ -6,6 +6,10 @@ import it.polimi.ingsw.shared.Move;
 
 import java.util.Map;
 
+/**
+ * This object is used to send updates to the server, it resides
+ * on the client. ServerRMI and ServerTCP implement methods properly.
+ */
 public abstract class Server {
     IpAddressV4 ip;
     int port;

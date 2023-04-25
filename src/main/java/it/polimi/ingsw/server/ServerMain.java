@@ -92,7 +92,6 @@ public class ServerMain implements ServerInterface{
      * @return true is login is successful
      * @throws RemoteException is there are problems with connection
      */
-    @Override
     public boolean login(Client client) throws RemoteException {
         clientsWithoutLobby.add(client);
         System.out.println(client.getPlayerName() + " has just logged in");
@@ -105,7 +104,6 @@ public class ServerMain implements ServerInterface{
      * @param nick is the player name
      * @return list of lobby id of matches joined by the player
      */
-    @Override
     public Map<Integer,Integer> getJoinedLobbies(String nick){
         Map<Integer,Integer> lobbyList = new HashMap<>();//get all lobbies already joined by the client
                 lobbies.keySet()
@@ -119,7 +117,6 @@ public class ServerMain implements ServerInterface{
      * @param client requesting to join the lobby
      * @return id of assigned lobby
      */
-    @Override
     public ServerLobbyInterface joinRandomLobby(Client client){
         ServerLobbyInterface lobbyInterface;
         Map<Integer,Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
@@ -149,7 +146,6 @@ public class ServerMain implements ServerInterface{
     /**
      * @param client requesting to join the lobby
      */
-    @Override
     public ServerLobbyInterface joinSelectedLobby(Client client, int id){
         Lobby lobby = lobbies.keySet()
                 .stream()
@@ -167,7 +163,6 @@ public class ServerMain implements ServerInterface{
     /**
      * @param client requesting to create the lobby
      */
-    @Override
     public ServerLobbyInterface createLobby(Client client){
         int minFreeKey;
         int lobbyPort;
@@ -196,7 +191,6 @@ public class ServerMain implements ServerInterface{
         }
     }
 
-    @Override
     public Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.keySet()
