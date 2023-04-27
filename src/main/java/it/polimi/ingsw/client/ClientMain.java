@@ -9,7 +9,7 @@ import it.polimi.ingsw.client.View.ViewDriver;
 import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.ClientControllerCLI;
-import it.polimi.ingsw.client.View.gui.HelloApplication;
+import it.polimi.ingsw.client.View.gui.ClientGUI;
 import it.polimi.ingsw.client.View.gui.GUI;
 import it.polimi.ingsw.client.controller.ClientControllerGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
@@ -195,7 +195,7 @@ public class ClientMain{
                 break;
             case GUI:
                 view = new GUI();
-                HelloApplication.startApp();
+                ClientGUI.startApp();
                 break;
             case DRIVER:
                 view = new ViewDriver();
