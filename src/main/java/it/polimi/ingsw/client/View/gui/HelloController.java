@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 
 public class HelloController {
     @FXML
-    private Label welcomeText;
+    Label welcome;
     @FXML
     TextField userName;
     @FXML
@@ -16,7 +16,7 @@ public class HelloController {
 
     @FXML
     protected void signInAction() {
-        welcomeText.setText(userName.getText() + " ha effettuato il login nella lobby " +
+        welcome.setText(userName.getText() + " ha effettuato il login nella lobby " +
                 lobbyNumber.getText());
     }
 }

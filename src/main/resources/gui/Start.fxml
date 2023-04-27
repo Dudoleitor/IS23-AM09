@@ -1,49 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.image.ImageView?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.View.gui.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
 
-    <GridPane alignment="center" hgap="10" vgap="10">
-        <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
-        <Text text="Welcome to MyShelfie"
-              GridPane.columnIndex="0" GridPane.rowIndex="0"
-              GridPane.columnSpan="2"/>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" >
+    <children>
 
-        <Label text="User Name:"
-               GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <ImageView fitHeight="618.0" fitWidth="762.0" layoutX="-9.0" layoutY="-216.0" opacity="0.75" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@gameGraphics/misc/sfondo_parquet.jpg" />
+            </image>
+        </ImageView>
 
-        <TextField fx:id="userName"
-                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Text layoutX="187.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WELCOME TO">
+            <font>
+                <Font name="SF Mono Bold" size="40.0" />
+            </font>
+        </Text>
 
-        <Label text="Insert the lobby number: "
-               GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="213.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true" >
+            <image>
+                <Image url="@gameGraphics/Publisher_material/Publisher.png" />
+            </image>
+        </ImageView>
 
-        <TextField fx:id="lobbyNumber"
-                   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="userName" layoutX="179.0" layoutY="207.0" prefHeight="29.0" prefWidth="277.0" promptText="Username" />
+        <TextField fx:id="lobbyNumber" layoutX="179.0" layoutY="259.0" prefHeight="29.0" prefWidth="277.0" promptText="Lobby" />
 
-        <HBox spacing="10" alignment="bottom_right"
-              GridPane.columnIndex="1" GridPane.rowIndex="4">
-            <Button text="Sign In"
-                    onAction="#signInAction"/>
-        </HBox>
+        <Button contentDisplay="CENTER" layoutX="286.0" layoutY="308.0" mnemonicParsing="false" onAction="#signInAction" style="-fx-background-color: white;" text="Join" textAlignment="CENTER">
+            <font>
+                <Font name="SF Mono Bold" size="13.0" />
+            </font>
+        </Button>
+        <ImageView fitHeight="38.0" fitWidth="42.0" layoutX="545.0" layoutY="345.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@gameGraphics/Publisher_material/Publisher.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="38.0" fitWidth="42.0" layoutX="27.0" layoutY="345.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@gameGraphics/Publisher_material/Box_noshadow_280x280.png" />
+            </image>
+        </ImageView>
 
-        <Text fx:id="actiontarget"
-              GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-    </GridPane>
+        <Label fx:id="welcome" layoutX="206.0" layoutY="356.0" />
+    </children>
+</AnchorPane>
 
-    <Label fx:id="welcomeText"/>
 </VBox>
+
