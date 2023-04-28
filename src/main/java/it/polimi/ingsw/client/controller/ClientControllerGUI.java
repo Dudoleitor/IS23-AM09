@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.controller;
 
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.Tile;
 import org.json.simple.JSONObject;
 
@@ -14,7 +15,15 @@ import java.util.List;
  * Here a copy of the model is not needed.
  */
 //TODO everything
-public class ClientControllerGUI implements ClientController {
+public class ClientControllerGUI implements ClientController, ClientRemote {
+    private final String playerName;
+    private boolean itsMyTurn;
+
+    public ClientControllerGUI(String playerName) {
+        this.playerName=playerName;
+        this.itsMyTurn=false;
+    }
+
     /**
      * This method is used to return the name of
      * the players using this client.
@@ -102,5 +111,28 @@ public class ClientControllerGUI implements ClientController {
     @Override
     public void gameStarted(List<String> players) throws RemoteException {
 
+    }
+
+    /**
+     * This function is used when the turn of a player ends.
+     *
+     * @param player Name of the player that will play next.
+     */
+    @Override
+    public void nextTurn(String player) throws RemoteException {
+        if (player.equals(this.playerName)) {
+            itsMyTurn=true;
+        } else {
+            itsMyTurn=false;
+        }
+    }
+
+    /**
+     * @return True if the player need to play in the current turn
+     * @throws RemoteException never, needed by RMI
+     */
+    @Override
+    public boolean isItMyTurn() throws RemoteException {
+        return itsMyTurn;
     }
 }

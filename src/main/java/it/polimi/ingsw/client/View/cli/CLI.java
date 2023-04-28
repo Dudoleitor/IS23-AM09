@@ -244,5 +244,4 @@ public class CLI extends View {
             io.setPlaceHolder(Client_Settings.stdPlaceHolder);
         }
     }
-
 }

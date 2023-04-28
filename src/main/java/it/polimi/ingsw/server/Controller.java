@@ -60,6 +60,8 @@ public class Controller implements Jsonable {
             board.fill();
             virtualViews.add(board.getVirtualBoard());
 
+            // TODO Chose first player
+
             for (Client client : clients) {
                 playerGoal = playerGoals.get(0);
                 playerGoals.remove(playerGoal);
@@ -71,6 +73,7 @@ public class Controller implements Jsonable {
                 players.add(player);
                 virtualViews.add(player.getVirtualShelf());
                 client.refreshBoard(this.board.toJson().toJSONString());
+                client.updateTurn(getCurrentPlayerName());
             }
 
             for(VirtualView v : virtualViews) {
@@ -128,7 +131,15 @@ public class Controller implements Jsonable {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
         }
 
+        // Updating clients
         for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
+        for (Client client : clients) {
+            client.refreshBoard(board.toJson().toJSONString());
+            for(Player player : players) {
+                client.refreshShelf(player.getName(), player.getShelf().toJson().toJSONString());
+            }
+            client.updateTurn(getCurrentPlayerName());
+        }
     }
 
     /**
@@ -272,6 +283,8 @@ public class Controller implements Jsonable {
             }
             prepareForNextPlayer(); //Fill if necessary
             nextTurn(); //increment turn
+            for (Client client : clients)
+                client.updateTurn(getCurrentPlayerName());
         } catch (InvalidMoveException e) {
             throw new ControllerGenericException("Error invalid move");
         } catch (BadPositionException e) {

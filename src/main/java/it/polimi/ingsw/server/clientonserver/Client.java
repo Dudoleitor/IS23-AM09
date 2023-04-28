@@ -1,8 +1,6 @@
 package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
 import org.json.simple.JSONObject;
 
@@ -85,5 +83,11 @@ public interface Client {
      *                determine turns
      */
     public void gameStarted(List<String> players);
+
+    /**
+     * This function is used when the turn of a player ends.
+     * @param player Name of the player that will play next.
+     */
+    public void updateTurn(String player);
 
 }

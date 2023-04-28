@@ -95,5 +95,4 @@ public abstract class View {
      * Set isLobbyAdmin variable in View
      */
     public abstract void setLobbyAdmin(boolean isAdmin);
-
 }

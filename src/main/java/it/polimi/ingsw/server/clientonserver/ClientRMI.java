@@ -123,6 +123,16 @@ public class ClientRMI implements Client, Serializable {
     }
 
     /**
+     * This method is used to send the whole chat to the client,
+     * it is used when a refresh is needed.
+     * @param chat Chat object
+     */
+    @Override
+    public void refreshChat(Chat chat) {
+
+    }
+
+    /**
      * This method is used when the lobby is ready and the
      * admin started the game.
      * @param players List of players, order is used to
@@ -139,13 +149,18 @@ public class ClientRMI implements Client, Serializable {
     }
 
     /**
-     * This method is used to send the whole chat to the client,
-     * it is used when a refresh is needed.
-     * @param chat Chat object
+     * This function is used when the turn of a player ends.
+     *
+     * @param player Name of the player that will play next.
      */
     @Override
-    public void refreshChat(Chat chat) {
-
+    public void updateTurn(String player) {
+        try {
+            clientRemote.nextTurn(player);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            // TODO Handle exception
+        }
     }
 
     @Override

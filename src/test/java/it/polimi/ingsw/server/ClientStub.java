@@ -65,6 +65,16 @@ public class ClientStub implements Client {
 
     }
 
+    /**
+     * This function is used when the turn of a player ends.
+     *
+     * @param player Name of the player that will play next.
+     */
+    @Override
+    public void updateTurn(String player) {
+       this.updated = true;
+    }
+
     public boolean wasUpdated() {
         return updated;
     }

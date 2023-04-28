@@ -199,4 +199,14 @@ public class Lobby implements ServerLobbyInterface {
     public int getID(){
         return this.id;
     }
+
+    /**
+     * This method is used to observe the player supposed
+     * to play in the current turn.
+     * @return String name of the player
+     */
+    @Override
+    public String getCurrentPlayer() {
+        return controller.getCurrentPlayerName();
+    }
 }

@@ -279,4 +279,15 @@ public class ServerTCP extends Server {
         else
             throw new LobbyException("lobby doesn't exists");
     }
+
+    /**
+     * This method is used to observe the player supposed
+     * to play in the current turn.
+     *
+     * @return String name of the player
+     */
+    @Override
+    public String getCurrentPlayer() throws LobbyException {
+        return "";
+    }
 }

@@ -167,4 +167,19 @@ public class ServerRMI extends Server {
         }
         return id;
     }
+
+    /**
+     * This method is used to observe the player supposed
+     * to play in the current turn.
+     *
+     * @return String name of the player
+     */
+    @Override
+    public String getCurrentPlayer() throws LobbyException {
+        try {
+            return lobby.getCurrentPlayer();
+        } catch (Exception e) {
+            throw new LobbyException(e.getMessage());
+        }
+    }
 }

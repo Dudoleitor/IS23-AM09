@@ -160,8 +160,16 @@ public class ClientMain{
         if(!server.matchHasStarted()){
             return;
         }
-        Move move = view.getMoveFromUser();
-        server.postMove(playerName,move);
+        try {
+            if (controller.isItMyTurn()) {
+                Move move = view.getMoveFromUser();
+                server.postMove(playerName, move);
+            } else {
+                view.errorMessage("It's not your turn");
+            }
+        } catch (RemoteException ignored) {
+            // Never thrown
+        }
     }
 
     private static void start(){
@@ -242,7 +250,7 @@ public class ClientMain{
     private static void initController() throws RemoteException {
         switch(Client_Settings.ui){
             case GUI:
-                controller = new ClientControllerGUI();
+                controller = new ClientControllerGUI(playerName);
                 break;
             case CLI:
                 try {

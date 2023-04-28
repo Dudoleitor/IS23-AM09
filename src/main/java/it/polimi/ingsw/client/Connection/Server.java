@@ -115,4 +115,11 @@ public abstract class Server {
      * @return lobby id
      */
     abstract public int getLobbyID() throws LobbyException;
+
+    /**
+     * This method is used to observe the player supposed
+     * to play in the current turn.
+     * @return String name of the player
+     */
+    abstract public String getCurrentPlayer() throws LobbyException;
 }

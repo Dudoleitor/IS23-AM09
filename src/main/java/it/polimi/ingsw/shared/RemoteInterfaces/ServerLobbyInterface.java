@@ -22,4 +22,5 @@ public interface ServerLobbyInterface extends Remote {
     boolean startGame(String player) throws Exception;
     boolean isLobbyAdmin(String player) throws Exception;
     int getID() throws Exception;
+    String getCurrentPlayer() throws Exception;
 }

@@ -114,6 +114,17 @@ public class ConnectionStub extends Server {
         return 1;
     }
 
+    /**
+     * This method is used to observe the player supposed
+     * to play in the current turn.
+     *
+     * @return String name of the player
+     */
+    @Override
+    public String getCurrentPlayer() throws LobbyException {
+        return "";
+    }
+
     public LinkedList<String> getCallsToStub() {
         return new LinkedList<>(callsToStub);
     }

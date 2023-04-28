@@ -90,4 +90,10 @@ public interface ClientRemote extends Remote, Serializable {
      * admin started the game.
      */
     public void gameStarted(List<String> players) throws RemoteException;
+
+    /**
+     * This function is used when the turn of a player ends.
+     * @param player Name of the player that will play next.
+     */
+    public void nextTurn(String player) throws RemoteException;
 }
