@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
+
 public class HelloController {
     @FXML
     Label welcome;
@@ -13,10 +15,12 @@ public class HelloController {
     @FXML
     TextField lobbyNumber;
 
+    ClientGUI gui = new ClientGUI();
 
     @FXML
-    protected void signInAction() {
+    protected void signInAction() throws IOException {
         welcome.setText(userName.getText() + " ha effettuato il login nella lobby " +
                 lobbyNumber.getText());
+        gui.changeScene();
     }
 }

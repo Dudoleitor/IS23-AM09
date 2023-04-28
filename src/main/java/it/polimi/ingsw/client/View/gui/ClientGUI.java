@@ -39,5 +39,14 @@ public class ClientGUI extends Application {
         alert.show();
     }
 
+    public void changeScene() throws IOException {
+        Parent root = loadScene("PlayerHomeScreen");
+        Scene scene = new Scene(root, 320, 240, Color.GREEN);
+        Stage stage = new Stage();
+        stage.setTitle("My Shelfie - Home");
+        stage.setScene(scene);
+        stage.show();
+    }
+
     public static void startApp() {launch();}
 }
