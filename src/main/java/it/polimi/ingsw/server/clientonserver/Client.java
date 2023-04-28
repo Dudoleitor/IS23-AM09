@@ -4,6 +4,9 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 /**
  * This object is used to send updates to
@@ -27,7 +30,7 @@ public interface Client {
      *
      * @param position position
      */
-    public void pickedFromBoard(Position position);
+    public void pickedFromBoard(JSONObject position);
 
     /**
      * This method is used to transfer the whole board
@@ -74,5 +77,13 @@ public interface Client {
      * @param chat Chat object
      */
     public void refreshChat(Chat chat);
+
+    /**
+     * This method is used when the lobby is ready and the
+     * admin started the game.
+     * @param players List of players, order is used to
+     *                determine turns
+     */
+    public void gameStarted(List<String> players);
 
 }

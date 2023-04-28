@@ -289,7 +289,7 @@ public class ServerTcpThread extends Thread{ //TODO
     public void postMove(JSONObject message){
         boolean foundErrors = false;;
         String player = message.get("player").toString(); //TODO for myself, to find a more clean way
-        Move move = new Move((JSONObject) message.get("move"));
+        JSONObject move = (JSONObject) message.get("move");
         synchronized (lobby) {
             try {
                 lobby.postMove(player,move);

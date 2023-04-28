@@ -3,10 +3,12 @@ package it.polimi.ingsw.shared.RemoteInterfaces;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * This object is used on the client to receive updates
@@ -35,7 +37,7 @@ public interface ClientRemote extends Remote, Serializable {
      *
      * @param position position
      */
-    public void pickedFromBoard(Position position) throws RemoteException;
+    public void pickedFromBoard(JSONObject position) throws RemoteException;
 
     /**
      * This method is used to transfer the whole board
@@ -82,4 +84,10 @@ public interface ClientRemote extends Remote, Serializable {
      * @param chat Chat object
      */
     public void refreshChat(Chat chat) throws RemoteException;
+
+    /**
+     * This method is used when the lobby is ready and the
+     * admin started the game.
+     */
+    public void gameStarted(List<String> players) throws RemoteException;
 }

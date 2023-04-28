@@ -402,7 +402,7 @@ public class Shelf implements Jsonable {
                 Color.coloredString(upperBorder,Color.Yellow)+
                         shelfTiles+
                         Color.coloredString(lowerBorder,Color.Yellow));
-        return str;
+        return "\n" + str;
     }
 
     /**

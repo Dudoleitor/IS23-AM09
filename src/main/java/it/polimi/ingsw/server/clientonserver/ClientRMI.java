@@ -5,10 +5,12 @@ import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -43,7 +45,7 @@ public class ClientRMI implements Client, Serializable {
      * @param position Position
      */
     @Override
-    public void pickedFromBoard(Position position) {
+    public void pickedFromBoard(JSONObject position) {
         try {
             clientRemote.pickedFromBoard(position);
         } catch (RemoteException e) {
@@ -120,6 +122,21 @@ public class ClientRMI implements Client, Serializable {
         }
     }
 
+    /**
+     * This method is used when the lobby is ready and the
+     * admin started the game.
+     * @param players List of players, order is used to
+     *                determine turns
+     */
+    @Override
+    public void gameStarted(List<String> players) {
+        try {
+            clientRemote.gameStarted(players);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            // TODO Handle exception
+        }
+    }
 
     /**
      * This method is used to send the whole chat to the client,

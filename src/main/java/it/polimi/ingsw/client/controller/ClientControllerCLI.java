@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import org.json.simple.JSONObject;
@@ -8,28 +9,35 @@ import org.json.simple.parser.ParseException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
  * This object contains a copy of the model and uses the CLI
  * to print the entire model each time.
  */
-public class ClientControllerCLI extends UnicastRemoteObject implements ClientRemote, ClientController {
+public class ClientControllerCLI extends UnicastRemoteObject implements ClientController {
 
     private final String playerName;
     private Chat chat;
     private Board board;
     private final Map<String, Shelf> playersShelves;
+    private final List<String> players;
+    private final CLI cli;
 
-    public ClientControllerCLI(String playerName) throws RemoteException {
+    /* This flag is used to avoid notifying the user multiple times when it's his turn.
+    Set to true after an update of the shelf, set to false after an update of the board. */
+    private boolean notifiedTurn;
+
+    public ClientControllerCLI(String playerName, CLI cli) throws RemoteException {
         super();
         this.playerName = playerName;
         this.chat = new Chat();
         this.board = null;
         this.playersShelves = new HashMap<>();
+        this.players = new ArrayList<>();
+        this.cli = cli;
+        this.notifiedTurn=false;
     }
 
     /**
@@ -85,12 +93,14 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientRe
      * @param position position
      */
     @Override
-    public void pickedFromBoard(Position position) throws RemoteException {
+    public void pickedFromBoard(JSONObject position) throws RemoteException {
         try {
-            board.pickTile(position);
+            board.pickTile(new Position(position));
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
+        cli.showBoard(board);
+        notifiedTurn=false;
     }
 
     /**
@@ -108,6 +118,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientRe
         } catch (ParseException | ClassCastException | JsonBadParsingException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
+        cli.showBoard(this.board);
+        notifiedTurn=false;
     }
 
     /**
@@ -130,6 +142,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientRe
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
+        cli.showShelves(playersShelves);
+        // TODO perform checks on turn
     }
 
     /**
@@ -148,6 +162,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientRe
         } catch (ParseException | ClassCastException | JsonBadParsingException e) {
             throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
         }
+        cli.showShelves(playersShelves);
+        notifiedTurn=false;
     }
 
     /**
@@ -157,6 +173,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientRe
      */
     public void postChatMessage(String sender, String message) throws RemoteException {
         chat.addMessage(sender, message);
+        if (!Objects.equals(sender, playerName))
+            cli.showChatMessage(sender, message);
     }
 
     /**
@@ -166,5 +184,23 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientRe
      */
     public void refreshChat(Chat chat) throws RemoteException {
         this.chat = chat;
+    }
+
+    /**
+     * This method is used when the lobby is ready and the
+     * admin started the game.
+     */
+    @Override
+    public void gameStarted(List<String> players) throws RemoteException {
+        for (String player : players) {
+            playersShelves.put(player, new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
+        }
+
+        if (board==null) {
+            throw new NullPointerException("The controller should have sent the first update of the board by now!");
+        }
+        cli.showShelves(playersShelves);
+
+        cli.message("Match has started");
     }
 }

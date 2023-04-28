@@ -41,8 +41,8 @@ public class Riemann { //an integration test
         assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
         //start from turn 0
         assertEquals(0,c.getTurn());
-        //the Board is a correct empty board for 4 players
-        assertTrue(c.getBoard().sameBoard(new Board(4)));
+        //the Board is a correct empty board for 4 players -- ASSERTION REMOVED! Controller must fill the board
+        //assertTrue(c.getBoard().sameBoard(new Board(4)));
         //the first player is actually the first
         assertEquals(playerNames.get(0),c.getCurrentPlayerName());
         //all shelves are empty

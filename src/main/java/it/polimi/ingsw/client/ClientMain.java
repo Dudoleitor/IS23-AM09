@@ -231,7 +231,7 @@ public class ClientMain{
             case STUB:
                 server = new ConnectionStub();
                 try {
-                    ClientControllerCLI remoteObject = new ClientControllerCLI(playerName);
+                    ClientControllerCLI remoteObject = new ClientControllerCLI(playerName, new CLI());
                     client = new ClientRMI(remoteObject); //TODO create stub when completed the real one
                 } catch (RemoteException e) {
                     throw new ServerException("Impossible to create RMI client object");
@@ -244,8 +244,13 @@ public class ClientMain{
             case GUI:
                 controller = new ClientControllerGUI();
                 break;
-            default:
-                controller = new ClientControllerCLI(playerName);
+            case CLI:
+                try {
+                    final CLI cli = (CLI) view;
+                    controller = new ClientControllerCLI(playerName, cli);
+                } catch (ClassCastException e) {
+                    throw new RuntimeException("Class cast exception while trying to initialize the clientController with CLI: " + e.getMessage());
+                }
                 break;
         }
     }

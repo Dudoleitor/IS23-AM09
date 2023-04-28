@@ -3,6 +3,7 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+import org.json.simple.JSONObject;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -118,6 +119,11 @@ public class Lobby implements ServerLobbyInterface {
 
         started = true;
         controller = new Controller(clients);
+
+        final List<String> players = clients.stream().map(Client::getPlayerName).collect(Collectors.toList());
+        for(Client c : clients)
+            c.gameStarted(new LinkedList<>(players));
+
         System.out.println("MATCH STARTED IN LOBBY #"+id);
         return true;
     }
@@ -175,8 +181,9 @@ public class Lobby implements ServerLobbyInterface {
     }
 
     @Override
-    public void postMove(String player, Move move) throws RemoteException {
+    public void postMove(String player, JSONObject moveJson) throws RemoteException {
         Client playerInput = null;
+        final Move move = new Move(moveJson);
         try{
             playerInput = clients.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
             if(playerInput != null) {

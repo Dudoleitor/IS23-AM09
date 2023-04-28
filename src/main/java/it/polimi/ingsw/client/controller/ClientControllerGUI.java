@@ -3,8 +3,10 @@ package it.polimi.ingsw.client.controller;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -31,7 +33,7 @@ public class ClientControllerGUI implements ClientController {
      *
      * @param position position
      */
-    public void pickedFromBoard(Position position) throws RemoteException {
+    public void pickedFromBoard(JSONObject position) throws RemoteException {
 
     }
 
@@ -90,6 +92,15 @@ public class ClientControllerGUI implements ClientController {
      * @param chat Chat object
      */
     public void refreshChat(Chat chat) throws RemoteException {
+
+    }
+
+    /**
+     * This method is used when the lobby is ready and the
+     * admin started the game.
+     */
+    @Override
+    public void gameStarted(List<String> players) throws RemoteException {
 
     }
 }

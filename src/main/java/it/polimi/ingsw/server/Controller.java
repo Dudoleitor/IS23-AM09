@@ -56,6 +56,10 @@ public class Controller implements Jsonable {
                 playerGoals.add(playerGoal);
             }
 
+            board = new Board(clients.size());
+            board.fill();
+            virtualViews.add(board.getVirtualBoard());
+
             for (Client client : clients) {
                 playerGoal = playerGoals.get(0);
                 playerGoals.remove(playerGoal);
@@ -66,13 +70,18 @@ public class Controller implements Jsonable {
 
                 players.add(player);
                 virtualViews.add(player.getVirtualShelf());
+                client.refreshBoard(this.board.toJson().toJSONString());
             }
-            board = new Board(players.size());
-            virtualViews.add(board.getVirtualBoard());
+
+            for(VirtualView v : virtualViews) {
+                v.setClientList(this.clients);
+            }
         } catch (NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : Json file doesn't exists");
         } catch (ClassCastException | JsonBadParsingException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad Json parsing");
+        } catch (OutOfTilesException e) {
+            throw new RuntimeException(e);
         }
 
         for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
@@ -110,6 +119,10 @@ public class Controller implements Jsonable {
                 if (nameAbsentInClients(player.getName(), clients)) {
                     throw new JsonBadParsingException("No client with playername " + player.getName() + " provided");
                 }
+            }
+
+            for(VirtualView v : virtualViews) {
+                v.setClientList(this.clients);
             }
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());

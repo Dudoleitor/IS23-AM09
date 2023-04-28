@@ -22,7 +22,7 @@ public class VirtualBoard extends VirtualView{
      */
     public void onPickTile(Position position) {
         for (Client cl : getClientList()) {
-            cl.pickedFromBoard(position);
+            cl.pickedFromBoard(position.toJson());
         }
     }
 

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.shared;
 
-public enum Tile {
+import java.io.Serializable;
+
+public enum Tile implements Serializable {
     Cat("C", Color.Green),
     Book("B",Color.White),
     Game("G",Color.Yellow),

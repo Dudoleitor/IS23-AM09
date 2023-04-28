@@ -129,7 +129,7 @@ public class ServerRMI extends Server {
     @Override
     public void postMove(String player, Move move) throws LobbyException{
         try {
-            lobby.postMove(player,move);
+            lobby.postMove(player,move.toJson());
         } catch (Exception e) {
             throw new LobbyException("Error in Lobby");
         }

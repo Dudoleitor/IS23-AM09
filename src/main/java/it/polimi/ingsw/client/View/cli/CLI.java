@@ -74,8 +74,8 @@ public class CLI extends View {
             io.printMessage("Write your move");
             List<String> fields = new ArrayList<>();
             fields.add("first position");
-            fields.add("second position");
-            fields.add("third position");
+            //fields.add("second position");
+            //fields.add("third position");
             fields.add("column");
             Map<String,String> input = io.multiScan(fields);
             try{
@@ -99,8 +99,8 @@ public class CLI extends View {
     private List<Position> getPositionsFromInput(Map<String,String> input){
         List<Position> positions = new ArrayList<>();
         positions.add(Position.fromString(input.get("first position")));
-        positions.add(Position.fromString(input.get("second position")));
-        positions.add(Position.fromString(input.get("third position")));
+        //positions.add(Position.fromString(input.get("second position")));
+        //positions.add(Position.fromString(input.get("third position")));
         return positions;
     }
 
@@ -127,6 +127,21 @@ public class CLI extends View {
             default:
                 io.printErrorMessage("Not valid element");
         }
+    }
+
+    public void showBoard(Board b) {
+        io.printMessage(b.toString());
+    }
+
+    public void showShelves(Map<String, Shelf> playerShelves) {
+        for (String player : playerShelves.keySet()) {
+            io.printMessage(player);
+            io.printMessage(playerShelves.get(player).toString());
+        }
+    }
+
+    public void showChatMessage(String sender, String message) {
+        io.printMessage(sender + " sent a chat message: " + message);
     }
 
     @Override

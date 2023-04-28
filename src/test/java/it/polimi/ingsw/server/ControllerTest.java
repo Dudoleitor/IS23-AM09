@@ -62,7 +62,8 @@ public class ControllerTest {
         assertEquals(0,c.getTurn());
         assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
         assertEquals(c.getPlayers(), playerList);
-        assertTrue(c.getBoard().sameBoard(new Board(3)));
+        // ASSERTION REMOVED! Controller must fill the board
+        //assertTrue(c.getBoard().sameBoard(new Board(3)));
         assertEquals(players.get(0),c.getCurrentPlayerName());
 
         //all shelves are empty

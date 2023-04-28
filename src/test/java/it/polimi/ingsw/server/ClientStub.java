@@ -5,6 +5,9 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.Position;
 import it.polimi.ingsw.shared.Tile;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class ClientStub implements Client {
     private String name;
@@ -21,7 +24,7 @@ public class ClientStub implements Client {
     }
 
     @Override
-    public void pickedFromBoard(Position position) {
+    public void pickedFromBoard(JSONObject position) {
         this.updated = true;
     }
 
@@ -47,6 +50,18 @@ public class ClientStub implements Client {
 
     @Override
     public void refreshChat(Chat chat) {
+
+    }
+
+    /**
+     * This method is used when the lobby is ready and the
+     * admin started the game.
+     *
+     * @param players List of players, order is used to
+     *                determine turns
+     */
+    @Override
+    public void gameStarted(List<String> players) {
 
     }
 
