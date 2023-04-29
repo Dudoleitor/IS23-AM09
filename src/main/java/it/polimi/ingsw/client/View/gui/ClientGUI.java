@@ -1,4 +1,5 @@
 package it.polimi.ingsw.client.View.gui;
+import it.polimi.ingsw.server.clientonserver.Client;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -7,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -23,7 +25,7 @@ public class ClientGUI extends Application {
         return FXMLLoader.load(ClientGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
     }
 
-    @Override
+
     public void start(Stage stage) throws IOException {
         Parent root = loadScene("Start");
         Scene scene = new Scene(root, 320, 240, Color.GREEN);
@@ -39,8 +41,8 @@ public class ClientGUI extends Application {
         alert.show();
     }
 
-    public void changeScene() throws IOException {
-        Parent root = loadScene("PlayerHomeScreen");
+    public void changeScene(String sceneName) throws IOException {
+        Parent root = loadScene(sceneName);
         Scene scene = new Scene(root, 320, 240, Color.GREEN);
         Stage stage = new Stage();
         stage.setTitle("My Shelfie - Home");

@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.View.gui.homeScreenController">
 
@@ -125,6 +126,12 @@
                     <Image url="@gameGraphics/Publisher_material/Title_2000x618px.png" />
                 </image>
             </ImageView>
+
+            <Button layoutX="37.0" layoutY="342.0" mnemonicParsing="false" onAction="#readChat" style="-fx-background-color: #49be25;" text="Read Chat">
+                <font>
+                    <Font name="SF Mono Bold" size="13.0" />
+                </font>
+            </Button>
         </children>
     </AnchorPane>
 

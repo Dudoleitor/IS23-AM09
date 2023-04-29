@@ -12,13 +12,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="it.polimi.ingsw.client.View.gui.HelloController">
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" >
     <children>
 
-        <ImageView fitHeight="618.0" fitWidth="762.0" layoutX="-9.0" layoutY="-216.0" opacity="0.75" pickOnBounds="true" preserveRatio="true">
+        <ImageView  fitHeight="850.0" fitWidth="1000.0" layoutX="-9.0" layoutY="-216.0" opacity="0.75"  pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@gameGraphics/misc/sfondo_parquet.jpg" />
             </image>
@@ -30,9 +30,9 @@
             </font>
         </Text>
 
-        <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="213.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true" >
+        <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="213.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@gameGraphics/Publisher_material/Publisher.png" />
+                <Image url="@gameGraphics/Publisher_material/Title_2000x618px.png" />
             </image>
         </ImageView>
 

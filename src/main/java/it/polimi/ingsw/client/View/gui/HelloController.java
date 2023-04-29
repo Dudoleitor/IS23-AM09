@@ -15,12 +15,12 @@ public class HelloController {
     @FXML
     TextField lobbyNumber;
 
-    ClientGUI gui = new ClientGUI();
+    private ClientGUI client = new ClientGUI();
 
     @FXML
     protected void signInAction() throws IOException {
         welcome.setText(userName.getText() + " ha effettuato il login nella lobby " +
                 lobbyNumber.getText());
-        gui.changeScene();
+        client.changeScene("PlayerHomeScreen");
     }
 }
