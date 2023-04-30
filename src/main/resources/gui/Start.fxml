@@ -10,13 +10,10 @@
 
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.polimi.ingsw.client.View.gui.HelloController">
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" >
-    <children>
+<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.polimi.ingsw.client.View.gui.HelloController" fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"  stylesheets="@Start.css">
+    <children >
 
         <ImageView  fitHeight="850.0" fitWidth="1000.0" layoutX="-9.0" layoutY="-216.0" opacity="0.75"  pickOnBounds="true" preserveRatio="true">
             <image>
@@ -39,7 +36,7 @@
         <TextField fx:id="userName" layoutX="179.0" layoutY="207.0" prefHeight="29.0" prefWidth="277.0" promptText="Username" />
         <TextField fx:id="lobbyNumber" layoutX="179.0" layoutY="259.0" prefHeight="29.0" prefWidth="277.0" promptText="Lobby" />
 
-        <Button contentDisplay="CENTER" layoutX="286.0" layoutY="308.0" mnemonicParsing="false" onAction="#signInAction" style="-fx-background-color: white;" text="Join" textAlignment="CENTER">
+        <Button styleClass="button" contentDisplay="CENTER" layoutX="286.0" layoutY="308.0" mnemonicParsing="false" onAction="#signInAction" style="-fx-background-color: white;" text="Join" textAlignment="CENTER">
             <font>
                 <Font name="SF Mono Bold" size="13.0" />
             </font>
@@ -59,5 +56,4 @@
     </children>
 </AnchorPane>
 
-</VBox>
 

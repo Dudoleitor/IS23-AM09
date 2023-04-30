@@ -62,7 +62,7 @@
                     <Image url="@gameGraphics/scoring_tokens/scoring_6.jpg" />
                 </image>
             </ImageView>
-            <Button layoutX="392.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" textFill="WHITE" />
+            <Button fx:id="sh00" layoutX="392.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" textFill="WHITE" />
             <Button layoutX="425.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="27.0" style="-fx-background-color: white;" />
             <Button layoutX="460.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" />
             <Button layoutX="495.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />

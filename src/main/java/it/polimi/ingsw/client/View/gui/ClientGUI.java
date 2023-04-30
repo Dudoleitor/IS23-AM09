@@ -1,4 +1,5 @@
 package it.polimi.ingsw.client.View.gui;
+import it.polimi.ingsw.client.controller.ClientControllerGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 public class ClientGUI extends Application {
 
+    private ClientControllerGUI controller;
 
     public static Parent loadScene(String scene) throws IOException {
         return FXMLLoader.load(ClientGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
@@ -48,6 +50,15 @@ public class ClientGUI extends Application {
         stage.setTitle("My Shelfie - Home");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public ClientControllerGUI getController() {
+        return controller;
+    }
+
+    public ClientControllerGUI setController(ClientControllerGUI controller) {
+        this.controller = controller;
+        return controller;
     }
 
     public static void startApp() {launch();}
