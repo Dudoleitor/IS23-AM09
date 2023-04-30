@@ -7,6 +7,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class ChatController {
 
@@ -19,7 +20,8 @@ public class ChatController {
     TextArea textArea;
 
     @FXML
-    protected void SendMsg() {
+    protected void SendMsg() throws RemoteException {
+        client.getController().postChatMessage("Luca", message.getText());
         textArea.appendText(message.getText() + "\n");
     }
 
