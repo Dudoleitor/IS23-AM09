@@ -141,10 +141,41 @@ public class CLI extends View {
     }
 
     public void showShelves(Map<String, Shelf> playerShelves) {
-        for (String player : playerShelves.keySet()) {
-            io.printMessage(player);
-            io.printMessage(playerShelves.get(player).toString());
+        String output = "\n";
+        final String spaceBetween = "     ";
+
+        for (int k=0; k<shelfStringRows(playerShelves); k++) {  // Iterating over the rows
+            for(String player : playerShelves.keySet()) {
+                output = output.concat(
+                        playerShelves
+                                .get(player)
+                                .toString()
+                                .split("\n")[k]
+                );
+                output = output.concat(spaceBetween);
+            }
+            output = output.concat("\n");
         }
+
+        final int shelfRowLenght = shelfStringCols(playerShelves);
+        for (String player : playerShelves.keySet()) {
+            output = player.length()<=shelfRowLenght ? output.concat(player) : output.concat(player).substring(0, shelfRowLenght);
+            int padding = shelfRowLenght - player.length();
+            for (int k=0; k<padding; k++) output = output.concat(" ");
+            //output = output.concat(spaceBetween);  // MISTERY
+        }
+        io.printMessage(output);
+    }
+
+    private static int shelfStringRows(Map<String, Shelf> playerShelves) {
+        Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());
+
+        return (shelf.toString().split("\n")).length;
+    }
+    private static int shelfStringCols(Map<String, Shelf> playerShelves) {
+        Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());
+
+        return (shelf.toString().split("\n")[0].length());
     }
 
     public void showChatMessage(String sender, String message) {

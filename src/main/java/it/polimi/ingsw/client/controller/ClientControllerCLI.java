@@ -26,6 +26,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
     private final CLI cli;
+    private boolean gameStarted;
     private boolean itsMyTurn;
 
     public ClientControllerCLI(String playerName, CLI cli) throws RemoteException {
@@ -37,6 +38,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         this.commonGoalList = new ArrayList<>();
         this.players = new ArrayList<>();
         this.cli = cli;
+        this.gameStarted = false;
         this.itsMyTurn = false;
     }
 
@@ -203,6 +205,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         cli.showCommonGoals(commonGoalList);
         cli.showShelves(playersShelves);
 
+        gameStarted = true;
         cli.message("Match has started");
     }
 
@@ -214,9 +217,11 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      */
     @Override
     public void nextTurn(String player) throws RemoteException {
-        cli.showBoard(board);
-        cli.showCommonGoals(commonGoalList);
-        cli.showShelves(playersShelves);
+        if (gameStarted) {
+            cli.showBoard(board);
+            cli.showCommonGoals(commonGoalList);
+            cli.showShelves(playersShelves);
+        }
 
         if (player.equals(this.playerName)) {
            cli.message("It's your turn");
