@@ -106,4 +106,11 @@ public interface ClientRemote extends Remote, Serializable {
      *               can still be achieved
      */
     public void refreshCommonGoal(int id, List<Integer> points) throws RemoteException;
+
+    /**
+     * This method is used at the beginning of the game to let
+     * the client know its personal goal
+     * @param id Int ID of the goal
+     */
+    public void setPlayerGoal(int id) throws RemoteException;
 }

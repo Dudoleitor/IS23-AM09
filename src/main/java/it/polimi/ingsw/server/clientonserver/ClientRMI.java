@@ -180,6 +180,22 @@ public class ClientRMI implements Client, Serializable {
        }
     }
 
+    /**
+     * This method is used at the beginning of the game to let
+     * the client know its personal goal
+     *
+     * @param id Int ID of the goal
+     */
+    @Override
+    public void setPlayerGoal(int id) {
+        try {
+            clientRemote.setPlayerGoal(id);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            // TODO Handle exception
+        }
+    }
+
     @Override
     public boolean equals(Object o) {  // Checking using LOWERCASE name
         if (this == o) return true;

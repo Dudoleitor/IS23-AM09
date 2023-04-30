@@ -4,6 +4,7 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Stack;
 
@@ -101,4 +102,11 @@ public interface Client {
      *               can still be achieved
      */
     public void refreshCommonGoal(int id, List<Integer> points);
+
+    /**
+     * This method is used at the beginning of the game to let
+     * the client know its personal goal
+     * @param id Int ID of the goal
+     */
+    public void setPlayerGoal(int id);
 }

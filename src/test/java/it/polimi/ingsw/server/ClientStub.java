@@ -74,6 +74,17 @@ public class ClientStub implements Client {
     }
 
     /**
+     * This method is used at the beginning of the game to let
+     * the client know its personal goal
+     *
+     * @param id Int ID of the goal
+     */
+    @Override
+    public void setPlayerGoal(int id) {
+       this.updated=true;
+    }
+
+    /**
      * This method is used when a player achieves
      * a common goal and pops points from
      * its stack.
