@@ -5,6 +5,7 @@ import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Stack;
 
 /**
  * This object is used to send updates to
@@ -90,4 +91,14 @@ public interface Client {
      */
     public void updateTurn(String player);
 
+    /**
+     * This method is used when a player achieves
+     * a common goal and pops points from
+     * its stack.
+     * It is also used to init the common goal.
+     * @param id ID of the common goal
+     * @param points Copy of the stack with points that
+     *               can still be achieved
+     */
+    public void refreshCommonGoal(int id, List<Integer> points);
 }

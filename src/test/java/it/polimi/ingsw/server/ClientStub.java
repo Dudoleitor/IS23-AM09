@@ -73,6 +73,21 @@ public class ClientStub implements Client {
        this.updated = true;
     }
 
+    /**
+     * This method is used when a player achieves
+     * a common goal and pops points from
+     * its stack.
+     * It is also used to init the common goal.
+     *
+     * @param id     ID of the common goal
+     * @param points Copy of the stack with points that
+     *               can still be achieved
+     */
+    @Override
+    public void refreshCommonGoal(int id, List<Integer> points) {
+        this.updated = true;
+    }
+
     public boolean wasUpdated() {
         return updated;
     }

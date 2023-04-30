@@ -60,6 +60,7 @@ public class Controller implements Jsonable {
             board = new Board(clients.size());
             board.fill();
             virtualViews.add(board.getVirtualBoard());
+            virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));
 
             // TODO Chose first player
 
@@ -72,14 +73,16 @@ public class Controller implements Jsonable {
                         playerGoal);
 
                 players.add(player);
+
+                // Sending data
                 virtualViews.add(player.getVirtualShelf());
                 client.refreshBoard(this.board.toJson().toJSONString());
+                for(CommonGoal commonGoal : this.board.getCommonGoals()) {
+                    client.refreshCommonGoal(commonGoal.getID(), commonGoal.showPointsStack());
+                }
                 client.updateTurn(getCurrentPlayerName());
             }
 
-            for(VirtualView v : virtualViews) {
-                v.setClientList(this.clients);
-            }
         } catch (NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : Json file doesn't exists");
         } catch (ClassCastException | JsonBadParsingException e) {

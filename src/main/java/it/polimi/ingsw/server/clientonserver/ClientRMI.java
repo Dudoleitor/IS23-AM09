@@ -160,6 +160,26 @@ public class ClientRMI implements Client, Serializable {
         }
     }
 
+    /**
+     * This method is used when a player achieves
+     * a common goal and pops points from
+     * its stack.
+     * It is also used to init the common goal.
+     *
+     * @param id     ID of the common goal
+     * @param points Copy of the stack with points that
+     *               can still be achieved
+     */
+    @Override
+    public void refreshCommonGoal(int id, List<Integer> points) {
+       try {
+           clientRemote.refreshCommonGoal(id, points);
+       } catch (RemoteException e) {
+           e.printStackTrace();
+           // TODO Handle exception
+       }
+    }
+
     @Override
     public boolean equals(Object o) {  // Checking using LOWERCASE name
         if (this == o) return true;
