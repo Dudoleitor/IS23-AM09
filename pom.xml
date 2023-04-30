@@ -85,6 +85,12 @@
       <resource>
         <directory>src/main/resources</directory>
         <includes>
+          <include>gui/*.css</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
           <include>gui/gameGraphics/</include>
         </includes>
       </resource>
