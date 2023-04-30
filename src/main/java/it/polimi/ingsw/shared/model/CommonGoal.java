@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.server.JSONFilePath.CommonGoals;
+import static it.polimi.ingsw.shared.JSONFilePath.CommonGoals;
 
 public class CommonGoal implements Jsonable{
     //VARIABLES

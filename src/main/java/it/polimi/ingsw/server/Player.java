@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static it.polimi.ingsw.server.JSONFilePath.PlayerGoals;
+import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
 
 
 /**

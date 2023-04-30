@@ -46,7 +46,7 @@ public class Position implements Jsonable {
                 }
                 return new Position(row, column);
             }
-            catch (Exception e){
+            catch (Exception e) {
                 return null;
             }
         }

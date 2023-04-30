@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared;
 
 public class JSONFilePath {
     public static final String PlayerGoals = "src/main/resources/personalGoals.json";

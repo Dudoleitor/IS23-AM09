@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static it.polimi.ingsw.server.JSONFilePath.Board;
+import static it.polimi.ingsw.shared.JSONFilePath.Board;
 
 
 public class Board implements Jsonable {
