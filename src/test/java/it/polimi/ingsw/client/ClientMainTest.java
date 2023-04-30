@@ -4,6 +4,9 @@ import it.polimi.ingsw.client.Connection.ConnectionStub;
 import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.client.View.ViewDriver;
+import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.model.CommonGoal;
+import it.polimi.ingsw.shared.model.CommonGoalStrategy;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
