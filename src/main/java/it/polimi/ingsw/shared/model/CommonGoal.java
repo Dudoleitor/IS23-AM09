@@ -206,12 +206,11 @@ public class CommonGoal implements Jsonable{
     }
 
     public String toString(){
-        String str = Color.coloredString(strategy.name(),Color.Yellow);
-        str = str.concat(": ");
+        String str = Color.coloredString(strategy.name()+": ",Color.Yellow);
         for(Integer points : showPointsStack()){
             str = str.concat(points + " ");
         }
-        str = str.concat("\n");
+        str = str.concat("\n"+strategy.getDescription());
         return str;
     }
     @Override

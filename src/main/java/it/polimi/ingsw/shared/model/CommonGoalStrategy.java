@@ -10,25 +10,39 @@ import java.util.stream.IntStream;
 
 public enum CommonGoalStrategy {
     //Name                    ID    Predicate
-    SixGroupsOf2(           1,   Predicates.groups(6,2)),
-    TwoSquares(             2,   Predicates.nSquares(2)),
-    EqualTilesInAllCorners( 3,   Predicates.corners(Predicates.maxNtypes(1))),
-    ThreeColumnsWith3Types( 4,   Predicates.columns(3,Predicates.maxNtypes(3))),
-    TwoAllDifferentColumns( 5,   Predicates.columns(2,Predicates.notEmptyAndAllDifferent)),
-    EightEqualTiles(        6,   Predicates.nEqualTiles(8)),
-    Ladders(                7,   Predicates.ladder),
-    FourLineWith3Types(     8,   Predicates.rows(4,Predicates.maxNtypes(3))),
-    TwoAllDifferentLines(   9,   Predicates.rows(2,Predicates.notEmptyAndAllDifferent)),
-    FullLadder(            10,   Predicates.fullLadder),
-    FourGroupsOf4(         11,   Predicates.groups(4,4)),
-    EqualX(                12,   Predicates.equalX),
+    SixGroupsOf2(           1,   Predicates.groups(6,2),
+            "Shelf should contain 6 non adjacent groups of 2 tiles"),
+    TwoSquares(             2,   Predicates.nSquares(2),
+            "Shelf should contain 2 non adjacent 2x2 squares"),
+    EqualTilesInAllCorners( 3,   Predicates.corners(Predicates.maxNtypes(1)),
+            "Tiles in all corners of the shelf should be equal"),
+    ThreeColumnsWith3Types( 4,   Predicates.columns(3,Predicates.maxNtypes(3)),
+            "The shelf should have 3 full columns with max 3 types of tiles each"),
+    TwoAllDifferentColumns( 5,   Predicates.columns(2,Predicates.notEmptyAndAllDifferent),
+            "The shelf should have 2 full columns with all different tiles"),
+    EightEqualTiles(        6,   Predicates.nEqualTiles(8),
+            "The shelf should have 8 equal tiles"),
+    Ladders(                7,   Predicates.ladder,
+            "The shelf should have a full diagonal filled with tiles"),
+    FourLineWith3Types(     8,   Predicates.rows(4,Predicates.maxNtypes(3)),
+            "The shelf should have 3 full lines with max 3 types of tiles each"),
+    TwoAllDifferentLines(   9,   Predicates.rows(2,Predicates.notEmptyAndAllDifferent),
+            "The shelf should have 2 full lines with all different tiles"),
+    FullLadder(            10,   Predicates.fullLadder,
+            "The shelf should have a ladder of tiles"),
+    FourGroupsOf4(         11,   Predicates.groups(4,4),
+            "Shelf should contain 4 non adjacent groups of 4 tiles"),
+    EqualX(                12,   Predicates.equalX,
+            "Shelf should contain an \"X\" of equal tiles"),
     ;
     private final int id;
     private final Predicate<Shelf> check;
+    private final String description;
 
-    CommonGoalStrategy(int id, Predicate<Shelf> check) {
+    CommonGoalStrategy(int id, Predicate<Shelf> check, String description) {
         this.id = id;
         this.check = check;
+        this.description = description;
     }
 
     int getId() {
@@ -44,6 +58,10 @@ public enum CommonGoalStrategy {
                 filter(x -> x.getId() == id).
                 findFirst().
                 orElseThrow();
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     //PREDICATES PASSED TO COMMON GOALS
