@@ -141,7 +141,7 @@ public class CLI extends View {
     }
 
     public void showShelves(Map<String, Shelf> playerShelves) {
-        String output = "\n";
+        String output = "Shelves:\n";
         final String spaceBetween = "     ";
 
         for (int k=0; k<shelfStringRows(playerShelves); k++) {  // Iterating over the rows
@@ -176,6 +176,10 @@ public class CLI extends View {
         Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());
 
         return (shelf.toString().split("\n")[0].length());
+    }
+
+    public void showPersonalGoal(PlayerGoal goal) {
+        io.printMessage(goal.toString());
     }
 
     public void showChatMessage(String sender, String message) {

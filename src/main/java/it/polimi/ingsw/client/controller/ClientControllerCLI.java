@@ -23,6 +23,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     private Chat chat;
     private Board board;
     private final Map<String, Shelf> playersShelves;
+    private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
     private final CLI cli;
@@ -35,6 +36,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         this.chat = new Chat();
         this.board = null;
         this.playersShelves = new HashMap<>();
+        this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
         this.players = new ArrayList<>();
         this.cli = cli;
@@ -157,9 +159,10 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      */
     @Override
     public void refreshShelf(String player, String shelf) throws RemoteException {
+        playersShelves.remove(player);
         try {
             JSONObject jsonShelf = (JSONObject) (new JSONParser()).parse(shelf);
-            this.playersShelves.replace(player, new Shelf(jsonShelf));
+            this.playersShelves.put(player, new Shelf(jsonShelf));
         } catch (ParseException | ClassCastException | JsonBadParsingException e) {
             throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
         }
@@ -188,22 +191,28 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     }
 
     /**
+     * This function throws a RuntimeException if any element
+     * of the model is not set properly.
+     */
+    private void ensureModelIsSet() {
+        if (board==null) throw new RuntimeException("Board null after the game has started");
+        if(commonGoalList.isEmpty()) throw new RuntimeException("Common goals list empty after game has started");
+        if(playersShelves.isEmpty()) throw new RuntimeException("Player shelves list empty after game has started");
+        if(playerGoal==null) throw new RuntimeException("Personal goal null after game has started");
+    }
+
+    /**
      * This method is used when the lobby is ready and the
      * admin started the game.
      * @throws RemoteException never, needed by RMI
      */
     @Override
     public void gameStarted(List<String> players) throws RemoteException {
-        for (String player : players) {
-            playersShelves.put(player, new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
-        }
-
-        if (board==null) {
-            throw new NullPointerException("The controller should have sent the first update of the board by now!");
-        }
+        ensureModelIsSet();
         cli.showBoard(board);
         cli.showCommonGoals(commonGoalList);
         cli.showShelves(playersShelves);
+        cli.showPersonalGoal(playerGoal);
 
         gameStarted = true;
         cli.message("Match has started");
@@ -211,6 +220,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
 
     /**
      * This function is used when the turn of a player ends.
+     * It is also used at beginning of the match, before
+     * the model is completely set.
      *
      * @param player Name of the player that will play next.
      * @throws RemoteException never, needed by RMI
@@ -218,9 +229,11 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     @Override
     public void nextTurn(String player) throws RemoteException {
         if (gameStarted) {
+            ensureModelIsSet();
             cli.showBoard(board);
             cli.showCommonGoals(commonGoalList);
             cli.showShelves(playersShelves);
+            cli.showPersonalGoal(playerGoal);
         }
 
         if (player.equals(this.playerName)) {
@@ -256,5 +269,20 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         commonGoalList.remove(commonGoal);
         commonGoalList.add(commonGoal);
         commonGoalList.sort((x,y) -> x.getID() > y.getID() ? 1 : -1);
+    }
+
+    /**
+     * This method is used at the beginning of the game to let
+     * the client know its personal goal
+     *
+     * @param id Int ID of the goal
+     */
+    @Override
+    public void setPlayerGoal(int id) throws RemoteException {
+        try {
+            this.playerGoal = new PlayerGoal(JSONFilePath.PlayerGoals, id);
+        } catch (JsonBadParsingException e) {
+            throw new RuntimeException("JsonBadParsing exception while loading player goal: " + e.getMessage());
+        }
     }
 }
