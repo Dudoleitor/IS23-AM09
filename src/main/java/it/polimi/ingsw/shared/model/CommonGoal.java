@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared.model;
 
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.virtualview.VirtualCommonGoal;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -16,19 +17,22 @@ public class CommonGoal implements Jsonable{
      */
     private final Stack<Integer> points;
     private final CommonGoalStrategy strategy;
+    private final VirtualCommonGoal virtualCommonGoal;
 
     //CONSTRUCTORS
     /**
-     * Construcor that initializes a CommonGoal with a pre-determined stack State and Strategy.
+     * Constructor that initializes a CommonGoal with a pre-determined stack State and Strategy.
      * This constructor is called by all others to actually build the CommonGoal
      * @param stackState a List of integers that will form the stack state
      */
-    private CommonGoal(CommonGoalStrategy strategy, List<Integer> stackState){
+    public CommonGoal(CommonGoalStrategy strategy, List<Integer> stackState){
         points = new Stack<>();
         for(Integer i : stackState){
             points.push(i);
         }
         this.strategy = strategy;
+        this.virtualCommonGoal = new VirtualCommonGoal();
+        virtualCommonGoal.refresh(strategy.getId(), showPointsStack());
     }
     /**
      * Loads a common goal from a JSON object
@@ -39,7 +43,7 @@ public class CommonGoal implements Jsonable{
                 getStackStateFromJson(jsonObject));
     }
     /**
-     * Cretes a CommonGoal with a specified id for a specified number of players
+     * Creates a CommonGoal with a specified id for a specified number of players
      * @param strategy is the check static function
      * @param number_of_players talks by itself //TODO to change one day or the other
      */
@@ -160,7 +164,7 @@ public class CommonGoal implements Jsonable{
      * Shows the state of the Points Stack
      * @return the Points Stack as an ArrayList
      */
-    public ArrayList<Integer> showPointsStack(){ //useful in debugging
+    public List<Integer> showPointsStack(){ //useful in debugging
         return new ArrayList<>(points);
     }
 
@@ -177,6 +181,11 @@ public class CommonGoal implements Jsonable{
             return 0;
         }
     }
+
+    public VirtualCommonGoal getVirtualCommonGoal() {
+        return this.virtualCommonGoal;
+    }
+
 
     //OTHERS
     /**

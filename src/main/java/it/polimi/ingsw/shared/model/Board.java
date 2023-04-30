@@ -210,13 +210,6 @@ public class Board implements Jsonable {
                 Color.coloredString(upperBorder,Color.Yellow)+
                     boardTiles+
                     Color.coloredString(lowerBorder,Color.Yellow));
-        str = str.concat("Common Goals:\n");
-        if(getCommonGoals().size() == 0){
-            str = str.concat(Color.coloredString("None",Color.Yellow));
-        }
-        for(CommonGoal cg : getCommonGoals()){
-            str = str.concat(cg.toString());
-        }
         return str;
     }
 
