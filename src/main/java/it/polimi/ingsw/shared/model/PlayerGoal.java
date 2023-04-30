@@ -249,11 +249,20 @@ public class PlayerGoal {
 
     @Override
     public String toString() {
-                Shelf shelf = new Shelf(GameSettings.shelfRows,GameSettings.shelfColumns);
+        Shelf shelf = new Shelf(GameSettings.shelfRows,GameSettings.shelfColumns);
         for(GoalPosition goalPosition : positionList){
             shelf.putTile(goalPosition.getTile(),goalPosition.getPos());
         }
-        return Color.coloredString("Personal Goal:\n",Color.Yellow) + shelf.toString();
+        String strShelf = Color.coloredString("Personal Goal:\n",Color.Yellow) + shelf.toString();
+        String strNumbers = Color.coloredString("Completed:",Color.Yellow);
+        String strPoints = Color.coloredString( "Points:   ",Color.Yellow);
+        for(Map.Entry<Integer,Integer> entry : pointsMap.entrySet()){
+            int number = entry.getKey();
+            int points = entry.getValue();
+            strNumbers = strNumbers.concat(((number >= 10)?String.valueOf(number):" "+String.valueOf(number)) + " ");
+            strPoints = strPoints.concat(((points >= 10)?String.valueOf(points):" "+String.valueOf(points)) + " ");
+        }
+        return strShelf.concat(strNumbers+"\n").concat(strPoints);
     }
 
     @Override

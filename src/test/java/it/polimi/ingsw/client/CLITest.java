@@ -13,7 +13,7 @@ import static org.junit.Assert.fail;
 
 public class CLITest {
 
-    static final boolean verbose = false;
+    static final boolean verbose = true;
     @Test
     void shelves() {
         if (verbose) {
