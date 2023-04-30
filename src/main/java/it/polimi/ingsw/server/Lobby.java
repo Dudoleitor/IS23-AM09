@@ -187,7 +187,7 @@ public class Lobby implements ServerLobbyInterface {
                 controller.moveTiles(player, move);
             }
         } catch (ControllerGenericException e){
-            if(playerInput != null)
+            if(playerInput != null) //TODO are we sure about that??
                 playerInput.postChatMessage("Server", e.getMessage());
             throw e;
         }

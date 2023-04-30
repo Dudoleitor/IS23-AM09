@@ -180,7 +180,7 @@ public class Board implements Jsonable {
      */
     @Override
     public String toString(){
-        String str = "Board:\n";
+        String str = Color.coloredString("Board:\n",Color.Yellow);
         int rows = getNumRows();
         int columns = getNumColumns();
         String boardTiles = "";

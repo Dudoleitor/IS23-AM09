@@ -158,6 +158,7 @@ public class ClientMain{
      */
     private static void postMove() throws LobbyException {
         if(!server.matchHasStarted()){
+            view.errorMessage("Match has not started");
             return;
         }
         try {

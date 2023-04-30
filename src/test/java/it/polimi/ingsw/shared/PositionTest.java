@@ -2,6 +2,7 @@ package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.shared.model.Position;
 import it.polimi.ingsw.shared.model.Shelf;
+import javafx.geometry.Pos;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -132,6 +133,10 @@ class PositionTest {
         Position p2 = Position.fromString("15,1");
         Position p3 = new Position(15,1);
         assertEquals(p2,p3);
+
+        Position p4 = Position.fromString("  12        ,      15");
+        Position p5 = new Position(12,15);
+        assertEquals(p4,p5);
 
         Position bad0 = Position.fromString("lala");
         assertEquals(null,bad0);

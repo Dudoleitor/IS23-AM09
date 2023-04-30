@@ -249,12 +249,11 @@ public class PlayerGoal {
 
     @Override
     public String toString() {
-        String str = "PlayerGoal ";
-        str = str.concat(": ");
-        for(GoalPosition p : positionList){
-            str = str.concat("\n" + p.toString());
+                Shelf shelf = new Shelf(GameSettings.shelfRows,GameSettings.shelfColumns);
+        for(GoalPosition goalPosition : positionList){
+            shelf.putTile(goalPosition.getTile(),goalPosition.getPos());
         }
-        return str;
+        return Color.coloredString("Personal Goal:\n",Color.Yellow) + shelf.toString();
     }
 
     @Override
@@ -287,10 +286,6 @@ class GoalPosition {
     public GoalPosition(Position pos, Tile tile) {
         this.pos = pos;
         this.tile = tile;
-    }
-    @Override
-    public String toString() {
-        return Color.coloredString(pos.toString(),getTile().getColor());
     }
 
     @Override

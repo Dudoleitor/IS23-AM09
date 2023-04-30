@@ -342,6 +342,17 @@ public class Shelf implements Jsonable {
             virtualShelf.onTileInsert(column, tile);  // Updating clients
     }
 
+    /**
+     * This puts a Tile in a specific position. This should never be called in game
+     * @param tile
+     * @param pos
+     */
+    public void putTile(Tile tile, Position pos) {
+        if(!isOutOfBounds(pos.getRow(),pos.getColumn())){
+            tiles[pos.getRow()][pos.getColumn()] = tile;
+        }
+    }
+
     //Others
     /**
      * compare two Shelf objects

@@ -68,10 +68,26 @@ public class CLI extends View {
         while(!validInput){
             validInput = true;
             io.printMessage("Write your move");
+            String posNumStr = "";
+            int posNum = 0;
+            while(!(inputSanitizer.isInteger(posNumStr) && posNum > 0 && posNum <= 3)){
+                message("How many tiles do you want to pick?:");
+                posNumStr =  io.scan();
+                if(inputSanitizer.isInteger(posNumStr)){
+                    posNum = Integer.parseInt(posNumStr);
+                    if(!(posNum > 0 && posNum <= 3)){
+                        errorMessage("Invalid number");
+                    }
+                }
+                else{
+                    errorMessage("Please insert an integer");
+                }
+            }
+
             List<String> fields = new ArrayList<>();
-            fields.add("first position");
-            //fields.add("second position");
-            //fields.add("third position");
+            for(int i = 1; i <= posNum; i++){
+                fields.add("position #"+String.valueOf(i));
+            }
             fields.add("column");
             Map<String,String> input = io.multiScan(fields);
             try{
@@ -85,18 +101,21 @@ public class CLI extends View {
                 }
             }
             catch (Exception e){
-                io.printErrorMessage("Invalid format");
+                errorMessage("Invalid format");
                 validInput = false;
             }
         }
-        return new Move(pm, column);
+        Move m = new Move(pm, column);
+        message("Your move:\n" + m.toString());
+        return m;
     }
 
     private List<Position> getPositionsFromInput(Map<String,String> input){
         List<Position> positions = new ArrayList<>();
-        positions.add(Position.fromString(input.get("first position")));
-        //positions.add(Position.fromString(input.get("second position")));
-        //positions.add(Position.fromString(input.get("third position")));
+        int postitions = input.size()-1; //the size minus one column field
+        for(int i = 1; i <= postitions; i++){
+            positions.add(Position.fromString(input.get("position #"+String.valueOf(i))));
+        }
         return positions;
     }
 

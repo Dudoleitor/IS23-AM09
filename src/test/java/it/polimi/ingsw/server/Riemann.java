@@ -185,7 +185,6 @@ public class Riemann { //an integration test
         catch (Exception e){
             assertEquals(ControllerGenericException.class, e.getClass());
             assertEquals("Error invalid move",e.getMessage());
-            System.out.println("Cathed");
         }
         //no nextTurn
         assertEquals(playerNames.get(2),c.getCurrentPlayerName());
