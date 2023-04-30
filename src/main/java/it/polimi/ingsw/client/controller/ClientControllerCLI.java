@@ -23,6 +23,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     private Chat chat;
     private Board board;
     private final Map<String, Shelf> playersShelves;
+    private final List<CommonGoal> commonGoalList;
     private final List<String> players;
     private final CLI cli;
     private boolean itsMyTurn;
@@ -33,6 +34,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         this.chat = new Chat();
         this.board = null;
         this.playersShelves = new HashMap<>();
+        this.commonGoalList = new ArrayList<>();
         this.players = new ArrayList<>();
         this.cli = cli;
         this.itsMyTurn = false;
@@ -198,6 +200,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
             throw new NullPointerException("The controller should have sent the first update of the board by now!");
         }
         cli.showBoard(board);
+        cli.showCommonGoals(commonGoalList);
         cli.showShelves(playersShelves);
 
         cli.message("Match has started");
@@ -212,7 +215,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     @Override
     public void nextTurn(String player) throws RemoteException {
         cli.showBoard(board);
+        cli.showCommonGoals(commonGoalList);
         cli.showShelves(playersShelves);
+
         if (player.equals(this.playerName)) {
            cli.message("It's your turn");
            itsMyTurn=true;
@@ -228,5 +233,23 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     @Override
     public boolean isItMyTurn() throws RemoteException{
         return itsMyTurn;
+    }
+
+    /**
+     * This method is used when a player achieves
+     * a common goal and pops points from
+     * its stack.
+     * It is also used to init the common goal.
+     *
+     * @param id     ID of the common goal
+     * @param points Copy of the stack with points that
+     *               can still be achieved
+     */
+    @Override
+    public void refreshCommonGoal(int id, List<Integer> points) throws RemoteException {
+        final CommonGoal commonGoal = new CommonGoal(CommonGoalStrategy.findById(id), points);
+        commonGoalList.remove(commonGoal);
+        commonGoalList.add(commonGoal);
+        commonGoalList.sort((x,y) -> x.getID() > y.getID() ? 1 : -1);
     }
 }

@@ -129,6 +129,17 @@ public class CLI extends View {
         io.printMessage(b.toString());
     }
 
+    public void showCommonGoals(List<CommonGoal> commonGoalList) {
+        String str = "Common Goals:\n";
+        if(commonGoalList.size() == 0){
+            str = str.concat(Color.coloredString("None",Color.Yellow));
+        }
+        for(CommonGoal cg : commonGoalList){
+            str = str.concat(cg.toString());
+        }
+        io.printMessage(str);
+    }
+
     public void showShelves(Map<String, Shelf> playerShelves) {
         for (String player : playerShelves.keySet()) {
             io.printMessage(player);
