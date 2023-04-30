@@ -1,17 +1,20 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class Riemann { //an integration test
-    static boolean verbous = false;
+    static final boolean verbose = false;
     @Test
     void wholeMatch() throws JsonBadParsingException {
         List<String> playerNames = new ArrayList<>();
@@ -217,14 +220,10 @@ public class Riemann { //an integration test
     }
 
     private void printAll(Controller c) throws JsonBadParsingException {
-        if(verbous){
-            List<String> playerNames = c.getPlayers().stream().
-                    map(p -> p.getName()).
-                    collect(Collectors.toList());
-            for(String p : playerNames){
-                System.out.println(c.getShelves().get(p)+p+"'s shelf\n");
-            }
-            System.out.println(c.getBoard());
+        if(verbose){
+            CLI cli = new CLI();
+            cli.showBoard(c.getBoard());
+            cli.showShelves(c.getShelves());
         }
     }
 }
