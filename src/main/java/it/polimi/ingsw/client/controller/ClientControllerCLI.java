@@ -49,10 +49,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * the players using this client.
      *
      * @return String, player's name.
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public String getPlayerName() throws RemoteException {
+    public String getPlayerName() {
         return playerName;
     }
 
@@ -94,12 +93,11 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * from the board. It sends the message
      * to the remote view to remove the tile
      * from the board.
-     * @throws RemoteException never, needed by RMI
      *
      * @param position position
      */
     @Override
-    public void pickedFromBoard(JSONObject position) throws RemoteException {
+    public void pickedFromBoard(JSONObject position) {
         try {
             board.pickTile(new Position(position));
         } catch (BadPositionException e) {
@@ -111,12 +109,11 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * This method is used to transfer the whole board
      * to the remote view,
      * it uses a json string.
-     * @throws RemoteException never, needed by RMI
      *
      * @param board JSONObject.toJsonString
      */
     @Override
-    public void refreshBoard(String board) throws RemoteException {
+    public void refreshBoard(String board) {
         try {
             JSONObject jsonBoard = (JSONObject) (new JSONParser()).parse(board);
             this.board = new Board(jsonBoard, new ArrayList<>());
@@ -135,10 +132,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * @param player String name of the player that moved the tile
      * @param column destination column of the shelf
      * @param tile   Tile to insert
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public void putIntoShelf(String player, int column, Tile tile) throws RemoteException {
+    public void putIntoShelf(String player, int column, Tile tile) {
         try{
             Shelf shelf = playersShelves.get(player);
             shelf.insertTile(tile, column);
@@ -155,10 +151,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      *
      * @param player name of the player
      * @param shelf  JSONObject.toJsonString
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public void refreshShelf(String player, String shelf) throws RemoteException {
+    public void refreshShelf(String player, String shelf) {
         playersShelves.remove(player);
         try {
             JSONObject jsonShelf = (JSONObject) (new JSONParser()).parse(shelf);
@@ -172,9 +167,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * This method is used to send a chat message to clients.
      * @param sender Player's name
      * @param message String message
-     * @throws RemoteException never, needed by RMI
      */
-    public void postChatMessage(String sender, String message) throws RemoteException {
+    public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
         if (!Objects.equals(sender, playerName))
             cli.showChatMessage(sender, message);
@@ -184,9 +178,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * This method is used to send the whole chat to the client,
      * it is used when a refresh is needed.
      * @param chat Chat object
-     * @throws RemoteException never, needed by RMI
      */
-    public void refreshChat(Chat chat) throws RemoteException {
+    public void refreshChat(Chat chat) {
         this.chat = chat;
     }
 
@@ -204,10 +197,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public void gameStarted(List<String> players) throws RemoteException {
+    public void gameStarted(List<String> players) {
         ensureModelIsSet();
         cli.showBoard(board);
         cli.showCommonGoals(commonGoalList);
@@ -224,10 +216,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * the model is completely set.
      *
      * @param player Name of the player that will play next.
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public void nextTurn(String player) throws RemoteException {
+    public void nextTurn(String player) {
         if (gameStarted) {
             ensureModelIsSet();
             cli.showBoard(board);
@@ -246,10 +237,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
 
     /**
      * @return True if the player need to play in the current turn
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public boolean isItMyTurn() throws RemoteException{
+    public boolean isItMyTurn(){
         return itsMyTurn;
     }
 
@@ -264,7 +254,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      *               can still be achieved
      */
     @Override
-    public void refreshCommonGoal(int id, List<Integer> points) throws RemoteException {
+    public void refreshCommonGoal(int id, List<Integer> points) {
         final CommonGoal commonGoal = new CommonGoal(CommonGoalStrategy.findById(id), points);
         commonGoalList.remove(commonGoal);
         commonGoalList.add(commonGoal);
@@ -278,7 +268,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * @param id Int ID of the goal
      */
     @Override
-    public void setPlayerGoal(int id) throws RemoteException {
+    public void setPlayerGoal(int id) {
         try {
             this.playerGoal = new PlayerGoal(JSONFilePath.PlayerGoals, id);
         } catch (JsonBadParsingException e) {

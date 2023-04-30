@@ -86,9 +86,8 @@ public class Lobby implements ServerLobbyInterface {
     /**
      * Tells who the lobby admin is
      * @return the name of the lobby admin
-     * @throws RemoteException never, needed by RMI
      */
-    public String getLobbyAdmin() throws RemoteException {
+    public String getLobbyAdmin() {
         if(clients.size() == 0){
             throw new RuntimeException("No Players while trying to get lobby admin");
         }
@@ -114,7 +113,7 @@ public class Lobby implements ServerLobbyInterface {
             if(!ready  || !getLobbyAdmin().equals(player))
                 return false;
         }
-        catch (RemoteException e){
+        catch (RuntimeException e){
             return false;
         }
 
@@ -132,10 +131,9 @@ public class Lobby implements ServerLobbyInterface {
     /**
      * @param playerName
      * @return true if playerName is the name of the lobby admin
-     * @throws RemoteException
      */
     @Override
-    public boolean isLobbyAdmin(String playerName) throws RemoteException {
+    public boolean isLobbyAdmin(String playerName) {
         if(isEmpty()){
             return false;
         }
@@ -148,10 +146,9 @@ public class Lobby implements ServerLobbyInterface {
      *
      * @param playerName is the player that is sending a message
      * @param message is the content
-     * @throws RemoteException from RMI
      */
     @Override
-    public void postToLiveChat(String playerName, String message) throws RemoteException {
+    public void postToLiveChat(String playerName, String message) {
         if(playerName == null || message == null){
             throw new RuntimeException("Wrong format of message");
         }
@@ -166,10 +163,9 @@ public class Lobby implements ServerLobbyInterface {
      * @param sender is the player that is sending a message
      * @param receiver is the player that is sending a message
      * @param message is the content
-     * @throws RemoteException from RMI
      */
     @Override
-    public void postSecretToLiveChat(String sender, String receiver, String message) throws RemoteException {
+    public void postSecretToLiveChat(String sender, String receiver, String message) {
         if(sender == null || receiver == null || message == null){
             throw new RuntimeException("Wrong format of message");
         }
@@ -177,12 +173,12 @@ public class Lobby implements ServerLobbyInterface {
     }
 
     @Override
-    public void quitGame(String player) throws RemoteException {
+    public void quitGame(String player) {
         //TODO
     }
 
     @Override
-    public void postMove(String player, JSONObject moveJson) throws RemoteException {
+    public void postMove(String player, JSONObject moveJson) {
         Client playerInput = null;
         final Move move = new Move(moveJson);
         try{
@@ -193,6 +189,7 @@ public class Lobby implements ServerLobbyInterface {
         } catch (ControllerGenericException e){
             if(playerInput != null)
                 playerInput.postChatMessage("Server", e.getMessage());
+            throw e;
         }
     }
 

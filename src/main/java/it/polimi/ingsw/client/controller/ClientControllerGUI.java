@@ -5,7 +5,6 @@ import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -29,7 +28,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      *
      * @return String, player's name.
      */
-    public String getPlayerName() throws RemoteException {
+    public String getPlayerName() {
         return "";
     }
 
@@ -41,7 +40,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      *
      * @param position position
      */
-    public void pickedFromBoard(JSONObject position) throws RemoteException {
+    public void pickedFromBoard(JSONObject position) {
 
     }
 
@@ -52,7 +51,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      *
      * @param board JSONObject.toJsonString
      */
-    public void refreshBoard(String board) throws RemoteException {
+    public void refreshBoard(String board) {
 
     }
 
@@ -67,7 +66,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param column destination column of the shelf
      * @param tile   Tile to insert
      */
-    public void putIntoShelf(String player, int column, Tile tile) throws RemoteException {
+    public void putIntoShelf(String player, int column, Tile tile) {
 
     }
 
@@ -79,7 +78,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param player name of the player
      * @param shelf  JSONObject.toJsonString
      */
-    public void refreshShelf(String player, String shelf) throws RemoteException {
+    public void refreshShelf(String player, String shelf) {
 
     }
 
@@ -89,7 +88,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param sender  Player's name
      * @param message String message
      */
-    public void postChatMessage(String sender, String message) throws RemoteException {
+    public void postChatMessage(String sender, String message) {
 
     }
 
@@ -99,7 +98,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      *
      * @param chat Chat object
      */
-    public void refreshChat(Chat chat) throws RemoteException {
+    public void refreshChat(Chat chat) {
 
     }
 
@@ -108,7 +107,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * admin started the game.
      */
     @Override
-    public void gameStarted(List<String> players) throws RemoteException {
+    public void gameStarted(List<String> players) {
 
     }
 
@@ -118,7 +117,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param player Name of the player that will play next.
      */
     @Override
-    public void nextTurn(String player) throws RemoteException {
+    public void nextTurn(String player) {
         if (player.equals(this.playerName)) {
             itsMyTurn=true;
         } else {
@@ -128,10 +127,9 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
 
     /**
      * @return True if the player need to play in the current turn
-     * @throws RemoteException never, needed by RMI
      */
     @Override
-    public boolean isItMyTurn() throws RemoteException {
+    public boolean isItMyTurn() {
         return itsMyTurn;
     }
 
@@ -146,7 +144,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      *               can still be achieved
      */
     @Override
-    public void refreshCommonGoal(int id, List<Integer> points) throws RemoteException {
+    public void refreshCommonGoal(int id, List<Integer> points) {
 
     }
 
@@ -157,7 +155,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param id Int ID of the goal
      */
     @Override
-    public void setPlayerGoal(int id) throws RemoteException {
+    public void setPlayerGoal(int id) {
 
     }
 }

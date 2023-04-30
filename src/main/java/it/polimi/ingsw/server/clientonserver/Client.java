@@ -4,9 +4,7 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
-import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * This object is used to send updates to

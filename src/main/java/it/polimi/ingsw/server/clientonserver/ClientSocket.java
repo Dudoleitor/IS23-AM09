@@ -19,7 +19,6 @@ import java.util.Objects;
  * and send them over a tcp tunnel.
  */
 public class ClientSocket implements Client {
-    // TODO add board and shelves
     private String playerName = null;
     private Chat chat;
     private Socket clientSocket;

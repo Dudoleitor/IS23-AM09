@@ -226,7 +226,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.postToLiveChat(sender, content);
-            } catch (RemoteException e) {
+            } catch (RuntimeException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -245,7 +245,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.postSecretToLiveChat(sender,receiver,content);
-            } catch (RemoteException e) {
+            } catch (RuntimeException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -261,7 +261,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.quitGame(playername);
-            } catch (RemoteException e) {
+            } catch (RuntimeException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -289,7 +289,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.postMove(player,move);
-            } catch (RemoteException e) {
+            } catch (ControllerGenericException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -319,7 +319,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 isAdmin = lobby.isLobbyAdmin(username);
-            } catch (RemoteException e) {
+            } catch (RuntimeException e) {
                 isAdmin = false;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
