@@ -3,7 +3,7 @@ package it.polimi.ingsw.client.Connection;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.IpAddressV4;
-import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.model.Move;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;

@@ -3,6 +3,7 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
 
 import java.rmi.RemoteException;

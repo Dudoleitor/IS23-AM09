@@ -1,8 +1,7 @@
 package it.polimi.ingsw.shared.RemoteInterfaces;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.Position;
-import it.polimi.ingsw.shared.Tile;
+import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;

@@ -4,7 +4,7 @@ import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.View;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.model.Move;
 
 import java.util.Map;
 

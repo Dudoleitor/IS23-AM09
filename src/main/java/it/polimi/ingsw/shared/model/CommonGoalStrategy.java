@@ -1,6 +1,4 @@
-package it.polimi.ingsw.server;
-
-import it.polimi.ingsw.shared.*;
+package it.polimi.ingsw.shared.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.View;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.model.Move;
 
 import java.util.Map;
 

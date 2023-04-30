@@ -1,6 +1,6 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.model.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

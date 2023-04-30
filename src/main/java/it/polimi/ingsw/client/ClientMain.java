@@ -16,7 +16,7 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.model.Move;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.PrivateChatMessage;
 

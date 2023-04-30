@@ -1,7 +1,7 @@
 package it.polimi.ingsw.shared.virtualview;
 
 import it.polimi.ingsw.server.ClientStub;
-import it.polimi.ingsw.shared.InvalidMoveException;
+import it.polimi.ingsw.shared.model.*;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
 import org.junit.jupiter.api.Test;

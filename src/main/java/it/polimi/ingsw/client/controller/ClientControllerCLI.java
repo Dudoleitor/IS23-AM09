@@ -1,10 +1,9 @@
 package it.polimi.ingsw.client.controller;
 
-import it.polimi.ingsw.client.Connection.LobbyException;
-import it.polimi.ingsw.client.Connection.Server;
 import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
+import it.polimi.ingsw.shared.model.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

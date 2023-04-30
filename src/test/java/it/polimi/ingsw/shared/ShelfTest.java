@@ -1,5 +1,9 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.shared.model.BadPositionException;
+import it.polimi.ingsw.shared.model.Shelf;
+import it.polimi.ingsw.shared.model.ShelfRuntimeException;
+import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

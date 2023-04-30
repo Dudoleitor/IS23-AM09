@@ -1,5 +1,6 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.shared.model;
 
+import it.polimi.ingsw.shared.Jsonable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

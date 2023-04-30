@@ -1,8 +1,9 @@
-package it.polimi.ingsw.server;
-import it.polimi.ingsw.shared.BadPositionException;
+package it.polimi.ingsw.shared;
+import it.polimi.ingsw.shared.model.BadPositionException;
 import it.polimi.ingsw.shared.JsonBadParsingException;
-import it.polimi.ingsw.shared.Tile;
-import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.model.PlayerGoal;
+import it.polimi.ingsw.shared.model.Tile;
+import it.polimi.ingsw.shared.model.Shelf;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

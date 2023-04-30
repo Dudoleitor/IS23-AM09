@@ -1,10 +1,11 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared.model;
 
 import it.polimi.ingsw.shared.*;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

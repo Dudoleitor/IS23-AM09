@@ -1,7 +1,7 @@
 package it.polimi.ingsw.shared.virtualview;
 
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.model.Position;
 
 /**
  * This object is used on the server to send

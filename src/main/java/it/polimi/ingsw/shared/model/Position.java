@@ -1,9 +1,9 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.shared.model;
 
+import it.polimi.ingsw.shared.Jsonable;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

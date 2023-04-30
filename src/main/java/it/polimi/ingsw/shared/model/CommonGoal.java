@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared.model;
 
 import it.polimi.ingsw.shared.*;
 import org.json.simple.JSONArray;

@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.Connection;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
-import it.polimi.ingsw.shared.Move;
+import it.polimi.ingsw.shared.model.Move;
 
 import java.util.LinkedList;
 import java.util.Map;

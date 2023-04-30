@@ -1,4 +1,6 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.shared.model;
+
+import it.polimi.ingsw.shared.Color;
 
 import java.io.Serializable;
 

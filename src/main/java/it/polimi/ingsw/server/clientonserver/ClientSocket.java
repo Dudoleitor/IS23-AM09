@@ -1,9 +1,7 @@
 package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Position;
-import it.polimi.ingsw.shared.Tile;
+import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;

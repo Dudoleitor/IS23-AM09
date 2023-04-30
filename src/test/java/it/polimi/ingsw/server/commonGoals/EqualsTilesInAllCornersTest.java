@@ -1,10 +1,10 @@
 package it.polimi.ingsw.server.commonGoals;
 
-import it.polimi.ingsw.server.CommonGoal;
-import it.polimi.ingsw.server.CommonGoalStrategy;
+import it.polimi.ingsw.shared.model.CommonGoal;
+import it.polimi.ingsw.shared.model.CommonGoalStrategy;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.Jsonable;
-import it.polimi.ingsw.shared.Shelf;
+import it.polimi.ingsw.shared.model.Shelf;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

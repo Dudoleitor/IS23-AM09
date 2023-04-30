@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

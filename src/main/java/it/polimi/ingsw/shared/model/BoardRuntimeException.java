@@ -1,4 +1,4 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.shared.model;
 
 public class BoardRuntimeException extends RuntimeException{
     BoardRuntimeException(String msg){

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.shared.model.Position;
+import it.polimi.ingsw.shared.model.Shelf;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

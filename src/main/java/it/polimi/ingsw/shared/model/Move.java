@@ -1,11 +1,9 @@
-package it.polimi.ingsw.shared;
+package it.polimi.ingsw.shared.model;
 
-import org.json.simple.JSONArray;
+import it.polimi.ingsw.shared.Jsonable;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-
-public class Move extends PartialMove implements Jsonable{
+public class Move extends PartialMove implements Jsonable {
     private int column;
     public Move(PartialMove partial,int column) throws PartialMoveException {
         super(partial);

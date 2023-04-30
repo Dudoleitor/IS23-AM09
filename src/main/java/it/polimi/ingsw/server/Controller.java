@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.model.*;
 import it.polimi.ingsw.shared.virtualview.VirtualView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

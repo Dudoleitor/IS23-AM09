@@ -1,9 +1,9 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.InvalidMoveException;
-import it.polimi.ingsw.shared.PartialMove;
-import it.polimi.ingsw.shared.PartialMoveException;
-import it.polimi.ingsw.shared.Position;
+import it.polimi.ingsw.shared.model.InvalidMoveException;
+import it.polimi.ingsw.shared.model.PartialMove;
+import it.polimi.ingsw.shared.model.PartialMoveException;
+import it.polimi.ingsw.shared.model.Position;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

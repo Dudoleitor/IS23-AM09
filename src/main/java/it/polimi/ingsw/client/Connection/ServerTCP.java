@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.Connection;
 import it.polimi.ingsw.client.Connection.TCPThread.ServerTCP_IO;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;

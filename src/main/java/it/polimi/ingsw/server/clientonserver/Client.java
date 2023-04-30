@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.Tile;
+import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.util.List;
