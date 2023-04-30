@@ -3,6 +3,7 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,11 +14,11 @@ import java.util.Map;
  * adapters invoke methods when using TCP.
  */
 public interface ServerInterface extends Remote {
-    boolean login(Client client) throws Exception;
-    ServerLobbyInterface joinRandomLobby(Client client) throws Exception;
-    Map<Integer,Integer> getJoinedLobbies(String nick) throws Exception;
-    ServerLobbyInterface createLobby(Client client) throws Exception;
-    Map<Integer,Integer> showAvailableLobbies() throws Exception;
-    ServerLobbyInterface joinSelectedLobby(Client client, int id) throws Exception;
+    boolean login(Client client) throws RemoteException;
+    ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException;
+    Map<Integer,Integer> getJoinedLobbies(String nick) throws RemoteException;
+    ServerLobbyInterface createLobby(Client client) throws RemoteException;
+    Map<Integer,Integer> showAvailableLobbies() throws RemoteException;
+    ServerLobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException;
 
 }

@@ -210,7 +210,7 @@ public class ServerTcpThread extends Thread{ //TODO
             this.lobbyAssigned = true;
             this.lobby = lobbyGet;
 
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             lobbyID = 0;
         }
         return lobbyID;
@@ -226,7 +226,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.postToLiveChat(sender, content);
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -245,7 +245,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.postSecretToLiveChat(sender,receiver,content);
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -261,7 +261,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.quitGame(playername);
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -274,11 +274,7 @@ public class ServerTcpThread extends Thread{ //TODO
     public void matchHasStarted(){
         boolean hasStarted;
         synchronized (lobby) {
-            try {
-                hasStarted = lobby.matchHasStarted();
-            } catch (Exception e) {
-                hasStarted = false;
-            }
+            hasStarted = lobby.matchHasStarted();
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set message command
             feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
@@ -293,7 +289,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 lobby.postMove(player,move);
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 foundErrors = true;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -308,11 +304,7 @@ public class ServerTcpThread extends Thread{ //TODO
         boolean hasStarted;
         String username = Jsonable.json2string(player);
         synchronized (lobby) {
-            try {
-                hasStarted = lobby.startGame(username);
-            } catch (Exception e) {
-                hasStarted = false;
-            }
+            hasStarted = lobby.startGame(username);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command
             feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
@@ -327,7 +319,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (lobby) {
             try {
                 isAdmin = lobby.isLobbyAdmin(username);
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 isAdmin = false;
             }
             MessageTcp feedback = new MessageTcp(); //message to send back

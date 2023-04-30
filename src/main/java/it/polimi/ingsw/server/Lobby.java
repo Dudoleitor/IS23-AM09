@@ -86,11 +86,11 @@ public class Lobby implements ServerLobbyInterface {
     /**
      * Tells who the lobby admin is
      * @return the name of the lobby admin
-     * @throws Exception when the lobby is empty
+     * @throws RemoteException never, needed by RMI
      */
-    public String getLobbyAdmin() throws Exception {
+    public String getLobbyAdmin() throws RemoteException {
         if(clients.size() == 0){
-            throw new Exception("No Players");
+            throw new RuntimeException("No Players while trying to get lobby admin");
         }
         else{
             return clients.get(0).getPlayerName();
@@ -98,10 +98,10 @@ public class Lobby implements ServerLobbyInterface {
     }
 
     /**
-     * @return true if match has startd
+     * @return true if match has started
      */
     @Override
-    public boolean matchHasStarted(){
+    public boolean matchHasStarted() {
         return started;
     }
     /**
@@ -114,7 +114,7 @@ public class Lobby implements ServerLobbyInterface {
             if(!ready  || !getLobbyAdmin().equals(player))
                 return false;
         }
-        catch (Exception e){
+        catch (RemoteException e){
             return false;
         }
 
@@ -148,12 +148,12 @@ public class Lobby implements ServerLobbyInterface {
      *
      * @param playerName is the player that is sending a message
      * @param message is the content
-     * @throws Exception when message format is wrong
+     * @throws RemoteException from RMI
      */
     @Override
-    public void postToLiveChat(String playerName, String message) throws Exception {
+    public void postToLiveChat(String playerName, String message) throws RemoteException {
         if(playerName == null || message == null){
-            throw new Exception("Wrong format of message");
+            throw new RuntimeException("Wrong format of message");
         }
         chat.addMessage(playerName,message);
         for (Client client : clients) {
@@ -166,12 +166,12 @@ public class Lobby implements ServerLobbyInterface {
      * @param sender is the player that is sending a message
      * @param receiver is the player that is sending a message
      * @param message is the content
-     * @throws Exception when message format is wrong
+     * @throws RemoteException from RMI
      */
     @Override
-    public void postSecretToLiveChat(String sender, String receiver, String message) throws Exception {
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws RemoteException {
         if(sender == null || receiver == null || message == null){
-            throw new Exception("Wrong format of message");
+            throw new RuntimeException("Wrong format of message");
         }
         chat.addSecret(sender,receiver,message);
     }

@@ -8,6 +8,8 @@ import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
@@ -34,7 +36,7 @@ public class ServerRMI extends Server {
             }
             server.login((ClientRMI) client);
             return true;
-        } catch (Exception e) {
+        } catch (RemoteException | NotBoundException e) {
             return false;
         }
     }
@@ -44,7 +46,7 @@ public class ServerRMI extends Server {
         Map<Integer,Integer> lobbies = null;
         try {
             lobbies = server.getJoinedLobbies(playerName);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
         return lobbies;
@@ -54,7 +56,7 @@ public class ServerRMI extends Server {
     public void joinRandomLobby(Client client) throws ServerException{
         try{
             lobby = server.joinRandomLobby(client);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
     }
@@ -63,7 +65,7 @@ public class ServerRMI extends Server {
     public void joinSelectedLobby(Client client, int id) throws ServerException{
         try{
             lobby = server.joinSelectedLobby(client,id);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
     }
@@ -72,7 +74,7 @@ public class ServerRMI extends Server {
     public void createLobby(Client client) throws ServerException{
         try{
             lobby = server.createLobby(client);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
     }
@@ -82,7 +84,7 @@ public class ServerRMI extends Server {
         Map<Integer, Integer> availableLobbies = null;
         try{
             availableLobbies = server.showAvailableLobbies();
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
         return availableLobbies;
@@ -91,7 +93,7 @@ public class ServerRMI extends Server {
     public void postToLiveChat(String playerName, String message) throws LobbyException {
         try {
             lobby.postToLiveChat(playerName,message);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException("Error in Lobby");
         }
     }
@@ -101,7 +103,7 @@ public class ServerRMI extends Server {
         try{
             lobby.postSecretToLiveChat(sender,receiver,message);
         }
-        catch (Exception e){
+        catch (RemoteException e){
             throw new LobbyException("Error in Lobby");
         }
     }
@@ -110,7 +112,7 @@ public class ServerRMI extends Server {
     public void quitGame(String player){
         try{
             lobby.quitGame(player);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             //do nothing and quit anyway
         }
     }
@@ -120,7 +122,7 @@ public class ServerRMI extends Server {
         boolean started = false;
         try{
             started=  lobby.matchHasStarted();
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException("Error in Lobby");
         }
         return started;
@@ -130,7 +132,7 @@ public class ServerRMI extends Server {
     public void postMove(String player, Move move) throws LobbyException{
         try {
             lobby.postMove(player,move.toJson());
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException("Error in Lobby");
         }
     }
@@ -140,7 +142,7 @@ public class ServerRMI extends Server {
         boolean hasStarted = false;
         try{
             hasStarted = lobby.startGame(player);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException("Error in Lobby");
         }
         return hasStarted;
@@ -151,7 +153,7 @@ public class ServerRMI extends Server {
         boolean result = false;
         try{
             result = lobby.isLobbyAdmin(player);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException("Error in Lobby");
         }
         return result;
@@ -162,7 +164,7 @@ public class ServerRMI extends Server {
         int id = 0;
         try {
             id = lobby.getID();
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException("Error in Lobby");
         }
         return id;
@@ -178,7 +180,7 @@ public class ServerRMI extends Server {
     public String getCurrentPlayer() throws LobbyException {
         try {
             return lobby.getCurrentPlayer();
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             throw new LobbyException(e.getMessage());
         }
     }
