@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.server.JSONFilePath.PlayerGoals;
+import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
 
 
 public class Controller implements Jsonable {
@@ -73,14 +73,7 @@ public class Controller implements Jsonable {
                         playerGoal);
 
                 players.add(player);
-
-                // Sending data
                 virtualViews.add(player.getVirtualShelf());
-                client.refreshBoard(this.board.toJson().toJSONString());
-                for(CommonGoal commonGoal : this.board.getCommonGoals()) {
-                    client.refreshCommonGoal(commonGoal.getID(), commonGoal.showPointsStack());
-                }
-                client.updateTurn(getCurrentPlayerName());
             }
 
         } catch (NullPointerException e) {
@@ -88,10 +81,14 @@ public class Controller implements Jsonable {
         } catch (ClassCastException | JsonBadParsingException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad Json parsing");
         } catch (OutOfTilesException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("A new board should never be out of tiles");
         }
 
         for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
+        // Sending all data to clients
+        for (Client client : clients) {
+            refreshClient(client);
+        }
     }
 
     /**
@@ -127,23 +124,43 @@ public class Controller implements Jsonable {
                     throw new JsonBadParsingException("No client with playername " + player.getName() + " provided");
                 }
             }
-
-            for(VirtualView v : virtualViews) {
-                v.setClientList(this.clients);
-            }
         } catch (Exception e) {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
         }
 
-        // Updating clients
         for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
+        // Sending all data to clients
         for (Client client : clients) {
-            client.refreshBoard(board.toJson().toJSONString());
-            for(Player player : players) {
-                client.refreshShelf(player.getName(), player.getShelf().toJson().toJSONString());
-            }
-            client.updateTurn(getCurrentPlayerName());
+            refreshClient(client);
         }
+    }
+
+    /**
+     * This method is used when there is the need to completely
+     * refresh a client.
+     * It is used on game loading.
+     * @param client Client object to update
+     */
+    public void refreshClient(Client client) {
+        final Player player = players.stream()
+                .filter(x ->
+                        x.getName().equals(client.getPlayerName())
+                )
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No player found with specified client name in refreshClient"));
+
+        client.refreshBoard(this.board.toJson().toJSONString());
+
+        for(CommonGoal commonGoal : this.board.getCommonGoals()) {
+            client.refreshCommonGoal(commonGoal.getID(), commonGoal.showPointsStack());
+        }
+
+        for (Player pl : players) {
+            client.refreshShelf(pl.getName(), pl.getShelf().toJson().toJSONString());
+        }
+
+        client.setPlayerGoal(player.getPersonalGoalId());
+        client.updateTurn(getCurrentPlayerName());
     }
 
     /**
