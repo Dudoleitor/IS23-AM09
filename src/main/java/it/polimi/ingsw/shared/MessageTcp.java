@@ -3,11 +3,14 @@ import org.json.simple.JSONObject;
 
 import javax.management.remote.JMXServerErrorException;
 import java.rmi.RemoteException;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Random;
 
 public class MessageTcp {
     private MessageCommand messageCommand;
     private JSONObject content;
-
+    private String requestID;
     public MessageTcp(){
         super();
     }
@@ -20,7 +23,9 @@ public class MessageTcp {
         JSONObject jsonMessage = Jsonable.parseString(message);
         MessageCommand command = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
         JSONObject content = (JSONObject) jsonMessage.get("content");
+        String requestID =  (String) jsonMessage.get("ID");
         this.messageCommand = command;
+        this.requestID = requestID;
         if(content != null) {
             this.content = Jsonable.parseString(content.toString());
         }
@@ -67,8 +72,17 @@ public class MessageTcp {
     public void setCommand(MessageCommand messageCommand){
         this.messageCommand = messageCommand;
     }
+    public void setRequestID(String id){this.requestID = id; }
     public void setContent(JSONObject content) {
         this.content = content;
+    }
+
+    public void generateRequestID(){
+        Random random = new SecureRandom();
+        byte[] sessionIDByte = new byte[8];
+        random.nextBytes(sessionIDByte);
+        this.requestID = Base64.getEncoder().encodeToString(sessionIDByte);
+
     }
     public boolean isReplyMessage(){
         boolean result;
@@ -96,6 +110,7 @@ public class MessageTcp {
     public String toString() {
         JSONObject message = new JSONObject();
         message.put("command", this.messageCommand.toString());
+        message.put("ID", requestID);
         message.put("content", this.content);
         return message.toJSONString();
     }
@@ -103,6 +118,8 @@ public class MessageTcp {
     public MessageCommand getCommand(){
         return messageCommand;
     }
+
+    public String getRequestID() {return requestID; }
 
     public JSONObject getContent(){
         if (content != null)
