@@ -40,11 +40,6 @@ public class GUI extends View {
     }
 
     @Override
-    public void showElement() {
-
-    }
-
-    @Override
     public void showHelp() {
 
     }
