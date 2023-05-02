@@ -165,7 +165,7 @@ public class ServerRMI extends Server {
         int id = 0;
         try {
             id = lobby.getID();
-        } catch (RemoteException e) {
+        } catch (RemoteException | NullPointerException e) {
             throw new LobbyException("Error in Lobby");
         }
         return id;

@@ -12,4 +12,7 @@ public enum LobbySelectionCommand{
     public int getID(){
         return id;
     }
+    public boolean isValid(){
+        return this != Invalid;
+    }
 }

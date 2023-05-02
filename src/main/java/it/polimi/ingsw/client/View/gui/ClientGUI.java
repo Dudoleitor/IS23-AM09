@@ -62,4 +62,8 @@ public class ClientGUI extends Application {
     }
 
     public static void startApp() {launch();}
+
+    static void startMyProtocols() {
+        return;
+    }
 }

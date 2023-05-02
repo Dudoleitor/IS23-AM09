@@ -49,10 +49,11 @@ public class ClientMain{
         //show the client the lobbies they can join
         view.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
         view.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
-        //ask the user
-        LobbySelectionCommand command = LobbySelectionCommand.Invalid;
-        while(command == LobbySelectionCommand.Invalid){
-            command = view.askLobby();
+
+        boolean successful = false;
+        while(!successful){
+            //ask the user
+            LobbySelectionCommand command = view.askLobby();
             switch (command){
                 case Random:
                     server.joinRandomLobby(client);
@@ -64,16 +65,18 @@ public class ClientMain{
                     server.createLobby(client);
                     break;
                 default:
-                    view.errorMessage("Input a valid id");
+                    view.errorMessage("Input a valid id or command");
                     break;
             }
-            try{
-                view.message("You joined #"+ server.getLobbyID()+" lobby!");
-                view.setLobbyAdmin(server.isLobbyAdmin(playerName));
-            }
-            catch (LobbyException e){
-                view.errorMessage("Lobby does not exist");
-                command = LobbySelectionCommand.Invalid;
+            if(command.isValid()){
+                try{
+                    view.message("You joined #"+ server.getLobbyID()+" lobby!");
+                    view.setLobbyAdmin(server.isLobbyAdmin(playerName));
+                    successful = true;
+                }
+                catch (LobbyException e){
+                    view.errorMessage("Lobby does not exist");
+                }
             }
         }
     }
@@ -102,9 +105,6 @@ public class ClientMain{
                     break;
                 case Move:
                     postMove();
-                    break;
-                case Show:
-                    view.showElement();
                     break;
                 case Message:
                     postToChat();
@@ -186,10 +186,7 @@ public class ClientMain{
         } catch (LobbyException e) {
             started = false;
         }
-        if(started){
-            view.message("Game has started!");
-        }
-        else{
+        if(!started){
             view.errorMessage("You can not start lobby now");
         }
     }

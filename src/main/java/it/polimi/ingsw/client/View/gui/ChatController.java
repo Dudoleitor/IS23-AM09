@@ -21,8 +21,8 @@ public class ChatController {
 
     @FXML
     protected void SendMsg() throws RemoteException {
-        client.getController().postChatMessage("Luca", message.getText());
-        textArea.appendText(message.getText() + "\n");
+        //client.getController().postChatMessage("Luca", message.getText());
+        textArea.appendText("Username: " + message.getText() + "\n");
     }
 
     @FXML
