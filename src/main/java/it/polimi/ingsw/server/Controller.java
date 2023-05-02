@@ -424,6 +424,13 @@ public class Controller implements Jsonable {
      *          with the provided name.
      */
     public void clientReconnected(Client client) {
+        if(
+                players.stream()
+                        .map(x->x.getName().toLowerCase())
+                        .noneMatch(x->x.equals(client.getPlayerName()))
+        )
+            throw new RuntimeException("No player with the give name found while reconnecting client");
+
         setActivity(client.getPlayerName(), true);
         clients.add(client);
     }

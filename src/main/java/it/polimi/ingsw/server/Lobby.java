@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     private final int id;
     private final List<Client> clients = new ArrayList<>();
+    private final List<String> disconnectedClients;
     private boolean started = false;
     private final Chat chat;
     private Controller controller;
@@ -29,6 +30,7 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     private final long pingIntervalSeconds = 3;
 
     public Lobby(Client firstPlayer, int id){
+        this.disconnectedClients = new ArrayList<>();
         this.clients.add(firstPlayer);
         firstPlayer.setExceptionHandler(this);
         this.id = id;
@@ -45,6 +47,19 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     public synchronized void addPlayer(Client client){
         if(clients.contains(client)) //if player logged in previously
             return;
+
+        if(disconnectedClients.contains(client.getPlayerName().toLowerCase())) {
+            disconnectedClients.remove(client.getPlayerName().toLowerCase());
+            clients.add(client);
+            client.setExceptionHandler(this);
+            if(controller!=null)
+                controller.clientReconnected(client);
+            return;
+        }
+
+        if(started)
+            throw new RuntimeException("Cannot add a client after the game has stated");
+
         if (clients.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
             clients.add(client);
             client.setExceptionHandler(this);
@@ -101,6 +116,14 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
         else{
             return clients.get(0).getPlayerName();
         }
+    }
+
+    /**
+     * Return the list of clients that were previously disconnected.
+     * @return List of String, playerNames in lowercase
+     */
+    public List<String> getDisconnectedClients() {
+        return new ArrayList<>(disconnectedClients);
     }
 
     /**
@@ -228,6 +251,7 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
         if(controller!=null)
             controller.clientDisconnected(client);
         client.disconnect();
+        disconnectedClients.add(client.getPlayerName().toLowerCase());
         System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
     }
 
