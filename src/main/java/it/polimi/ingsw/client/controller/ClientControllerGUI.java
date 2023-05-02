@@ -158,4 +158,13 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
     public void setPlayerGoal(int id) {
 
     }
+
+    /**
+     * This function is used to ensure the client is still connected.
+     * Expected return value is "pong".
+     */
+    @Override
+    public String ping() {
+        return "pong";
+    }
 }

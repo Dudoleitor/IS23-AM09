@@ -275,4 +275,13 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
             throw new RuntimeException("JsonBadParsing exception while loading player goal: " + e.getMessage());
         }
     }
+
+    /**
+     * This function is used to ensure the client is still connected.
+     * Expected return value is "pong".
+     */
+    @Override
+    public String ping() {
+        return "pong";
+    }
 }

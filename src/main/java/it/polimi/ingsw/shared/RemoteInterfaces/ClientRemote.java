@@ -75,4 +75,9 @@ public interface ClientRemote extends Remote, Serializable {
      * @see it.polimi.ingsw.server.clientonserver.Client
      */
     public void setPlayerGoal(int id) throws RemoteException;
+
+    /**
+     * @see it.polimi.ingsw.server.clientonserver.Client
+     */
+    public String ping() throws RemoteException;
 }
