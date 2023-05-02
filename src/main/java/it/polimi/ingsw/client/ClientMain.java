@@ -64,6 +64,11 @@ public class ClientMain{
                 case Create:
                     server.createLobby(client);
                     break;
+                case Refresh:
+                    //show the client the lobbies they can join
+                    view.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+                    view.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
+                    break;
                 default:
                     view.errorMessage("Input a valid id or command");
                     break;

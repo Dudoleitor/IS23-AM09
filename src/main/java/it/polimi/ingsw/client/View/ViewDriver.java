@@ -58,6 +58,7 @@ public class ViewDriver extends View {
 
     @Override
     public void notifyInvalidCommand() {
+        System.out.println("Invalid command");
         //do nothing
     }
 
@@ -73,6 +74,7 @@ public class ViewDriver extends View {
 
     @Override
     public Map<String, String> getMessageFromUser() {
+        System.out.println("A really meaningful message");
         Map<String, String> msg = new HashMap<>();
         msg.put("message", "A really meaningful message");
         return msg;

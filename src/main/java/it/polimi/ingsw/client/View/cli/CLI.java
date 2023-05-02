@@ -229,13 +229,18 @@ public class CLI extends View {
     public LobbySelectionCommand askLobby(){
         int lobbyID;
         LobbySelectionCommand command;
-        io.printMessage("Choose a Lobby (ENTER for random, NEW to create a new one):");
+        io.printMessage("Choose a Lobby (ENTER for random, NEW to create a new one, REFRESH to update lobby list):");
         String id = io.scan();
         if(id.isEmpty()){
             return LobbySelectionCommand.Random;
-        } else if (id.toLowerCase().equals("new")) {
+        }
+        else if (id.toLowerCase().equals("new")) {
             return LobbySelectionCommand.Create;
-        } else if(inputSanitizer.isInteger(id)){
+        }
+        else if (id.toLowerCase().equals("refresh")) {
+            return LobbySelectionCommand.Refresh;
+        }
+        else if(inputSanitizer.isInteger(id)){
             lobbyID = Integer.parseInt(id);
             command = LobbySelectionCommand.Number;
             command.setId(lobbyID);

@@ -1,9 +1,14 @@
 package it.polimi.ingsw.client.View;
 
-public enum LobbySelectionCommand{
+import it.polimi.ingsw.client.View.cli.InputSanitizer;
+
+import java.util.Arrays;
+
+public enum LobbySelectionCommand {
     Invalid(),
     Number(),
     Create(),
+    Refresh(),
     Random();
     private int id = -1;
     public void setId(int id){
@@ -13,6 +18,6 @@ public enum LobbySelectionCommand{
         return id;
     }
     public boolean isValid(){
-        return this != Invalid;
+        return this != Invalid && this != Refresh;
     }
 }
