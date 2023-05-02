@@ -119,42 +119,17 @@ public class CLI extends View {
         return positions;
     }
 
-    public void showElement(){
-        io.printMessage("What do you want to see (Board/Shelf)");
-        String choice = io.scan();
-        if(!inputSanitizer.isValidMessage(choice)){
-            io.printErrorMessage("Please enter valid command");
-            return;
-        }
-        switch (choice.toLowerCase()){
-            case("board"):
-                //TODO show board
-                break;
-            case("shelf"):
-                io.printMessage("Select the player:");
-                String player = io.scan();
-                if(!inputSanitizer.isValidName(choice)){
-                    io.printErrorMessage("Please enter valid command");
-                    return;
-                }
-                //TODO show player's shelf
-                break;
-            default:
-                io.printErrorMessage("Not valid element");
-        }
-    }
-
     public void showBoard(Board b) {
         io.printMessage(b.toString());
     }
 
     public void showCommonGoals(List<CommonGoal> commonGoalList) {
-        String str = "Common Goals:\n";
+        String str = "Common Goals:";
         if(commonGoalList.size() == 0){
             str = str.concat(Color.coloredString("None",Color.Yellow));
         }
         for(CommonGoal cg : commonGoalList){
-            str = str.concat(cg.toString());
+            str = str.concat("\n"+cg.toString());
         }
         io.printMessage(str);
     }
@@ -162,7 +137,7 @@ public class CLI extends View {
     public void showShelves(Map<String, Shelf> playerShelves) {
         String output = "Shelves:\n";
         final String spaceBetween = "     ";
-
+        int rows = shelfStringRows(playerShelves);
         for (int k=0; k<shelfStringRows(playerShelves); k++) {  // Iterating over the rows
             for(String player : playerShelves.keySet()) {
                 output = output.concat(
@@ -175,7 +150,6 @@ public class CLI extends View {
             }
             output = output.concat("\n");
         }
-
         final int shelfRowLenght = shelfStringCols(playerShelves);
         for (String player : playerShelves.keySet()) {
             output = player.length()<=shelfRowLenght ? output.concat(player) : output.concat(player).substring(0, shelfRowLenght);

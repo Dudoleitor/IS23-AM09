@@ -87,11 +87,6 @@ public class ViewDriver extends View {
     }
 
     @Override
-    public void showElement() {
-        //do nothing
-    }
-
-    @Override
     public void showHelp() {
         //do nothing
     }

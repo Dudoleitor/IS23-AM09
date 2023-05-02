@@ -59,11 +59,16 @@ public class cli_IO {
 
     //Print methods
 
+    public void gotoBeginningOfLine(){
+        System.out.print("\033[F\r");
+    }
+
     /**
      * Prints the string (decorated as a message) in a synchronous way
      * @param s the message string
      */
     public void printMessage(String s){
+        gotoBeginningOfLine();
         synchronized (cli_Lock) {
             System.out.println(messageFormat(s));
         }
@@ -74,6 +79,7 @@ public class cli_IO {
      * @param s the message string
      */
     public void printErrorMessage(String s){
+        gotoBeginningOfLine();
         synchronized (cli_Lock) {
             System.out.println(errorFormat(s));
         }

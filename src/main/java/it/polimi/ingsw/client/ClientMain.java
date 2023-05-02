@@ -106,9 +106,6 @@ public class ClientMain{
                 case Move:
                     postMove();
                     break;
-                case Show:
-                    view.showElement();
-                    break;
                 case Message:
                     postToChat();
                     break;
@@ -189,10 +186,7 @@ public class ClientMain{
         } catch (LobbyException e) {
             started = false;
         }
-        if(started){
-            view.message("Game has started!");
-        }
-        else{
+        if(!started){
             view.errorMessage("You can not start lobby now");
         }
     }

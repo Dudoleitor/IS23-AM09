@@ -47,11 +47,6 @@ public abstract class View {
     public abstract Move getMoveFromUser();
 
     /**
-     * Show the user an object from the model
-     */
-    public abstract void showElement();
-
-    /**
      * Show the list of commands that the client can execute
      */
     public abstract void showHelp();
