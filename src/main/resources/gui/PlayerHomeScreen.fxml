@@ -10,7 +10,7 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.View.gui.homeScreenController">
 
-    <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+    <AnchorPane onMouseClicked="#randPersonalGoal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
         <children>
             <ImageView fitHeight="619.0" fitWidth="614.0" layoutX="-7.0" layoutY="-214.0" opacity="0.75" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -37,11 +37,8 @@
                     <Image url="@gameGraphics/boards/bookshelf.png" />
                 </image>
             </ImageView>
-            <ImageView fitHeight="108.0" fitWidth="76.0" layoutX="320.0" layoutY="252.0" pickOnBounds="true" preserveRatio="true" rotate="-15.0">
-                <image>
-                    <Image url="@gameGraphics/personal_goal_cards/Personal_Goals4.png" />
-                </image>
-            </ImageView>
+            <ImageView fx:id="imgPersGoal"  fitHeight="108.0" fitWidth="76.0" layoutX="320.0" layoutY="252.0" pickOnBounds="true" preserveRatio="true" rotate="-15.0" />
+
             <ImageView fitHeight="76.0" fitWidth="121.0" layoutX="328.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/common_goal_cards/3.jpg" />
