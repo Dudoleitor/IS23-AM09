@@ -99,6 +99,34 @@ public class ClientStub implements Client {
         this.updated = true;
     }
 
+    /**
+     * This function is used to set the ExceptionHandler the client
+     * will notify when a network exception happens.
+     *
+     * @param e Exception handler
+     */
+    @Override
+    public void setExceptionHandler(NetworkExceptionHandler e) {
+
+    }
+
+    /**
+     * This function is used to close the connection with the client
+     */
+    @Override
+    public void disconnect() {
+
+    }
+
+    /**
+     * This function is used to ensure the client is still connected.
+     * Expected return value is "pong".
+     */
+    @Override
+    public String ping() {
+        return "pong";
+    }
+
     public boolean wasUpdated() {
         return updated;
     }

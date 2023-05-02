@@ -6,65 +6,72 @@ import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
 
-import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Lobby implements ServerLobbyInterface {
+public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     private final int id;
     private final List<Client> clients = new ArrayList<>();
-    private boolean ready = false;
     private boolean started = false;
-    private boolean full = false;
     private final Chat chat;
     private Controller controller;
 
+    /* Note: methods using the list clients need to be synchronized:
+    the pings sent by the executor can result in the handleNetworkException method
+    being called.
+    In addition to that, multiple clients can send requests to the lobby and
+    they must send commands to the model one at a time. */
+    private final ScheduledExecutorService executor;
+    private final long pingIntervalSeconds = 3;
+
     public Lobby(Client firstPlayer, int id){
         this.clients.add(firstPlayer);
+        firstPlayer.setExceptionHandler(this);
         this.id = id;
         this.chat = new Chat();
         chat.addPlayer(firstPlayer);
+        this.executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
     }
 
     /**
      * add a player to lobby
      * @param client is the player object to add to the lobby
      */
-    public void addPlayer(Client client){
+    public synchronized void addPlayer(Client client){
         if(clients.contains(client)) //if player logged in previously
             return;
         if (clients.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
             clients.add(client);
+            client.setExceptionHandler(this);
             chat.addPlayer(client);
         }else
             throw new RuntimeException("Lobby already full");
-
-        //if the lobby has enough players it's ready to start
-        if(clients.size() >= GameSettings.minSupportedPlayers)
-            ready = true;
-        if(clients.size() >= GameSettings.maxSupportedPlayers)
-            full = true;
     }
 
     /**
      * @return true is the lobby is ready to start
      */
-    public boolean isReady(){
-        return ready;
+    public synchronized boolean isReady(){
+        return clients.size()>=GameSettings.minSupportedPlayers;
     }
     /**
      * @return true is the lobby is full of players for it's capacity
      */
-    public boolean isFull(){
-        return full;
+    public synchronized boolean isFull(){
+        return clients.size()>=GameSettings.maxSupportedPlayers;
     }
     /**
      * @return list of players in this lobby
      */
-    public ArrayList<Client> getClients(){
+    public synchronized ArrayList<Client> getClients(){
         return new ArrayList<>(clients); //TODO this is by reference
     }
-    public List<String> getPlayerNames(){
+    public synchronized List<String> getPlayerNames(){
         return clients.stream().
                 map(Client::getPlayerName).
                 collect(Collectors.toList());
@@ -72,14 +79,14 @@ public class Lobby implements ServerLobbyInterface {
     /**
      * @return every message in that lobby
      */
-    public Chat getChat(){
+    public synchronized Chat getChat(){
         return new Chat(chat);
     }
 
     /**
      * @return true if no players are in lobby
      */
-    public boolean isEmpty(){
+    public synchronized boolean isEmpty(){
         return clients.size() == 0;
     }
 
@@ -87,7 +94,7 @@ public class Lobby implements ServerLobbyInterface {
      * Tells who the lobby admin is
      * @return the name of the lobby admin
      */
-    public String getLobbyAdmin() {
+    public synchronized String getLobbyAdmin() {
         if(clients.size() == 0){
             throw new RuntimeException("No Players while trying to get lobby admin");
         }
@@ -108,9 +115,9 @@ public class Lobby implements ServerLobbyInterface {
      * @return true if successful
      */
     @Override
-    public boolean startGame(String player){
+    public synchronized boolean startGame(String player){
         try {
-            if(!ready  || !getLobbyAdmin().equals(player))
+            if(!isReady()  || !getLobbyAdmin().equals(player))
                 return false;
         }
         catch (RuntimeException e){
@@ -118,7 +125,7 @@ public class Lobby implements ServerLobbyInterface {
         }
 
         started = true;
-        controller = new Controller(clients);
+        controller = new Controller(new ArrayList<>(clients));  // List is given by copy
 
         final List<String> players = clients.stream().map(Client::getPlayerName).collect(Collectors.toList());
         for(Client c : clients)
@@ -133,7 +140,7 @@ public class Lobby implements ServerLobbyInterface {
      * @return true if playerName is the name of the lobby admin
      */
     @Override
-    public boolean isLobbyAdmin(String playerName) {
+    public synchronized boolean isLobbyAdmin(String playerName) {
         if(isEmpty()){
             return false;
         }
@@ -148,7 +155,7 @@ public class Lobby implements ServerLobbyInterface {
      * @param message is the content
      */
     @Override
-    public void postToLiveChat(String playerName, String message) {
+    public synchronized void postToLiveChat(String playerName, String message) {
         if(playerName == null || message == null){
             throw new RuntimeException("Wrong format of message");
         }
@@ -165,7 +172,7 @@ public class Lobby implements ServerLobbyInterface {
      * @param message is the content
      */
     @Override
-    public void postSecretToLiveChat(String sender, String receiver, String message) {
+    public synchronized void postSecretToLiveChat(String sender, String receiver, String message) {
         if(sender == null || receiver == null || message == null){
             throw new RuntimeException("Wrong format of message");
         }
@@ -173,12 +180,12 @@ public class Lobby implements ServerLobbyInterface {
     }
 
     @Override
-    public void quitGame(String player) {
+    public synchronized void quitGame(String player) {
         //TODO
     }
 
     @Override
-    public void postMove(String player, JSONObject moveJson) {
+    public synchronized void postMove(String player, JSONObject moveJson) {
         Client playerInput = null;
         final Move move = new Move(moveJson);
         try{
@@ -204,11 +211,31 @@ public class Lobby implements ServerLobbyInterface {
      * @return String name of the player
      */
     @Override
-    public String getCurrentPlayer() {
+    public synchronized String getCurrentPlayer() {
         return controller.getCurrentPlayerName();
     }
 
-    private void networkExceptionHandler(Exception e) {
-
+    /**
+     * This function is used to handle network exceptions thrown by RMI or the socket.
+     * The function disconnects the client and sets the player as inactive in the controller.
+     * @param client Client object
+     * @param e Exception thrown
+     */
+    public synchronized void handleNetworkException(Client client, Exception e) {
+        if(!clients.remove(client)) {
+            throw new RuntimeException("Provided client was not connected");
+        }
+        if(controller!=null)
+            controller.clientDisconnected(client);
+        client.disconnect();
+        System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
     }
+
+    /**
+     * This Runnable is used to ping clients, if a client is not available
+     * an exception is thrown and the exception handles kicks in.
+     */
+    private final Runnable pingSender = () -> {
+        for (Client c : clients) c.ping();
+    };
 }

@@ -7,6 +7,7 @@ import it.polimi.ingsw.shared.virtualview.VirtualView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.awt.font.GlyphMetrics;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -266,6 +267,13 @@ public class Controller implements Jsonable {
      * or if the shelf hasn't enough empty cells
      */
     public void moveTiles(String playerName, Move move) throws ControllerGenericException {
+        if (clients.size()<GameSettings.minSupportedPlayers) {
+            for (Client c : clients) {
+                c.postChatMessage("Server", "You must wait for other players to reconnect before playing");
+            }
+            return;
+        }
+
         Player player; //doesnt work as an Optional TODO for @Jack
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
@@ -396,6 +404,14 @@ public class Controller implements Jsonable {
             throw new ControllerGenericException("Provided client did not exist");
         }
         setActivity(client.getPlayerName(), false);
+        for (Client c: clients) {
+            c.postChatMessage("Server", "User " + client.getPlayerName() + " left the game.");
+            if (clients.size()<GameSettings.minSupportedPlayers) {
+                c.postChatMessage("Server", "Not enough players online, waiting for somebody to reconnect");
+                //TODO start timer to eventually declare the victory
+            }
+        }
+
     }
 
     /**

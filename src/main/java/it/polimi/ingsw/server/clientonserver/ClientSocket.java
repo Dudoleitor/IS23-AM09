@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.clientonserver;
 
+import it.polimi.ingsw.server.NetworkExceptionHandler;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
@@ -20,6 +21,7 @@ import java.util.Objects;
  */
 public class ClientSocket implements Client {
     private String playerName = null;
+    private NetworkExceptionHandler networkExceptionHandler;
     private Chat chat;
     private Socket clientSocket;
 
@@ -80,6 +82,17 @@ public class ClientSocket implements Client {
      * @return String, player's name.
      */
     public String getPlayerName() {return playerName;}
+
+    /**
+     * This function is used to set the ExceptionHandler the client
+     * will notify when a network exception happens.
+     *
+     * @param e Exception handler
+     */
+    @Override
+    public void setExceptionHandler(NetworkExceptionHandler e) {
+        this.networkExceptionHandler = e;
+    }
 
     /**
      * This method is used when a player picks a tile
@@ -199,6 +212,24 @@ public class ClientSocket implements Client {
     @Override
     public void setPlayerGoal(int id) {
         //TODO
+    }
+
+    /**
+     * This function is used to close the connection with the client
+     */
+    @Override
+    public void disconnect() {
+        //TODO
+    }
+
+    /**
+     * This function is used to ensure the client is still connected.
+     * Expected return value is "pong".
+     */
+    @Override
+    public String ping() {
+        // TODO
+        return "";
     }
 
     @Override

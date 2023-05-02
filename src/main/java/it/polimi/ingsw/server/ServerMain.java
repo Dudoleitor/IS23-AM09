@@ -18,7 +18,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ServerMain implements ServerInterface{
+public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     private static final int RMIport = NetworkSettings.RMIport;
     private static final int TCPport = NetworkSettings.TCPport;
 
@@ -94,6 +94,7 @@ public class ServerMain implements ServerInterface{
      */
     public boolean login(Client client) throws RemoteException {
         clientsWithoutLobby.add(client);
+        client.setExceptionHandler(this);
         System.out.println(client.getPlayerName() + " has just logged in");
         client.postChatMessage("Server", "You joined");
         return true;
@@ -212,5 +213,17 @@ public class ServerMain implements ServerInterface{
         //TODO
     }
 
-
+    /**
+     * This function is used to handle network exceptions thrown by RMI or the socket.
+     *
+     * @param client Client object
+     * @param e      Exception thrown
+     */
+    @Override
+    public void handleNetworkException(Client client, Exception e) {
+        if(!clientsWithoutLobby.remove(client)) {
+            throw new RuntimeException("Provided client was not connected");
+        }
+        System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
+    }
 }

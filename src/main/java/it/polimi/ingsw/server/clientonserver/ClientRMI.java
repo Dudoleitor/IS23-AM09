@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.clientonserver;
 
+import it.polimi.ingsw.server.NetworkExceptionHandler;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.Tile;
@@ -19,6 +20,7 @@ import java.util.Objects;
 public class ClientRMI implements Client, Serializable {
     private final String playerName;
     private final ClientRemote clientRemote;
+    private NetworkExceptionHandler exceptionHandler;
     private Chat chat;
 
     public ClientRMI(ClientRemote clientRemote) throws RemoteException {
@@ -34,6 +36,16 @@ public class ClientRMI implements Client, Serializable {
     public String getPlayerName() {return playerName;}
 
     /**
+     * This function is used to set the ExceptionHandler the client
+     * will notify when a network exception happens.
+     * @param e Exception handler
+     */
+    @Override
+    public void setExceptionHandler(NetworkExceptionHandler e) {
+        this.exceptionHandler = e;
+    }
+
+    /**
      * This method is used when a player picks a tile
      * from the board. It sends the message
      * to the remote view to remove the tile
@@ -46,8 +58,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.pickedFromBoard(position);
         } catch (RemoteException e) {
-            // TODO Handle exception
-            e.printStackTrace();
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -62,8 +73,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.refreshBoard(board);
         } catch (RemoteException e) {
-            // TODO Handle exception
-            e.printStackTrace();
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -82,8 +92,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.putIntoShelf(player, column, tile);
         } catch (RemoteException e) {
-            // TODO Handle exception
-            e.printStackTrace();
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -99,8 +108,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.refreshShelf(player, shelf);
         } catch (RemoteException e) {
-            // TODO Handle exception
-            e.printStackTrace();
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -114,8 +122,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.postChatMessage(sender, message);
         } catch (RemoteException e) {
-            e.printStackTrace();
-            // TODO Handle exception
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -126,7 +133,11 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void refreshChat(Chat chat) {
-
+        try {
+            clientRemote.refreshChat(chat);
+        } catch (RemoteException e) {
+            exceptionHandler.handleNetworkException(this, e);
+        }
     }
 
     /**
@@ -140,8 +151,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.gameStarted(players);
         } catch (RemoteException e) {
-            e.printStackTrace();
-            // TODO Handle exception
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -155,8 +165,7 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.nextTurn(player);
         } catch (RemoteException e) {
-            e.printStackTrace();
-            // TODO Handle exception
+            exceptionHandler.handleNetworkException(this, e);
         }
     }
 
@@ -175,8 +184,7 @@ public class ClientRMI implements Client, Serializable {
        try {
            clientRemote.refreshCommonGoal(id, points);
        } catch (RemoteException e) {
-           e.printStackTrace();
-           // TODO Handle exception
+           exceptionHandler.handleNetworkException(this, e);
        }
     }
 
@@ -191,9 +199,30 @@ public class ClientRMI implements Client, Serializable {
         try {
             clientRemote.setPlayerGoal(id);
         } catch (RemoteException e) {
-            e.printStackTrace();
-            // TODO Handle exception
+            exceptionHandler.handleNetworkException(this, e);
         }
+    }
+
+    /**
+     * This function is used to close the connection with the client
+     */
+    @Override
+    public void disconnect() {
+        return; // Nothing to do, RMI does everything
+    }
+
+    /**
+     * This function is used to ensure the client is still connected.
+     * Expected return value is "pong".
+     */
+    @Override
+    public String ping() {
+        try {
+            return clientRemote.ping();
+        } catch (RemoteException e) {
+            exceptionHandler.handleNetworkException(this, e);
+        }
+        return "notPong";
     }
 
     @Override
