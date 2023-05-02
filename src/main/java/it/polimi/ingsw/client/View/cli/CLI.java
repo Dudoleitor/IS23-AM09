@@ -268,7 +268,6 @@ public class CLI extends View {
         }
         else{
             command = LobbySelectionCommand.Invalid;
-            io.printErrorMessage("Input a valid id or command");
         }
         return command;
     }
