@@ -1,8 +1,8 @@
 package it.polimi.ingsw.shared.model;
 
 import it.polimi.ingsw.shared.*;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,8 +30,13 @@ public class PlayerGoal {
     public PlayerGoal(String jsonPath, int goalId) throws JsonBadParsingException {
         this.goalId = goalId;
         JSONParser jsonParser = new JSONParser();
-        try {
-            JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+        try (
+                InputStream stream = this.getClass().getClassLoader().getResourceAsStream(jsonPath);
+        ){
+            if (stream==null)
+                throw new JsonBadParsingException("Error while loading json: file not found");
+            Reader reader = new InputStreamReader(stream);
+            JSONObject obj = (JSONObject) jsonParser.parse(reader);
             if (obj == null) {
                 throw new JsonBadParsingException("Error while parsing json");
             }
@@ -39,10 +44,10 @@ public class PlayerGoal {
             this.positionList = buildPositionList(obj, goalId);
             this.pointsMap = buildPointsMap(obj);
 
-        } catch (IOException | NullPointerException e) {
-            throw new JsonBadParsingException("Error while loading json: file not found");
         } catch (ParseException | ClassCastException e) {
             throw new JsonBadParsingException("Error while parsing json");
+        } catch (IOException e ) {
+            throw new JsonBadParsingException("Error while loading json: file not found");
         }
     }
 
@@ -54,8 +59,13 @@ public class PlayerGoal {
     public PlayerGoal(String jsonPath) throws JsonBadParsingException {
         JSONParser jsonParser = new JSONParser();
         Random rand = new Random();
-        try {
-            JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+        try (
+                InputStream stream = PlayerGoal.class.getClassLoader().getResourceAsStream(jsonPath)
+        ){
+            if(stream==null)
+                throw new JsonBadParsingException("Error while loading json: file not found");
+            Reader reader = new InputStreamReader(stream);
+            JSONObject obj = (JSONObject) jsonParser.parse(reader);
 
             JSONObject goals = (JSONObject) (obj).get("goals");
             if (goals == null) {
@@ -99,8 +109,13 @@ public class PlayerGoal {
      */
     public static int playerGoalsAmount(String jsonPath) throws JsonBadParsingException {
         JSONParser jsonParser = new JSONParser();
-        try {
-            JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+        try (
+                InputStream stream = PlayerGoal.class.getClassLoader().getResourceAsStream(jsonPath)
+                ){
+            if(stream==null)
+                throw new JsonBadParsingException("Error while loading json: file not found");
+            Reader reader = new InputStreamReader(stream);
+            JSONObject obj = (JSONObject) jsonParser.parse(reader);
 
             return playerGoalsAmount(obj);
         } catch (IOException e) {
@@ -110,7 +125,7 @@ public class PlayerGoal {
         }
     }
 
-    public static int playerGoalsAmount(JSONObject obj) throws JsonBadParsingException {
+    private static int playerGoalsAmount(JSONObject obj) throws JsonBadParsingException {
         try {
             JSONObject goals = (JSONObject) (obj).get("goals");
             if (goals == null) {

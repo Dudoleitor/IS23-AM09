@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class VirtualShelfTest {
     @Test
     void insertTest() throws JsonBadParsingException, BadPositionException {
-        String jsonPath = getClass().getClassLoader().getResource("PlayerGoalTests").getPath() + "/TestGoal.json";
+        String jsonPath = "PlayerGoalTests/TestGoal.json";
         String name = "fridgeieri";
         Shelf shelf = new Shelf(3, 3);
         PlayerGoal goal = new PlayerGoal(jsonPath);

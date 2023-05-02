@@ -11,12 +11,14 @@ import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerGoalTest {
 
-    private final String basePath = getClass().getClassLoader().getResource("PlayerGoalTests").getPath() + "/";
+    private final String basePath = "PlayerGoalTests/";
     @Test
     void FileNotFoundTest() {
         String jsonPath = "ghost.json";
@@ -83,7 +85,8 @@ public class PlayerGoalTest {
     void creationFromJsonObjTest() throws JsonBadParsingException, IOException, ParseException {
         String jsonPath = basePath + "TestGoal.json";
         JSONParser jsonParser = new JSONParser();
-        JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(jsonPath);
+        JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(stream));
         PlayerGoal goal = new PlayerGoal(obj, 0);
         assertEquals(0, goal.getGoalId());
     }

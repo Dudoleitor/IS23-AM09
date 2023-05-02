@@ -13,7 +13,7 @@ import java.util.Stack;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
-    private final String basePath = getClass().getClassLoader().getResource("PlayerGoalTests").getPath() + "/";
+    private final String basePath = "PlayerGoalTests/";
 
     @Test
     void creationTest() throws JsonBadParsingException {
