@@ -102,14 +102,22 @@ public class PlayerGoal {
         try {
             JSONObject obj = (JSONObject) jsonParser.parse(new FileReader(jsonPath));
 
+            return playerGoalsAmount(obj);
+        } catch (IOException e) {
+            throw new JsonBadParsingException("Error while loading json: file not found");
+        } catch (ParseException | ClassCastException e) {
+            throw new JsonBadParsingException("Error while parsing json");
+        }
+    }
+
+    public static int playerGoalsAmount(JSONObject obj) throws JsonBadParsingException {
+        try {
             JSONObject goals = (JSONObject) (obj).get("goals");
             if (goals == null) {
                 throw new JsonBadParsingException("Error while parsing json: goals not found");}
 
             return goals.size();  // Choosing a random objective
-        } catch (IOException e) {
-            throw new JsonBadParsingException("Error while loading json: file not found");
-        } catch (ParseException | ClassCastException e) {
+        } catch (ClassCastException e) {
             throw new JsonBadParsingException("Error while parsing json");
         }
     }

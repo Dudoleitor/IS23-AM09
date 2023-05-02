@@ -207,4 +207,8 @@ public class Lobby implements ServerLobbyInterface {
     public String getCurrentPlayer() {
         return controller.getCurrentPlayerName();
     }
+
+    private void networkExceptionHandler(Exception e) {
+
+    }
 }

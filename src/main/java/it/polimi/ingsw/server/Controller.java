@@ -47,7 +47,7 @@ public class Controller implements Jsonable {
 
             // Generating players' goals
             if (PlayerGoal.playerGoalsAmount(PlayerGoals) < clients.size()) {
-                throw new RuntimeException("Unable to generate players goals: not enough goals in file!");
+                throw new ControllerGenericException("Unable to generate players goals: not enough goals in file!");
             }
             for (int goalToGen = 0; goalToGen < clients.size(); goalToGen++) {
                 playerGoal = new PlayerGoal(PlayerGoals);
@@ -204,7 +204,7 @@ public class Controller implements Jsonable {
                 collect(Collectors.toList());
     }
 
-    public void setActivity(String playerName, boolean value) throws ControllerGenericException{
+    protected void setActivity(String playerName, boolean value) throws ControllerGenericException{
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
         }
@@ -381,5 +381,34 @@ public class Controller implements Jsonable {
         gameStatus.put("commonGoals", commonGoalsJson);
 
         return gameStatus;
+    }
+
+    /**
+     * This function is called by the lobby when a client disconnected.
+     * The function removes the client and sets the corresponding player
+     * as inactive.
+     * @param client Client object
+     * @throws ControllerGenericException when there is no client or
+     *          no player matching the provided object.
+     */
+    public void clientDisconnected(Client client) {
+        if(!clients.remove(client)){
+            throw new ControllerGenericException("Provided client did not exist");
+        }
+        setActivity(client.getPlayerName(), false);
+    }
+
+    /**
+     * This function is called by the lobby when a client connects
+     * after a crash.
+     * The function adds the client and sets the corresponding player
+     * as active.
+     * @param client Client object
+     * @throws ControllerGenericException when there is no player
+     *          with the provided name.
+     */
+    public void clientReconnected(Client client) {
+        setActivity(client.getPlayerName(), true);
+        clients.add(client);
     }
 }

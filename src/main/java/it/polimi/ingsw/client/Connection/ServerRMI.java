@@ -143,6 +143,7 @@ public class ServerRMI extends Server {
         try{
             hasStarted = lobby.startGame(player);
         } catch (RemoteException e) {
+            e.printStackTrace();
             throw new LobbyException("Error in Lobby");
         }
         return hasStarted;

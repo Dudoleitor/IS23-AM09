@@ -100,13 +100,39 @@
           <include>*.json</include>
         </includes>
       </resource>
-      <resource>
+    </resources>
+    <testResources>
+      <testResource>
         <directory>src/test/resources</directory>
         <includes>
           <include>*.json</include>
         </includes>
-      </resource>
-    </resources>
+      </testResource>
+      <testResource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>gui/*.fxml</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>gui/*.css</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>gui/gameGraphics/</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>*.json</include>
+        </includes>
+      </testResource>
+    </testResources>
 
     <plugins>
       <plugin>
