@@ -11,7 +11,12 @@ import java.util.Random;
 
 public class homeScreenController {
 
-    private ClientGUI client = new ClientGUI();
+    //HelloController helloController;
+    private ClientGUI client = HelloController.getClient();
+    boolean clicked = false;
+
+    @FXML
+    Button goalsButton;
 
     @FXML
     ImageView imgPersGoal;
@@ -52,8 +57,15 @@ public class homeScreenController {
 
     @FXML
     protected void randGoals() {
+        clicked = true;
+        if(clicked) {
+            goalsButton.setOpacity(0.0);
+        } else {
+            goalsButton.setOpacity(1.0);
+        }
         randPG();
         randCG();
+
     }
 
     @FXML
@@ -67,6 +79,7 @@ public class homeScreenController {
 
     @FXML
     protected void readChat() throws IOException {
+        clicked = false;
         client.changeScene("Chat");
     }
 

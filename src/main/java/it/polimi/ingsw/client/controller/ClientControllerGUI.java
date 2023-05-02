@@ -29,7 +29,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @return String, player's name.
      */
     public String getPlayerName() {
-        return "";
+        return playerName;
     }
 
     /**

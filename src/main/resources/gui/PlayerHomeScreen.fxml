@@ -10,7 +10,7 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.View.gui.homeScreenController">
 
-    <AnchorPane onMouseClicked="#randGoals" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+    <AnchorPane  onMouseClicked="#randGoals" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
         <children>
             <ImageView fitHeight="619.0" fitWidth="614.0" layoutX="-7.0" layoutY="-214.0" opacity="0.75" pickOnBounds="true" preserveRatio="true">
                 <image>
@@ -117,6 +117,11 @@
             </ImageView>
 
             <Button layoutX="37.0" layoutY="342.0" mnemonicParsing="false" onAction="#readChat" style="-fx-background-color: #49be25;" text="Read Chat">
+                <font>
+                    <Font name="SF Mono Bold" size="13.0" />
+                </font>
+            </Button>
+            <Button fx:id="goalsButton" layoutX="137.0" layoutY="342.0" mnemonicParsing="false" onAction="#randGoals" style="-fx-background-color: #49be25;" text="View goals">
                 <font>
                     <Font name="SF Mono Bold" size="13.0" />
                 </font>

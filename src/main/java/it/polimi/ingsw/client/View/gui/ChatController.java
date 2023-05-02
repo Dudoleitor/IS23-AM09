@@ -6,12 +6,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class ChatController {
 
-    private ClientGUI client = new ClientGUI();
+    private ClientGUI client = HelloController.getClient();
 
     @FXML
     TextField message;
@@ -21,8 +22,9 @@ public class ChatController {
 
     @FXML
     protected void SendMsg() throws RemoteException {
-        //client.getController().postChatMessage("Luca", message.getText());
-        textArea.appendText("Username: " + message.getText() + "\n");
+        client.getController().postChatMessage(client.getController().getPlayerName(), message.getText());
+        textArea.appendText(client.getController().getPlayerName() + ": " + message.getText() + "\n");
+        message.setText("");
     }
 
     @FXML

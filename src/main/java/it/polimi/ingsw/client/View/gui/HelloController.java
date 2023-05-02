@@ -16,14 +16,19 @@ public class HelloController {
     @FXML
     TextField lobbyNumber;
 
-    private ClientGUI client = new ClientGUI();
-    //private ClientControllerGUI controller = new ClientControllerGUI(userName.getText());
+    private static ClientGUI client = new ClientGUI();
+    private ClientControllerGUI controller;
+
+    public static ClientGUI getClient() {
+        return client;
+    }
 
     @FXML
     protected void signInAction() throws IOException {
         welcome.setText(userName.getText() + " ha effettuato il login nella lobby " +
                 lobbyNumber.getText());
-        //client.setController(controller);
+        controller = new ClientControllerGUI(userName.getText());
+        client.setController(controller);
         client.changeScene("PlayerHomeScreen");
     }
 }
