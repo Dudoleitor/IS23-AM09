@@ -1,11 +1,11 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.shared.model.PlayerGoal;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +18,14 @@ public interface Jsonable {
      * @return JSONObject with the content
      */
     static JSONObject pathToJsonObject(String jsonPath, Class<?> cls) throws JsonBadParsingException{
-        try {
-            JSONParser jsonParser = new JSONParser(); //initialize parser
-            Object obj = jsonParser.parse(new FileReader(jsonPath)); //acquire JSON object file
+        JSONParser jsonParser = new JSONParser(); //initialize parser
+        try(
+                InputStream stream = Jsonable.class.getClassLoader().getResourceAsStream(jsonPath)
+                ) {
+            if(stream==null)
+                throw new JsonBadParsingException("Error while generating " + parseClassName1UC(cls) + " from JSON : file was not found");
+            Reader reader = new InputStreamReader(stream);
+            Object obj = jsonParser.parse(reader); //acquire JSON object file
             return (JSONObject) ((JSONObject) obj).get(parseClassName(cls)); //acquire board object
         } catch (IOException | NullPointerException e){
             throw new JsonBadParsingException("Error while generating " + parseClassName1UC(cls) + " from JSON : file was not found");

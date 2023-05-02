@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FullLadderTest {
-    private final String basePath = getClass().getClassLoader().getResource("CommonGoalTests").getPath() + "/";
+    private final String basePath = "CommonGoalTests/";
 
     @Test
     void testEmptyShelf() throws JsonBadParsingException {

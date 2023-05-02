@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
-    private final String basePath = getClass().getClassLoader().getResource("BoardTests").getPath() + "/";
+    private final String basePath = "BoardTests/";
     PartialMove partialMove = new PartialMove();
 
     @Test

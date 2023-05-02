@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class VirtualBoardTest {
-    private final String basePath = getClass().getClassLoader().getResource("BoardTests").getPath() +  "/";
+    private final String basePath = "BoardTests/";
 
     @Test
     void pickTest() throws OutOfTilesException, JsonBadParsingException, BadPositionException, InvalidMoveException {

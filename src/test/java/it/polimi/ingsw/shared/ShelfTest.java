@@ -1,16 +1,12 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.model.BadPositionException;
-import it.polimi.ingsw.shared.model.Shelf;
-import it.polimi.ingsw.shared.model.ShelfRuntimeException;
-import it.polimi.ingsw.shared.model.Tile;
+import it.polimi.ingsw.shared.model.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ShelfTest {
-    private final String basePath = getClass().getClassLoader().getResource("ShelfTests").getPath() + "/";
+    private final String basePath = "ShelfTests/";
 
     final int rows = 6;
     final int columns = 5;
@@ -118,8 +114,11 @@ public class ShelfTest {
     void JsonObjectTest() throws JsonBadParsingException, BadPositionException {
         JSONParser jsonParser = new JSONParser(); //initialize JSON parser
         Object obj = null; //acquire JSON object file
-        try {
-            obj = jsonParser.parse(new FileReader(basePath + "ShelfInsert.json"));
+        try (
+                InputStream stream = PlayerGoal.class.getClassLoader().getResourceAsStream(basePath + "ShelfInsert.json")
+                ){
+            Reader reader = new InputStreamReader(stream);
+            obj = jsonParser.parse(reader);
         } catch (IOException | ParseException e) {
             fail();
         }
@@ -189,7 +188,7 @@ public class ShelfTest {
 
     @Test
     void toJsonTest() throws JsonBadParsingException {
-        String jsonPath = getClass().getClassLoader().getResource("CommonGoalTests").getPath() + "/TestShelf_1_2Squares.json";
+        String jsonPath = "CommonGoalTests/TestShelf_1_2Squares.json";
         JSONObject jsonShelf = Jsonable.pathToJsonObject(jsonPath, Shelf.class);
         Shelf shelf = new Shelf(Jsonable.pathToJsonObject(jsonPath, Shelf.class));
 
