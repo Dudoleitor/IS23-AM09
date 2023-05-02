@@ -16,7 +16,13 @@ public class homeScreenController {
     @FXML
     ImageView imgPersGoal;
 
-    //qua mi servirà una funzione che mi dà il personal goal del player
+   @FXML
+   ImageView commonGoal1;
+
+    @FXML
+    ImageView commonGoal2;
+
+    //qua mi servirà un metodo che mi dà il personal goal del player
     private void randPG() {
         Random rand = new Random();
         int int_random = rand.nextInt(12);
@@ -28,9 +34,26 @@ public class homeScreenController {
         }
     }
 
+    //qua mi servirà un metodo che mi dà i common goals della partita
+    private void randCG () {
+        Random rand = new Random();
+        int int_random = rand.nextInt(12);
+        int int_random_2 = rand.nextInt(12);
+        while(int_random_2 == int_random) {
+            int_random_2 = rand.nextInt(12);
+        }
+        int_random += 1;
+        int_random_2 += 1;
+
+        commonGoal1.setImage(new Image("gui/gameGraphics/common_goal_cards/" + int_random + ".jpg"));
+        commonGoal2.setImage(new Image("gui/gameGraphics/common_goal_cards/" + int_random_2 + ".jpg"));
+
+    }
+
     @FXML
-    protected void randPersonalGoal() {
+    protected void randGoals() {
         randPG();
+        randCG();
     }
 
     @FXML
