@@ -55,11 +55,9 @@ public class ClientStub implements Client {
      * This method is used when the lobby is ready and the
      * admin started the game.
      *
-     * @param players List of players, order is used to
-     *                determine turns
      */
     @Override
-    public void gameStarted(List<String> players) {
+    public void gameStarted() {
 
     }
 

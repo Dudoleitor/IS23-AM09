@@ -199,7 +199,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * admin started the game.
      */
     @Override
-    public void gameStarted(List<String> players) {
+    public void gameStarted() {
         ensureModelIsSet();
         cli.showBoard(board);
         cli.showCommonGoals(commonGoalList);

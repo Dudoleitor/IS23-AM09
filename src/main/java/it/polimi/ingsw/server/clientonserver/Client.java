@@ -87,10 +87,8 @@ public interface Client {
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
-     * @param players List of players, order is used to
-     *                determine turns
      */
-    public void gameStarted(List<String> players);
+    public void gameStarted();
 
     /**
      * This function is used when the turn of a player ends.

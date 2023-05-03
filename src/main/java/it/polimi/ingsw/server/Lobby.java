@@ -54,6 +54,7 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
             client.setExceptionHandler(this);
             if(controller!=null)
                 controller.clientReconnected(client);
+            client.gameStarted();
             return;
         }
 
@@ -152,9 +153,8 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
         it won't be added to the match later */
         controller = new Controller(new ArrayList<>(clients));  // List is given by copy
 
-        final List<String> players = clients.stream().map(Client::getPlayerName).collect(Collectors.toList());
         for(Client c : clients)
-            c.gameStarted(new LinkedList<>(players));
+            c.gameStarted();
 
         System.out.println("MATCH STARTED IN LOBBY #"+id);
         return true;

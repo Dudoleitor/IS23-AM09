@@ -143,13 +143,11 @@ public class ClientRMI implements Client, Serializable {
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
-     * @param players List of players, order is used to
-     *                determine turns
      */
     @Override
-    public void gameStarted(List<String> players) {
+    public void gameStarted() {
         try {
-            clientRemote.gameStarted(players);
+            clientRemote.gameStarted();
         } catch (RemoteException e) {
             exceptionHandler.handleNetworkException(this, e);
         }

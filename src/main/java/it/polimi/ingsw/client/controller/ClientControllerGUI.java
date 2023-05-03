@@ -107,7 +107,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * admin started the game.
      */
     @Override
-    public void gameStarted(List<String> players) {
+    public void gameStarted() {
 
     }
 
