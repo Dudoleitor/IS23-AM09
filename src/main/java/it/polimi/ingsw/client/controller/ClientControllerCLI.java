@@ -110,14 +110,13 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * to the remote view,
      * it uses a json string.
      *
-     * @param board JSONObject.toJsonString
+     * @param board JSONObject
      */
     @Override
-    public void refreshBoard(String board) {
+    public void refreshBoard(JSONObject board) {
         try {
-            JSONObject jsonBoard = (JSONObject) (new JSONParser()).parse(board);
-            this.board = new Board(jsonBoard, new ArrayList<>());
-        } catch (ParseException | ClassCastException | JsonBadParsingException e) {
+            this.board = new Board(board, new ArrayList<>());
+        } catch (JsonBadParsingException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
     }
@@ -150,15 +149,14 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * it uses a json string.
      *
      * @param player name of the player
-     * @param shelf  JSONObject.toJsonString
+     * @param shelf  JSONObject
      */
     @Override
-    public void refreshShelf(String player, String shelf) {
+    public void refreshShelf(String player, JSONObject shelf) {
         playersShelves.remove(player);
         try {
-            JSONObject jsonShelf = (JSONObject) (new JSONParser()).parse(shelf);
-            this.playersShelves.put(player, new Shelf(jsonShelf));
-        } catch (ParseException | ClassCastException | JsonBadParsingException e) {
+            this.playersShelves.put(player, new Shelf(shelf));
+        } catch (JsonBadParsingException e) {
             throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
         }
     }

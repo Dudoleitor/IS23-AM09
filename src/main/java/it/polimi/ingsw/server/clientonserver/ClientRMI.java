@@ -66,10 +66,10 @@ public class ClientRMI implements Client, Serializable {
      * This method is used to transfer the whole board
      * to the remote view,
      * it uses a json string.
-     * @param board JSONObject.toJsonString
+     * @param board JSONObject
      */
     @Override
-    public void refreshBoard(String board) {
+    public void refreshBoard(JSONObject board) {
         try {
             clientRemote.refreshBoard(board);
         } catch (RemoteException e) {
@@ -101,10 +101,10 @@ public class ClientRMI implements Client, Serializable {
      * of a player to the remote view,
      * it uses a json string.
      * @param player name of the player
-     * @param shelf  JSONObject.toJsonString
+     * @param shelf  JSONObject
      */
     @Override
-    public void refreshShelf(String player, String shelf) {
+    public void refreshShelf(String player, JSONObject shelf) {
         try {
             clientRemote.refreshShelf(player, shelf);
         } catch (RemoteException e) {

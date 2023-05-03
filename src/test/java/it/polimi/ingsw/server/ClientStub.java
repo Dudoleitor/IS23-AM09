@@ -27,7 +27,7 @@ public class ClientStub implements Client {
     }
 
     @Override
-    public void refreshBoard(String board) {
+    public void refreshBoard(JSONObject board) {
         this.updated = true;
     }
 
@@ -37,7 +37,7 @@ public class ClientStub implements Client {
     }
 
     @Override
-    public void refreshShelf(String player, String shelf) {
+    public void refreshShelf(String player, JSONObject shelf) {
         this.updated = true;
     }
 
