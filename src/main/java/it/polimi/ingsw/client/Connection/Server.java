@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.model.Move;
 
+import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
@@ -28,16 +29,12 @@ public abstract class Server {
     /**
      * Join the first available Lobby
      * @param client
-     * @return the Lobby object that will handle the connection with
-     * the joined lobby
      */
     public abstract void joinRandomLobby(Client client) throws ServerException;
 
     /**
      * Create a lobby on server
      * @param client
-     * @return the Lobby object that will handle the connection with
-     * the joined lobby
      */
     public abstract void createLobby(Client client) throws ServerException;
 
@@ -58,8 +55,6 @@ public abstract class Server {
      * Join a specific lobby
      * @param client
      * @param id
-     * @return the Lobby object that will handle the connection with
-     * the joined lobby
      */
     public abstract void joinSelectedLobby(Client client, int id) throws ServerException;
     /**
@@ -122,4 +117,13 @@ public abstract class Server {
      * @return String name of the player
      */
     abstract public String getCurrentPlayer() throws LobbyException;
+
+    /**
+     * This function is used to check if the client was already connected to
+     * the specified lobby and was previously disconnected.
+     * @param playerName String name of the player
+     * @param id Int id of the lobby
+     * @return True if was previously disconnected
+     */
+    abstract public boolean disconnectedFromLobby(String playerName, int id) throws ServerException;
 }

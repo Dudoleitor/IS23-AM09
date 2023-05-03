@@ -50,8 +50,8 @@ class ClientMainTest {
 
         LinkedList<String> callsDouble = new LinkedList<>();
         callsDouble.addLast("frigioggi login");
-        callsDouble.addLast("joined lobbies");
         callsDouble.addLast("available lobbies");
+        callsDouble.addLast("joined lobbies");
         callsDouble.addLast("frigioggi create lobby");
         callsDouble.addLast("frigioggi asked lobby admin");
         callsDouble.addLast("frigioggi asked lobby admin");

@@ -46,9 +46,28 @@ public class ClientMain{
      * Join the lobby by creating a Lobby connection object and connecting it to server
      */
     private static void joinLobby() throws ServerException {
+        Map<Integer, Integer> availableLobbies = server.getAvailableLobbies();
+
+        // Checking if we were previously disconnected from a lobby
+        for (int lobbyId : availableLobbies.keySet()) {
+            if(server.disconnectedFromLobby(playerName, lobbyId)) {
+                server.joinSelectedLobby(client, lobbyId);  // Automatically joining the lobby
+                try {
+                    final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
+
+                    view.message("You joined automatically #"+ lobbyId +" lobby!\nYou were previously connected to it");
+                    view.setLobbyAdmin(isLobbyAdmin);
+
+                    return;
+                } catch (LobbyException e) {
+                    view.errorMessage("Error while connecting automatically to lobby");
+                }
+            }
+        }
+
         //show the client the lobbies they can join
         view.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
-        view.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
+        view.showLobbies(availableLobbies, "The lobbies that are available");
 
         boolean successful = false;
         while(!successful){
@@ -75,8 +94,11 @@ public class ClientMain{
             }
             if(command.isValid()){
                 try{
-                    view.message("You joined #"+ server.getLobbyID()+" lobby!");
-                    view.setLobbyAdmin(server.isLobbyAdmin(playerName));
+                    final int joinedLobbyId = server.getLobbyID();
+                    final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
+
+                    view.message("You joined #"+ joinedLobbyId +" lobby!");
+                    view.setLobbyAdmin(isLobbyAdmin);
                     successful = true;
                 }
                 catch (LobbyException e){

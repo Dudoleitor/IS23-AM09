@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.model.Move;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class ConnectionStub extends Server {
         callsToStub.addLast("available lobbies");
         if(verbous)
             System.out.println("available lobbies");
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -50,7 +51,7 @@ public class ConnectionStub extends Server {
         callsToStub.addLast("joined lobbies");
         if(verbous)
             System.out.println("joined lobbies");
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -123,6 +124,19 @@ public class ConnectionStub extends Server {
     @Override
     public String getCurrentPlayer() throws LobbyException {
         return "";
+    }
+
+    /**
+     * This function is used to check if the client was already connected to
+     * the specified lobby and was previously disconnected.
+     *
+     * @param playerName String name of the player
+     * @param id         Int id of the lobby
+     * @return True if was previously disconnected
+     */
+    @Override
+    public boolean disconnectedFromLobby(String playerName, int id) throws ServerException {
+        return false;
     }
 
     public LinkedList<String> getCallsToStub() {

@@ -12,6 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ServerRMI extends Server {
@@ -43,13 +44,15 @@ public class ServerRMI extends Server {
 
     @Override
     public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException{
-        Map<Integer,Integer> lobbies = null;
+        Map<Integer,Integer> lobbies;
         try {
             lobbies = server.getJoinedLobbies(playerName);
         } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
-        return lobbies;
+        if(lobbies != null)
+            return lobbies;
+        return new HashMap<>();
     }
 
     @Override
@@ -81,13 +84,15 @@ public class ServerRMI extends Server {
 
     @Override
     public Map<Integer, Integer> getAvailableLobbies() throws ServerException{
-        Map<Integer, Integer> availableLobbies = null;
+        Map<Integer, Integer> availableLobbies;
         try{
             availableLobbies = server.showAvailableLobbies();
         } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
-        return availableLobbies;
+        if (availableLobbies!=null)
+            return availableLobbies;
+        return new HashMap<>();
     }
     @Override
     public void postToLiveChat(String playerName, String message) throws LobbyException {
@@ -183,6 +188,23 @@ public class ServerRMI extends Server {
             return lobby.getCurrentPlayer();
         } catch (RemoteException e) {
             throw new LobbyException(e.getMessage());
+        }
+    }
+
+    /**
+     * This function is used to check if the client was already connected to
+     * the specified lobby and was previously disconnected.
+     *
+     * @param playerName String name of the player
+     * @param id     Int id of the lobby
+     * @return True if was previously disconnected
+     */
+    @Override
+    public boolean disconnectedFromLobby(String playerName, int id) throws ServerException {
+        try {
+            return server.disconnectedFromLobby(playerName, id);
+        } catch (RemoteException e) {
+            throw new ServerException(e.getMessage());
         }
     }
 }
