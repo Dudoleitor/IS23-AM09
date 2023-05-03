@@ -245,14 +245,17 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
      * @param e Exception thrown
      */
     public synchronized void handleNetworkException(Client client, Exception e) {
-        if(!clients.remove(client)) {
-            throw new RuntimeException("Provided client was not connected");
+        if (controller!=null) {
+            /* If controller is null it's still be initialized, we won't disconnect
+                    the player. An exception will be thrown later and the player will
+                    be disconnected then. */
+            if (clients.remove(client)) {
+                controller.clientDisconnected(client);
+                disconnectedClients.add(client.getPlayerName().toLowerCase());
+                System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
+            }
+            client.disconnect();
         }
-        if(controller!=null)
-            controller.clientDisconnected(client);
-        client.disconnect();
-        disconnectedClients.add(client.getPlayerName().toLowerCase());
-        System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
     }
 
     /**
