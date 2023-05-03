@@ -117,8 +117,7 @@ public class ServerRMI extends Server {
     public void quitGame(String player){
         try{
             lobby.quitGame(player);
-        } catch (RemoteException e) {
-            //do nothing and quit anyway
+        } catch (RemoteException ignored) {
         }
     }
 
