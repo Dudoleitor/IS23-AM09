@@ -27,6 +27,7 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     In addition to that, multiple clients can send requests to the lobby and
     they must send commands to the model one at a time. */
     private final ScheduledExecutorService executor;
+    private final PingSender pingSender;
     private final long pingIntervalSeconds = 3;
 
     public Lobby(Client firstPlayer, int id){
@@ -36,6 +37,7 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
         this.id = id;
         this.chat = new Chat();
         chat.addPlayer(firstPlayer);
+        this.pingSender = new PingSender(this);
         this.executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
     }
@@ -140,6 +142,8 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
      */
     @Override
     public synchronized boolean startGame(String player){
+        pingSender.run();  // Making sure no client disconnected
+
         try {
             if(!isReady()  || !getLobbyAdmin().equals(player))
                 return false;
@@ -269,12 +273,23 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
             }
         }
     }
+}
+
+class PingSender implements Runnable {
+
+    private final Lobby lobby;  // Needed for proper synchronization
+
+    public PingSender(Lobby lobby) {
+        this.lobby = lobby;
+    }
 
     /**
      * This Runnable is used to ping clients, if a client is not available
      * an exception is thrown and the exception handles kicks in.
      */
-    private final Runnable pingSender = () -> {
-        for (Client c : clients) c.ping();
+    public void run() {
+        synchronized (lobby) {
+            for (Client c : lobby.getClients()) c.ping();
+        }
     };
 }
