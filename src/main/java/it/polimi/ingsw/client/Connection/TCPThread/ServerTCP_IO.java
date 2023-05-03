@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -40,19 +39,15 @@ public class ServerTCP_IO{
     public MessageTcp in() throws RemoteException {
         MessageTcp message;
         try {
-
             synchronized (serverListener) {
-                serverSocket.setSoTimeout(NetworkSettings.WaitingTime); //TODO seems not working
                 while (input.isEmpty()) {
-                    serverListener.wait();
+                    serverListener.wait(NetworkSettings.WaitingTime);
+                    if(input.isEmpty())
+                        throw new RemoteException("Waited too much");
                 }
             }
-        } catch (InterruptedException | SocketException e) {
-                //serverSocket.close(); U SURE?
-                synchronized (serverListener){
-                    serverListener.terminate();
-                }
-                throw new RemoteException();
+        } catch (InterruptedException | RemoteException e) {
+                throw new RemoteException(e.getMessage());
         }
 
 

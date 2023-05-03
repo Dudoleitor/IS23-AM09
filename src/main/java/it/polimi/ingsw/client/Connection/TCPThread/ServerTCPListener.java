@@ -10,7 +10,6 @@ public class ServerTCPListener extends Thread{
 
     private final BufferedReader serverIn;
     private final ArrayList<MessageTcp> input;
-    private boolean exit;
 
     public ServerTCPListener(BufferedReader serverIn, ArrayList input) {
         this.serverIn = serverIn;
@@ -18,7 +17,7 @@ public class ServerTCPListener extends Thread{
     }
     @Override
     public void run(){
-        exit = false;
+        boolean exit = false;
         while (!exit){
             MessageTcp incomingMessage = in();
             if(incomingMessage.isReplyMessage()) {
@@ -48,9 +47,5 @@ public class ServerTCPListener extends Thread{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void terminate(){
-        exit = true;
     }
 }
