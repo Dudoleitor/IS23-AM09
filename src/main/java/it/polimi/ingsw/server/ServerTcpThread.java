@@ -33,8 +33,7 @@ public class ServerTcpThread extends Thread{ //TODO
     @Override
     public void run() {
         while(!exit){
-            String string = client.in(); //TODO to make it wait on input ready
-            MessageTcp message = new MessageTcp(string);
+            MessageTcp message = client.in(); //TODO to make it wait on input ready
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
             JSONObject content = message.getContent(); //content in JSON
             if(!lobbyAssigned)

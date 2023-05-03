@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.server.NetworkExceptionHandler;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
@@ -34,14 +35,14 @@ public class ClientSocket implements Client {
      * socket input buffer
      * @return the read line of the buffer
      */
-    public String in(){
+    public MessageTcp in(){
         boolean ready = false;
         try {
             while(!ready){ //TODO this is a bad way to wait, look for better options
                 if(ClientIn.ready())
                     ready = true;
             }
-            return ClientIn.readLine();
+            return new MessageTcp(ClientIn.readLine());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
