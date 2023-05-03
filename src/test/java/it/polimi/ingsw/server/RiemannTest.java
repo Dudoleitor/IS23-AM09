@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-public class Riemann { //an integration test
+public class RiemannTest { //an integration test
     static final boolean verbose = false;
+
     @Test
-    void wholeMatch() throws JsonBadParsingException {
+    void wholeMatchTest() throws JsonBadParsingException {
         List<String> playerNames = new ArrayList<>();
         playerNames.add("fridgeieri");
         playerNames.add("fridgeoggi");
@@ -210,7 +211,7 @@ public class Riemann { //an integration test
         }
         catch (Exception e){
             assertEquals(ControllerGenericException.class, e.getClass());
-            assertEquals("Null move",e.getMessage());
+            assertEquals("Invalid move",e.getMessage());
         }
         //no nextTurn
         assertEquals(playerNames.get(2),c.getCurrentPlayerName());
