@@ -40,10 +40,16 @@ public class ServerTCP_IO{
         MessageTcp message;
         try {
             synchronized (serverListener) {
+                long startTime = System.currentTimeMillis();
+                long endTime;
+                long elapsedTime = 0;
                 while (input.isEmpty()) {
-                    serverListener.wait(NetworkSettings.WaitingTime);
-                    if(input.isEmpty())
+                    serverListener.wait(NetworkSettings.WaitingTime - elapsedTime); //set to wait for remaining time
+                    endTime = System.currentTimeMillis();
+                    elapsedTime = endTime-startTime;
+                    if(input.isEmpty() && elapsedTime>NetworkSettings.WaitingTime)//check that wake up wasn't accidental
                         throw new RemoteException("Waited too much");
+
                 }
             }
         } catch (InterruptedException | RemoteException e) {
