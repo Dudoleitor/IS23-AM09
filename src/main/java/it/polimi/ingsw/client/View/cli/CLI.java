@@ -33,18 +33,18 @@ public class CLI extends View {
 
     @Override
     public LobbyCommand askCommand(){
-        synchronized (cli_lock){
             String input;
             input = scan();
             //Invalid command
             if(!inputSanitizer.isValidMessage(input)){
-                printErrorMessage("Invalid format");
+                synchronized (cli_lock){
+                    printErrorMessage("Invalid format");
+                }
                 return LobbyCommand.Invalid;
             }
             else{
                 return LobbyCommand.stringToCommand(input);
             }
-        }
     }
 
     @Override
@@ -156,6 +156,15 @@ public class CLI extends View {
             pm.addPosition(p);
         }
         return new Move(pm, column);
+    }
+
+    public void showGameStatus(Board b, Map<String, Shelf> playerShelves, PlayerGoal goal){
+        synchronized (cli_lock){
+            showBoard(b);
+            showCommonGoals(b.getCommonGoals());
+            showShelves(playerShelves);
+            showPersonalGoal(goal);
+        }
     }
 
     public void showBoard(Board b) {

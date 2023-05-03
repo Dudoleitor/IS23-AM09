@@ -201,10 +201,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     @Override
     public void gameStarted() {
         ensureModelIsSet();
-        cli.showBoard(board);
-        cli.showCommonGoals(commonGoalList);
-        cli.showShelves(playersShelves);
-        cli.showPersonalGoal(playerGoal);
+
+        cli.showGameStatus(board,playersShelves,playerGoal);
 
         gameStarted = true;
         cli.message("Match has started");
@@ -221,10 +219,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void nextTurn(String player) {
         if (gameStarted) {
             ensureModelIsSet();
-            cli.showBoard(board);
-            cli.showCommonGoals(commonGoalList);
-            cli.showShelves(playersShelves);
-            cli.showPersonalGoal(playerGoal);
+
+            cli.showGameStatus(board,playersShelves,playerGoal);
         }
 
         if (player.equals(this.playerName)) {
