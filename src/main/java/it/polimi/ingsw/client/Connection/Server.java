@@ -120,10 +120,11 @@ public abstract class Server {
 
     /**
      * This function is used to check if the client was already connected to
-     * the specified lobby and was previously disconnected.
+     * a lobby and was previously disconnected.
+     *
      * @param playerName String name of the player
-     * @param id Int id of the lobby
-     * @return True if was previously disconnected
+     * @return Int id of the lobby if the player was previously connected,
+     * -1 if not.
      */
-    abstract public boolean disconnectedFromLobby(String playerName, int id) throws ServerException;
+    abstract public int disconnectedFromLobby(String playerName) throws ServerException;
 }

@@ -294,14 +294,14 @@ public class ServerTCP extends Server {
 
     /**
      * This function is used to check if the client was already connected to
-     * the specified lobby and was previously disconnected.
+     * a lobby and was previously disconnected.
      *
      * @param playerName String name of the player
-     * @param id     Int id of the lobby
-     * @return True if was previously disconnected
+     * @return Int id of the lobby if the player was previously connected,
+     * -1 if not.
      */
     @Override
-    public boolean disconnectedFromLobby(String playerName, int id) throws ServerException {
-        return false; //TODO
+    public int disconnectedFromLobby(String playerName) throws ServerException {
+        return -1; //TODO
     }
 }

@@ -126,17 +126,9 @@ public class ConnectionStub extends Server {
         return "";
     }
 
-    /**
-     * This function is used to check if the client was already connected to
-     * the specified lobby and was previously disconnected.
-     *
-     * @param playerName String name of the player
-     * @param id         Int id of the lobby
-     * @return True if was previously disconnected
-     */
     @Override
-    public boolean disconnectedFromLobby(String playerName, int id) throws ServerException {
-        return false;
+    public int disconnectedFromLobby(String playerName) throws ServerException {
+        return -1;
     }
 
     public LinkedList<String> getCallsToStub() {

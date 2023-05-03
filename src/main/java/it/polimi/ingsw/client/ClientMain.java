@@ -49,19 +49,18 @@ public class ClientMain{
         Map<Integer, Integer> availableLobbies = server.getAvailableLobbies();
 
         // Checking if we were previously disconnected from a lobby
-        for (int lobbyId : availableLobbies.keySet()) {
-            if(server.disconnectedFromLobby(playerName, lobbyId)) {
-                server.joinSelectedLobby(client, lobbyId);  // Automatically joining the lobby
-                try {
-                    final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
+        final int previousLobbyId = server.disconnectedFromLobby(playerName);
+        if(previousLobbyId >= 0) {
+            server.joinSelectedLobby(client, previousLobbyId);  // Automatically joining the lobby
+            try {
+                final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
 
-                    view.message("You joined automatically #"+ lobbyId +" lobby!\nYou were previously connected to it");
-                    view.setLobbyAdmin(isLobbyAdmin);
+                view.message("You joined automatically #"+ previousLobbyId +" lobby!\nYou were previously connected to it");
+                view.setLobbyAdmin(isLobbyAdmin);
 
-                    return;
-                } catch (LobbyException e) {
-                    view.errorMessage("Error while connecting automatically to lobby");
-                }
+                return;
+            } catch (LobbyException e) {
+                view.errorMessage("Error while connecting automatically to lobby");
             }
         }
 
