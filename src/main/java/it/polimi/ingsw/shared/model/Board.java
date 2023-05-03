@@ -372,11 +372,9 @@ public class Board implements Jsonable {
      * @throws BadPositionException when picking position is out of bound
      */
     public Tile pickTile(Position pos) throws BadPositionException { //maybe add pick tile by coordinates
-        try {
-            return pickTile(pos.getRow(), pos.getColumn());
-        } catch (NullPointerException e){
+        if (pos==null)
             throw new BoardRuntimeException("Error while picking tile: pos is null pointer");
-        }
+        return pickTile(pos.getRow(), pos.getColumn());
     }
 
     /**

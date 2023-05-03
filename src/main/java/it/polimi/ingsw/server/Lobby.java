@@ -148,6 +148,8 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
         }
 
         started = true;
+        disconnectedClients.removeIf(x->true);  /* If a client disconnects before the controller is initialized,
+        it won't be added to the match later */
         controller = new Controller(new ArrayList<>(clients));  // List is given by copy
 
         final List<String> players = clients.stream().map(Client::getPlayerName).collect(Collectors.toList());
@@ -211,7 +213,7 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     public synchronized void postMove(String player, JSONObject moveJson) {
         Client playerInput = null;
         final Move move = new Move(moveJson);
-        try{
+        try {
             playerInput = clients.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
             if(playerInput != null) {
                 controller.moveTiles(player, move);
@@ -245,16 +247,26 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
      * @param e Exception thrown
      */
     public synchronized void handleNetworkException(Client client, Exception e) {
-        if (controller!=null) {
-            /* If controller is null it's still be initialized, we won't disconnect
-                    the player. An exception will be thrown later and the player will
-                    be disconnected then. */
+        if (controller!=null && started) {
+            /* If game is started and controller is null it's still being initialized,
+                    we won't disconnect the player. An exception will be thrown later
+                    and the player will be disconnected then. */
             if (clients.remove(client)) {
                 controller.clientDisconnected(client);
                 disconnectedClients.add(client.getPlayerName().toLowerCase());
-                System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
+                System.err.println("Disconnected client " + client.getPlayerName());
             }
             client.disconnect();
+            return;
+        }
+
+        if(controller==null && !started) {
+            // The admin did not start the match yet
+            if(clients.remove(client)) {
+                disconnectedClients.add(client.getPlayerName().toLowerCase());
+                System.err.println("Disconnected client " + client.getPlayerName());
+                client.disconnect();
+            }
         }
     }
 

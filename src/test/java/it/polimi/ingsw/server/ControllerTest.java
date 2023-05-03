@@ -208,4 +208,26 @@ public class ControllerTest {
             c.nextTurn();
         }
     }
+
+    @Test
+    void reconnectTest() throws InvalidMoveException {
+        List<String> players = new ArrayList<>();
+        players.add("fridgeieri");
+        players.add("fridgeoggi");
+        players.add("fridgedomani");
+        List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
+        Controller c = new Controller(new ArrayList<>(clients));
+
+        c.clientDisconnected(clients.get(2));
+        clients.remove(clients.get(2));
+
+        clients.add(new ClientStub(players.get(2)));
+        c.clientReconnected(clients.get(2));
+
+        PartialMove partialMove = new PartialMove();
+        partialMove.addPosition(new Position(1,3));
+        Move testMove = new Move(partialMove, 1);
+
+        c.moveTiles(players.get(0), testMove);
+    }
 }

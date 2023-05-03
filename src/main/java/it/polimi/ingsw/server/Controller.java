@@ -278,8 +278,8 @@ public class Controller implements Jsonable {
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
         }
-        else if(move == null){
-            throw new ControllerGenericException("Null move");
+        else if(move == null || move.getBoardPositions() == null || move.getBoardPositions().contains(null)){
+            throw new ControllerGenericException("Invalid move");
         }
         else {
             player = players.stream().
@@ -436,5 +436,6 @@ public class Controller implements Jsonable {
             c.postChatMessage("Server", "User " + client.getPlayerName() + " joined the game.");
 
         clients.add(client);
+        refreshClient(client);
     }
 }
