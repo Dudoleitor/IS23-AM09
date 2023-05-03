@@ -21,7 +21,10 @@ public class ChatMessage implements Serializable, Jsonable{
         this.playerName = playerName;
         Date date = new Date();
         this.timestamp = new Timestamp(date.getTime());
-        this.color = color;
+        if(color!=null)
+            this.color = color;
+        else
+            this.color = Color.getRandomColor();
     }
     public ChatMessage(JSONObject jsonChat){
         playerName = jsonChat.get("sender").toString();
