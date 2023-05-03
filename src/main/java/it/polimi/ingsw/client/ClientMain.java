@@ -88,7 +88,7 @@ public class ClientMain{
                     view.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
                     break;
                 default:
-                    view.errorMessage("Input a valid id or command");
+                    view.notifyInvalidCommand();
                     break;
             }
             if(command.isValid()){
