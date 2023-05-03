@@ -429,9 +429,12 @@ public class Controller implements Jsonable {
                         .map(x->x.getName().toLowerCase())
                         .noneMatch(x->x.equals(client.getPlayerName()))
         )
-            throw new RuntimeException("No player with the give name found while reconnecting client");
+            throw new RuntimeException("No player with the given name found while reconnecting client");
 
         setActivity(client.getPlayerName(), true);
+        for(Client c : clients)
+            c.postChatMessage("Server", "User " + client.getPlayerName() + " joined the game.");
+
         clients.add(client);
     }
 }
