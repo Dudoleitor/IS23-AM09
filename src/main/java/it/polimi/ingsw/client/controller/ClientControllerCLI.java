@@ -169,7 +169,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
         if (!Objects.equals(sender, playerName))
-            cli.showChatMessage(sender, message);
+            cli.showChatMessage(chat.getLast());
     }
 
     /**

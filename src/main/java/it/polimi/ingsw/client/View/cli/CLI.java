@@ -223,8 +223,8 @@ public class CLI extends View {
         printMessage(goal.toString());
     }
 
-    public void showChatMessage(String sender, String message) {
-        printMessage(sender + " sent a chat message: " + message);
+    public void showChatMessage(ChatMessage message) {
+        System.out.println(message);
     }
 
     @Override
