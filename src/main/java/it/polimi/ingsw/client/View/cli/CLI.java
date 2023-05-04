@@ -19,7 +19,7 @@ public class CLI extends View {
     private InputSanitizer inputSanitizer;
     private Scanner scanner;
     private String placeHolder = stdPlaceHolder;
-    private boolean placeHolderToRestore = false;
+    private static boolean placeHolderToRestore = false;
 
     /**
      * Constructor. The cli_lock is built as a Singleton
@@ -161,11 +161,11 @@ public class CLI extends View {
         return new Move(pm, column);
     }
 
-    public void showGameStatus(Board b, Map<String, Shelf> playerShelves, PlayerGoal goal){
+    public void showGameStatus(Board b,List<CommonGoal> commongoals ,Map<String, Shelf> playerShelves, PlayerGoal goal){
         synchronized (cli_lock){
             skipPlaceHolder();
             showBoard(b);
-            showCommonGoals(b.getCommonGoals());
+            showCommonGoals(commongoals);
             showShelves(playerShelves);
             showPersonalGoal(goal);
         }
@@ -384,7 +384,7 @@ public class CLI extends View {
 
     private void skipPlaceHolder(){
         if(placeHolderToRestore){
-            System.out.print("");
+            System.out.println("");
         }
     }
 

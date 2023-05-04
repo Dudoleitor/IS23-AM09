@@ -1,9 +1,10 @@
 package it.polimi.ingsw.client.View.gui;
-import it.polimi.ingsw.client.controller.ClientControllerGUI;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 
 import java.io.IOException;
@@ -11,8 +12,7 @@ import java.util.Random;
 
 public class homeScreenController {
 
-    //HelloController helloController;
-    private ClientGUI client = HelloController.getClient();
+    private final ClientGUI client = HelloController.getClient();
     boolean clicked = false;
 
     @FXML
@@ -30,13 +30,11 @@ public class homeScreenController {
     //qua mi servirà un metodo che mi dà il personal goal del player
     private void randPG() {
         Random rand = new Random();
-        int int_random = rand.nextInt(12);
+        int int_random = rand.nextInt(11);
 
-        if(int_random == 0) {
-            imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals.png"));
-        } else {
-            imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
-        }
+        int_random += 1;
+        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
+
     }
 
     //qua mi servirà un metodo che mi dà i common goals della partita
@@ -80,7 +78,8 @@ public class homeScreenController {
     @FXML
     protected void readChat() throws IOException {
         clicked = false;
-        client.changeScene("Chat");
+        Stage stage = (Stage) imgPersGoal.getScene().getWindow();
+        stage.setScene(new Scene(client.loadScene("Chat"), 800, 800));
     }
 
 }
