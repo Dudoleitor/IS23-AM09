@@ -19,7 +19,7 @@ public class CLI extends View {
     private InputSanitizer inputSanitizer;
     private Scanner scanner;
     private String placeHolder = stdPlaceHolder;
-    private boolean placeHolderToRestore = false;
+    private static boolean placeHolderToRestore = false;
 
     /**
      * Constructor. The cli_lock is built as a Singleton
@@ -384,7 +384,7 @@ public class CLI extends View {
 
     private void skipPlaceHolder(){
         if(placeHolderToRestore){
-            System.out.print("");
+            System.out.println("");
         }
     }
 

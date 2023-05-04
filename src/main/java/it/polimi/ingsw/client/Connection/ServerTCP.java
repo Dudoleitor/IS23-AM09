@@ -59,8 +59,6 @@ public class ServerTCP extends Server {
         }catch (RemoteException e){
             return false;
         }
-
-
     }
 
 
