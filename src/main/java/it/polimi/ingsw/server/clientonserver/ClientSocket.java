@@ -113,10 +113,10 @@ public class ClientSocket implements Client {
      * to the remote view,
      * it uses a json string.
      *
-     * @param board JSONObject.toJsonString
+     * @param board JSONObject
      */
     @Override
-    public void refreshBoard(String board) {
+    public void refreshBoard(JSONObject board) {
         //TODO
     }
 
@@ -142,10 +142,10 @@ public class ClientSocket implements Client {
      * it uses a json string.
      *
      * @param player name of the player
-     * @param shelf  JSONObject.toJsonString
+     * @param shelf  JSONObject
      */
     @Override
-    public void refreshShelf(String player, String shelf) {
+    public void refreshShelf(String player, JSONObject shelf) {
         //TODO
     }
 

@@ -2,6 +2,7 @@ package it.polimi.ingsw.shared.virtualview;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.model.Position;
+import org.json.simple.JSONObject;
 
 /**
  * This object is used on the server to send
@@ -30,9 +31,9 @@ public class VirtualBoard extends VirtualView{
      * This method is used when there is the need to
      * send the whole board to clients. It overrides
      * every client copy of the board.
-     * @param board JSObject.toJsonString
+     * @param board JSObject
      */
-    public void refresh(String board) {
+    public void refresh(JSONObject board) {
         for (Client cl : getClientList()) {
             cl.refreshBoard(board);
         }

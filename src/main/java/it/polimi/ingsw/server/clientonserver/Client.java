@@ -43,9 +43,9 @@ public interface Client {
      * to the remote view,
      * it uses a json string.
      *
-     * @param board JSONObject.toJsonString
+     * @param board JSONObject
      */
-    public void refreshBoard(String board);
+    public void refreshBoard(JSONObject board);
 
     /**
      * This method is used when a player inserts a single
@@ -66,9 +66,9 @@ public interface Client {
      * it uses a json string.
      *
      * @param player name of the player
-     * @param shelf JSONObject.toJsonString
+     * @param shelf JSONObject
      */
-    public void refreshShelf(String player, String shelf);
+    public void refreshShelf(String player, JSONObject shelf);
 
     /**
      * This method is used to send a chat message to clients.

@@ -34,7 +34,7 @@ public interface ClientRemote extends Remote, Serializable {
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client
      */
-    public void refreshBoard(String board) throws RemoteException;
+    public void refreshBoard(JSONObject board) throws RemoteException;
 
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client
@@ -44,7 +44,7 @@ public interface ClientRemote extends Remote, Serializable {
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client
      */
-    public void refreshShelf(String player, String shelf) throws RemoteException;
+    public void refreshShelf(String player, JSONObject shelf) throws RemoteException;
 
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client

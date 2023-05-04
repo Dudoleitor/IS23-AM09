@@ -49,9 +49,9 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * to the remote view,
      * it uses a json string.
      *
-     * @param board JSONObject.toJsonString
+     * @param board JSONObject
      */
-    public void refreshBoard(String board) {
+    public void refreshBoard(JSONObject board) {
 
     }
 
@@ -76,9 +76,9 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * it uses a json string.
      *
      * @param player name of the player
-     * @param shelf  JSONObject.toJsonString
+     * @param shelf  JSONObject
      */
-    public void refreshShelf(String player, String shelf) {
+    public void refreshShelf(String player, JSONObject shelf) {
 
     }
 

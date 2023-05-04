@@ -150,14 +150,14 @@ public class Controller implements Jsonable {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No player found with specified client name in refreshClient"));
 
-        client.refreshBoard(this.board.toJson().toJSONString());
+        client.refreshBoard(this.board.toJson());
 
         for(CommonGoal commonGoal : this.board.getCommonGoals()) {
             client.refreshCommonGoal(commonGoal.getID(), commonGoal.showPointsStack());
         }
 
         for (Player pl : players) {
-            client.refreshShelf(pl.getName(), pl.getShelf().toJson().toJSONString());
+            client.refreshShelf(pl.getName(), pl.getShelf().toJson());
         }
 
         client.setPlayerGoal(player.getPersonalGoalId());

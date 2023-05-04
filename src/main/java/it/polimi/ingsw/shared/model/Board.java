@@ -172,7 +172,7 @@ public class Board implements Jsonable {
                 }
             }
         }
-        virtualBoard.refresh(this.toJson().toJSONString());  // Updating clients
+        virtualBoard.refresh(this.toJson());  // Updating clients
     }
     /**
      * Convert the matrix to a printable String
