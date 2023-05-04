@@ -1,8 +1,12 @@
 package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
+import it.polimi.ingsw.shared.model.Board;
+import it.polimi.ingsw.shared.model.Shelf;
 
 import java.rmi.RemoteException;
+import java.util.Map;
 
 /**
  * This object is used to receive updates coming from
@@ -17,4 +21,8 @@ public interface ClientController extends ClientRemote{
      * @return True if the player need to play in the current turn
      */
     public boolean isItMyTurn() throws RemoteException;
+
+    public Board getBoard() throws RemoteException;
+    public Map<String, Shelf> getPlayersShelves() throws RemoteException;
+    public Chat getChat() throws RemoteException;
 }
