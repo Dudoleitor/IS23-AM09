@@ -21,9 +21,9 @@ public class Position implements Jsonable {
         this.row = row;
         this.column = column;
     }
-    public Position(JSONObject jsonChat){
-        this.row = Integer.parseInt(jsonChat.get("row").toString());
-        this.column = Integer.parseInt(jsonChat.get("column").toString());
+    public Position(JSONObject jsonPos){
+        this.row = Integer.parseInt(jsonPos.get("row").toString());
+        this.column = Integer.parseInt(jsonPos.get("column").toString());
     }
 
     public static Position fromString(String str){

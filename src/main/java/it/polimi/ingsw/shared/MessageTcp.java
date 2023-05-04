@@ -39,6 +39,10 @@ public class MessageTcp {
         PostMove("move", "ReplyWait"),
         StartGame("start", "ReplyWait"),
         IsLobbyAdmin("isAdmin", "ReplyWait"),
+        PickedFromBoard("pickedTile", "Update"),
+        RefreshBoard("refreshBoard", "Update"),
+        PutIntoShelf("refreshShelf","Update"),
+
         ;
 
         private final String label;

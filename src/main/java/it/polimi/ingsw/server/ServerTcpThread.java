@@ -103,7 +103,7 @@ public class ServerTcpThread extends Thread{ //TODO
     //SERVER METHODS
 
     private void login(JSONObject message){
-        client.setName(Jsonable.json2string(message));
+        client.setName(message.get("player").toString());
         boolean logged;
         synchronized (server){
             try {
@@ -112,14 +112,16 @@ public class ServerTcpThread extends Thread{ //TODO
                 logged = false;
             }
         }
+        JSONObject result = new JSONObject();
+        result.put("result", logged);
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.Login); //set message command
-        feedback.setContent(Jsonable.boolean2json(logged)); //set message content
+        feedback.setContent(result); //set message content
         client.out(feedback.toString()); //send object to client
     }
     private void getJoinedLobbies(JSONObject message){
         Map<Integer,Integer> lobbies;
-        String username = Jsonable.json2string(message);
+        String username = message.get("player").toString();
         synchronized (server){
             try {
                 lobbies = server.getJoinedLobbies(username);
@@ -127,9 +129,11 @@ public class ServerTcpThread extends Thread{ //TODO
                 lobbies = new HashMap<>(); //TODO to send back error message to set username first
             }
         }
+        JSONObject result = new JSONObject();
+        result.put("lobbies", Jsonable.map2json(lobbies));
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set message command
-        feedback.setContent(Jsonable.map2json(lobbies)); //set message content
+        feedback.setContent(result); //set message content
         client.out(feedback.toString()); //send object to client
     }
     private void getAvailableLobbies(){
@@ -141,9 +145,11 @@ public class ServerTcpThread extends Thread{ //TODO
                 lobbies = new HashMap<>();
             }
         }
+        JSONObject result = new JSONObject();
+        result.put("lobbies", Jsonable.map2json(lobbies));
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set message command
-        feedback.setContent(Jsonable.map2json(lobbies)); //set message content
+        feedback.setContent(result); //set message content
         client.out(feedback.toString()); //send object to client
     }
 
@@ -158,9 +164,11 @@ public class ServerTcpThread extends Thread{ //TODO
             }
         }
         lobbyID = LobbyIni(lobbyInterface);
+        JSONObject result = new JSONObject();
+        result.put("lobbyID", lobbyID);
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
-        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
+        feedback.setContent(result); //set message content
         client.out(feedback.toString()); //send object to client
     }
 
@@ -175,25 +183,29 @@ public class ServerTcpThread extends Thread{ //TODO
             }
         }
         lobbyID = LobbyIni(lobbyInterface);
+        JSONObject result = new JSONObject();
+        result.put("lobbyID", lobbyID);
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.CreateLobby); //set message command
-        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
+        feedback.setContent(result); //set message content
         client.out(feedback.toString()); //send object to client
     }
     private void joinSelectedLobby(JSONObject message){
-        int lobbyID = Jsonable.json2int(message);
+        long lobbyID = Long.parseLong(message.get("lobbyID").toString());
         ServerLobbyInterface lobbyInterface = null;
         synchronized (server){
             try {
-                lobbyInterface = server.joinSelectedLobby(client,lobbyID);
+                lobbyInterface = server.joinSelectedLobby(client,(int) lobbyID);
             } catch (NullPointerException e) {
                 //TODO to send back error message to set username first
             }
         }
         lobbyID = LobbyIni(lobbyInterface);
+        JSONObject result = new JSONObject();
+        result.put("lobbyID", lobbyID);
         MessageTcp feedback = new MessageTcp(); //message to send back
         feedback.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set message command
-        feedback.setContent(Jsonable.int2json(lobbyID)); //set message content
+        feedback.setContent(result); //set message content
         client.out(feedback.toString()); //send object to client
     }
 
@@ -219,7 +231,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
     private void postToLiveChat(JSONObject message){
         boolean foundErrors = false;
-        ChatMessage chatMessage = new ChatMessage(message);
+        ChatMessage chatMessage = new ChatMessage((JSONObject) message.get("chat"));
         String sender = chatMessage.getSender();
         String content = chatMessage.getMessage();
         synchronized (lobby) {
@@ -228,16 +240,18 @@ public class ServerTcpThread extends Thread{ //TODO
             } catch (RuntimeException e) {
                 foundErrors = true;
             }
+            JSONObject result = new JSONObject();
+            result.put("errors", foundErrors);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set message command
-            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
 
         }
     }
     public void postSecretToLiveChat(JSONObject message){
         boolean foundErrors = false;
-        PrivateChatMessage chatMessage = new PrivateChatMessage(message);
+        PrivateChatMessage chatMessage = new PrivateChatMessage((JSONObject) message.get("chat"));
         String sender = chatMessage.getSender();
         String content = chatMessage.getMessage();
         String receiver = chatMessage.getReciever();
@@ -247,25 +261,29 @@ public class ServerTcpThread extends Thread{ //TODO
             } catch (RuntimeException e) {
                 foundErrors = true;
             }
+            JSONObject result = new JSONObject();
+            result.put("errors", foundErrors);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set message command
-            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
         }
 
     }
     public void quit(JSONObject message){
         boolean foundErrors = false;
-        String playername = Jsonable.json2string(message);
+        String playername = message.get("player").toString();
         synchronized (lobby) {
             try {
                 lobby.quitGame(playername);
             } catch (RuntimeException e) {
                 foundErrors = true;
             }
+            JSONObject result = new JSONObject();
+            result.put("errors", foundErrors);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.Quit); //set message command
-            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
         }
 
@@ -274,9 +292,11 @@ public class ServerTcpThread extends Thread{ //TODO
         boolean hasStarted;
         synchronized (lobby) {
             hasStarted = lobby.matchHasStarted();
+            JSONObject result = new JSONObject();
+            result.put("started", hasStarted);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set message command
-            feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
         }
 
@@ -291,9 +311,11 @@ public class ServerTcpThread extends Thread{ //TODO
             } catch (ControllerGenericException e) {
                 foundErrors = true;
             }
+            JSONObject result = new JSONObject();
+            result.put("errors", foundErrors);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.PostMove); //set message command
-            feedback.setContent(Jsonable.boolean2json(foundErrors)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
         }
 
@@ -301,12 +323,14 @@ public class ServerTcpThread extends Thread{ //TODO
 
     public void startGame(JSONObject player){
         boolean hasStarted;
-        String username = Jsonable.json2string(player);
+        String username = player.get("player").toString();
         synchronized (lobby) {
             hasStarted = lobby.startGame(username);
+            JSONObject result = new JSONObject();
+            result.put("start", hasStarted);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command
-            feedback.setContent(Jsonable.boolean2json(hasStarted)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
         }
 
@@ -314,16 +338,18 @@ public class ServerTcpThread extends Thread{ //TODO
 
     public void isLobbyAdmin(JSONObject player){
         boolean isAdmin;
-        String username = Jsonable.json2string(player);
+        String username = player.get("player").toString();
         synchronized (lobby) {
             try {
                 isAdmin = lobby.isLobbyAdmin(username);
             } catch (RuntimeException e) {
                 isAdmin = false;
             }
+            JSONObject result = new JSONObject();
+            result.put("admin", isAdmin);
             MessageTcp feedback = new MessageTcp(); //message to send back
             feedback.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set message command
-            feedback.setContent(Jsonable.boolean2json(isAdmin)); //set message content
+            feedback.setContent(result); //set message content
             client.out(feedback.toString()); //send object to client
         }
 

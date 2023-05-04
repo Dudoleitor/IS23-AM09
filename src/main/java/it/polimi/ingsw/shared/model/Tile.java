@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared.model;
 
 import it.polimi.ingsw.shared.Color;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 
@@ -25,6 +26,8 @@ public enum Tile implements Serializable {
         label = s;
         color = c;
     }
+
+
 
     public Color getColor(){
         return this.color;
@@ -69,6 +72,18 @@ public enum Tile implements Serializable {
     public String toColorFulString(){
         //return Color.coloredString(this.label,this.color);
         return Color.coloredString("██",this.color);
+    }
+
+    public JSONObject toJson(){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("tile", toString());
+        return jsonObject;
+    }
+
+    public static Tile fromJSON(JSONObject jsonObject) throws TileGenericException {
+        String label = (String) jsonObject.get("tile");
+        return valueOfLabel(label);
+
     }
 }
 

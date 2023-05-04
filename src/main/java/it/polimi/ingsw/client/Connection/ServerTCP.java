@@ -45,15 +45,17 @@ public class ServerTCP extends Server {
     }
     @Override
     public boolean login(Client client) {
+        JSONObject content = new JSONObject();
+        content.put("player", client.getPlayerName());
         MessageTcp login = new MessageTcp();
         login.setCommand(MessageTcp.MessageCommand.Login); //set command
-        login.setContent(Jsonable.string2json(client.getPlayerName())); //set playername as JsonObject
+        login.setContent(content);
         out(login.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.Login)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2boolean(response.getContent());
+            return Boolean.parseBoolean(response.getContent().get("result").toString());
         }catch (RemoteException e){
             return false;
         }
@@ -64,15 +66,17 @@ public class ServerTCP extends Server {
 
     @Override
     public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
+        JSONObject content = new JSONObject();
+        content.put("player", playerName);
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set command
-        requestLobbies.setContent(Jsonable.string2json(playerName)); //set playername as JsonObject
+        requestLobbies.setContent(content); //set playername as JsonObject
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobbies)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2mapInt(response.getContent());
+            return Jsonable.json2mapInt((JSONObject) response.getContent().get("lobbies"));
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -86,7 +90,7 @@ public class ServerTCP extends Server {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.GetAvailableLobbies)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2mapInt(response.getContent());
+            return Jsonable.json2mapInt((JSONObject) response.getContent().get("lobbies"));
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -101,9 +105,9 @@ public class ServerTCP extends Server {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinRandomLobby)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            int Lobbyid = Jsonable.json2int(response.getContent());
+            long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
-                this.id = Lobbyid;
+                this.id = (int)Lobbyid;
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -117,9 +121,9 @@ public class ServerTCP extends Server {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.CreateLobby)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            int Lobbyid = Jsonable.json2int(response.getContent());
+            long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
-                this.id = Lobbyid;
+                this.id = (int) Lobbyid;
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -128,33 +132,37 @@ public class ServerTCP extends Server {
 
     @Override
     public void joinSelectedLobby(Client client, int id)throws ServerException {
+        JSONObject content = new JSONObject();
+        content.put("lobbyID", id);
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set command
-        requestLobbies.setContent(Jsonable.int2json(id));
+        requestLobbies.setContent(content);
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinSelectedLobby)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            int Lobbyid = Jsonable.json2int(response.getContent());
+            long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
-                this.id = Lobbyid;
+                this.id = (int) Lobbyid;
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
     }
     @Override
     public void postToLiveChat(String playerName, String message) throws LobbyException {
-        MessageTcp postMessage = new MessageTcp();
         ChatMessage chatMessage = new ChatMessage(playerName, message, Color.Black); //TODO maybe create a constructor that doesn't need color
+        JSONObject content = new JSONObject();
+        MessageTcp postMessage = new MessageTcp();
+        content.put("chat", chatMessage.toJson());
         postMessage.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set command
-        postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
+        postMessage.setContent(content); //set playername as JsonObject
         out(postMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
             while (!response.getCommand().equals(MessageTcp.MessageCommand.PostToLiveChat)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            boolean errorFound = Jsonable.json2boolean(response.getContent());
+            boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
                 //TODO to implement
             }
@@ -165,16 +173,18 @@ public class ServerTCP extends Server {
 
     @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
-        MessageTcp postMessage = new MessageTcp();
         PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black); //TODO maybe create a constructor that doesn't need color
+        JSONObject content = new JSONObject();
+        content.put("chat", chatMessage.toJson());
+        MessageTcp postMessage = new MessageTcp();
         postMessage.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set command
-        postMessage.setContent(chatMessage.toJson()); //set playername as JsonObject
+        postMessage.setContent(content); //set playername as JsonObject
         out(postMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
             while (!response.getCommand().equals(MessageTcp.MessageCommand.PostSecretToLiveChat)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            boolean errorFound = Jsonable.json2boolean(response.getContent());
+            boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
                 //TODO to implement
             }
@@ -185,15 +195,17 @@ public class ServerTCP extends Server {
 
     @Override
     public void quitGame(String player) throws LobbyException{
+        JSONObject content = new JSONObject();
+        content.put("player", player);
         MessageTcp quitMessage = new MessageTcp();
         quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
-        quitMessage.setContent(Jsonable.string2json(player));
+        quitMessage.setContent(content);
         out(quitMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
             while (!response.getCommand().equals(MessageTcp.MessageCommand.Quit)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            boolean errorFound = Jsonable.json2boolean(response.getContent());
+            boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
                 //TODO to implement
             }
@@ -214,7 +226,7 @@ public class ServerTCP extends Server {
             MessageTcp response = in(); //wait for response by server and create an object responses
             while (!response.getCommand().equals(MessageTcp.MessageCommand.MatchHasStarted)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2boolean(response.getContent());
+            return Boolean.parseBoolean(response.getContent().get("started").toString());
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
         }
@@ -222,10 +234,10 @@ public class ServerTCP extends Server {
 
     @Override
     public void postMove(String player, Move move) throws LobbyException {
-        MessageTcp postMoveMessage = new MessageTcp();
         JSONObject content = new JSONObject();
         content.put("player",player);
         content.put("move",move.toJson());
+        MessageTcp postMoveMessage = new MessageTcp();
         postMoveMessage.setCommand(MessageTcp.MessageCommand.PostMove); //set command
         postMoveMessage.setContent(content);
         out(postMoveMessage.toString());
@@ -233,7 +245,7 @@ public class ServerTCP extends Server {
             MessageTcp response = in(); //wait for response by server and create an object responses
             while (!response.getCommand().equals(MessageTcp.MessageCommand.PostMove)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            boolean errorFound = Jsonable.json2boolean(response.getContent());
+            boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
                 //TODO to implement
             }
@@ -245,30 +257,34 @@ public class ServerTCP extends Server {
 
     @Override
     public boolean startGame(String player)throws LobbyException {
+        JSONObject content = new JSONObject();
+        content.put("player", player);
         MessageTcp startGame = new MessageTcp();
         startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command
-        startGame.setContent(Jsonable.string2json(player)); //set playername as JsonObject
+        startGame.setContent(content); //set playername as JsonObject
         out(startGame.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.StartGame)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2boolean(response.getContent());
+            return Boolean.parseBoolean(response.getContent().get("start").toString());
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
         }
     }
     @Override
     public boolean isLobbyAdmin(String player)throws LobbyException {
+        JSONObject content = new JSONObject();
+        content.put("player", player);
         MessageTcp isAdmin = new MessageTcp();
         isAdmin.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set command
-        isAdmin.setContent(Jsonable.string2json(player)); //set playername as JsonObject
+        isAdmin.setContent(content); //set playername as JsonObject
         out(isAdmin.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
             while (!response.getCommand().equals(MessageTcp.MessageCommand.IsLobbyAdmin)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2boolean(response.getContent());
+            return Boolean.parseBoolean(response.getContent().get("admin").toString());
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
         }

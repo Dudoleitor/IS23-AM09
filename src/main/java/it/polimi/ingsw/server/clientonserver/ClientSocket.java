@@ -2,8 +2,10 @@ package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.server.NetworkExceptionHandler;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.model.Tile;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
@@ -35,10 +37,10 @@ public class ClientSocket implements Client {
      * socket input buffer
      * @return the read line of the buffer
      */
-    public MessageTcp in(){
+    public MessageTcp in(){ //TODO to handle with a thread, otherwise I can't send an update while waiting for a message
         boolean ready = false;
         try {
-            while(!ready){ //TODO this is a bad way to wait, look for better options
+            while(!ready){
                 if(ClientIn.ready())
                     ready = true;
             }
@@ -105,7 +107,12 @@ public class ClientSocket implements Client {
      */
     @Override
     public void pickedFromBoard(JSONObject position) {
-        //TODO
+        JSONObject content = new JSONObject();
+        content.put("position", position);
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.PickedFromBoard);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -117,7 +124,12 @@ public class ClientSocket implements Client {
      */
     @Override
     public void refreshBoard(JSONObject board) {
-        //TODO
+        JSONObject content = new JSONObject();
+        content.put("board", board);
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.RefreshBoard);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -133,7 +145,15 @@ public class ClientSocket implements Client {
      */
     @Override
     public void putIntoShelf(String player, int column, Tile tile) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("player", player);
+        content.put("column", column);
+        content.put("tile", tile.toJson());
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.PutIntoShelf);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**

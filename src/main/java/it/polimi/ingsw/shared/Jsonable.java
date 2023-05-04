@@ -104,59 +104,12 @@ public interface Jsonable {
         return map;
     }
 
-    /**
-     * transform a boolean to a jsonString
-     * @param value is the boolean
-     * @return JsonObject that corresponds to that boolean
-     */
-    static JSONObject boolean2json(boolean value) {
-        JSONObject jsonBool = new JSONObject();
-        jsonBool.put("boolean",value);
-        return jsonBool;
-    }
-    /**
-     * transform a jsonString to a boolean
-     * @param jsonBool is the string of JsonObject
-     * @return a boolean corresponding to the Object
-     */
-    static boolean json2boolean (JSONObject jsonBool){
-        return Boolean.parseBoolean(jsonBool.get("boolean").toString());
-    }
-    /**
-     * transform an int to a jsonString
-     * @param value is the int
-     * @return JsonObject that corresponds to that int
-     */
-    static JSONObject int2json(int value) {
-        JSONObject jsonInt = new JSONObject();
-        jsonInt.put("int",value);
-        return jsonInt;
-    }
-    /**
-     * transform a jsonString to an int
-     * @param jsonInt is the string of JsonObject
-     * @return an int corresponding to the Object
-     */
-    static int json2int (JSONObject jsonInt){;
-        return Integer.parseInt(jsonInt.get("int").toString());
-    }
-    /**
-     * transform a string to a jsonString
-     * @param value is the string
-     * @return JsonObject that corresponds to that string
-     */
-    static JSONObject string2json(String value) {
-        JSONObject jsonString = new JSONObject();
-        jsonString.put("string",value);
-        return jsonString;
-    }
-    /**
-     * transform a jsonString to a string
-     * @param jsonS is the string of JsonObject
-     * @return a string corresponding to the Object
-     */
-    static String json2string (JSONObject jsonS){
-        return jsonS.get("string").toString();
-    }
 
+
+
+    static JSONObject mergeJSONObjects(JSONObject json1, JSONObject json2){
+        json2.keySet().stream()
+                .forEach(k -> json1.put(k, json2.get(k))); //TODO if they have same label we have a collision, I'll handle the case later, but it will be a runtime probably
+        return json1;
+    }
 }
