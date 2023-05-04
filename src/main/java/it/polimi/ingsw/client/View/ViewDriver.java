@@ -2,7 +2,9 @@ package it.polimi.ingsw.client.View;
 
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Color;
+import it.polimi.ingsw.shared.model.Board;
 import it.polimi.ingsw.shared.model.Move;
+import it.polimi.ingsw.shared.model.Shelf;
 
 import java.util.*;
 
@@ -44,7 +46,7 @@ public class ViewDriver extends View {
     }
 
     @Override
-    public Move getMoveFromUser() {
+    public Move getMoveFromUser(Board board, Shelf shelf) {
         if (moves.isEmpty()) {
             return null;
         } else {

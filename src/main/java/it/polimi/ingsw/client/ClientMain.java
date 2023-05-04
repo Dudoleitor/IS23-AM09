@@ -199,8 +199,13 @@ public class ClientMain{
         }
         try {
             if (controller.isItMyTurn()) {
-                Move move = view.getMoveFromUser();
-                server.postMove(playerName, move);
+                try {
+                    Move move = view.getMoveFromUser(controller.getBoard(), controller.getPlayersShelves().get(playerName));
+                    server.postMove(playerName, move);
+                }
+                catch (RemoteException e){
+                    view.errorMessage("Error while loading resources");
+                }
             } else {
                 view.errorMessage("It's not your turn");
             }

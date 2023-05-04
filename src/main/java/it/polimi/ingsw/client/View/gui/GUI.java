@@ -4,7 +4,9 @@ import it.polimi.ingsw.client.View.LobbyCommand;
 import it.polimi.ingsw.client.View.View;
 import it.polimi.ingsw.client.View.LobbySelectionCommand;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.model.Board;
 import it.polimi.ingsw.shared.model.Move;
+import it.polimi.ingsw.shared.model.Shelf;
 
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public class GUI extends View {
     }
 
     @Override
-    public Move getMoveFromUser() {
+    public Move getMoveFromUser(Board board, Shelf shelf) {
         return null;
     }
 

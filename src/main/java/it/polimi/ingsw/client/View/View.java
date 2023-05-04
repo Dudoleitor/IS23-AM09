@@ -1,7 +1,9 @@
 package it.polimi.ingsw.client.View;
 
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.model.Board;
 import it.polimi.ingsw.shared.model.Move;
+import it.polimi.ingsw.shared.model.Shelf;
 
 import java.util.Map;
 
@@ -44,7 +46,7 @@ public abstract class View {
      * Ask the user for a move
      * @return the chosen move
      */
-    public abstract Move getMoveFromUser();
+    public abstract Move getMoveFromUser(Board board, Shelf shelf);
 
     /**
      * Show the list of commands that the client can execute
