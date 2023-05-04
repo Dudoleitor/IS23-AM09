@@ -161,11 +161,11 @@ public class CLI extends View {
         return new Move(pm, column);
     }
 
-    public void showGameStatus(Board b, Map<String, Shelf> playerShelves, PlayerGoal goal){
+    public void showGameStatus(Board b,List<CommonGoal> commongoals ,Map<String, Shelf> playerShelves, PlayerGoal goal){
         synchronized (cli_lock){
             skipPlaceHolder();
             showBoard(b);
-            showCommonGoals(b.getCommonGoals());
+            showCommonGoals(commongoals);
             showShelves(playerShelves);
             showPersonalGoal(goal);
         }

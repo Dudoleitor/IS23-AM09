@@ -201,7 +201,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void gameStarted() {
         ensureModelIsSet();
 
-        enqueueTask(() -> cli.showGameStatus(board,playersShelves,playerGoal));
+        enqueueTask(() -> cli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         gameStarted = true;
         enqueueTask(() -> cli.message("Match has started"));
 
@@ -219,7 +219,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void nextTurn(String player) {
         if (gameStarted) {
             ensureModelIsSet();
-            enqueueTask(() -> cli.showGameStatus(board,playersShelves,playerGoal));
+            enqueueTask(() -> cli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         }
 
         if (player.equals(this.playerName)) {
