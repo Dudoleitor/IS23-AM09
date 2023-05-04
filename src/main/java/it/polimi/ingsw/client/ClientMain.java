@@ -256,7 +256,7 @@ public class ClientMain{
                 }
                 break;
             case TCP:
-                server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport);
+                server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, controller);
                 client = new ClientSocket();
                 ((ClientSocket) client).setName(playerName);
                 break;

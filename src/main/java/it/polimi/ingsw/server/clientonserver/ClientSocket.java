@@ -185,7 +185,7 @@ public class ClientSocket implements Client {
     public void postChatMessage(String sender, String message) {
         JSONObject content= new JSONObject();
         content.put("sender", sender);
-        content.put("text", message);
+        content.put("message", message);
 
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.ChatMessageUpdate);

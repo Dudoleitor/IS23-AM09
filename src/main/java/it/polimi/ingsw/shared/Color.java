@@ -9,20 +9,22 @@ import java.util.List;
 import java.util.Random;
 
 public enum Color {
-        Reset("\u001B[0m"),
-        Black("\u001B[30m"),
-        Red("\u001B[31m"),
-        Green("\u001B[32m"),
-        Yellow("\u001B[33m"),
-        Blue("\u001B[34m"),
-        Purple("\u001B[35m"),
-        Cyan("\u001B[36m"),
-        White("\u001B[37m"),
+        Reset("\u001B[0m", "reset"),
+        Black("\u001B[30m", "black"),
+        Red("\u001B[31m", "red"),
+        Green("\u001B[32m", "green"),
+        Yellow("\u001B[33m", "yellow"),
+        Blue("\u001B[34m", "blue"),
+        Purple("\u001B[35m", "purple"),
+        Cyan("\u001B[36m", "cyan"),
+        White("\u001B[37m", "white"),
         ;
         public final String ANSICode;
+        public final String color;
 
-        Color(String color) {
-                this.ANSICode = color;
+        Color(String ANSICode, String color) {
+                this.ANSICode = ANSICode;
+                this.color = color;
         }
         public String getColorAnsiCode(){
                 return ANSICode;
@@ -39,14 +41,18 @@ public enum Color {
                 return List.of(Color.values())
                         .get(new Random().nextInt(numOfColors()));
         }
+        @Override
+        public String toString(){
+                return this.color;
+        }
 
         /**
          * @param label is the label to look for
          * @return the Color corresponding to the label otherwise reset
          */
-        public static Color valueOfString(String label) throws TileGenericException { //gets a label and returns a Tile
+        public static Color valueOfString(String label) { //gets a label and returns a Tile
                 for (Color e : values()) {
-                        if (e.getColorAnsiCode().equals(label)) {
+                        if (e.toString().equals(label)) {
                                 return e;
                         }
                 }

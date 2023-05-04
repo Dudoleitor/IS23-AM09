@@ -29,7 +29,7 @@ public class ChatMessage implements Serializable, Jsonable{
     public ChatMessage(JSONObject jsonChat){
         playerName = jsonChat.get("sender").toString();
         message = jsonChat.get("message").toString();
-        color = Color.valueOf((String) jsonChat.get("color"));
+        color = Color.valueOfString((String) jsonChat.get("color"));
     }
     @Override
     public String toString(){
@@ -52,7 +52,7 @@ public class ChatMessage implements Serializable, Jsonable{
         // Saving parameters
         chatMessage.put("sender", playerName);
         chatMessage.put("message", message);
-        chatMessage.put("color", color);
+        chatMessage.put("color", color.toString());
 
         return chatMessage;
     }

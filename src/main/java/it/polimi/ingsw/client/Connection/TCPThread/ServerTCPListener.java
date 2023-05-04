@@ -9,11 +9,13 @@ import java.util.ArrayList;
 public class ServerTCPListener extends Thread{
 
     private final BufferedReader serverIn;
-    private final ArrayList<MessageTcp> input;
+    private final ArrayList<MessageTcp> responses;
+    private final ArrayList<MessageTcp> updates;
 
-    public ServerTCPListener(BufferedReader serverIn, ArrayList input) {
+    public ServerTCPListener(BufferedReader serverIn, ArrayList responses, ArrayList updates) {
         this.serverIn = serverIn;
-        this.input = input;
+        this.responses = responses;
+        this.updates = updates;
     }
     @Override
     public void run(){
@@ -21,18 +23,15 @@ public class ServerTCPListener extends Thread{
         while (!exit){
             MessageTcp incomingMessage = in();
             if(incomingMessage.isReplyMessage()) {
-                synchronized (input){
-                    input.add(incomingMessage);
-                }
-                synchronized (this) {
-                    this.notifyAll();
+                synchronized (responses){
+                    responses.add(incomingMessage);
+                    responses.notifyAll();
                 }
             } else if (incomingMessage.isUpdateMessage()){
-                //TODO Waiting for ClientSocket
-                if(incomingMessage.getCommand().equals(MessageTcp.MessageCommand.Ping))
-                    System.out.println("PING MOLESTO");
-                else
-                    System.out.println("to implement yet");
+                synchronized (updates){
+                    updates.add(incomingMessage);
+                    updates.notifyAll();
+                }
             }
 
         }

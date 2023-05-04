@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.Connection.TCPThread;
 
+import it.polimi.ingsw.client.View.View;
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.NetworkSettings;
 
@@ -15,21 +17,28 @@ public class ServerTCP_IO{
     private final Socket serverSocket;
     private final PrintWriter serverOut;
     private final BufferedReader serverIn;
-    private final ArrayList<MessageTcp> input;
-    private final ServerTCPListener serverListener;
+    private final ArrayList<MessageTcp> responses = new ArrayList<>();
+    private final ArrayList<MessageTcp> updates = new ArrayList<>();
+    private ServerTCPListener serverListener;
+    private ServerTCPViewUpdater serverViewUpdater;
 
-    public ServerTCP_IO(Socket server) {
+    public ServerTCP_IO(Socket server, ClientController clientController) {
         try {
             serverSocket = server;
             serverOut = new PrintWriter(serverSocket.getOutputStream(), true);
             serverIn = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-            input = new ArrayList<>();
-            serverListener = new ServerTCPListener(serverIn,input);
-            serverListener.start();
+            initializeThreads(clientController);
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    private void initializeThreads(ClientController clientController){
+        serverListener = new ServerTCPListener(serverIn, responses, updates);
+        serverViewUpdater = new ServerTCPViewUpdater(clientController, updates);
+        serverListener.start();
+        serverViewUpdater.start();
     }
 
     /**
@@ -39,27 +48,34 @@ public class ServerTCP_IO{
     public MessageTcp in() throws RemoteException {
         MessageTcp message;
         try {
-            synchronized (serverListener) {
                 long startTime = System.currentTimeMillis();
                 long endTime;
                 long elapsedTime = 0;
-                while (input.isEmpty()) {
-                    serverListener.wait(NetworkSettings.WaitingTime - elapsedTime); //set to wait for remaining time
+                while (responses.isEmpty()) {
+                    synchronized (responses) {
+                        responses.wait(NetworkSettings.WaitingTime - elapsedTime); //set to wait for remaining time
+                    }
                     endTime = System.currentTimeMillis();
-                    elapsedTime = endTime-startTime;
-                    if(input.isEmpty() && elapsedTime>NetworkSettings.WaitingTime)//check that wake up wasn't accidental
+                    elapsedTime = endTime - startTime;
+                    if (responses.isEmpty() && elapsedTime > NetworkSettings.WaitingTime)//check that wake up wasn't accidental
                         throw new RemoteException("Waited too much");
 
                 }
-            }
         } catch (InterruptedException | RemoteException e) {
                 throw new RemoteException(e.getMessage());
         }
 
 
-        synchronized (input) {
-            message = input.get(0);
-            input.remove(0);
+        synchronized (responses) {
+            message = responses.get(0);
+            responses.remove(0);
+        }
+
+        if (message.getCommand() == MessageTcp.MessageCommand.Quit) {
+            synchronized (serverViewUpdater) {
+                serverViewUpdater.exit();
+                serverViewUpdater.notifyAll();
+            }
         }
 
 
