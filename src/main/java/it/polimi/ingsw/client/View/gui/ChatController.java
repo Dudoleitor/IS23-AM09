@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 
 public class ChatController {
 
-    private ClientGUI client = HelloController.getClient();
+    private final ClientGUI client = HelloController.getClient();
 
     @FXML
     TextField message;
@@ -22,7 +22,7 @@ public class ChatController {
     TextArea textArea;
 
     @FXML
-    protected void SendMsg() throws RemoteException {
+    protected void SendMsg() {
         client.getController().postChatMessage(client.getController().getPlayerName(), message.getText());
         textArea.appendText(client.getController().getPlayerName() + ": " + message.getText() + "\n");
         message.setText("");

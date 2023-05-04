@@ -16,7 +16,7 @@ public class HelloController {
     @FXML
     TextField lobbyNumber;
 
-    private static ClientGUI client = new ClientGUI();
+    private static final ClientGUI client = new ClientGUI();
     private ClientControllerGUI controller;
 
     public static ClientGUI getClient() {
