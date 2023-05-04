@@ -120,8 +120,7 @@ public class ClientMain{
                     exit = true;
                     break;
                 case Print: //print all messages
-                    //view.showAllMessages(chat);
-                    // TODO Here we should use ClientControllerCLI
+                    printChat();
                     break;
                 case Secret: //send private message
                     postToPrivateChat();
@@ -142,6 +141,17 @@ public class ClientMain{
                     view.notifyInvalidCommand();
                     break;
             }
+    }
+
+    /**
+     * This will print the whole chat into the cli
+     */
+    private static void printChat(){
+        try {
+            view.showAllMessages(controller.getChat());
+        } catch (RemoteException e) {
+            view.errorMessage("Error while loading resourses");
+        }
     }
 
     /**
