@@ -34,8 +34,9 @@ public class PartialMove implements Jsonable {
     public PartialMove(JSONObject jsonMove){
         JSONArray posArray = (JSONArray) jsonMove.get("posArray");
         positions = new ArrayList<>();
-        posArray.stream().
-                forEach(p -> positions.add(new Position((JSONObject) p)));
+        for(Object p : posArray){
+            positions.add(new Position((JSONObject) p));
+        }
     }
     public int getMaxNumMoves() {
         return maxNumMoves;
@@ -54,8 +55,9 @@ public class PartialMove implements Jsonable {
         JSONObject jsonMove = new JSONObject();  // Object to return
         JSONArray jsonPositions = new JSONArray();
         // Saving parameters
-        positions.stream()
-                .forEach(p -> jsonPositions.add(p.toJson()));
+        for(Position p : positions){
+            jsonPositions.add(p.toJson());
+        }
         jsonMove.put("posArray",jsonPositions);
 
         return jsonMove;

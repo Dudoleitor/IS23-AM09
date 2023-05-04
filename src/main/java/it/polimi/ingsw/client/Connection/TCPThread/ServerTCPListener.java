@@ -29,7 +29,10 @@ public class ServerTCPListener extends Thread{
                 }
             } else if (incomingMessage.isUpdateMessage()){
                 //TODO Waiting for ClientSocket
-                System.out.println("to implement yet");
+                if(incomingMessage.getCommand().equals(MessageTcp.MessageCommand.Ping))
+                    System.out.println("PING MOLESTO");
+                else
+                    System.out.println("to implement yet");
             }
 
         }

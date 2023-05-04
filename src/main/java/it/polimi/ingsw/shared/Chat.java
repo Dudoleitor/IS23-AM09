@@ -1,6 +1,8 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.server.clientonserver.Client;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -16,6 +18,17 @@ public class Chat implements Serializable {
     public Chat(Chat toClone){
         chatMessages =  Collections.synchronizedList(new ArrayList<>());
         chatMessages.addAll(toClone.getAllMessages());
+    }
+    public Chat(JSONObject jsonChat){
+        chatMessages = new ArrayList<>();
+        JSONArray jsonArray = (JSONArray) jsonChat.get("messageList");
+        for(Object c : jsonArray){
+            if(!((JSONObject) c).containsKey("receiver"))
+                chatMessages.add(new ChatMessage((JSONObject) c));
+            else
+                chatMessages.add(new PrivateChatMessage((JSONObject)c));
+
+        }
     }
     public void add(ChatMessage newMessage){
         chatMessages.add(newMessage);
@@ -88,5 +101,15 @@ public class Chat implements Serializable {
         List<ChatMessage> allmessages = new ArrayList<>();
         allmessages.addAll(chatMessages);
         return allmessages;
+    }
+
+    public JSONObject toJson(){
+        JSONObject jsonChat = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        for(ChatMessage c : chatMessages){
+            jsonArray.add(c.toJson());
+        }
+        jsonChat.put("messageList", jsonArray);
+        return jsonChat;
     }
 }

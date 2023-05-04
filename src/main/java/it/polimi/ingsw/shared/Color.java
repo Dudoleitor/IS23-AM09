@@ -1,5 +1,9 @@
 package it.polimi.ingsw.shared;
 
+import it.polimi.ingsw.shared.model.Tile;
+import it.polimi.ingsw.shared.model.TileGenericException;
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,6 +20,7 @@ public enum Color {
         White("\u001B[37m"),
         ;
         public final String ANSICode;
+
         Color(String color) {
                 this.ANSICode = color;
         }
@@ -34,4 +39,18 @@ public enum Color {
                 return List.of(Color.values())
                         .get(new Random().nextInt(numOfColors()));
         }
+
+        /**
+         * @param label is the label to look for
+         * @return the Color corresponding to the label otherwise reset
+         */
+        public static Color valueOfString(String label) throws TileGenericException { //gets a label and returns a Tile
+                for (Color e : values()) {
+                        if (e.getColorAnsiCode().equals(label)) {
+                                return e;
+                        }
+                }
+                return Color.Reset;
+        }
+
 }

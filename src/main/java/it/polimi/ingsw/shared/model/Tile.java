@@ -74,16 +74,5 @@ public enum Tile implements Serializable {
         return Color.coloredString("██",this.color);
     }
 
-    public JSONObject toJson(){
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("tile", toString());
-        return jsonObject;
-    }
-
-    public static Tile fromJSON(JSONObject jsonObject) throws TileGenericException {
-        String label = (String) jsonObject.get("tile");
-        return valueOfLabel(label);
-
-    }
 }
 

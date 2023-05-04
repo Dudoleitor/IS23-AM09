@@ -148,7 +148,7 @@ public class ClientSocket implements Client {
         JSONObject content= new JSONObject();
         content.put("player", player);
         content.put("column", column);
-        content.put("tile", tile.toJson());
+        content.put("tile", tile.toString());
 
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.PutIntoShelf);
@@ -166,7 +166,14 @@ public class ClientSocket implements Client {
      */
     @Override
     public void refreshShelf(String player, JSONObject shelf) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("player", player);
+        content.put("shelf", shelf);
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.RefreshShelf);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -176,7 +183,14 @@ public class ClientSocket implements Client {
      */
     @Override
     public void postChatMessage(String sender, String message) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("sender", sender);
+        content.put("text", message);
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.ChatMessageUpdate);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -185,7 +199,13 @@ public class ClientSocket implements Client {
      * @param chat Chat object
      */
     public void refreshChat(Chat chat) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("chat", chat.toJson());
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.RefreshChat);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -194,7 +214,10 @@ public class ClientSocket implements Client {
      */
     @Override
     public void gameStarted() {
-        //TODO
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.NotifyStart);
+        out(update.toString());
+
     }
 
     /**
@@ -204,7 +227,13 @@ public class ClientSocket implements Client {
      */
     @Override
     public void updateTurn(String player) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("player", player);
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.UpdateTurn);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -219,7 +248,14 @@ public class ClientSocket implements Client {
      */
     @Override
     public void refreshCommonGoal(int id, List<Integer> points) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("id", id);
+        content.put("points", Jsonable.list2json(points));
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.RefreshCommonGoals);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -230,7 +266,13 @@ public class ClientSocket implements Client {
      */
     @Override
     public void setPlayerGoal(int id) {
-        //TODO
+        JSONObject content= new JSONObject();
+        content.put("id", id);
+
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.SetPlayerGoal);
+        update.setContent(content);
+        out(update.toString());
     }
 
     /**
@@ -238,7 +280,9 @@ public class ClientSocket implements Client {
      */
     @Override
     public void disconnect() {
-        //TODO
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.Disconnect);
+        out(update.toString());
     }
 
     /**
@@ -247,7 +291,9 @@ public class ClientSocket implements Client {
      */
     @Override
     public String ping() {
-        // TODO
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.Ping);
+        out(update.toString());
         return "";
     }
 

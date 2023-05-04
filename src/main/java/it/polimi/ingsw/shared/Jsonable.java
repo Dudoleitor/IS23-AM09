@@ -1,12 +1,15 @@
 package it.polimi.ingsw.shared;
 
 import it.polimi.ingsw.shared.model.PlayerGoal;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface Jsonable {
@@ -69,17 +72,9 @@ public interface Jsonable {
      * @return JsonObject that corresponds to that boolean
      */
     static JSONObject map2json(Map<?,?> map) {
-        if (map == null)
-            return null;
         JSONObject jsonMap = new JSONObject();
-        map.keySet()
-                .stream()
-                .forEach(x ->
-                        jsonMap.put(
-                                x.toString(),
-                                map.get(x).toString()
-                        )
-                );
+        jsonMap.putAll(map);
+
         return jsonMap;
     }
     /**
@@ -91,25 +86,38 @@ public interface Jsonable {
         if (jsonMap == null)
             return null;
         Map<Integer,Integer> map = new HashMap<>();
-        if(jsonMap == null)
-            return null;
-        jsonMap.keySet()
-                .stream()
-                .forEach(x ->
-                        map.put(
-                                Integer.parseInt(x.toString()),
-                                Integer.parseInt(jsonMap.get(x).toString())
-                        )
-                );
+        for(Object k : jsonMap.keySet()){
+            map.put(Integer.parseInt(k.toString()),
+                    Integer.parseInt(jsonMap.get(k).toString()));
+
+        }
         return map;
     }
 
 
+    /**
+     * transform a list to a jsonString
+     * @param list is the boolean
+     * @return JsonObject that corresponds to that boolean
+     */
+    static JSONArray list2json(List<?> list) {
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.addAll(list);
 
-
-    static JSONObject mergeJSONObjects(JSONObject json1, JSONObject json2){
-        json2.keySet().stream()
-                .forEach(k -> json1.put(k, json2.get(k))); //TODO if they have same label we have a collision, I'll handle the case later, but it will be a runtime probably
-        return json1;
+        return jsonArray;
+    }
+    /**
+     * transform a jsonString to a List<Integer>
+     * @param jsonList is the string of JsonObject
+     * @return a boolean corresponding to the Object
+     */
+    static List<Integer> json2listInt (JSONArray jsonList){
+        if (jsonList == null)
+            return null;
+        List<Integer> list = new ArrayList<>();
+        for(Object l : jsonList){
+            list.add(Integer.parseInt(l.toString()));
+        }
+        return list;
     }
 }

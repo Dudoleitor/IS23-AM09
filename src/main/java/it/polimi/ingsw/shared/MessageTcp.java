@@ -26,28 +26,44 @@ public class MessageTcp {
         }
     }
     public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP
-        Login("login","ReplyWait"),
-        GetJoinedLobbies("getJoined", "ReplyWait"),
-        JoinRandomLobby("joinRandom", "ReplyWait"),
-        CreateLobby("createLobby", "ReplyWait"),
-        GetAvailableLobbies("availableLobbies", "ReplyWait"),
-        JoinSelectedLobby("joinSelected", "ReplyWait"),
-        PostToLiveChat("postChat", "ReplyWait"),
-        PostSecretToLiveChat("postSecret", "ReplyWait"),
-        Quit("quit", "ReplyWait"),
-        MatchHasStarted("matchStarted", "ReplyWait"),
-        PostMove("move", "ReplyWait"),
-        StartGame("start", "ReplyWait"),
-        IsLobbyAdmin("isAdmin", "ReplyWait"),
-        PickedFromBoard("pickedTile", "Update"),
-        RefreshBoard("refreshBoard", "Update"),
-        PutIntoShelf("refreshShelf","Update"),
+        Login("login",TypeMessage.ReplyWait),
+        GetJoinedLobbies("getJoined", TypeMessage.ReplyWait),
+        JoinRandomLobby("joinRandom", TypeMessage.ReplyWait),
+        CreateLobby("createLobby", TypeMessage.ReplyWait),
+        GetAvailableLobbies("availableLobbies", TypeMessage.ReplyWait),
+        JoinSelectedLobby("joinSelected", TypeMessage.ReplyWait),
+        PostToLiveChat("postChat", TypeMessage.ReplyWait),
+        PostSecretToLiveChat("postSecret", TypeMessage.ReplyWait),
+        Quit("quit", TypeMessage.ReplyWait),
+        MatchHasStarted("matchStarted", TypeMessage.ReplyWait),
+        PostMove("move", TypeMessage.ReplyWait),
+        StartGame("start", TypeMessage.ReplyWait),
+        IsLobbyAdmin("isAdmin", TypeMessage.ReplyWait),
+        PickedFromBoard("pickedTile", TypeMessage.Update),
+        RefreshBoard("refreshBoard", TypeMessage.Update),
+        PutIntoShelf("putShelf",TypeMessage.Update),
+        RefreshShelf("refreshShelf", TypeMessage.Update),
+        ChatMessageUpdate("chatUpdate", TypeMessage.Update),
+        RefreshChat("refreshChat", TypeMessage.Update),
+        NotifyStart("notifyStart", TypeMessage.Update),
+        UpdateTurn("updateTurn", TypeMessage.Update),
+        RefreshCommonGoals("refreshGoals", TypeMessage.Update),
+        SetPlayerGoal("setGoal", TypeMessage.Update),
+        Disconnect("disconnect", TypeMessage.Update),
+        Ping("ping", TypeMessage.Update),
+
+
+
 
         ;
+        public enum TypeMessage{
+            ReplyWait,
+            Update
+        }
 
         private final String label;
-        private final String type;
-        MessageCommand(String tag, String type){
+        private final TypeMessage type;
+        MessageCommand(String tag, TypeMessage type){
             this.label = tag;
             this.type = type;
         }
@@ -59,7 +75,7 @@ public class MessageTcp {
             }
             throw new RuntimeException("command not found");
         }
-        public String typeOfCommand(){
+        public TypeMessage typeOfCommand(){
             return type;
         }
 
@@ -79,7 +95,7 @@ public class MessageTcp {
         if(messageCommand == null){
             result = false;
         } else {
-            result = messageCommand.typeOfCommand().equals("ReplyWait");
+            result = messageCommand.typeOfCommand().equals(MessageCommand.TypeMessage.ReplyWait);
 
         }
         return result;
@@ -89,7 +105,7 @@ public class MessageTcp {
         if(messageCommand == null){
             result = false;
         } else {
-            result = messageCommand.typeOfCommand().equals("Update");
+            result = messageCommand.typeOfCommand().equals(MessageCommand.TypeMessage.Update);
 
         }
         return result;
