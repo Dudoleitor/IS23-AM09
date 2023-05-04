@@ -106,6 +106,11 @@ public class CLI extends View {
         return move;
     }
 
+    /**
+     * Get from input a valid number of tiles to pick according to game status
+     * @param shelf the player's sheld
+     * @return the first valid number chosen by user
+     */
     private int getNumberOfTilesFromUser(Shelf shelf){
         String posNumStr = "";
         int posNum = 0;
@@ -135,6 +140,12 @@ public class CLI extends View {
         return posNum;
     }
 
+    /**
+     * Build the partila move from the user input
+     * @param board the board
+     * @param posNum the chosen number of positions. The choice of tiles can reduce it
+     * @return the partial move
+     */
     private PartialMove getPartialMoveFromUser(Board board, int posNum){
         PartialMove pm = new PartialMove();
         boolean validInput = false;
@@ -145,7 +156,8 @@ public class CLI extends View {
 
                     //assure that there are valid positions
                     if(board.getValidPositions(pm).isEmpty()){
-                        printMessage("There are no more tiles to pick");
+                        printErrorMessage("There are no more tiles to pick");
+                        posNum = i;
                         break;
                     }
 
@@ -179,6 +191,12 @@ public class CLI extends View {
         return pm;
     }
 
+    /**
+     * Get from input a valid column from user
+     * @param shelf the player's sheld
+     * @param numPos the number of tiles to put in shelf
+     * @return the first valid number column by user
+     */
     private int getColumnFromUser(Shelf shelf, int numPos){
         String scannedColumn = "";
         boolean validInput = false;
@@ -218,14 +236,24 @@ public class CLI extends View {
         return column;
     }
 
+    /**
+     * @param shelf
+     * @param column
+     * @return the height of a column
+     */
     private int columnHeigth(Shelf shelf, int column){
         return (int) shelf.allTilesInColumn(column).stream()
                 .filter(x -> !x.equals(Tile.Empty)).count();
     }
 
+    /**
+     * @param shelf
+     * @param posNum
+     * @return a list of valid columns to choose from
+     */
     private List<Integer> columnsToChose(Shelf shelf, int posNum){
         return  IntStream.range(0,shelf.getColumns()).
-                filter(col -> columnHeigth(shelf,col) + posNum < shelf.getRows()).
+                filter(col -> columnHeigth(shelf,col) + posNum <= shelf.getRows()).
                 boxed().
                 collect(Collectors.toList());
     }
