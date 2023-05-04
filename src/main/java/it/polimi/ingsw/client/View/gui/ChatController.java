@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class ChatController {
 
     @FXML
     protected void backHome() throws IOException {
-        client.changeScene("PlayerHomeScreen");
+        Stage stage = (Stage) message.getScene().getWindow();
+        stage.setScene(new Scene(client.loadScene("PlayerHomeScreen"), 800, 800));
     }
 }

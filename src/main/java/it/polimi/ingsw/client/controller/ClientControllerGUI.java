@@ -1,11 +1,17 @@
 package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.client.View.gui.GUI;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.JSONFilePath;
+import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
-import it.polimi.ingsw.shared.model.Tile;
+import it.polimi.ingsw.shared.model.*;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -16,10 +22,25 @@ import java.util.List;
 public class ClientControllerGUI implements ClientController, ClientRemote {
     private final String playerName;
     private boolean itsMyTurn;
+    private Chat chat;
+    private Board board;
+    private final Map<String, Shelf> playersShelves;
+    private PlayerGoal playerGoal;
+    private final List<CommonGoal> commonGoalList;
+    private final List<String> players;
+    private boolean gameStarted;
 
     public ClientControllerGUI(String playerName) {
         this.playerName=playerName;
         this.itsMyTurn=false;
+        this.chat = new Chat();
+        this.board = null;
+        this.playersShelves = new HashMap<>();
+        this.playerGoal = null;
+        this.commonGoalList = new ArrayList<>();
+        this.players = new ArrayList<>();
+        this.gameStarted = false;
+        this.itsMyTurn = false;
     }
 
     /**
@@ -30,6 +51,41 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      */
     public String getPlayerName() {
         return playerName;
+    }
+
+    public Chat getChat() {
+        return new Chat(this.chat);
+    }
+
+    public Board getBoard() {
+        if (board==null) {
+            throw new RuntimeException("The client contains an invalid board: null");
+        }
+        try {
+            return new Board(this.board);
+        } catch (JsonBadParsingException e) {
+            throw new RuntimeException("The client contains an invalid board: " + e.getMessage());
+        }
+    }
+
+    public Map<String, Shelf> getPlayersShelves() {
+        return playersShelves;
+    }
+
+    public PlayerGoal getPlayerGoal() {
+        return playerGoal;
+    }
+
+    public List<CommonGoal> getCommonGoalList() {
+        return commonGoalList;
+    }
+
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public boolean isGameStarted() {
+        return gameStarted;
     }
 
     /**
@@ -89,7 +145,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param message String message
      */
     public void postChatMessage(String sender, String message) {
-
+        chat.addMessage(sender, message);
     }
 
     /**
@@ -156,6 +212,11 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      */
     @Override
     public void setPlayerGoal(int id) {
+        try {
+            this.playerGoal = new PlayerGoal(JSONFilePath.PlayerGoals, id);
+        } catch (JsonBadParsingException e) {
+            throw new RuntimeException("JsonBadParsing exception while loading player goal: " + e.getMessage());
+        }
 
     }
 

@@ -23,14 +23,14 @@ public class ClientGUI extends Application {
 
     private ClientControllerGUI controller;
 
-    public static Parent loadScene(String scene) throws IOException {
+    public Parent loadScene(String scene) throws IOException {
         return FXMLLoader.load(ClientGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
     }
 
 
     public void start(Stage stage) throws IOException {
         Parent root = loadScene("Start");
-        Scene scene = new Scene(root, 320, 240, Color.GREEN);
+        Scene scene = new Scene(root, 800, 800, Color.GREEN);
         stage.setTitle("My Shelfie");
         stage.setScene(scene);
         stage.show();
@@ -41,15 +41,6 @@ public class ClientGUI extends Application {
         alert.setTitle("Error");
         alert.setHeaderText(message);
         alert.show();
-    }
-
-    public void changeScene(String sceneName) throws IOException {
-        Parent root = loadScene(sceneName);
-        Scene scene = new Scene(root, 320, 240, Color.GREEN);
-        Stage stage = new Stage();
-        stage.setTitle("My Shelfie - Home");
-        stage.setScene(scene);
-        stage.show();
     }
 
     public ClientControllerGUI getController() {
