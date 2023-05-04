@@ -27,6 +27,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     private final CLI cli;
     private boolean gameStarted;
     private boolean itsMyTurn;
+    private LinkedList<Runnable> actionsQueue;
 
     public ClientControllerCLI(String playerName, CLI cli) throws RemoteException {
         super();
@@ -40,6 +41,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         this.cli = cli;
         this.gameStarted = false;
         this.itsMyTurn = false;
+        this.actionsQueue = new LinkedList<>();
     }
 
     /**
@@ -167,7 +169,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
         if (!Objects.equals(sender, playerName))
-            cli.showChatMessage(chat.getLast());
+            enqueueTask(() -> cli.showChatMessage(chat.getLast()));
+        executeTasks();
     }
 
     /**
@@ -198,9 +201,11 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void gameStarted() {
         ensureModelIsSet();
 
-        cli.showGameStatus(board,playersShelves,playerGoal);
+        enqueueTask(() -> cli.showGameStatus(board,playersShelves,playerGoal));
         gameStarted = true;
-        cli.message("Match has started");
+        enqueueTask(() -> cli.message("Match has started"));
+
+        executeTasks();
     }
 
     /**
@@ -214,17 +219,17 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void nextTurn(String player) {
         if (gameStarted) {
             ensureModelIsSet();
-
-            cli.showGameStatus(board,playersShelves,playerGoal);
+            enqueueTask(() -> cli.showGameStatus(board,playersShelves,playerGoal));
         }
 
         if (player.equals(this.playerName)) {
-           cli.message("It's your turn");
+            enqueueTask(() -> cli.message("It's your turn"));
            itsMyTurn=true;
         } else {
-            cli.message("It's "+player+" turn");
+            enqueueTask(() -> cli.message("It's "+player+" turn"));
             itsMyTurn=false;
         }
+        executeTasks();
     }
 
     /**
@@ -275,5 +280,27 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     @Override
     public String ping() {
         return "pong";
+    }
+
+    /**
+     * Add a runnable to a FIFO queue of tasks to perform
+     * This is used not to lock the server on client syncronized events
+     * @param task
+     */
+    private void enqueueTask(Runnable task){
+        actionsQueue.addLast(task);
+    }
+
+    /**
+     * Execute all tasks on a new thread
+     */
+    private void executeTasks(){
+        new Thread(
+                () -> {
+                    while(!actionsQueue.isEmpty()){
+                        actionsQueue.pollFirst().run();
+                    }
+                }
+        ).start();
     }
 }

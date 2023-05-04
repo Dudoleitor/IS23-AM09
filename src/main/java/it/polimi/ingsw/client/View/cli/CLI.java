@@ -228,9 +228,11 @@ public class CLI extends View {
     }
 
     public void showChatMessage(ChatMessage message) {
-        skipPlaceHolder();
-        System.out.println(message);
-        restorePlaceHolder();
+        synchronized (cli_lock){
+            skipPlaceHolder();
+            System.out.println(message);
+            restorePlaceHolder();
+        }
     }
 
     @Override
@@ -382,7 +384,7 @@ public class CLI extends View {
 
     private void skipPlaceHolder(){
         if(placeHolderToRestore){
-            System.out.println("");
+            System.out.print("");
         }
     }
 
