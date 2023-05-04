@@ -76,6 +76,14 @@ public class Chat implements Serializable {
     public ChatMessage get(int index){
         return chatMessages.get(index);
     }
+    public ChatMessage getLast(){
+        if(chatMessages == null || chatMessages.isEmpty()){
+            return null;
+        }
+        else {
+            return chatMessages.get(chatMessages.size()-1);
+        }
+    }
     public List<ChatMessage> getAllMessages(){
         List<ChatMessage> allmessages = new ArrayList<>();
         allmessages.addAll(chatMessages);

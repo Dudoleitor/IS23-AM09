@@ -5,8 +5,6 @@ import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.*;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -169,7 +167,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
         if (!Objects.equals(sender, playerName))
-            cli.showChatMessage(sender, message);
+            cli.showChatMessage(chat.getLast());
     }
 
     /**
@@ -201,7 +199,6 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         ensureModelIsSet();
 
         cli.showGameStatus(board,playersShelves,playerGoal);
-
         gameStarted = true;
         cli.message("Match has started");
     }
@@ -225,6 +222,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
            cli.message("It's your turn");
            itsMyTurn=true;
         } else {
+            cli.message("It's "+player+" turn");
             itsMyTurn=false;
         }
     }

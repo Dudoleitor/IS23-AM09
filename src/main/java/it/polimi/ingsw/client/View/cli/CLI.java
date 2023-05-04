@@ -19,6 +19,7 @@ public class CLI extends View {
     private InputSanitizer inputSanitizer;
     private Scanner scanner;
     private String placeHolder = stdPlaceHolder;
+    private boolean placeHolderToRestore = false;
 
     /**
      * Constructor. The cli_lock is built as a Singleton
@@ -60,11 +61,13 @@ public class CLI extends View {
     @Override
     public void showAllMessages(Chat chat){
         synchronized (cli_lock){
+            skipPlaceHolder();
             if(chat == null || chat.size() == 0){
                 printMessage("No messages yet");
                 return;
             }
             chat.getAllMessages().stream().map(mes -> mes.toString()).forEach(System.out::println);
+            restorePlaceHolder();
         }
     }
     @Override
@@ -160,6 +163,7 @@ public class CLI extends View {
 
     public void showGameStatus(Board b, Map<String, Shelf> playerShelves, PlayerGoal goal){
         synchronized (cli_lock){
+            skipPlaceHolder();
             showBoard(b);
             showCommonGoals(b.getCommonGoals());
             showShelves(playerShelves);
@@ -223,8 +227,10 @@ public class CLI extends View {
         printMessage(goal.toString());
     }
 
-    public void showChatMessage(String sender, String message) {
-        printMessage(sender + " sent a chat message: " + message);
+    public void showChatMessage(ChatMessage message) {
+        skipPlaceHolder();
+        System.out.println(message);
+        restorePlaceHolder();
     }
 
     @Override
@@ -345,7 +351,9 @@ public class CLI extends View {
     @Override
     public void errorMessage(String message) {
         synchronized (cli_lock){
+            skipPlaceHolder();
             printErrorMessage(message);
+            restorePlaceHolder();
         }
     }
 
@@ -357,18 +365,31 @@ public class CLI extends View {
     @Override
     public void message(String message) {
         synchronized (cli_lock){
+            skipPlaceHolder();
             printMessage(message);
+            restorePlaceHolder();
         }
     }
 
     //String decorators
-
     private void printErrorMessage(String message){
         System.out.println(errorFormat(message));
     }
 
     private void printMessage(String message){
         System.out.println(messageFormat(message));
+    }
+
+    private void skipPlaceHolder(){
+        if(placeHolderToRestore){
+            System.out.println("");
+        }
+    }
+
+    private void restorePlaceHolder(){
+        if(placeHolderToRestore){
+            printPlaceHolder();
+        }
     }
 
     /**
@@ -384,6 +405,7 @@ public class CLI extends View {
      * Prints the placeholder
      */
     public void printPlaceHolder(){
+        placeHolderToRestore = true;
         System.out.print(placeHolder);
     }
 
@@ -409,6 +431,7 @@ public class CLI extends View {
     public String scan(){
         printPlaceHolder();
         String command = scanner.nextLine();
+        placeHolderToRestore = false;
         return command;
     }
 
@@ -424,6 +447,7 @@ public class CLI extends View {
             printMessage(field+":");
             printPlaceHolder();
             value =  scanner.nextLine();
+            placeHolderToRestore = false;
             result.put(field,value);
         }
         return result;
