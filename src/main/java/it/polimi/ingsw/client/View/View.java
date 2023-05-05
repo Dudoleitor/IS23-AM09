@@ -93,4 +93,9 @@ public abstract class View {
      * Set isLobbyAdmin variable in View
      */
     public abstract void setLobbyAdmin(boolean isAdmin);
+
+    /**
+     * Print the end game leaderboard
+     */
+    public abstract void endGame(Map<String,Integer> leaderBoard, String playername);
 }

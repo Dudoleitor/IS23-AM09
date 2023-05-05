@@ -82,6 +82,11 @@ public class GUI extends View {
     }
 
     @Override
+    public void endGame(Map<String, Integer> leaderBoard, String playername) {
+
+    }
+
+    @Override
     public void notifyInvalidCommand() {
 
     }

@@ -67,4 +67,17 @@ public class CLITest {
             }
         }
     }
+
+    @Test
+    void endGame(){
+        if(verbose){
+            Map<String,Integer> leaderboard = new HashMap<>();
+            leaderboard.put("frigieri",200);
+            leaderboard.put("firgioggi",30);
+            leaderboard.put("frigdopodonmani",55);
+            leaderboard.put("friegdomani",25);
+            CLI cli = new CLI();
+            cli.endGame(leaderboard,"frigieri");
+        }
+    }
 }

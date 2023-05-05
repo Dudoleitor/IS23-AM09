@@ -126,4 +126,9 @@ public class ViewDriver extends View {
     public void setLobbyAdmin(boolean isAdmin) {
         //do nothing
     }
+
+    @Override
+    public void endGame(Map<String, Integer> leaderBoard, String playername) {
+
+    }
 }

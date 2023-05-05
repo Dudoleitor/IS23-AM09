@@ -441,6 +441,34 @@ public class CLI extends View {
         }
     }
 
+    @Override
+    public void endGame(Map<String, Integer> leaderBoard, String playername) {
+        //sort the points
+        List<Integer> points = leaderBoard.values().
+                stream().
+                sorted(Comparator.reverseOrder()).
+                collect(Collectors.toList());
+        //sort the names based on points
+        List<String> names = leaderBoard.keySet().
+                stream().
+                sorted(Comparator.comparingInt(leaderBoard::get).reversed()). //TODO handle same scores properly
+                collect(Collectors.toList());
+        String leaderboard = "LeaderBoard:\n";
+
+        for(String player : names){
+            leaderboard = leaderboard.concat("      -"+player+": "+leaderBoard.get(player)+"\n");
+        }
+        synchronized (cli_lock){
+            if(names.get(0).equals(playername)){
+                System.out.println(victoryBanner);
+            }
+            else{
+                System.out.println(defeatBanner);
+            }
+            printMessage(leaderboard);
+        }
+    }
+
 
     /**
      * Prints the string (decorated as an error message) in a synchronous way
