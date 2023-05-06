@@ -7,6 +7,7 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.canvas.Canvas?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.View.gui.homeScreenController">
 
@@ -51,65 +52,6 @@
                     <Image url="@gameGraphics/scoring_tokens/scoring_6.jpg" />
                 </image>
             </ImageView>
-            <Button fx:id="sh00" layoutX="392.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" textFill="WHITE" />
-            <Button layoutX="425.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="27.0" style="-fx-background-color: white;" />
-            <Button layoutX="460.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" />
-            <Button layoutX="495.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="530.0" layoutY="129.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="392.0" layoutY="159.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="425.0" layoutY="159.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="460.0" layoutY="159.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="495.0" layoutY="159.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="530.0" layoutY="159.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="24.0" style="-fx-background-color: white;" />
-            <Button layoutX="393.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="24.0" style="-fx-background-color: white;" />
-            <Button layoutX="426.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" />
-            <Button layoutX="461.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="26.0" style="-fx-background-color: white;" />
-            <Button layoutX="494.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="27.0" style="-fx-background-color: white;" />
-            <Button layoutX="529.0" layoutY="189.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" />
-            <Button layoutX="393.0" layoutY="218.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: white;" />
-            <Button layoutX="426.0" layoutY="218.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="461.0" layoutY="218.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="494.0" layoutY="218.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="529.0" layoutY="218.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="392.0" layoutY="246.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="425.0" layoutY="246.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="460.0" layoutY="246.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="495.0" layoutY="246.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="528.0" layoutY="247.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="392.0" layoutY="276.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="425.0" layoutY="276.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="460.0" layoutY="276.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="495.0" layoutY="276.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="528.0" layoutY="277.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="20.0" prefWidth="21.0" text="Button" />
-            <Button layoutX="122.0" layoutY="109.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="148.0" layoutY="109.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="122.0" layoutY="135.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="148.0" layoutY="135.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="174.0" layoutY="135.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="122.0" layoutY="161.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="148.0" layoutY="161.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="174.0" layoutY="161.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="201.0" layoutY="160.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="227.0" layoutY="160.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="96.0" layoutY="161.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="123.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="149.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="175.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="202.0" layoutY="187.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="228.0" layoutY="187.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="97.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="70.0" layoutY="188.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="123.0" layoutY="214.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="149.0" layoutY="214.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="175.0" layoutY="214.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="202.0" layoutY="213.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="97.0" layoutY="214.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="70.0" layoutY="214.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="123.0" layoutY="240.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="149.0" layoutY="240.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="175.0" layoutY="240.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="149.0" layoutY="266.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
-            <Button layoutX="175.0" layoutY="266.0" mnemonicParsing="false" onAction="#hello" opacity="0.0" prefHeight="26.0" prefWidth="23.0" />
             <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="19.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/Publisher_material/Title_2000x618px.png" />
@@ -126,6 +68,9 @@
                     <Font name="SF Mono Bold" size="13.0" />
                 </font>
             </Button>
+            <Canvas onMousePressed="#clickedMouseBoard"  height="258.0" layoutX="32.0" layoutY="71.0" width="268.0" />
+            <Canvas onMousePressed="#clickedMouseShelf" height="219.0" layoutX="365.0" layoutY="114.0" width="366.0" />
+
         </children>
     </AnchorPane>
 
