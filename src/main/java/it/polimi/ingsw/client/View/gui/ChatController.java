@@ -29,7 +29,7 @@ public class ChatController {
     protected void SendMsg() {
         client.getController().postChatMessage(client.getController().getPlayerName(), message.getText());
         username.setText(client.getController().getPlayerName());
-        username.setStyle(" -fx-text-background-color: green");
+        username.setStyle("-fx-text-background-color: green");
         textArea.appendText(username.getText() + ": " + message.getText() + "\n");
         message.setText("");
     }

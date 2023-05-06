@@ -289,7 +289,8 @@ public class ClientMain{
     private static void initController() throws RemoteException {
         switch(Client_Settings.ui){
             case GUI:
-                controller = new ClientControllerGUI(playerName);
+                final GUI gui = (GUI) view;
+                controller = new ClientControllerGUI(playerName, gui);
                 break;
             case CLI:
                 try {

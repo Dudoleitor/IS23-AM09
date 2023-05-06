@@ -18,6 +18,7 @@ public class HelloController {
 
     private static final ClientGUI client = new ClientGUI();
     private ClientControllerGUI controller;
+    private GUI gui;
 
     public static ClientGUI getClient() {
         return client;
@@ -27,7 +28,9 @@ public class HelloController {
     protected void signInAction() throws IOException {
         welcome.setText(userName.getText() + " joined the lobby " +
                 lobbyNumber.getText());
-        controller = new ClientControllerGUI(userName.getText());
+        gui = new GUI();
+        client.setGui(gui);
+        controller = new ClientControllerGUI(userName.getText(), gui);
         client.setController(controller);
         Stage stage = (Stage) welcome.getScene().getWindow();
         stage.setScene(new Scene(client.loadScene("PlayerHomeScreen"), 800, 800));

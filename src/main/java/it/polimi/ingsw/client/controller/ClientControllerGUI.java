@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.client.View.cli.CLI;
 import it.polimi.ingsw.client.View.gui.GUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
@@ -29,8 +30,9 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
     private boolean gameStarted;
+    private final GUI gui;
 
-    public ClientControllerGUI(String playerName) {
+    public ClientControllerGUI(String playerName, GUI gui) {
         this.playerName=playerName;
         this.itsMyTurn=false;
         this.chat = new Chat();
@@ -41,6 +43,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
         this.players = new ArrayList<>();
         this.gameStarted = false;
         this.itsMyTurn = false;
+        this.gui = gui;
     }
 
     /**
