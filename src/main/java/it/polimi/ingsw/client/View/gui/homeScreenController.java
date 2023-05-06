@@ -30,12 +30,7 @@ public class homeScreenController {
 
     //qua mi servirà un metodo che mi dà il personal goal del player
     private void randPG() {
-        Random rand = new Random();
-        int int_random = rand.nextInt(11);
-
-        int_random += 1;
-        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
-
+        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + client.getController().getPlayerGoal().getGoalId() + ".png"));
     }
 
     //qua mi servirà un metodo che mi dà i common goals della partita

@@ -111,6 +111,11 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param board JSONObject
      */
     public void refreshBoard(JSONObject board) {
+        try {
+            this.board = new Board(board, new ArrayList<>());
+        } catch (JsonBadParsingException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
 
     }
 
@@ -126,6 +131,13 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param tile   Tile to insert
      */
     public void putIntoShelf(String player, int column, Tile tile) {
+        try{
+            Shelf shelf = playersShelves.get(player);
+            shelf.insertTile(tile, column);
+            playersShelves.replace(player, shelf);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
 
     }
 
@@ -138,6 +150,12 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param shelf  JSONObject
      */
     public void refreshShelf(String player, JSONObject shelf) {
+        playersShelves.remove(player);
+        try {
+            this.playersShelves.put(player, new Shelf(shelf));
+        } catch (JsonBadParsingException e) {
+            throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
+        }
 
     }
 
@@ -158,8 +176,20 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      * @param chat Chat object
      */
     public void refreshChat(Chat chat) {
-
+        this.chat = chat;
     }
+
+    /**
+     * This function throws a RuntimeException if any element
+     * of the model is not set properly.
+     */
+    private void ensureModelIsSet() {
+        if (board==null) throw new RuntimeException("Board null after the game has started");
+        if(commonGoalList.isEmpty()) throw new RuntimeException("Common goals list empty after game has started");
+        if(playersShelves.isEmpty()) throw new RuntimeException("Player shelves list empty after game has started");
+        if(playerGoal==null) throw new RuntimeException("Personal goal null after game has started");
+    }
+
 
     /**
      * This method is used when the lobby is ready and the
@@ -204,7 +234,10 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
      */
     @Override
     public void refreshCommonGoal(int id, List<Integer> points) {
-
+        final CommonGoal commonGoal = new CommonGoal(CommonGoalStrategy.findById(id), points);
+        commonGoalList.remove(commonGoal);
+        commonGoalList.add(commonGoal);
+        commonGoalList.sort((x,y) -> x.getID() > y.getID() ? 1 : -1);
     }
 
     /**

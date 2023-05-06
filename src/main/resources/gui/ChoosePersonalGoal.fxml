@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.client.View.gui.ChoosePersonalGoalController" stylesheets="@ChoosePersonalGoal.css" fx:id="vbox">
+<AnchorPane>
+
+    <children>
+
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="36.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id1">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals1.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="126.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id2">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals2.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="217.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id3">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals3.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="316.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id4">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals4.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="406.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id5">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals5.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="497.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id6">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals6.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="36.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id7">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals7.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="126.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id8">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals8.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="217.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id9">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals9.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="316.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id10">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals10.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="406.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id11">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals11.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="155.0" fitWidth="100.0" layoutX="497.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#id12">
+            <image>
+                <Image url="@gameGraphics/personal_goal_cards/Personal_Goals12.png" />
+            </image>
+        </ImageView>
+        <Text layoutX="36.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Click your personal goal" wrappingWidth="559.21630859375">
+            <font>
+                <Font name="SF Mono Bold" size="36.0" />
+            </font>
+        </Text>
+    </children>
+
+</AnchorPane>
+</VBox>
