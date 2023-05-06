@@ -92,8 +92,8 @@ public class homeScreenController {
     public void clickedMouseShelf(MouseEvent mouseEvent) {
         System.out.println("Shelf:");
 
-        int column = (int) ((mouseEvent.getX())/24) - 1;
-        int row = (int) ((mouseEvent.getY())/24) - 1;
+        int column = (int) ((mouseEvent.getX())/25) - 1;
+        int row = (int) ((mouseEvent.getY())/25) - 1;
         if(row < 0) row += 1;
         if(column < 0) column += 1;
         System.out.println("Row: " + row);
