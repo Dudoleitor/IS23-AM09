@@ -27,6 +27,7 @@ public class ChatController {
 
     @FXML
     protected void SendMsg() {
+        //System.out.println(client.getController().getChat().getAllMessages());
         client.getController().postChatMessage(client.getController().getPlayerName(), message.getText());
         username.setText(client.getController().getPlayerName());
         username.setStyle("-fx-text-background-color: green");

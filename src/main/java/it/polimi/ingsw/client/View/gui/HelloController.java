@@ -34,6 +34,5 @@ public class HelloController {
         client.setController(controller);
         Stage stage = (Stage) welcome.getScene().getWindow();
         stage.setScene(new Scene(client.loadScene("ChoosePersonalGoal"), 800, 800));
-        //client.changeScene("PlayerHomeScreen");
     }
 }

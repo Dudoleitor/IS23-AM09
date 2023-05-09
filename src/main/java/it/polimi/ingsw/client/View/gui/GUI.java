@@ -8,7 +8,10 @@ import it.polimi.ingsw.shared.model.Board;
 import it.polimi.ingsw.shared.model.Move;
 import it.polimi.ingsw.shared.model.Shelf;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GUI extends View {
     @Override
@@ -23,7 +26,8 @@ public class GUI extends View {
 
     @Override
     public void showAllMessages(Chat chat) {
-
+        List<String> messages = new ArrayList<>();
+        messages.addAll(chat.getAllMessages().stream().map(mes -> mes.toString()).collect(Collectors.toList()));
     }
 
     @Override

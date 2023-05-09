@@ -15,11 +15,6 @@ public class ChoosePersonalGoalController {
     VBox vbox;
 
     @FXML
-    protected void goToMatch() {
-        System.out.println("Go to match!");
-    }
-
-    @FXML
     protected void id1() throws IOException {
         client.getController().setPlayerGoal(1);
         Stage stage = (Stage) vbox.getScene().getWindow();
