@@ -41,6 +41,10 @@ public class PartialMove implements Jsonable {
     public int getMaxNumMoves() {
         return maxNumMoves;
     }
+
+    public int size(){
+        return positions.size();
+    }
     @Override
     public String toString(){
         String s = "Positions:\n";

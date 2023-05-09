@@ -188,6 +188,47 @@ public class CLI extends View {
                 }
             }
         }
+
+        if(pm.size() > 1){
+            List<Position> positions = pm.getBoardPositions();
+            pm = new PartialMove();
+            printMessage("Select insertion order:");
+            while(positions.size() > 1){
+                validInput = false;
+                printMessage("Pick a tile:");
+                for(int i = 0; i < positions.size(); i++){
+                    System.out.println(i+"> "+positions.get(i));
+                }
+                while(!validInput){
+                    validInput = true;
+                    String numStr = scan();
+                    if(!inputSanitizer.isInteger(numStr)){
+                        validInput = false;
+                        printErrorMessage("Please enter an integer");
+                        continue;
+                    }
+                    int num = Integer.parseInt(numStr);
+                    if(num < 0 || num >= positions.size()){
+                        validInput = false;
+                        printErrorMessage("Input a valid integer");
+                    }
+                    else{
+                        try {
+                            pm.addPosition(positions.get(num));
+                            positions.remove(num);
+                        } catch (InvalidMoveException e) {
+                            printErrorMessage("Input a valid integer");
+                            validInput = false;
+                        }
+                    }
+                }
+            }
+            try {
+                pm.addPosition(positions.get(0));
+            } catch (InvalidMoveException e) {
+                //This should not happen
+            }
+        }
         return pm;
     }
 
