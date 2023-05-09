@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.awt.event.KeyEvent;
@@ -21,10 +22,15 @@ public class ChatController {
     @FXML
     TextArea textArea;
 
+    Text username = new Text();
+
+
     @FXML
     protected void SendMsg() {
         client.getController().postChatMessage(client.getController().getPlayerName(), message.getText());
-        textArea.appendText(client.getController().getPlayerName() + ": " + message.getText() + "\n");
+        username.setText(client.getController().getPlayerName());
+        username.setStyle("-fx-text-background-color: green");
+        textArea.appendText(username.getText() + ": " + message.getText() + "\n");
         message.setText("");
     }
 
