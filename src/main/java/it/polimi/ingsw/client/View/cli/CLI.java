@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static it.polimi.ingsw.client.Client_Settings.*;
 
@@ -90,75 +91,212 @@ public class CLI extends View {
     }
 
     @Override
-    public Move getMoveFromUser(){
-        Move m = null;
-        boolean validInput = false;
+    public Move getMoveFromUser(Board board, Shelf shelf){
+        PartialMove pm = new PartialMove();
+        int column = 0;
+        Move move = null;
         synchronized (cli_lock){
-            while(!validInput){
-                validInput = true;
-                printMessage("Write your move");
-                int posNum = getNumberOfTiles();
+            printMessage("Write your move");
+            int posNum = getNumberOfTilesFromUser(shelf);
+            pm = getPartialMoveFromUser(board,posNum);
+            column = getColumnFromUser(shelf,posNum);
+            move = new Move(pm,column);
+            printMessage("Your move:\n" + move.toString());
+        }
+        return move;
+    }
 
-                List<String> fields = new ArrayList<>();
-                for(int i = 1; i <= posNum; i++){
-                    fields.add("position #"+String.valueOf(i));
-                }
-                fields.add("column");
+    /**
+     * Get from input a valid number of tiles to pick according to game status
+     * @param shelf the player's sheld
+     * @return the first valid number chosen by user
+     */
+    private int getNumberOfTilesFromUser(Shelf shelf){
+        String posNumStr = "";
+        int posNum = 0;
+        int maxShelfCapacity = shelf.getHighestColumn();
+        boolean validInput = false;
 
+        while(!validInput){
+            validInput = true;
+            printMessage("How many tiles do you want to pick?:");
+            posNumStr =  scan();
+
+            //assure it's a number
+            if(!inputSanitizer.isInteger(posNumStr)){
+                printErrorMessage("Please insert an integer");
+                validInput = false;
+                continue;
+            }
+
+            posNum = Integer.parseInt(posNumStr);
+
+            //assure it's a number that is valid and can fit in at least one column
+            if(!(posNum > 0 && posNum <= 3 && posNum <= maxShelfCapacity)){
+                printErrorMessage("Invalid number");
+                validInput = false;
+            }
+        }
+        return posNum;
+    }
+
+    /**
+     * Build the partila move from the user input
+     * @param board the board
+     * @param posNum the chosen number of positions. The choice of tiles can reduce it
+     * @return the partial move
+     */
+    private PartialMove getPartialMoveFromUser(Board board, int posNum){
+        PartialMove pm = new PartialMove();
+        boolean validInput = false;
+        while(!validInput){
+            validInput = true;
+            for(int i = 0; i < posNum; i++){
                 try{
-                    m = parseMove(fieldsScan(fields));
+
+                    //assure that there are valid positions
+                    if(board.getValidPositions(pm).isEmpty()){
+                        printErrorMessage("There are no more tiles to pick");
+                        posNum = i;
+                        break;
+                    }
+
+                    //show valid moves
+                    printMessage("Here is the list of all the valid moves:");
+                    for(Position p : board.getValidPositions(pm)){
+                        System.out.println("> "+p.toString());
+                    }
+
+                    //get position
+                    printMessage("Position #"+String.valueOf(i+1)+":");
+                    String stringPos = scan();
+                    Position pos = Position.fromString(stringPos);
+
+                    //if invalid
+                    if(pos == null || !board.getValidPositions(pm).contains(pos)){
+                        printErrorMessage("Please enter a valid position");
+                        i--; //ask again the same position
+                    }
+                    else {
+                        //add to move
+                        pm.addPosition(pos);
+                    }
                 }
                 catch (Exception e){
                     printErrorMessage("Invalid format");
                     validInput = false;
                 }
             }
-            printMessage("Your move:\n" + m.toString());
         }
-        return m;
-    }
 
-    private int getNumberOfTiles(){
-        String posNumStr = "";
-        int posNum = 0;
-        while(!(inputSanitizer.isInteger(posNumStr) && posNum > 0 && posNum <= 3)){
-            printMessage("How many tiles do you want to pick?:");
-            posNumStr =  scan();
-            if(inputSanitizer.isInteger(posNumStr)){
-                posNum = Integer.parseInt(posNumStr);
-                if(!(posNum > 0 && posNum <= 3)){
-                    printErrorMessage("Invalid number");
+        if(pm.size() > 1){
+            List<Position> positions = pm.getBoardPositions();
+            pm = new PartialMove();
+            printMessage("Select insertion order:");
+            while(positions.size() > 1){
+                validInput = false;
+                printMessage("Pick a tile:");
+                for(int i = 0; i < positions.size(); i++){
+                    System.out.println(i+"> "+positions.get(i));
+                }
+                while(!validInput){
+                    validInput = true;
+                    String numStr = scan();
+                    if(!inputSanitizer.isInteger(numStr)){
+                        validInput = false;
+                        printErrorMessage("Please enter an integer");
+                        continue;
+                    }
+                    int num = Integer.parseInt(numStr);
+                    if(num < 0 || num >= positions.size()){
+                        validInput = false;
+                        printErrorMessage("Input a valid integer");
+                    }
+                    else{
+                        try {
+                            pm.addPosition(positions.get(num));
+                            positions.remove(num);
+                        } catch (InvalidMoveException e) {
+                            printErrorMessage("Input a valid integer");
+                            validInput = false;
+                        }
+                    }
                 }
             }
-            else{
-                printErrorMessage("Please insert an integer");
+            try {
+                pm.addPosition(positions.get(0));
+            } catch (InvalidMoveException e) {
+                //This should not happen
             }
         }
-        return posNum;
+        return pm;
     }
 
-    private List<Position> getPositionsFromInput(Map<String,String> input){
-        List<Position> positions = new ArrayList<>();
-        int postitions = input.size()-1; //the size minus one column field
-        for(int i = 1; i <= postitions; i++){
-            positions.add(Position.fromString(input.get("position #"+String.valueOf(i))));
+    /**
+     * Get from input a valid column from user
+     * @param shelf the player's sheld
+     * @param numPos the number of tiles to put in shelf
+     * @return the first valid number column by user
+     */
+    private int getColumnFromUser(Shelf shelf, int numPos){
+        String scannedColumn = "";
+        boolean validInput = false;
+        int column = 0;
+        while(!validInput){
+
+            validInput = true;
+            printMessage("Choose the column");
+            printMessage("Here is a list of the valid columns");
+            for(int choice : columnsToChose(shelf,numPos)){
+                System.out.println("> "+choice);
+            }
+            scannedColumn = scan(); //scan the input
+
+            //assure it's an integer
+            if(!inputSanitizer.isInteger(scannedColumn)){
+                validInput = false;
+                printErrorMessage("Please enter a number");
+                continue;
+            }
+
+            column = Integer.valueOf(scannedColumn);
+
+            //assure the number is inside the bounds og shelf
+            if(!(column >= 0 && column < shelf.getColumns())){
+                validInput = false;
+                printErrorMessage("Please enter a valid number");
+                continue;
+            }
+
+            //assure the tiles will fit int the column
+            if(columnHeigth(shelf,column) + numPos > shelf.getRows()){
+                printErrorMessage("You cannot insert "+numPos+ " tiles in column "+ column);
+                validInput = false;
+            }
         }
-        return positions;
+        return column;
     }
 
-    private Move parseMove(Map<String,String> input) throws Exception {
-        List<Position> positions;
-        int column;
-        PartialMove pm = new PartialMove();
-        positions = getPositionsFromInput(input);
-        column = Integer.valueOf(input.get("column"));
-        if(positions == null ||  positions.contains(null)){
-            throw new Exception();
-        }
-        for(Position p : positions){
-            pm.addPosition(p);
-        }
-        return new Move(pm, column);
+    /**
+     * @param shelf
+     * @param column
+     * @return the height of a column
+     */
+    private int columnHeigth(Shelf shelf, int column){
+        return (int) shelf.allTilesInColumn(column).stream()
+                .filter(x -> !x.equals(Tile.Empty)).count();
+    }
+
+    /**
+     * @param shelf
+     * @param posNum
+     * @return a list of valid columns to choose from
+     */
+    private List<Integer> columnsToChose(Shelf shelf, int posNum){
+        return  IntStream.range(0,shelf.getColumns()).
+                filter(col -> columnHeigth(shelf,col) + posNum <= shelf.getRows()).
+                boxed().
+                collect(Collectors.toList());
     }
 
     public void showGameStatus(Board b,List<CommonGoal> commongoals ,Map<String, Shelf> playerShelves, PlayerGoal goal){
@@ -341,6 +479,34 @@ public class CLI extends View {
         }
         else{
             setPlaceHolder(Client_Settings.stdPlaceHolder);
+        }
+    }
+
+    @Override
+    public void endGame(Map<String, Integer> leaderBoard, String playername) {
+        //sort the points
+        List<Integer> points = leaderBoard.values().
+                stream().
+                sorted(Comparator.reverseOrder()).
+                collect(Collectors.toList());
+        //sort the names based on points
+        List<String> names = leaderBoard.keySet().
+                stream().
+                sorted(Comparator.comparingInt(leaderBoard::get).reversed()). //TODO handle same scores properly
+                collect(Collectors.toList());
+        String leaderboard = "LeaderBoard:\n";
+
+        for(String player : names){
+            leaderboard = leaderboard.concat("      -"+player+": "+leaderBoard.get(player)+"\n");
+        }
+        synchronized (cli_lock){
+            if(names.get(0).equals(playername)){
+                System.out.println(victoryBanner);
+            }
+            else{
+                System.out.println(defeatBanner);
+            }
+            printMessage(leaderboard);
         }
     }
 

@@ -25,4 +25,6 @@ public interface ClientController extends ClientRemote{
     public Board getBoard() throws RemoteException;
     public Map<String, Shelf> getPlayersShelves() throws RemoteException;
     public Chat getChat() throws RemoteException;
+
+    public boolean gameEnded() throws RemoteException;
 }

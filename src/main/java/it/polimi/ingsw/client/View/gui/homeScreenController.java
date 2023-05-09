@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 
@@ -29,12 +30,7 @@ public class homeScreenController {
 
     //qua mi servirà un metodo che mi dà il personal goal del player
     private void randPG() {
-        Random rand = new Random();
-        int int_random = rand.nextInt(11);
-
-        int_random += 1;
-        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
-
+        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + client.getController().getPlayerGoal().getGoalId() + ".png"));
     }
 
     //qua mi servirà un metodo che mi dà i common goals della partita
@@ -67,19 +63,36 @@ public class homeScreenController {
     }
 
     @FXML
-    Button sh00;
-
-    @FXML
-    protected void hello() {
-        sh00.setOpacity(1.0);
-        sh00.setStyle("-fx-background-color: #9925be; ");
-    }
-
-    @FXML
     protected void readChat() throws IOException {
         clicked = false;
         Stage stage = (Stage) imgPersGoal.getScene().getWindow();
         stage.setScene(new Scene(client.loadScene("Chat"), 800, 800));
     }
 
+    //BOARD: 25 (column getX) x 25 (getY)
+    //SHELF: 24 (getY) x 24 (getX)
+
+    public void clickedMouseBoard(MouseEvent mouseEvent) {
+        System.out.println("Board:");
+
+        int column = (int) ((mouseEvent.getX())/25) - 1;
+        int row = (int) ((mouseEvent.getY())/25) - 1;
+        if(row < 0) row += 1;
+        if(column < 0) column += 1;
+        System.out.println("Row: " + row);
+        System.out.println("Column: " + column);
+        System.out.println("\n");
+    }
+
+    public void clickedMouseShelf(MouseEvent mouseEvent) {
+        System.out.println("Shelf:");
+
+        int column = (int) ((mouseEvent.getX())/25) - 1;
+        int row = (int) ((mouseEvent.getY())/25) - 1;
+        if(row < 0) row += 1;
+        if(column < 0) column += 1;
+        System.out.println("Row: " + row);
+        System.out.println("Column: " + column);
+        System.out.println("\n");
+    }
 }

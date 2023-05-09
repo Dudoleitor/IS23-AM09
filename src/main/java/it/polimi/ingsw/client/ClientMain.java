@@ -199,8 +199,13 @@ public class ClientMain{
         }
         try {
             if (controller.isItMyTurn()) {
-                Move move = view.getMoveFromUser();
-                server.postMove(playerName, move);
+                try {
+                    Move move = view.getMoveFromUser(controller.getBoard(), controller.getPlayersShelves().get(playerName));
+                    server.postMove(playerName, move);
+                }
+                catch (RemoteException e){
+                    view.errorMessage("Error while loading resources");
+                }
             } else {
                 view.errorMessage("It's not your turn");
             }
@@ -284,7 +289,8 @@ public class ClientMain{
     private static void initController() throws RemoteException {
         switch(Client_Settings.ui){
             case GUI:
-                controller = new ClientControllerGUI(playerName);
+                final GUI gui = (GUI) view;
+                controller = new ClientControllerGUI(playerName, gui);
                 break;
             case CLI:
                 try {
@@ -361,6 +367,12 @@ public class ClientMain{
     private static void playMatch() throws LobbyException {
         //Receive and execute commands until "exit" lobbyCommand is launched
         while(!exit){
+
+            try {
+                if (controller!=null && controller.gameEnded()) return;
+            } catch (RemoteException ignored) {
+            }
+
             LobbyCommand lobbyCommand = view.askCommand();
             executeUserCommand(lobbyCommand);
         }

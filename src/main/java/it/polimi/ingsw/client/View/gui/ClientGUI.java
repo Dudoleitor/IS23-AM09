@@ -22,6 +22,7 @@ import java.io.IOException;
 public class ClientGUI extends Application {
 
     private ClientControllerGUI controller;
+    private GUI gui;
 
     public Parent loadScene(String scene) throws IOException {
         return FXMLLoader.load(ClientGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
@@ -47,9 +48,16 @@ public class ClientGUI extends Application {
         return controller;
     }
 
-    public ClientControllerGUI setController(ClientControllerGUI controller) {
+    public void setController(ClientControllerGUI controller) {
         this.controller = controller;
-        return controller;
+    }
+
+    public GUI getGui() {
+        return gui;
+    }
+
+    public void setGui(GUI gui) {
+        this.gui = gui;
     }
 
     public static void startApp() {launch();}

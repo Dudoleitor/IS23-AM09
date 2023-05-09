@@ -29,6 +29,8 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     private boolean itsMyTurn;
     private LinkedList<Runnable> actionsQueue;
 
+    private boolean gameEnded;
+
     public ClientControllerCLI(String playerName, CLI cli) throws RemoteException {
         super();
         this.playerName = playerName;
@@ -42,6 +44,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.actionsQueue = new LinkedList<>();
+        this.gameEnded = false;
     }
 
     /**
@@ -271,6 +274,21 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         } catch (JsonBadParsingException e) {
             throw new RuntimeException("JsonBadParsing exception while loading player goal: " + e.getMessage());
         }
+    }
+
+    /**
+     * This method is used at the end of the game to
+     * send the leaderboard to the client.
+     * @param leaderBoard Map: player's name - points
+     */
+    public void endGame(Map<String, Integer> leaderBoard){
+        cli.endGame(leaderBoard, playerName);
+        this.gameEnded = true;
+    }
+
+    @Override
+    public boolean gameEnded() throws RemoteException {
+        return gameEnded;
     }
 
     /**

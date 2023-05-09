@@ -1,0 +1,7 @@
+.root {
+    -fx-background-image: url("gameGraphics/misc/sfondo_parquet.jpg");
+}
+
+#vbox {
+    -fx-alignment: center;
+}

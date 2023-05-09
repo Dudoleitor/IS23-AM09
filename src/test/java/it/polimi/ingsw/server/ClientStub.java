@@ -6,6 +6,7 @@ import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 public class ClientStub implements Client {
     private String name;
@@ -115,6 +116,13 @@ public class ClientStub implements Client {
     public void disconnect() {
 
     }
+
+    @Override
+    public void endGame(Map<String, Integer> leaderBoard) {
+
+    }
+
+    
 
     /**
      * This function is used to ensure the client is still connected.
