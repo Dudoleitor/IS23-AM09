@@ -53,10 +53,11 @@ public class ServerTCP extends Server {
         MessageTcp login = new MessageTcp();
         login.setCommand(MessageTcp.MessageCommand.Login); //set command
         login.setContent(content);
+        login.generateRequestID();
         out(login.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.Login)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.Login) && !response.getRequestID().equals(login.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             return Boolean.parseBoolean(response.getContent().get("result").toString());
         }catch (RemoteException e){
@@ -72,10 +73,11 @@ public class ServerTCP extends Server {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set command
         requestLobbies.setContent(content); //set playername as JsonObject
+        requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobbies)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobbies) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             return Jsonable.json2mapInt((JSONObject) response.getContent().get("lobbies"));
         }catch (RemoteException e){
@@ -86,10 +88,11 @@ public class ServerTCP extends Server {
     public Map<Integer, Integer> getAvailableLobbies()throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set command
+        requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetAvailableLobbies)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetAvailableLobbies) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             return Jsonable.json2mapInt((JSONObject) response.getContent().get("lobbies"));
         }catch (RemoteException e){
@@ -101,10 +104,11 @@ public class ServerTCP extends Server {
     public void joinRandomLobby(Client client) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command
+        requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinRandomLobby)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinRandomLobby) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
@@ -117,10 +121,11 @@ public class ServerTCP extends Server {
     public void createLobby(Client client) throws ServerException {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command
+        requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.CreateLobby)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.CreateLobby) && !response.getRequestID().equals(requestLobbies.getRequestID()))//is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
@@ -138,10 +143,11 @@ public class ServerTCP extends Server {
         MessageTcp requestLobbies = new MessageTcp();
         requestLobbies.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set command
         requestLobbies.setContent(content);
+        requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinSelectedLobby)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinSelectedLobby) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
@@ -158,10 +164,11 @@ public class ServerTCP extends Server {
         content.put("chat", chatMessage.toJson());
         postMessage.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set command
         postMessage.setContent(content); //set playername as JsonObject
+        postMessage.generateRequestID();
         out(postMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostToLiveChat)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostToLiveChat) && !response.getRequestID().equals(postMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
@@ -180,10 +187,11 @@ public class ServerTCP extends Server {
         MessageTcp postMessage = new MessageTcp();
         postMessage.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set command
         postMessage.setContent(content); //set playername as JsonObject
+        postMessage.generateRequestID();
         out(postMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostSecretToLiveChat)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostSecretToLiveChat) && !response.getRequestID().equals(postMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
@@ -201,10 +209,11 @@ public class ServerTCP extends Server {
         MessageTcp quitMessage = new MessageTcp();
         quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
         quitMessage.setContent(content);
+        quitMessage.generateRequestID();
         out(quitMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.Quit)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.Quit) && !response.getRequestID().equals(quitMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
@@ -222,10 +231,11 @@ public class ServerTCP extends Server {
     public boolean matchHasStarted() throws LobbyException {
         MessageTcp hasStartedMessage = new MessageTcp();
         hasStartedMessage.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set command
+        hasStartedMessage.generateRequestID();
         out(hasStartedMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.MatchHasStarted)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.MatchHasStarted) && !response.getRequestID().equals(hasStartedMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             return Boolean.parseBoolean(response.getContent().get("started").toString());
         }catch (RemoteException e){
@@ -241,10 +251,11 @@ public class ServerTCP extends Server {
         MessageTcp postMoveMessage = new MessageTcp();
         postMoveMessage.setCommand(MessageTcp.MessageCommand.PostMove); //set command
         postMoveMessage.setContent(content);
+        postMoveMessage.generateRequestID();
         out(postMoveMessage.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object responses
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostMove)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostMove) && !response.getRequestID().equals(postMoveMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
@@ -263,10 +274,11 @@ public class ServerTCP extends Server {
         MessageTcp startGame = new MessageTcp();
         startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command
         startGame.setContent(content); //set playername as JsonObject
+        startGame.generateRequestID();
         out(startGame.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.StartGame)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.StartGame) && !response.getRequestID().equals(startGame.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             return Boolean.parseBoolean(response.getContent().get("start").toString());
         }catch (RemoteException e){
@@ -280,10 +292,11 @@ public class ServerTCP extends Server {
         MessageTcp isAdmin = new MessageTcp();
         isAdmin.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set command
         isAdmin.setContent(content); //set playername as JsonObject
+        isAdmin.generateRequestID();
         out(isAdmin.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.IsLobbyAdmin)) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.IsLobbyAdmin) && !response.getRequestID().equals(isAdmin.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
             return Boolean.parseBoolean(response.getContent().get("admin").toString());
         }catch (RemoteException e){
