@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -273,6 +274,15 @@ public class ClientSocket implements Client {
         update.setCommand(MessageTcp.MessageCommand.SetPlayerGoal);
         update.setContent(content);
         out(update.toString());
+    }
+
+    /**
+     * This method is used at the end of the game to
+     * send the leaderboard to the client.
+     * @param leaderBoard Map: player's name - points
+     */
+    public void endGame(Map<String, Integer> leaderBoard){
+        // TODO
     }
 
     /**

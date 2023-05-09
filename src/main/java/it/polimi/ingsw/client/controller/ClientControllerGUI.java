@@ -9,6 +9,7 @@ import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.*;
 import org.json.simple.JSONObject;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
     private boolean gameStarted;
     private final GUI gui;
 
+    private boolean gameEnded;
+
     public ClientControllerGUI(String playerName, GUI gui) {
         this.playerName=playerName;
         this.itsMyTurn=false;
@@ -44,6 +47,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.gui = gui;
+        this.gameEnded = false;
     }
 
     /**
@@ -254,6 +258,21 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
             throw new RuntimeException("JsonBadParsing exception while loading player goal: " + e.getMessage());
         }
 
+    }
+
+    /**
+     * This method is used at the end of the game to
+     * send the leaderboard to the client.
+     * @param leaderBoard Map: player's name - points
+     */
+    public void endGame(Map<String, Integer> leaderBoard){
+        // TODO update gui
+        this.gameEnded = true;
+    }
+
+    @Override
+    public boolean gameEnded() throws RemoteException {
+        return gameEnded;
     }
 
     /**

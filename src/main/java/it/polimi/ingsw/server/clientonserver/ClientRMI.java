@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -196,6 +197,19 @@ public class ClientRMI implements Client, Serializable {
     public void setPlayerGoal(int id) {
         try {
             clientRemote.setPlayerGoal(id);
+        } catch (RemoteException e) {
+            exceptionHandler.handleNetworkException(this, e);
+        }
+    }
+
+    /**
+     * This method is used at the end of the game to
+     * send the leaderboard to the client.
+     * @param leaderBoard Map: player's name - points
+     */
+    public void endGame(Map<String, Integer> leaderBoard){
+        try {
+            clientRemote.endGame(leaderBoard);
         } catch (RemoteException e) {
             exceptionHandler.handleNetworkException(this, e);
         }

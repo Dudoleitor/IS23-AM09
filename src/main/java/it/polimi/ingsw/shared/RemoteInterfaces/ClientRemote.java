@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This object is used on the client to receive updates
@@ -75,6 +76,12 @@ public interface ClientRemote extends Remote, Serializable {
      * @see it.polimi.ingsw.server.clientonserver.Client
      */
     public void setPlayerGoal(int id) throws RemoteException;
+
+
+    /**
+     * @see it.polimi.ingsw.server.clientonserver.Client
+     */
+    public void endGame(Map<String, Integer> leaderBoard) throws RemoteException;
 
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client

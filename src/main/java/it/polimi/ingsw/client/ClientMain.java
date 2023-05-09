@@ -367,6 +367,12 @@ public class ClientMain{
     private static void playMatch() throws LobbyException {
         //Receive and execute commands until "exit" lobbyCommand is launched
         while(!exit){
+
+            try {
+                if (controller!=null && controller.gameEnded()) return;
+            } catch (RemoteException ignored) {
+            }
+
             LobbyCommand lobbyCommand = view.askCommand();
             executeUserCommand(lobbyCommand);
         }

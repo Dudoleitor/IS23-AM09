@@ -6,6 +6,7 @@ import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This object is used to send updates to
@@ -113,6 +114,13 @@ public interface Client {
      * @param id Int ID of the goal
      */
     public void setPlayerGoal(int id);
+
+    /**
+     * This method is used at the end of the game to
+     * send the leaderboard to the client.
+     * @param leaderBoard Map: player's name - points
+     */
+    public void endGame(Map<String, Integer> leaderBoard);
 
     /**
      * This function is used to close the connection with the client
