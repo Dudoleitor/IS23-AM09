@@ -10,6 +10,8 @@ import it.polimi.ingsw.shared.*;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -188,16 +190,25 @@ public class CLI extends View {
                 }
             }
         }
+        return decideOrder(pm,board);
+    }
 
+    private PartialMove decideOrder(PartialMove pm, Board board){
+        boolean validInput = false;
         if(pm.size() > 1){
             List<Position> positions = pm.getBoardPositions();
             pm = new PartialMove();
             printMessage("Select insertion order:");
-            while(positions.size() > 1){
+
+            while(positions.size() > 1 && distinctTiles(positions,board)){
                 validInput = false;
                 printMessage("Pick a tile:");
                 for(int i = 0; i < positions.size(); i++){
-                    System.out.println(i+"> "+positions.get(i));
+                    try {
+                        System.out.println( i+ "> " + board.getTile(positions.get(i)).toColorFulString() + " "+ positions.get(i));
+                    } catch (BadPositionException e) {
+                        //this should not happend
+                    }
                 }
                 while(!validInput){
                     validInput = true;
@@ -224,12 +235,25 @@ public class CLI extends View {
                 }
             }
             try {
-                pm.addPosition(positions.get(0));
+                for(Position p : positions){
+                    pm.addPosition(p);
+                }
             } catch (InvalidMoveException e) {
                 //This should not happen
             }
         }
         return pm;
+    }
+
+    private boolean distinctTiles(List<Position> positions, Board board){
+        return positions.stream().
+                map(p -> {
+                    try {
+                        return board.getTile((Position) p);
+                    } catch (BadPositionException e) {
+                        return Tile.Invalid; //this should not happend
+                    }
+                }).distinct().count() > 1;
     }
 
     /**
