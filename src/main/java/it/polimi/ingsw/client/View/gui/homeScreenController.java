@@ -1,7 +1,9 @@
 package it.polimi.ingsw.client.View.gui;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,6 +16,7 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -21,8 +24,8 @@ public class homeScreenController implements Initializable {
 
     private final ClientGUI client = HelloController.getClient();
     boolean clicked = false;
-    private final double iHeight = 13.0;
-    private final double iWidth = 11.0;
+    private final double iHeight = 85.0;
+    private final double iWidth = 49.0;
 
     @FXML
     VBox vbox;
@@ -34,10 +37,10 @@ public class homeScreenController implements Initializable {
     ImageView board;
 
     @FXML
-    Button goalsButton;
+    ImageView imgPersGoal;
 
     @FXML
-    ImageView imgPersGoal;
+    Canvas canvas;
 
    @FXML
    ImageView commonGoal1;
@@ -81,6 +84,10 @@ public class homeScreenController implements Initializable {
     protected void setBoard() {
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
+                if((j == 0 && i == 0) || (j == 0 && i == 1) || (j == 0 && i == 2) || (j == 0 && i == 5) || (j == 0 && i == 6) || (j == 0 && i == 7) || (j == 0 && i == 8)
+                        || (j == 1 && i == 0) || (j == 1 && i == 1) || (j == 1 && i == 2) || (j == 1 && i == 6) || (j == 1 && i == 7) || (j == 1 && i == 8)) {
+                    j++;
+                }
                 ImageView imageView = new ImageView();
                 imageView.setImage(new Image("gui/gameGraphics/item_tiles/Piante1_3.png"));
                 imageView.setFitHeight(25.0);
@@ -90,6 +97,7 @@ public class homeScreenController implements Initializable {
                 anchor.getChildren().add(imageView);
             }
         }
+        canvas.toFront();
     }
 
     //BOARD: 25 (column getX) x 25 (getY)
@@ -104,6 +112,17 @@ public class homeScreenController implements Initializable {
         if(column < 0) column += 1;
         System.out.println("Row: " + row);
         System.out.println("Column: " + column);
+
+        ImageView imageView = new ImageView();
+        imageView.setImage(new Image("gui/gameGraphics/item_tiles/Gatti1.1.png"));
+        imageView.setFitHeight(25.0);
+        imageView.setFitWidth(25.0);
+        imageView.setLayoutX(iWidth + column*25.0);
+        imageView.setLayoutY(iHeight + row*25.0);
+        anchor.getChildren().add(imageView);
+
+        canvas.toFront();
+
         System.out.println("\n");
     }
 

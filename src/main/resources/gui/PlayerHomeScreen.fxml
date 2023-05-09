@@ -60,10 +60,9 @@
                     <Font name="SF Mono Bold" size="13.0" />
                 </font>
             </Button>
-            <Canvas onMousePressed="#clickedMouseBoard"  height="258.0" layoutX="32.0" layoutY="71.0" width="268.0" />
+            <Canvas fx:id="canvas" onMousePressed="#clickedMouseBoard"  height="258.0" layoutX="32.0" layoutY="71.0" width="268.0" />
             <Canvas onMousePressed="#clickedMouseShelf" height="219.0" layoutX="365.0" layoutY="114.0" width="366.0" />
 
         </children>
     </AnchorPane>
-
 </VBox>
