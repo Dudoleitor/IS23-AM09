@@ -86,7 +86,7 @@ public class GUI extends View {
     }
 
     @Override
-    public void endGame(Map<String, Integer> leaderBoard, String playername) {
+    public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
     }
 

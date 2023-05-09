@@ -97,5 +97,5 @@ public abstract class View {
     /**
      * Print the end game leaderboard
      */
-    public abstract void endGame(Map<String,Integer> leaderBoard, String playername);
+    public abstract void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board);
 }

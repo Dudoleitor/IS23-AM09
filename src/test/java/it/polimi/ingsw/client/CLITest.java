@@ -69,7 +69,7 @@ public class CLITest {
     }
 
     @Test
-    void endGame(){
+    void endGame() throws JsonBadParsingException {
         if(verbose){
             Map<String,Integer> leaderboard = new HashMap<>();
             leaderboard.put("frigieri",200);
@@ -77,7 +77,12 @@ public class CLITest {
             leaderboard.put("frigdopodonmani",55);
             leaderboard.put("friegdomani",25);
             CLI cli = new CLI();
-            cli.endGame(leaderboard,"frigieri");
+            Board board = new Board(4);
+            Map<String,Shelf> shelves = new HashMap<>();
+            for(String p: leaderboard.keySet()){
+                shelves.put(p,new Shelf(6,5));
+            }
+            cli.endGame(leaderboard,"frigieri",shelves,board);
         }
     }
 }

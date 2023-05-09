@@ -92,6 +92,13 @@ public class Controller implements Jsonable {
         }
     }
 
+    private boolean gameFinished(){
+        return getShelves()
+                .values()
+                .stream()
+                .anyMatch(s -> s.isFull());
+    }
+
     /**
      * This constructor is used to load the state of the game from a jsonfile.
      * @param gameStatus JSONObject with the status
@@ -227,7 +234,6 @@ public class Controller implements Jsonable {
      */
     public void nextTurn() {
         turn++;
-
         if(!players.get( getTurn() % players.size() ) .isActive()) {
             nextTurn();
         }
@@ -310,10 +316,23 @@ public class Controller implements Jsonable {
             for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
                 player.insertTile(board.pickTile(p), move.getColumn());
             }
-            prepareForNextPlayer(); //Fill if necessary
-            nextTurn(); //increment turn
-            for (Client client : clients)
-                client.updateTurn(getCurrentPlayerName());
+
+            if(gameFinished()){
+
+                Map<String, Integer> leaderBoard = new HashMap<>();
+                for(Player p : players){
+                    leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
+                }
+
+                for (Client client : clients)
+                    client.endGame(leaderBoard);
+            }
+            else{
+                prepareForNextPlayer(); //Fill if necessary
+                nextTurn(); //increment turn
+                for (Client client : clients)
+                    client.updateTurn(getCurrentPlayerName());
+            }
         } catch (InvalidMoveException e) {
             throw new ControllerGenericException("Error invalid move");
         } catch (BadPositionException e) {

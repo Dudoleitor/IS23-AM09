@@ -10,8 +10,6 @@ import it.polimi.ingsw.shared.*;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -507,30 +505,34 @@ public class CLI extends View {
     }
 
     @Override
-    public void endGame(Map<String, Integer> leaderBoard, String playername) {
-        //sort the points
-        List<Integer> points = leaderBoard.values().
-                stream().
-                sorted(Comparator.reverseOrder()).
-                collect(Collectors.toList());
-        //sort the names based on points
-        List<String> names = leaderBoard.keySet().
-                stream().
-                sorted(Comparator.comparingInt(leaderBoard::get).reversed()). //TODO handle same scores properly
-                collect(Collectors.toList());
-        String leaderboard = "LeaderBoard:\n";
+    public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
-        for(String player : names){
-            leaderboard = leaderboard.concat("      -"+player+": "+leaderBoard.get(player)+"\n");
-        }
-        synchronized (cli_lock){
-            if(names.get(0).equals(playername)){
-                System.out.println(victoryBanner);
+        synchronized (cli_lock) {
+            //sort the points
+            List<Integer> points = leaderBoard.values().
+                    stream().
+                    sorted(Comparator.reverseOrder()).
+                    collect(Collectors.toList());
+            //sort the names based on points
+            List<String> names = leaderBoard.keySet().
+                    stream().
+                    sorted(Comparator.comparingInt(leaderBoard::get).reversed()). //TODO handle same scores properly
+                            collect(Collectors.toList());
+            String leaderboard = "LeaderBoard:\n";
+
+            for (String player : names) {
+                leaderboard = leaderboard.concat("      -" + player + ": " + leaderBoard.get(player) + "\n");
             }
-            else{
-                System.out.println(defeatBanner);
+            synchronized (cli_lock) {
+                if (names.get(0).equals(playername)) {
+                    System.out.println(victoryBanner);
+                } else {
+                    System.out.println(defeatBanner);
+                }
+                printMessage(leaderboard);
+                showBoard(board);
+                showShelves(playerShelves);
             }
-            printMessage(leaderboard);
         }
     }
 

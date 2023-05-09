@@ -282,7 +282,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        cli.endGame(leaderBoard, playerName);
+        cli.endGame(leaderBoard, playerName,playersShelves,board);
         this.gameEnded = true;
     }
 

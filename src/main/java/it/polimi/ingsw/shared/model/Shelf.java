@@ -157,6 +157,13 @@ public class Shelf implements Jsonable {
     }
 
     /**
+     * @return true if the shelf is full
+     */
+    public boolean isFull(){
+        return getHighestColumn() == 0;
+    }
+
+    /**
      * Checks if the Shelf is valid according to the game rulels
      * @return true if valid
      */
