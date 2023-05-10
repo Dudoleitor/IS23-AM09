@@ -27,6 +27,10 @@ public class homeScreenController implements Initializable {
     private final double iHeight = 85.0;
     private final double iWidth = 49.0;
 
+    private final double iHeightShelf = 130.0;
+    private final double iWidthShelf = 390.0;
+
+
     @FXML
     VBox vbox;
 
@@ -40,9 +44,13 @@ public class homeScreenController implements Initializable {
     ImageView imgPersGoal;
 
     @FXML
-    Canvas canvas;
+    Canvas canvasBoard;
 
-   @FXML
+    @FXML
+    Canvas canvasShelf;
+
+
+    @FXML
    ImageView commonGoal1;
 
     @FXML
@@ -78,9 +86,6 @@ public class homeScreenController implements Initializable {
         stage.setScene(new Scene(client.loadScene("Chat"), 800, 800));
     }
 
-    //board iHeight: 13.0
-    //board iWidth: 11.0
-
     protected void setBoard() {
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
@@ -97,8 +102,39 @@ public class homeScreenController implements Initializable {
                 anchor.getChildren().add(imageView);
             }
         }
-        canvas.toFront();
+
+        //Alla fine dovrà essere tipo così
+        /*for(int i = 0; i < client.getController().getBoard().getNumRows(); i++) {
+            for (int j = 0; j < client.getController().getBoard().getNumColumns(); j++) {
+                ImageView imageView = new ImageView();
+                client.getController().getBoard().getTile(i, j).toString();
+                imageView.setImage(new Image("gui/gameGraphics/item_tiles/Piante1_3.png"));
+                imageView.setFitHeight(25.0);
+                imageView.setFitWidth(25.0);
+                imageView.setLayoutX(iWidth + i*25.0);
+                imageView.setLayoutY(iHeight + j*25.0);
+                anchor.getChildren().add(imageView);
+
+            }
+        }*/
+        canvasBoard.toFront();
     }
+
+    protected void setShelf() {
+        for(int i = 0; i < 5; i++) {
+            for(int j = 0; j < 6; j++) {
+                ImageView imageView = new ImageView();
+                imageView.setImage(new Image("gui/gameGraphics/item_tiles/Giochi1.1.png"));
+                imageView.setFitHeight(24.0);
+                imageView.setFitWidth(24.0);
+                imageView.setLayoutX(iWidthShelf + i*35.0);
+                imageView.setLayoutY(iHeightShelf + j*30.0);
+                anchor.getChildren().add(imageView);
+            }
+        }
+        canvasShelf.toFront();
+    }
+
 
     //BOARD: 25 (column getX) x 25 (getY)
     //SHELF: 24 (getY) x 24 (getX)
@@ -121,7 +157,7 @@ public class homeScreenController implements Initializable {
         imageView.setLayoutY(iHeight + row*25.0);
         anchor.getChildren().add(imageView);
 
-        canvas.toFront();
+        canvasBoard.toFront();
 
         System.out.println("\n");
     }
@@ -141,6 +177,7 @@ public class homeScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setBoard();
+        setShelf();
         getPersonalGoal();
         randCG();
     }
