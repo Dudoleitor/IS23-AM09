@@ -65,6 +65,9 @@ public class homeScreenController implements Initializable {
     @FXML
     ImageView commonGoal2;
 
+    @FXML
+    javafx.scene.shape.Polygon turnFlag;
+
     private void getPersonalGoal() {
         imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + client.getController().getPlayerGoal().getGoalId() + ".png"));
     }
@@ -204,10 +207,15 @@ public class homeScreenController implements Initializable {
 
         System.out.println("Column: " + column);
         System.out.println("\n");
+
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        boolean turn = client.getController().isItMyTurn();
+        if(!turn) {
+            turnFlag.setStyle("-fx-fill: grey;");
+        }
         setBoard();
         setShelf();
         if(client.getController().getPlayerGoal() == null) {
