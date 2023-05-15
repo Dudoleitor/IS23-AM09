@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.View.gui;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -10,9 +11,11 @@ import javafx.stage.Stage;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ResourceBundle;
 
-public class ChatController {
+public class ChatController implements Initializable {
 
     private final ClientGUI client = HelloController.getClient();
 
@@ -40,4 +43,16 @@ public class ChatController {
         Stage stage = (Stage) message.getScene().getWindow();
         stage.setScene(new Scene(client.loadScene("PlayerHomeScreen"), 800, 800));
     }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        if(client.getController().getChat().getAllMessages().size() > 0) {
+            for(int i = 0; i < client.getController().getChat().getAllMessages().size(); i++) {
+                textArea.appendText(client.getController().getChat().getAllMessages().get(i).getSender() + ": " +
+                        client.getController().getChat().getAllMessages().get(i).getMessage() + "\n");
+
+            }
+        }
+    }
+
 }

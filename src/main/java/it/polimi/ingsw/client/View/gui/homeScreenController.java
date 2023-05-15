@@ -17,8 +17,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class homeScreenController implements Initializable {
 
@@ -58,6 +60,12 @@ public class homeScreenController implements Initializable {
 
     private void getPersonalGoal() {
         imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + client.getController().getPlayerGoal().getGoalId() + ".png"));
+    }
+
+    protected void randPG() {
+        Random rand = new Random();
+        int int_random = rand.nextInt(13);
+        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
     }
 
     //qua mi servirà un metodo che mi dà i common goals della partita
@@ -144,8 +152,10 @@ public class homeScreenController implements Initializable {
 
         int column = (int) ((mouseEvent.getX())/25) - 1;
         int row = (int) ((mouseEvent.getY())/25) - 1;
+
         if(row < 0) row += 1;
         if(column < 0) column += 1;
+        System.out.println(mouseEvent.getSource().toString());
         System.out.println("Row: " + row);
         System.out.println("Column: " + column);
 
@@ -169,6 +179,7 @@ public class homeScreenController implements Initializable {
         int row = (int) ((mouseEvent.getY())/25) - 1;
         if(row < 0) row += 1;
         if(column < 0) column += 1;
+
         System.out.println("Row: " + row);
         System.out.println("Column: " + column);
         System.out.println("\n");
@@ -178,7 +189,11 @@ public class homeScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setBoard();
         setShelf();
-        getPersonalGoal();
+        if(client.getController().getPlayerGoal() == null) {
+            randPG();
+        } else {
+            getPersonalGoal();
+        }
         randCG();
     }
 }
