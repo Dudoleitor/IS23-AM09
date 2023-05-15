@@ -1,9 +1,14 @@
 package it.polimi.ingsw.client.View.gui;
+import it.polimi.ingsw.shared.model.InvalidMoveException;
+import it.polimi.ingsw.shared.model.PartialMove;
+import it.polimi.ingsw.shared.model.Position;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,6 +36,8 @@ public class homeScreenController implements Initializable {
 
     private final double iHeightShelf = 130.0;
     private final double iWidthShelf = 390.0;
+
+    private List<Position> move = new ArrayList<>();
 
 
     @FXML
@@ -64,7 +71,8 @@ public class homeScreenController implements Initializable {
 
     protected void randPG() {
         Random rand = new Random();
-        int int_random = rand.nextInt(13);
+        int int_random = rand.nextInt(12);
+        int_random += 1;
         imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
     }
 
@@ -147,25 +155,41 @@ public class homeScreenController implements Initializable {
     //BOARD: 25 (column getX) x 25 (getY)
     //SHELF: 24 (getY) x 24 (getX)
 
-    public void clickedMouseBoard(MouseEvent mouseEvent) {
+    public void clickedMouseBoard(MouseEvent mouseEvent) throws InvalidMoveException {
         System.out.println("Board:");
 
-        int column = (int) ((mouseEvent.getX())/25) - 1;
-        int row = (int) ((mouseEvent.getY())/25) - 1;
+        if(move.size() >= 3) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Max number of positions selected");
+            alert.show();
+        } else {
+            int column = (int) ((mouseEvent.getX())/25) - 1;
+            int row = (int) ((mouseEvent.getY())/25) - 1;
 
-        if(row < 0) row += 1;
-        if(column < 0) column += 1;
-        System.out.println(mouseEvent.getSource().toString());
-        System.out.println("Row: " + row);
-        System.out.println("Column: " + column);
+            if(row < 0) row += 1;
+            if(column < 0) column += 1;
+            System.out.println(mouseEvent.getSource().toString());
+            System.out.println("Row: " + row);
+            System.out.println("Column: " + column);
+        /*PartialMove pm = new PartialMove();
+        pm.addPosition(new Position(row, column));
+        System.out.println(client.getController().getBoard().getValidPositions(pm));*/
 
-        ImageView imageView = new ImageView();
-        imageView.setImage(new Image("gui/gameGraphics/item_tiles/Gatti1.1.png"));
-        imageView.setFitHeight(25.0);
-        imageView.setFitWidth(25.0);
-        imageView.setLayoutX(iWidth + column*25.0);
-        imageView.setLayoutY(iHeight + row*25.0);
-        anchor.getChildren().add(imageView);
+            Position pos = new Position(row, column);
+            move.add(pos);
+            System.out.println(move);
+
+            ImageView imageView = new ImageView();
+            imageView.setImage(new Image("gui/gameGraphics/item_tiles/Gatti1.1.png"));
+            imageView.setFitHeight(25.0);
+            imageView.setFitWidth(25.0);
+            imageView.setLayoutX(iWidth + column*25.0);
+            imageView.setLayoutY(iHeight + row*25.0);
+            anchor.getChildren().add(imageView);
+
+        }
+
 
         canvasBoard.toFront();
 
@@ -175,12 +199,9 @@ public class homeScreenController implements Initializable {
     public void clickedMouseShelf(MouseEvent mouseEvent) {
         System.out.println("Shelf:");
 
-        int column = (int) ((mouseEvent.getX())/25) - 1;
-        int row = (int) ((mouseEvent.getY())/25) - 1;
-        if(row < 0) row += 1;
+        int column = (int) ((mouseEvent.getX())/30) - 1;
         if(column < 0) column += 1;
 
-        System.out.println("Row: " + row);
         System.out.println("Column: " + column);
         System.out.println("\n");
     }
