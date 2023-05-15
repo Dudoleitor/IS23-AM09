@@ -162,10 +162,7 @@ public class homeScreenController implements Initializable {
         System.out.println("Board:");
 
         if(move.size() >= 3) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Max number of positions selected");
-            alert.show();
+            client.showError("Max number of positions selected");
         } else {
             int column = (int) ((mouseEvent.getX())/25) - 1;
             int row = (int) ((mouseEvent.getY())/25) - 1;

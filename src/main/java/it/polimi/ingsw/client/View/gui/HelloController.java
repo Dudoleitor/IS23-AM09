@@ -14,8 +14,6 @@ public class HelloController {
     Label welcome;
     @FXML
     TextField userName;
-    @FXML
-    TextField lobbyNumber;
 
     private static final ClientGUI client = new ClientGUI();
     private ClientControllerGUI controller;
@@ -28,13 +26,9 @@ public class HelloController {
     @FXML
     protected void signInAction() throws IOException {
         if(userName.getText().equals("")) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Insert username");
-            alert.show();
+            client.showError("Insert username");
         } else {
-            welcome.setText(userName.getText() + " joined the lobby " +
-                    lobbyNumber.getText());
+            welcome.setText(userName.getText() + " joined the game!");
             gui = new GUI();
             client.setGui(gui);
             controller = new ClientControllerGUI(userName.getText(), gui);
