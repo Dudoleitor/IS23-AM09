@@ -109,14 +109,12 @@ public class main {
         } else if (hasTCPPort()) {
             System.out.println("Connecting Client via TCP");
             cs.setConnection(TCP);
-            String TCPport = commandLine.getOptionValue("tcp");
-            NetworkSettings.TCPport = Integer.parseInt(TCPport);
+            setTCPPort();
 
         } else if (hasRMIPort()) {
             System.out.println("Connecting Client via RMI");
             cs.setConnection(RMI);
-            String RMIport = commandLine.getOptionValue("rmi");
-            NetworkSettings.TCPport = Integer.parseInt(RMIport);
+            setRMIPort();
         }
         else{
             // TODO add ask user and/or load from file
@@ -131,10 +129,34 @@ public class main {
             System.err.println("both rmi and tcp need to be specified in server");
             System.exit(1);
         }
-        String TCPport = commandLine.getOptionValue("tcp");
-        NetworkSettings.TCPport = Integer.parseInt(TCPport);
+        setTCPPort();
+        setRMIPort();
+    }
+
+    private static boolean isValidPort(int port){
+        return port < 65535 && port > 1024;
+    }
+
+    private static void setRMIPort() throws ParseException {
         String RMIport = commandLine.getOptionValue("rmi");
-        NetworkSettings.RMIport = Integer.parseInt(RMIport);
+        int rmiPort = Integer.parseInt(RMIport);
+        if(isValidPort(rmiPort)){
+            NetworkSettings.RMIport = rmiPort;
+        }
+        else{
+            throw new ParseException("Invalid port number for rmi");
+        }
+    }
+
+    private static void setTCPPort() throws ParseException {
+        String TCPport = commandLine.getOptionValue("tcp");
+        int tcpPort = Integer.parseInt(TCPport);
+        if(isValidPort(tcpPort)){
+            NetworkSettings.TCPport = tcpPort;
+        }
+        else{
+            throw new ParseException("Invalid port number for tcp");
+        }
     }
 
     private static void setServerIp() throws ParseException {
