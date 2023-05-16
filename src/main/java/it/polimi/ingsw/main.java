@@ -1,7 +1,10 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.client.ClientMain;
 import it.polimi.ingsw.client.Client_Settings;
+import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.ClientControllerDriver;
+import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.server.ServerMain;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.NetworkSettings;
@@ -146,7 +149,19 @@ public class main {
         NetworkSettings.serverIp = ip;
     }
     private static void startClient(){
-        ClientMain.startClient();
+        final ClientController controller;
+        switch (Client_Settings.ui) {
+            case CLI:
+                controller = new ClientControllerCLI();
+                break;
+            case GUI:
+                controller = new ClientControllerGUI();
+                break;
+            default:
+                controller = new ClientControllerDriver();
+                break;
+        }
+        controller.startClient();
     }
     public static void main(String[] args) {
         initOptions();
