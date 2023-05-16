@@ -6,6 +6,8 @@ import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -13,7 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
+public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, NetworkExceptionHandler {
     private final int id;
     private final List<Client> clients = new ArrayList<>();
     private final List<String> disconnectedClients;
@@ -30,7 +32,8 @@ public class Lobby implements ServerLobbyInterface, NetworkExceptionHandler {
     private final PingSender pingSender;
     private final long pingIntervalSeconds = 3;
 
-    public Lobby(Client firstPlayer, int id){
+    public Lobby(Client firstPlayer, int id) throws RemoteException {
+        super();
         this.disconnectedClients = new ArrayList<>();
         this.clients.add(firstPlayer);
         firstPlayer.setExceptionHandler(this);

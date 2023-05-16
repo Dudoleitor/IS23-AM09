@@ -28,7 +28,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * server that did not join a lobby yet.
      */
     private final List<Client> clientsWithoutLobby = new ArrayList<>();
-    private final Map<Lobby, ServerLobbyInterface> lobbies = new HashMap<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
+    private final List<Lobby> lobbies = new ArrayList<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
     private static Registry registry = null;
     private static InputSanitizer inputSanitizer;
 
@@ -108,8 +108,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     public Map<Integer,Integer> getJoinedLobbies(String nick){
         Map<Integer,Integer> lobbyList = new HashMap<>();//get all lobbies already joined by the client
-                lobbies.keySet()
-                        .stream()
+                lobbies.stream()
                         .filter(x -> x.getPlayerNames().contains(nick))
                         .forEach(x -> lobbyList.put(x.getID(),x.getPlayerNames().size()));
         return lobbyList;
@@ -130,14 +129,13 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                     orElse(-1);
             lobbyInterface = joinSelectedLobby(client,alreadyJoinedID);
         } else {
-            Lobby lobby = lobbies.keySet()
-                    .stream()
+            Lobby lobby = lobbies.stream()
                     .filter(l -> !l.isFull() && !l.matchHasStarted()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
             if (lobby != null) { //if a lobby exists then add player
                 lobby.addPlayer(client); //if exists then add player
-                lobbyInterface = lobbies.get(lobby);
+                lobbyInterface = lobby;
             } else {
                 lobbyInterface = createLobby(client); //otherwise creates new lobby
             }
@@ -149,15 +147,14 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @param client requesting to join the lobby
      */
     public ServerLobbyInterface joinSelectedLobby(Client client, int id){
-        Lobby lobby = lobbies.keySet()
-                .stream()
+        Lobby lobby = lobbies.stream()
                 .filter(x -> x.getID() == id) //verify lobby exists and is not full
                 .findFirst().orElse(null);
         if(lobby == null) //if a lobby exists then add player
             return null;
         try {
             lobby.addPlayer(client); //if exists then add player
-            return lobbies.get(lobby);
+            return lobby;
         } catch (RuntimeException e) {
             return null;
         }
@@ -167,8 +164,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     public ServerLobbyInterface createLobby(Client client){
         int minFreeKey;
-        List<Integer> lobbyIDs= lobbies.keySet()
-                .stream()
+        List<Integer> lobbyIDs= lobbies.stream()
                 .map(Lobby::getID)
                 .collect(Collectors.toList()); // returns list of active lobby ids
         if(lobbyIDs.contains(1)) { //check if first lobby position is free
@@ -178,13 +174,12 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                     .min(Integer::compareTo).orElse(1);//find the lowest key number available
         } else
             minFreeKey = 1;
-        Lobby lobby = new Lobby(client, minFreeKey); //creates new lobby
         try {
-            ServerLobbyInterface lobbyStub = (ServerLobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
+            Lobby lobby = new Lobby(client, minFreeKey); //creates new lobby
 
-            lobbies.put(lobby, lobbyStub);
+            lobbies.add(lobby);
 
-            return lobbyStub;
+            return lobby;
 
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -193,19 +188,10 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
 
     public Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
-        lobbies.keySet()
-                .stream()
+        lobbies.stream()
                 .filter(x -> !x.isFull() && !x.matchHasStarted())
                 .forEach(x -> lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in
         return lobbyMap;
-    }
-    public Lobby getLobbyInterface(ServerLobbyInterface lobbyInt){
-        Lobby lobby = lobbies.keySet()
-                .stream()
-                .filter(x-> lobbies.get(x).equals(lobbyInt))
-                .findFirst()
-                .orElse(null);
-        return lobby;
     }
 
     public void removeLobby(){
@@ -235,7 +221,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     @Override
     public int disconnectedFromLobby(String playerName) {
-        Optional<Lobby> lobbyOpt = lobbies.keySet().stream().filter(x-> x.getDisconnectedClients().contains(playerName.toLowerCase())).findFirst();
+        Optional<Lobby> lobbyOpt = lobbies.stream().filter(x-> x.getDisconnectedClients().contains(playerName.toLowerCase())).findFirst();
         return lobbyOpt.map(Lobby::getID).orElse(-1);
     }
 }
