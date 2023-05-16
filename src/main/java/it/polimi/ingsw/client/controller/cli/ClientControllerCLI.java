@@ -1,25 +1,17 @@
 package it.polimi.ingsw.client.controller.cli;
 
 
-import it.polimi.ingsw.client.Client_Settings;
 import it.polimi.ingsw.client.connection.*;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.model.ClientModel;
 import it.polimi.ingsw.client.model.ClientModelCLI;
-import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
-import it.polimi.ingsw.server.clientonserver.ClientRMI;
-import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.model.Move;
-import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.PrivateChatMessage;
 
 import java.rmi.RemoteException;
 import java.util.Map;
-
-import static java.lang.Thread.sleep;
 
 /**
  * This class handles the sequence of events on the client side
@@ -37,6 +29,19 @@ public class ClientControllerCLI implements ClientController {
      * UI View
      */
     private CLI_IO cliIO;
+
+    public Server getServer() {
+        return server;
+    }
+    public void setServer(Server server) {
+        this.server = server;
+    }
+    public Client getClient() {
+        return client;
+    }
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     /**
      * Join the lobby by creating a Lobby connection object and connecting it to server
@@ -229,92 +234,9 @@ public class ClientControllerCLI implements ClientController {
     }
 
 
-    /**
-     * Initiate all the objects that will handle the connection to serer
-     */
-    private void initConnectionInterface() throws ServerException{
-        switch (Client_Settings.connection){
-            case RMI:
-                server = new ServerRMI(NetworkSettings.serverIp, NetworkSettings.RMIport);
-                try {
-                    client = new ClientRMI(model);
-                } catch (RemoteException e) {
-                    throw new ServerException("Impossible to create RMI client object");
-                }
-                break;
-            case TCP:
-                server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, model);
-                client = new ClientSocket();
-                ((ClientSocket) client).setName(playerName);
-                break;
-            case STUB:
-                server = new ConnectionStub();
-                try {
-                    ClientModelCLI remoteObject = new ClientModelCLI(playerName, new CLI_IO());
-                    client = new ClientRMI(remoteObject); //TODO create stub when completed the real one
-                } catch (RemoteException e) {
-                    throw new ServerException("Impossible to create RMI client object");
-                }
-        }
-    }
-
-    /**
-     * Initiate the connection interface and attempt a login
-     * @return true if login was successful
-     */
-    private boolean connect() {
-        try{
-            //Initiate the server connection interfaces according to settings
-            tryConnect(10,1);
-            //login
-            return tryLogin(3,2);
-        } catch (ServerException e) {
-            return false;
-        }
-    }
-    /**
-     * Try login tries times
-     * @param tries available to connect
-     * @param seconds to wait in case of failure
-     */
-    private void tryConnect(int tries, int seconds) throws ServerException {
-        try {
-            initConnectionInterface();
-        } catch (ServerException e) {
-            cliIO.errorMessage("Connection Error, retying in "+seconds+" seconds");
-            try {
-                sleep(seconds * 1000);
-            } catch (InterruptedException i) {
-                return;
-            }
-            if (tries > 1)
-                tryConnect(tries - 1, seconds);
-            else throw new ServerException("Can't connect to the server");
-        }
-    }
 
 
-    /**
-     * Try login tries times
-     * @param tries available to login
-     * @param seconds to wait in case of failure
-     * @return true if successful
-     */
-    private boolean tryLogin(int tries, int seconds){
-        boolean logged = false;
-        for(int attempt = 0; attempt < tries && !logged; attempt++){
-            logged = server.login(client); //get previous sessions if present
-            if(!logged){
-                cliIO.errorMessage("Connection Error, retying in "+seconds+" seconds");
-                try {
-                    sleep(seconds*1000);
-                } catch (InterruptedException e) {
-                    return false;
-                }
-            }
-        }
-        return logged;
-    }
+
 
     /**
      * Play a match in the lobby
@@ -358,7 +280,7 @@ public class ClientControllerCLI implements ClientController {
         }
 
         //initiate the connection interface and attempt a login
-        boolean successfulLogin = connect();
+        boolean successfulLogin = ClientController.connect(this, model);
 
         while(play){
             if(successfulLogin){
@@ -381,5 +303,8 @@ public class ClientControllerCLI implements ClientController {
                 play = false;
             }
         }
+    }
+    public void errorMessage(String msg) {
+        cliIO.errorMessage(msg);
     }
 }

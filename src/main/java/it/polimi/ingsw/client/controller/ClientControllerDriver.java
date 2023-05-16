@@ -1,7 +1,9 @@
 package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.cli.LobbyCommand;
 import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
+import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.model.Board;
@@ -120,6 +122,26 @@ public class ClientControllerDriver implements ClientController {
 
     @Override
     public void startClient() {
+
+    }
+
+    @Override
+    public Server getServer() {
+        return null;
+    }
+
+    @Override
+    public void setServer(Server server) {
+
+    }
+
+    @Override
+    public Client getClient() {
+        return null;
+    }
+
+    @Override
+    public void setClient(Client client) {
 
     }
 }

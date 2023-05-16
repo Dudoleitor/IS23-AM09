@@ -1,4 +1,5 @@
 package it.polimi.ingsw.client.controller.gui;
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -21,6 +22,9 @@ public class loginController {
         } else {
             welcome.setText(userName.getText() + " joined the game!");
             ClientControllerGUI.model = new ClientModelGUI(userName.getText());
+
+            ClientController.connect(ClientControllerGUI.controller, ClientControllerGUI.model);
+
             Stage stage = (Stage) welcome.getScene().getWindow();
             stage.setScene(new Scene(ClientControllerGUI.loadScene("Lobbies"), 800, 800));
         }
