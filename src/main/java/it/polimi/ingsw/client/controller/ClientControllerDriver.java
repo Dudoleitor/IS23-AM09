@@ -1,5 +1,7 @@
-package it.polimi.ingsw.client.View;
+package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.client.controller.cli.LobbyCommand;
+import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Color;
 import it.polimi.ingsw.shared.model.Board;
@@ -8,7 +10,7 @@ import it.polimi.ingsw.shared.model.Shelf;
 
 import java.util.*;
 
-public class ViewDriver extends View {
+public class ClientControllerDriver extends ClientController {
     String username;
     static LinkedList<LobbyCommand> commands = new LinkedList<>();
     static LinkedList<LobbySelectionCommand> lobbySelectionCommands = new LinkedList<>();

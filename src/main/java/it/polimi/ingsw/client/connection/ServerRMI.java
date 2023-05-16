@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.Connection;
+package it.polimi.ingsw.client.connection;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;

@@ -1,7 +1,6 @@
-package it.polimi.ingsw.client.Connection.TCPThread;
+package it.polimi.ingsw.client.connection.TCPThread;
 
-import it.polimi.ingsw.client.View.View;
-import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.model.ClientModel;
 import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.NetworkSettings;
 
@@ -22,21 +21,21 @@ public class ServerTCP_IO{
     private ServerTCPListener serverListener;
     private ServerTCPViewUpdater serverViewUpdater;
 
-    public ServerTCP_IO(Socket server, ClientController clientController) {
+    public ServerTCP_IO(Socket server, ClientModel clientModel) {
         try {
             serverSocket = server;
             serverOut = new PrintWriter(serverSocket.getOutputStream(), true);
             serverIn = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-            initializeThreads(clientController);
+            initializeThreads(clientModel);
 
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    private void initializeThreads(ClientController clientController){
+    private void initializeThreads(ClientModel clientModel){
         serverListener = new ServerTCPListener(serverIn, responses, updates);
-        serverViewUpdater = new ServerTCPViewUpdater(clientController, updates);
+        serverViewUpdater = new ServerTCPViewUpdater(clientModel, updates);
         serverListener.start();
         serverViewUpdater.start();
     }

@@ -1,15 +1,10 @@
-package it.polimi.ingsw.client.View.gui;
+package it.polimi.ingsw.client.controller.gui;
 import it.polimi.ingsw.shared.model.InvalidMoveException;
-import it.polimi.ingsw.shared.model.PartialMove;
 import it.polimi.ingsw.shared.model.Position;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -18,14 +13,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class homeScreenController implements Initializable {
 

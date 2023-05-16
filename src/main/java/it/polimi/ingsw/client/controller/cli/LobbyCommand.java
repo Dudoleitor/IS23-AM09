@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.View;
+package it.polimi.ingsw.client.controller.cli;
 
 import java.util.Arrays;
 

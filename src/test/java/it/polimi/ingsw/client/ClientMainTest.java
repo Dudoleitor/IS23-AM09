@@ -1,12 +1,9 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.Connection.ConnectionStub;
-import it.polimi.ingsw.client.View.LobbyCommand;
-import it.polimi.ingsw.client.View.LobbySelectionCommand;
-import it.polimi.ingsw.client.View.ViewDriver;
-import it.polimi.ingsw.shared.JsonBadParsingException;
-import it.polimi.ingsw.shared.model.CommonGoal;
-import it.polimi.ingsw.shared.model.CommonGoalStrategy;
+import it.polimi.ingsw.client.connection.ConnectionStub;
+import it.polimi.ingsw.client.controller.cli.LobbyCommand;
+import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
+import it.polimi.ingsw.client.controller.ClientControllerDriver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +23,7 @@ class ClientMainTest {
 
     @Test
     void test1(){
-        ViewDriver viewDriver = new ViewDriver();
+        ClientControllerDriver viewDriver = new ClientControllerDriver();
         ConnectionStub connectionStub = new ConnectionStub();
 
         //Set command sequence to execute

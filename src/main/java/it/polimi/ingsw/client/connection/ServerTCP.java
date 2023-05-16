@@ -1,9 +1,7 @@
-package it.polimi.ingsw.client.Connection;
+package it.polimi.ingsw.client.connection;
 
-import it.polimi.ingsw.client.Connection.TCPThread.ServerTCPViewUpdater;
-import it.polimi.ingsw.client.Connection.TCPThread.ServerTCP_IO;
-import it.polimi.ingsw.client.View.View;
-import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.connection.TCPThread.ServerTCP_IO;
+import it.polimi.ingsw.client.model.ClientModel;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.model.Move;
@@ -21,11 +19,11 @@ public class ServerTCP extends Server {
 
     private final ServerTCP_IO serverIO;
 
-    public ServerTCP(IpAddressV4 ip, int port, ClientController clientController) throws ServerException {
+    public ServerTCP(IpAddressV4 ip, int port, ClientModel clientModel) throws ServerException {
         super(ip, port);
         try {
             serverSocket = new Socket(ip.toString(), port);
-            serverIO = new ServerTCP_IO(serverSocket, clientController);
+            serverIO = new ServerTCP_IO(serverSocket, clientModel);
         } catch (IOException e) {
             throw new ServerException(e.getMessage());
         }

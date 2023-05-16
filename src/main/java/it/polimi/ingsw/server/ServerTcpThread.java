@@ -1,6 +1,5 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.Connection.LobbyException;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;

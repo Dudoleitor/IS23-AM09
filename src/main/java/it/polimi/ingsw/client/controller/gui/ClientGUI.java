@@ -1,28 +1,19 @@
-package it.polimi.ingsw.client.View.gui;
-import it.polimi.ingsw.client.controller.ClientControllerGUI;
-import it.polimi.ingsw.server.clientonserver.Client;
+package it.polimi.ingsw.client.controller.gui;
+import it.polimi.ingsw.client.model.ClientModelGUI;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class ClientGUI extends Application {
 
-    private ClientControllerGUI controller;
-    private GUI gui;
+    private ClientModelGUI controller;
+    private ClientControllerGUI clientControllerGui;
 
     public Parent loadScene(String scene) throws IOException {
         return FXMLLoader.load(ClientGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
@@ -44,20 +35,20 @@ public class ClientGUI extends Application {
         alert.show();
     }
 
-    public ClientControllerGUI getController() {
+    public ClientModelGUI getController() {
         return controller;
     }
 
-    public void setController(ClientControllerGUI controller) {
+    public void setController(ClientModelGUI controller) {
         this.controller = controller;
     }
 
-    public GUI getGui() {
-        return gui;
+    public ClientControllerGUI getGui() {
+        return clientControllerGui;
     }
 
-    public void setGui(GUI gui) {
-        this.gui = gui;
+    public void setGui(ClientControllerGUI clientControllerGui) {
+        this.clientControllerGui = clientControllerGui;
     }
 
     public static void startApp() {launch();}

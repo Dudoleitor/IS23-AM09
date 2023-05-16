@@ -1,7 +1,6 @@
-package it.polimi.ingsw.client.controller;
+package it.polimi.ingsw.client.model;
 
-import it.polimi.ingsw.client.View.cli.CLI;
-import it.polimi.ingsw.client.View.gui.GUI;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
 import it.polimi.ingsw.shared.JsonBadParsingException;
@@ -21,7 +20,7 @@ import java.util.Map;
  * Here a copy of the model is not needed.
  */
 //TODO everything
-public class ClientControllerGUI implements ClientController, ClientRemote {
+public class ClientModelGUI implements ClientModel, ClientRemote {
     private final String playerName;
     private boolean itsMyTurn;
     private Chat chat;
@@ -31,11 +30,11 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
     private boolean gameStarted;
-    private final GUI gui;
+    private final ClientControllerGUI clientControllerGui;
 
     private boolean gameEnded;
 
-    public ClientControllerGUI(String playerName, GUI gui) {
+    public ClientModelGUI(String playerName, ClientControllerGUI clientControllerGui) {
         this.playerName=playerName;
         this.itsMyTurn=false;
         this.chat = new Chat();
@@ -46,7 +45,7 @@ public class ClientControllerGUI implements ClientController, ClientRemote {
         this.players = new ArrayList<>();
         this.gameStarted = false;
         this.itsMyTurn = false;
-        this.gui = gui;
+        this.clientControllerGui = clientControllerGui;
         this.gameEnded = false;
     }
 

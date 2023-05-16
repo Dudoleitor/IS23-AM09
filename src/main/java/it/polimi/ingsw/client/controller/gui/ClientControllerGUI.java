@@ -1,8 +1,8 @@
-package it.polimi.ingsw.client.View.gui;
+package it.polimi.ingsw.client.controller.gui;
 
-import it.polimi.ingsw.client.View.LobbyCommand;
-import it.polimi.ingsw.client.View.View;
-import it.polimi.ingsw.client.View.LobbySelectionCommand;
+import it.polimi.ingsw.client.controller.cli.LobbyCommand;
+import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.model.Board;
 import it.polimi.ingsw.shared.model.Move;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class GUI extends View {
+public class ClientControllerGUI extends ClientController {
     @Override
     public LobbyCommand askCommand() {
         return null;

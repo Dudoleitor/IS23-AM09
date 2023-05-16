@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.View.cli.CLI;
+import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
 import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.model.*;
@@ -11,7 +11,7 @@ import java.util.*;
 import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
 import static org.junit.Assert.fail;
 
-public class CLITest {
+public class ClientControllerCLITest {
 
     static final boolean verbose = false;
     @Test
@@ -21,9 +21,9 @@ public class CLITest {
             playerShelves.put("fridgeieri", new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
             playerShelves.put("dge", new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
             playerShelves.put("ieri", new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
-            CLI cli = new CLI();
+            ClientControllerCLI clientControllerCli = new ClientControllerCLI();
 
-            cli.showShelves(playerShelves);
+            clientControllerCli.showShelves(playerShelves);
         }
     }
     @Test
@@ -76,13 +76,13 @@ public class CLITest {
             leaderboard.put("firgioggi",30);
             leaderboard.put("frigdopodonmani",55);
             leaderboard.put("friegdomani",25);
-            CLI cli = new CLI();
+            ClientControllerCLI clientControllerCli = new ClientControllerCLI();
             Board board = new Board(4);
             Map<String,Shelf> shelves = new HashMap<>();
             for(String p: leaderboard.keySet()){
                 shelves.put(p,new Shelf(6,5));
             }
-            cli.endGame(leaderboard,"frigieri",shelves,board);
+            clientControllerCli.endGame(leaderboard,"frigieri",shelves,board);
         }
     }
 }

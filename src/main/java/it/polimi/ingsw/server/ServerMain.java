@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.View.cli.InputSanitizer;
+import it.polimi.ingsw.client.controller.cli.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.NetworkSettings;
@@ -15,7 +15,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 

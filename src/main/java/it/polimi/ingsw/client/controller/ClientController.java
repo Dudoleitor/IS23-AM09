@@ -1,30 +1,103 @@
 package it.polimi.ingsw.client.controller;
 
+import it.polimi.ingsw.client.controller.cli.LobbyCommand;
+import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
 import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.Board;
+import it.polimi.ingsw.shared.model.Move;
 import it.polimi.ingsw.shared.model.Shelf;
 
-import java.rmi.RemoteException;
 import java.util.Map;
 
-/**
- * This object is used to receive updates coming from
- * the server, it resides on the client. When RMI is
- * used, the object is wrapped inside ClientRMI and
- * methods are called directly from the server.
- * With TCP, proper adapters parse messages coming
- * from the network and call the methods.
- */
-public interface ClientController extends ClientRemote{
+public abstract class ClientController {
+
     /**
-     * @return True if the player need to play in the current turn
+     * Ask the user for a command
+     * @return the selected LobbyCommand
      */
-    public boolean isItMyTurn() throws RemoteException;
+    public abstract LobbyCommand askCommand();
+    /**
+     * Notify the user that they entered an ivalid command
+     */
+    public abstract void notifyInvalidCommand();
 
-    public Board getBoard() throws RemoteException;
-    public Map<String, Shelf> getPlayersShelves() throws RemoteException;
-    public Chat getChat() throws RemoteException;
+    /**
+     * Notify the player that he quit
+     */
+    public abstract void notifyExit();
 
-    public boolean gameEnded() throws RemoteException;
+    /**
+     * Show the user all chat messages
+     * @param chat the Chat to print
+     */
+    public abstract void showAllMessages(Chat chat);
+
+    /**
+     * Ask the player to input a message
+     * @return the Map from message fields to fields String values
+     */
+    public abstract Map<String,String> getMessageFromUser();
+
+    /**
+     * Ask the player to input a private message
+     * @return the Map from private message fields to fields String values
+     */
+    public abstract Map<String,String> getPrivateMessageFromUser();
+
+    /**
+     * Ask the user for a move
+     * @return the chosen move
+     */
+    public abstract Move getMoveFromUser(Board board, Shelf shelf);
+
+    /**
+     * Show the list of commands that the client can execute
+     */
+    public abstract void showHelp();
+    /**
+     * Ask the player for his username
+     * @return the username
+     */
+    public abstract String askUserName();
+
+    /**
+     * Ask the player what lobby they want to join
+     * @return a LobbySelection LobbyCommand corresponding to the user request
+     */
+    public abstract LobbySelectionCommand askLobby();
+
+    /**
+     * Show the user the lobbies passed as parameter
+     * @param lobbies the list of lobbies
+     */
+    public abstract void showLobbies(Map<Integer,Integer> lobbies, String description);
+
+    /**
+     * Ask the player if they want to play again
+     * @return
+     */
+
+    public abstract boolean playAgain();
+
+    /**
+     * Show the user an error message
+     * @param message
+     */
+    public abstract void errorMessage(String message);
+
+    /**
+     * Show a message to user
+     * @param message
+     */
+    public abstract void message(String message);
+
+    /**
+     * Set isLobbyAdmin variable in View
+     */
+    public abstract void setLobbyAdmin(boolean isAdmin);
+
+    /**
+     * Print the end game leaderboard
+     */
+    public abstract void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board);
 }

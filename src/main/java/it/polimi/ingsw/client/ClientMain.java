@@ -1,17 +1,17 @@
 package it.polimi.ingsw.client;
 
 
-import it.polimi.ingsw.client.Connection.*;
-import it.polimi.ingsw.client.View.LobbyCommand;
-import it.polimi.ingsw.client.View.LobbySelectionCommand;
-import it.polimi.ingsw.client.View.View;
-import it.polimi.ingsw.client.View.ViewDriver;
-import it.polimi.ingsw.client.View.cli.CLI;
+import it.polimi.ingsw.client.connection.*;
+import it.polimi.ingsw.client.controller.cli.LobbyCommand;
+import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.client.controller.ClientControllerCLI;
-import it.polimi.ingsw.client.View.gui.ClientGUI;
-import it.polimi.ingsw.client.View.gui.GUI;
-import it.polimi.ingsw.client.controller.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.ClientControllerDriver;
+import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.model.ClientModel;
+import it.polimi.ingsw.client.model.ClientModelCLI;
+import it.polimi.ingsw.client.controller.gui.ClientGUI;
+import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
@@ -36,11 +36,11 @@ public class ClientMain{
     //Objects that handle connection with server
     static Server server;
     static Client client;
-    static ClientController controller;
+    static ClientModel controller;
     /**
      * UI View
      */
-    static View view;
+    static ClientController clientController;
 
     /**
      * Join the lobby by creating a Lobby connection object and connecting it to server
@@ -55,23 +55,23 @@ public class ClientMain{
             try {
                 final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
 
-                view.message("You joined automatically #"+ previousLobbyId +" lobby!\nYou were previously connected to it");
-                view.setLobbyAdmin(isLobbyAdmin);
+                clientController.message("You joined automatically #"+ previousLobbyId +" lobby!\nYou were previously connected to it");
+                clientController.setLobbyAdmin(isLobbyAdmin);
 
                 return;
             } catch (LobbyException e) {
-                view.errorMessage("Error while connecting automatically to lobby");
+                clientController.errorMessage("Error while connecting automatically to lobby");
             }
         }
 
         //show the client the lobbies they can join
-        view.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
-        view.showLobbies(availableLobbies, "The lobbies that are available");
+        clientController.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+        clientController.showLobbies(availableLobbies, "The lobbies that are available");
 
         boolean successful = false;
         while(!successful){
             //ask the user
-            LobbySelectionCommand command = view.askLobby();
+            LobbySelectionCommand command = clientController.askLobby();
             switch (command){
                 case Random:
                     server.joinRandomLobby(client);
@@ -84,11 +84,11 @@ public class ClientMain{
                     break;
                 case Refresh:
                     //show the client the lobbies they can join
-                    view.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
-                    view.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
+                    clientController.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+                    clientController.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
                     break;
                 default:
-                    view.notifyInvalidCommand();
+                    clientController.notifyInvalidCommand();
                     break;
             }
             if(command.isValid()){
@@ -96,12 +96,12 @@ public class ClientMain{
                     final int joinedLobbyId = server.getLobbyID();
                     final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
 
-                    view.message("You joined #"+ joinedLobbyId +" lobby!");
-                    view.setLobbyAdmin(isLobbyAdmin);
+                    clientController.message("You joined #"+ joinedLobbyId +" lobby!");
+                    clientController.setLobbyAdmin(isLobbyAdmin);
                     successful = true;
                 }
                 catch (LobbyException e){
-                    view.errorMessage("Lobby does not exist");
+                    clientController.errorMessage("Lobby does not exist");
                 }
             }
         }
@@ -116,7 +116,7 @@ public class ClientMain{
             switch (lobbyCommand) {
                 case Exit: //quit game
                     server.quitGame(playerName);
-                    view.notifyExit();
+                    clientController.notifyExit();
                     exit = true;
                     break;
                 case Print: //print all messages
@@ -135,10 +135,10 @@ public class ClientMain{
                     postToChat();
                     break;
                 case Help:
-                    view.showHelp();
+                    clientController.showHelp();
                     break;
                 default: //post message to chat
-                    view.notifyInvalidCommand();
+                    clientController.notifyInvalidCommand();
                     break;
             }
     }
@@ -148,9 +148,9 @@ public class ClientMain{
      */
     private static void printChat(){
         try {
-            view.showAllMessages(controller.getChat());
+            clientController.showAllMessages(controller.getChat());
         } catch (RemoteException e) {
-            view.errorMessage("Error while loading resourses");
+            clientController.errorMessage("Error while loading resourses");
         }
     }
 
@@ -172,7 +172,7 @@ public class ClientMain{
      * Get message from user and post to Server Chat
      */
     private static void postToChat() throws LobbyException {
-        Map<String,String> message = view.getMessageFromUser();
+        Map<String,String> message = clientController.getMessageFromUser();
         server.postToLiveChat(
                 playerName,
                 message.get("message"));
@@ -182,7 +182,7 @@ public class ClientMain{
      * Get private message from user and post to Server Chat
      */
     private static void postToPrivateChat() throws LobbyException {
-        Map<String,String> privateMessage = view.getPrivateMessageFromUser();
+        Map<String,String> privateMessage = clientController.getPrivateMessageFromUser();
         server.postSecretToLiveChat(
                 playerName,
                 privateMessage.get("receiver"),
@@ -194,20 +194,20 @@ public class ClientMain{
      */
     private static void postMove() throws LobbyException {
         if(!server.matchHasStarted()){
-            view.errorMessage("Match has not started");
+            clientController.errorMessage("Match has not started");
             return;
         }
         try {
             if (controller.isItMyTurn()) {
                 try {
-                    Move move = view.getMoveFromUser(controller.getBoard(), controller.getPlayersShelves().get(playerName));
+                    Move move = clientController.getMoveFromUser(controller.getBoard(), controller.getPlayersShelves().get(playerName));
                     server.postMove(playerName, move);
                 }
                 catch (RemoteException e){
-                    view.errorMessage("Error while loading resources");
+                    clientController.errorMessage("Error while loading resources");
                 }
             } else {
-                view.errorMessage("It's not your turn");
+                clientController.errorMessage("It's not your turn");
             }
         } catch (RemoteException ignored) {
             // Never thrown
@@ -220,7 +220,7 @@ public class ClientMain{
         try {
             admin = server.isLobbyAdmin(playerName);
             if(!admin){
-                view.errorMessage("You are not lobby admin");
+                clientController.errorMessage("You are not lobby admin");
                 return;
             }
             started = server.startGame(playerName);
@@ -228,7 +228,7 @@ public class ClientMain{
             started = false;
         }
         if(!started){
-            view.errorMessage("You can not start lobby now");
+            clientController.errorMessage("You can not start lobby now");
         }
     }
 
@@ -238,14 +238,14 @@ public class ClientMain{
     private static void initView(){
         switch (Client_Settings.ui){
             case CLI:
-                view = new CLI();
+                clientController = new ClientControllerCLI();
                 break;
             case GUI:
-                view = new GUI();
+                clientController = new ClientControllerGUI();
                 ClientGUI.startApp();
                 break;
             case DRIVER:
-                view = new ViewDriver();
+                clientController = new ClientControllerDriver();
                 break;
         }
     }
@@ -278,7 +278,7 @@ public class ClientMain{
             case STUB:
                 server = new ConnectionStub();
                 try {
-                    ClientControllerCLI remoteObject = new ClientControllerCLI(playerName, new CLI());
+                    ClientModelCLI remoteObject = new ClientModelCLI(playerName, new ClientControllerCLI());
                     client = new ClientRMI(remoteObject); //TODO create stub when completed the real one
                 } catch (RemoteException e) {
                     throw new ServerException("Impossible to create RMI client object");
@@ -289,13 +289,13 @@ public class ClientMain{
     private static void initController() throws RemoteException {
         switch(Client_Settings.ui){
             case GUI:
-                final GUI gui = (GUI) view;
-                controller = new ClientControllerGUI(playerName, gui);
+                final ClientControllerGUI clientControllerGui = (ClientControllerGUI) clientController;
+                controller = new ClientModelGUI(playerName, clientControllerGui);
                 break;
             case CLI:
                 try {
-                    final CLI cli = (CLI) view;
-                    controller = new ClientControllerCLI(playerName, cli);
+                    final ClientControllerCLI clientControllerCli = (ClientControllerCLI) clientController;
+                    controller = new ClientModelCLI(playerName, clientControllerCli);
                 } catch (ClassCastException e) {
                     throw new RuntimeException("Class cast exception while trying to initialize the clientController with CLI: " + e.getMessage());
                 }
@@ -326,7 +326,7 @@ public class ClientMain{
         try {
             initConnectionInterface();
         } catch (ServerException e) {
-            view.errorMessage("Connection Error, retying in "+seconds+" seconds");
+            clientController.errorMessage("Connection Error, retying in "+seconds+" seconds");
             try {
                 sleep(seconds * 1000);
             } catch (InterruptedException i) {
@@ -350,7 +350,7 @@ public class ClientMain{
         for(int attempt = 0; attempt < tries && !logged; attempt++){
             logged = server.login(client); //get previous sessions if present
             if(!logged){
-                view.errorMessage("Connection Error, retying in "+seconds+" seconds");
+                clientController.errorMessage("Connection Error, retying in "+seconds+" seconds");
                 try {
                     sleep(seconds*1000);
                 } catch (InterruptedException e) {
@@ -373,7 +373,7 @@ public class ClientMain{
             } catch (RemoteException ignored) {
             }
 
-            LobbyCommand lobbyCommand = view.askCommand();
+            LobbyCommand lobbyCommand = clientController.askCommand();
             executeUserCommand(lobbyCommand);
         }
     }
@@ -395,7 +395,7 @@ public class ClientMain{
         initView();
 
         //ask for username
-        playerName = view.askUserName();
+        playerName = clientController.askUserName();
 
         //initiate the connection interface and attempt a login
         boolean successfulLogin = connect();
@@ -410,14 +410,14 @@ public class ClientMain{
                     playMatch();
 
                 } catch (ServerException | LobbyException e) {
-                    view.errorMessage("Something went wrong connecting to server");
+                    clientController.errorMessage("Something went wrong connecting to server");
                     play = false;
                 }
                 //ask the player if they want to play again
-                play = view.playAgain();
+                play = clientController.playAgain();
             }
             else{
-                view.errorMessage("It was impossible to connect to server");
+                clientController.errorMessage("It was impossible to connect to server");
                 play = false;
             }
         }

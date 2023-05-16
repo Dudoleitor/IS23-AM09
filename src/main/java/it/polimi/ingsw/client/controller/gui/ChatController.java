@@ -1,18 +1,14 @@
-package it.polimi.ingsw.client.View.gui;
-import javafx.application.Platform;
+package it.polimi.ingsw.client.controller.gui;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class ChatController implements Initializable {

@@ -1,9 +1,7 @@
-package it.polimi.ingsw.client.View.cli;
+package it.polimi.ingsw.client.controller.cli;
 
 import it.polimi.ingsw.client.Client_Settings;
-import it.polimi.ingsw.client.View.LobbyCommand;
-import it.polimi.ingsw.client.View.View;
-import it.polimi.ingsw.client.View.LobbySelectionCommand;
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.shared.model.*;
 import it.polimi.ingsw.shared.*;
 
@@ -15,7 +13,7 @@ import java.util.stream.IntStream;
 
 import static it.polimi.ingsw.client.Client_Settings.*;
 
-public class CLI extends View {
+public class ClientControllerCLI extends ClientController {
     private static Lock cli_lock;
     private InputSanitizer inputSanitizer;
     private Scanner scanner;
@@ -25,7 +23,7 @@ public class CLI extends View {
     /**
      * Constructor. The cli_lock is built as a Singleton
      */
-    public CLI(){
+    public ClientControllerCLI(){
         if(cli_lock == null){
             cli_lock = new ReentrantLock();
         }

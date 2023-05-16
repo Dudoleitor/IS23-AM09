@@ -1,10 +1,9 @@
-package it.polimi.ingsw.client.Connection;
+package it.polimi.ingsw.client.connection;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.model.Move;
 
-import java.rmi.RemoteException;
 import java.util.Map;
 
 /**

@@ -1,8 +1,4 @@
-package it.polimi.ingsw.client.View;
-
-import it.polimi.ingsw.client.View.cli.InputSanitizer;
-
-import java.util.Arrays;
+package it.polimi.ingsw.client.controller.cli;
 
 public enum LobbySelectionCommand {
     Invalid(),

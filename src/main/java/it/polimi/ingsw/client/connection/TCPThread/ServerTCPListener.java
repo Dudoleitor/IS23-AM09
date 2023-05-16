@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.Connection.TCPThread;
+package it.polimi.ingsw.client.connection.TCPThread;
 
 import it.polimi.ingsw.shared.MessageTcp;
 

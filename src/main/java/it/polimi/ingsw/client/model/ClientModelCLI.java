@@ -1,6 +1,6 @@
-package it.polimi.ingsw.client.controller;
+package it.polimi.ingsw.client.model;
 
-import it.polimi.ingsw.client.View.cli.CLI;
+import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.*;
@@ -15,7 +15,7 @@ import java.util.*;
  * This object contains a copy of the model and uses the CLI
  * to print the entire model each time.
  */
-public class ClientControllerCLI extends UnicastRemoteObject implements ClientController, ClientRemote {
+public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, ClientRemote {
 
     private final String playerName;
     private Chat chat;
@@ -24,14 +24,14 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
-    private final CLI cli;
+    private final ClientControllerCLI clientControllerCli;
     private boolean gameStarted;
     private boolean itsMyTurn;
     private LinkedList<Runnable> actionsQueue;
 
     private boolean gameEnded;
 
-    public ClientControllerCLI(String playerName, CLI cli) throws RemoteException {
+    public ClientModelCLI(String playerName, ClientControllerCLI clientControllerCli) throws RemoteException {
         super();
         this.playerName = playerName;
         this.chat = new Chat();
@@ -40,7 +40,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
         this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
         this.players = new ArrayList<>();
-        this.cli = cli;
+        this.clientControllerCli = clientControllerCli;
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.actionsQueue = new LinkedList<>();
@@ -172,7 +172,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
         if (!Objects.equals(sender, playerName))
-            enqueueTask(() -> cli.showChatMessage(chat.getLast()));
+            enqueueTask(() -> clientControllerCli.showChatMessage(chat.getLast()));
         executeTasks();
     }
 
@@ -204,9 +204,9 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void gameStarted() {
         ensureModelIsSet();
 
-        enqueueTask(() -> cli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
+        enqueueTask(() -> clientControllerCli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         gameStarted = true;
-        enqueueTask(() -> cli.message("Match has started"));
+        enqueueTask(() -> clientControllerCli.message("Match has started"));
 
         executeTasks();
     }
@@ -222,14 +222,14 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
     public void nextTurn(String player) {
         if (gameStarted) {
             ensureModelIsSet();
-            enqueueTask(() -> cli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
+            enqueueTask(() -> clientControllerCli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         }
 
         if (player.equals(this.playerName)) {
-            enqueueTask(() -> cli.message("It's your turn"));
+            enqueueTask(() -> clientControllerCli.message("It's your turn"));
            itsMyTurn=true;
         } else {
-            enqueueTask(() -> cli.message("It's "+player+" turn"));
+            enqueueTask(() -> clientControllerCli.message("It's "+player+" turn"));
             itsMyTurn=false;
         }
         executeTasks();
@@ -282,7 +282,7 @@ public class ClientControllerCLI extends UnicastRemoteObject implements ClientCo
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        cli.endGame(leaderBoard, playerName,playersShelves,board);
+        clientControllerCli.endGame(leaderBoard, playerName,playersShelves,board);
         this.gameEnded = true;
     }
 
