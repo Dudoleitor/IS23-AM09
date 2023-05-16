@@ -8,32 +8,21 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloController {
+public class loginController {
     @FXML
     Label welcome;
     @FXML
     TextField userName;
 
-    private static final ClientGUI client = new ClientGUI();
-    private ClientModelGUI controller;
-    private ClientControllerGUI clientControllerGui;
-
-    public static ClientGUI getClient() {
-        return client;
-    }
-
     @FXML
     protected void signInAction() throws IOException {
         if(userName.getText().equals("")) {
-            client.showError("Insert username");
+            ClientControllerGUI.showError("Insert username");
         } else {
             welcome.setText(userName.getText() + " joined the game!");
-            clientControllerGui = new ClientControllerGUI();
-            client.setGui(clientControllerGui);
-            controller = new ClientModelGUI(userName.getText(), clientControllerGui);
-            client.setController(controller);
+            ClientControllerGUI.model = new ClientModelGUI(userName.getText());
             Stage stage = (Stage) welcome.getScene().getWindow();
-            stage.setScene(new Scene(client.loadScene("Lobbies"), 800, 800));
+            stage.setScene(new Scene(ClientControllerGUI.loadScene("Lobbies"), 800, 800));
         }
     }
 

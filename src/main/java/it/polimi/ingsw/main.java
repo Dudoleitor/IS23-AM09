@@ -1,6 +1,7 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.client.ClientMain;
+import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
 import it.polimi.ingsw.client.Client_Settings;
 import it.polimi.ingsw.server.ServerMain;
 import org.apache.commons.cli.*;

@@ -1,4 +1,5 @@
 package it.polimi.ingsw.client.controller.gui;
+import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.model.InvalidMoveException;
 import it.polimi.ingsw.shared.model.Position;
 import javafx.fxml.FXML;
@@ -21,16 +22,15 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 public class homeScreenController implements Initializable {
-
-    private final ClientGUI client = HelloController.getClient();
     boolean clicked = false;
     private final double iHeight = 85.0;
     private final double iWidth = 49.0;
-
     private final double iHeightShelf = 130.0;
     private final double iWidthShelf = 390.0;
 
     private List<Position> move = new ArrayList<>();
+
+    private final ClientModelGUI model = ClientControllerGUI.model;
 
 
     @FXML
@@ -62,7 +62,7 @@ public class homeScreenController implements Initializable {
     javafx.scene.shape.Polygon turnFlag;
 
     private void getPersonalGoal() {
-        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + client.getController().getPlayerGoal().getGoalId() + ".png"));
+        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + model.getPlayerGoal().getGoalId() + ".png"));
     }
 
     protected void randPG() {
@@ -95,7 +95,7 @@ public class homeScreenController implements Initializable {
     protected void readChat() throws IOException {
         clicked = false;
         Stage stage = (Stage) imgPersGoal.getScene().getWindow();
-        stage.setScene(new Scene(client.loadScene("Chat"), 800, 800));
+        stage.setScene(new Scene(ClientControllerGUI.loadScene("Chat"), 800, 800));
     }
 
     protected void setBoard() {
@@ -155,7 +155,7 @@ public class homeScreenController implements Initializable {
         System.out.println("Board:");
 
         if(move.size() >= 3) {
-            client.showError("Max number of positions selected");
+            ClientControllerGUI.showError("Max number of positions selected");
         } else {
             int column = (int) ((mouseEvent.getX())/25) - 1;
             int row = (int) ((mouseEvent.getY())/25) - 1;
@@ -202,14 +202,14 @@ public class homeScreenController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        boolean turn = client.getController().isItMyTurn();
+        boolean turn = model.isItMyTurn();
         boolean myTurn = true; //questo sarà da togliere
         if(!myTurn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
         setBoard();
         setShelf();
-        if(client.getController().getPlayerGoal() == null) {
+        if(model.getPlayerGoal() == null) {
             randPG();
         } else {
             getPersonalGoal();

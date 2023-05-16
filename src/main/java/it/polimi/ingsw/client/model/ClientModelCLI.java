@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.model;
 
-import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
+import it.polimi.ingsw.client.controller.cli.CLI_IO;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.*;
@@ -24,14 +24,14 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
-    private final ClientControllerCLI clientControllerCli;
+    private final CLI_IO cliIO;
     private boolean gameStarted;
     private boolean itsMyTurn;
     private LinkedList<Runnable> actionsQueue;
 
     private boolean gameEnded;
 
-    public ClientModelCLI(String playerName, ClientControllerCLI clientControllerCli) throws RemoteException {
+    public ClientModelCLI(String playerName, CLI_IO cliIO) throws RemoteException {
         super();
         this.playerName = playerName;
         this.chat = new Chat();
@@ -40,7 +40,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
         this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
         this.players = new ArrayList<>();
-        this.clientControllerCli = clientControllerCli;
+        this.cliIO = cliIO;
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.actionsQueue = new LinkedList<>();
@@ -172,7 +172,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
         if (!Objects.equals(sender, playerName))
-            enqueueTask(() -> clientControllerCli.showChatMessage(chat.getLast()));
+            enqueueTask(() -> cliIO.showChatMessage(chat.getLast()));
         executeTasks();
     }
 
@@ -204,9 +204,9 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     public void gameStarted() {
         ensureModelIsSet();
 
-        enqueueTask(() -> clientControllerCli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
+        enqueueTask(() -> cliIO.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         gameStarted = true;
-        enqueueTask(() -> clientControllerCli.message("Match has started"));
+        enqueueTask(() -> cliIO.message("Match has started"));
 
         executeTasks();
     }
@@ -222,14 +222,14 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     public void nextTurn(String player) {
         if (gameStarted) {
             ensureModelIsSet();
-            enqueueTask(() -> clientControllerCli.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
+            enqueueTask(() -> cliIO.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         }
 
         if (player.equals(this.playerName)) {
-            enqueueTask(() -> clientControllerCli.message("It's your turn"));
+            enqueueTask(() -> cliIO.message("It's your turn"));
            itsMyTurn=true;
         } else {
-            enqueueTask(() -> clientControllerCli.message("It's "+player+" turn"));
+            enqueueTask(() -> cliIO.message("It's "+player+" turn"));
             itsMyTurn=false;
         }
         executeTasks();
@@ -282,7 +282,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        clientControllerCli.endGame(leaderBoard, playerName,playersShelves,board);
+        cliIO.endGame(leaderBoard, playerName,playersShelves,board);
         this.gameEnded = true;
     }
 

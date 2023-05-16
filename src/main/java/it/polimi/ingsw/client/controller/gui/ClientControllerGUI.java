@@ -1,97 +1,39 @@
 package it.polimi.ingsw.client.controller.gui;
-
-import it.polimi.ingsw.client.controller.cli.LobbyCommand;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
-import it.polimi.ingsw.shared.Chat;
-import it.polimi.ingsw.shared.model.Board;
-import it.polimi.ingsw.shared.model.Move;
-import it.polimi.ingsw.shared.model.Shelf;
+import it.polimi.ingsw.client.model.ClientModelGUI;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
-public class ClientControllerGUI extends ClientController {
-    @Override
-    public LobbyCommand askCommand() {
-        return null;
+public class ClientControllerGUI extends Application implements ClientController {
+
+    public static ClientModelGUI model;
+
+    public static Parent loadScene(String scene) throws IOException {
+        return FXMLLoader.load(ClientControllerGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
     }
 
-    @Override
-    public void notifyExit() {
 
+    public void start(Stage stage) throws IOException {
+        Parent root = loadScene("Start");
+        Scene scene = new Scene(root, 800, 800, Color.GREEN);
+        stage.setTitle("My Shelfie");
+        stage.setScene(scene);
+        stage.show();
     }
 
-    @Override
-    public void showAllMessages(Chat chat) {
-        List<String> messages = new ArrayList<>();
-        messages.addAll(chat.getAllMessages().stream().map(mes -> mes.toString()).collect(Collectors.toList()));
+    public static void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.show();
     }
 
-    @Override
-    public Map<String, String> getMessageFromUser() {
-        return null;
-    }
-
-    @Override
-    public Map<String, String> getPrivateMessageFromUser() {
-        return null;
-    }
-
-    @Override
-    public Move getMoveFromUser(Board board, Shelf shelf) {
-        return null;
-    }
-
-    @Override
-    public void showHelp() {
-
-    }
-
-    @Override
-    public String askUserName() {
-        return null;
-    }
-
-    @Override
-    public LobbySelectionCommand askLobby() {
-        return null;
-    }
-
-    @Override
-    public void showLobbies(Map<Integer, Integer> lobbies, String description) {
-
-    }
-
-    @Override
-    public boolean playAgain() {
-        return false;
-    }
-
-    @Override
-    public void errorMessage(String message) {
-
-    }
-
-    @Override
-    public void message(String message) {
-
-    }
-
-    @Override
-    public void setLobbyAdmin(boolean isAdmin) {
-
-    }
-
-    @Override
-    public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
-
-    }
-
-    @Override
-    public void notifyInvalidCommand() {
-
-    }
+    public void startClient() {launch();}
 }

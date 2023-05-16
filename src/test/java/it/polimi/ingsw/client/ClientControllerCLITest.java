@@ -1,88 +1,69 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.connection.ConnectionStub;
 import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
-import it.polimi.ingsw.shared.GameSettings;
-import it.polimi.ingsw.shared.JsonBadParsingException;
-import it.polimi.ingsw.shared.model.*;
+import it.polimi.ingsw.client.controller.cli.LobbyCommand;
+import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
+import it.polimi.ingsw.client.controller.ClientControllerDriver;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.LinkedList;
 
-import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
-import static org.junit.Assert.fail;
+import static it.polimi.ingsw.client.Client_Settings.Connection.STUB;
+import static it.polimi.ingsw.client.Client_Settings.UI.DRIVER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ClientControllerCLITest {
-
-    static final boolean verbose = false;
-    @Test
-    void shelves() {
-        if (verbose) {
-            Map<String, Shelf> playerShelves = new HashMap<>();
-            playerShelves.put("fridgeieri", new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
-            playerShelves.put("dge", new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
-            playerShelves.put("ieri", new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns));
-            ClientControllerCLI clientControllerCli = new ClientControllerCLI();
-
-            clientControllerCli.showShelves(playerShelves);
-        }
-    }
-    @Test
-    void personalGoals(){
-        if(verbose){
-            List<PlayerGoal> playerGoals = new ArrayList<>();
-            PlayerGoal playerGoal;
-            try{
-                for (int goalToGen = 0; goalToGen < 4; goalToGen++) {
-                    playerGoal = new PlayerGoal(PlayerGoals);
-                    while (playerGoals.contains(playerGoal)) {
-                        playerGoal = new PlayerGoal(PlayerGoals);
-                    }
-                    playerGoals.add(playerGoal);
-                }
-            }
-            catch (Exception e){
-                fail();
-            }
-            for(PlayerGoal pg : playerGoals){
-                System.out.println(pg);
-            }
-        }
+@Disabled
+class ClientControllerCLITest {
+    @BeforeAll
+    static void setTestSettings(){
+        Client_Settings cs = new Client_Settings();
+        cs.setConnection(STUB);
+        cs.setUI(DRIVER);
     }
 
     @Test
-    void board() throws JsonBadParsingException, OutOfTilesException {
-        if(verbose){
-            Board board = new Board(4);
-            board.fill();
-            System.out.println(board);
-        }
-    }
+    void test1(){
+        ClientControllerDriver viewDriver = new ClientControllerDriver();
+        ConnectionStub connectionStub = new ConnectionStub();
 
-    @Test
-    void CommonGoal() throws JsonBadParsingException {
-        if(verbose){
-            for(CommonGoalStrategy strategy : CommonGoalStrategy.values()){
-                System.out.println(new CommonGoal(strategy,4));
-                System.out.println("\n\n");
-            }
-        }
-    }
+        //Set command sequence to execute
+        LobbySelectionCommand lc = LobbySelectionCommand.Create;
+        viewDriver.putLobbySelectionCommand(lc);
+        viewDriver.putCommand(LobbyCommand.Start);
+        viewDriver.putCommand(LobbyCommand.Message);
+        viewDriver.putCommand(LobbyCommand.Secret);
+        viewDriver.putCommand(LobbyCommand.Message);
+        viewDriver.putCommand(LobbyCommand.Message);
+        viewDriver.putCommand(LobbyCommand.Secret);
+        viewDriver.putCommand(LobbyCommand.Secret);
+        viewDriver.putCommand(LobbyCommand.Exit);
 
-    @Test
-    void endGame() throws JsonBadParsingException {
-        if(verbose){
-            Map<String,Integer> leaderboard = new HashMap<>();
-            leaderboard.put("frigieri",200);
-            leaderboard.put("firgioggi",30);
-            leaderboard.put("frigdopodonmani",55);
-            leaderboard.put("friegdomani",25);
-            ClientControllerCLI clientControllerCli = new ClientControllerCLI();
-            Board board = new Board(4);
-            Map<String,Shelf> shelves = new HashMap<>();
-            for(String p: leaderboard.keySet()){
-                shelves.put(p,new Shelf(6,5));
-            }
-            clientControllerCli.endGame(leaderboard,"frigieri",shelves,board);
-        }
+
+        //execute client
+        (new ClientControllerCLI()).startClient();
+
+        //check for correct order
+        LinkedList<String> calls = connectionStub.getCallsToStub();
+
+        LinkedList<String> callsDouble = new LinkedList<>();
+        callsDouble.addLast("frigioggi login");
+        callsDouble.addLast("available lobbies");
+        callsDouble.addLast("joined lobbies");
+        callsDouble.addLast("frigioggi create lobby");
+        callsDouble.addLast("frigioggi asked lobby admin");
+        callsDouble.addLast("frigioggi asked lobby admin");
+        callsDouble.addLast("frigioggi started game");
+        callsDouble.addLast("frigioggi posted A really meaningful message");
+        callsDouble.addLast("frigioggi posted secret A really secret message for frigieri");
+        callsDouble.addLast("frigioggi posted A really meaningful message");
+        callsDouble.addLast("frigioggi posted A really meaningful message");
+        callsDouble.addLast("frigioggi posted secret A really secret message for frigieri");
+        callsDouble.addLast("frigioggi posted secret A really secret message for frigieri");
+        callsDouble.addLast("frigioggi quit");
+
+        assertEquals(callsDouble.toString(),calls.toString());
     }
 }

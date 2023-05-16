@@ -30,11 +30,9 @@ public class ClientModelGUI implements ClientModel, ClientRemote {
     private final List<CommonGoal> commonGoalList;
     private final List<String> players;
     private boolean gameStarted;
-    private final ClientControllerGUI clientControllerGui;
-
     private boolean gameEnded;
 
-    public ClientModelGUI(String playerName, ClientControllerGUI clientControllerGui) {
+    public ClientModelGUI(String playerName) {
         this.playerName=playerName;
         this.itsMyTurn=false;
         this.chat = new Chat();
@@ -45,7 +43,6 @@ public class ClientModelGUI implements ClientModel, ClientRemote {
         this.players = new ArrayList<>();
         this.gameStarted = false;
         this.itsMyTurn = false;
-        this.clientControllerGui = clientControllerGui;
         this.gameEnded = false;
     }
 

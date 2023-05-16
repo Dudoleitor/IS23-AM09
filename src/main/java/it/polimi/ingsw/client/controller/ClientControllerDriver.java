@@ -10,14 +10,13 @@ import it.polimi.ingsw.shared.model.Shelf;
 
 import java.util.*;
 
-public class ClientControllerDriver extends ClientController {
+public class ClientControllerDriver implements ClientController {
     String username;
     static LinkedList<LobbyCommand> commands = new LinkedList<>();
     static LinkedList<LobbySelectionCommand> lobbySelectionCommands = new LinkedList<>();
     static LinkedList<Move> moves = new LinkedList<>();
     private boolean verbous = false;
 
-    @Override
     public LobbyCommand askCommand() {
         if (commands.isEmpty()) {
             if(verbous)
@@ -34,7 +33,6 @@ public class ClientControllerDriver extends ClientController {
         commands.addLast(command);
     }
 
-    @Override
     public LobbySelectionCommand askLobby() {
         if (lobbySelectionCommands.isEmpty()) {
             return LobbySelectionCommand.Invalid;
@@ -47,7 +45,6 @@ public class ClientControllerDriver extends ClientController {
         lobbySelectionCommands.addLast(command);
     }
 
-    @Override
     public Move getMoveFromUser(Board board, Shelf shelf) {
         if (moves.isEmpty()) {
             return null;
@@ -60,23 +57,19 @@ public class ClientControllerDriver extends ClientController {
         moves.addLast(move);
     }
 
-    @Override
     public void notifyInvalidCommand() {
         System.out.println("Invalid command");
         //do nothing
     }
 
-    @Override
     public void notifyExit() {
         //do nothing
     }
 
-    @Override
     public void showAllMessages(Chat chat) {
         //do nothing
     }
 
-    @Override
     public Map<String, String> getMessageFromUser() {
         System.out.println("A really meaningful message");
         Map<String, String> msg = new HashMap<>();
@@ -84,7 +77,6 @@ public class ClientControllerDriver extends ClientController {
         return msg;
     }
 
-    @Override
     public Map<String, String> getPrivateMessageFromUser() {
         Map<String, String> msg = new HashMap<>();
         msg.put("message", "A really secret message");
@@ -92,46 +84,42 @@ public class ClientControllerDriver extends ClientController {
         return msg;
     }
 
-    @Override
     public void showHelp() {
         //do nothing
     }
 
-    @Override
     public String askUserName() {
         return "frigioggi";
     }
 
-    @Override
     public void showLobbies(Map<Integer, Integer> lobbies, String description) {
         //do nothing
     }
 
-    @Override
     public boolean playAgain() {
         return false;
     }
 
-    @Override
     public void errorMessage(String message) {
         if(verbous)
             System.out.println(Color.coloredString(message,Color.Red));
     }
 
-    @Override
     public void message(String message) {
         if(verbous)
             System.out.println(Color.coloredString(message,Color.Green));
     }
 
-    @Override
     public void setLobbyAdmin(boolean isAdmin) {
         //do nothing
     }
 
-    @Override
     public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
     }
 
+    @Override
+    public void startClient() {
+
+    }
 }

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
+import it.polimi.ingsw.client.controller.cli.CLI_IO;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.model.*;
@@ -219,9 +219,9 @@ public class RiemannTest { //an integration test
 
     private void printAll(Controller c) throws JsonBadParsingException {
         if(verbose){
-            ClientControllerCLI clientControllerCli = new ClientControllerCLI();
-            clientControllerCli.showBoard(c.getBoard());
-            clientControllerCli.showShelves(c.getShelves());
+            CLI_IO cliIO = new CLI_IO();
+            cliIO.showBoard(c.getBoard());
+            cliIO.showShelves(c.getShelves());
         }
     }
 }

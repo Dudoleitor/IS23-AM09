@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.controller.gui;
 
+import it.polimi.ingsw.client.model.ClientModelGUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class lobbiesGuiController implements Initializable {
-    private final ClientGUI client = HelloController.getClient();
+    private final ClientModelGUI model = ClientControllerGUI.model;
     List<String> avalaibleLobbies = new ArrayList<>();
 
     @FXML
@@ -42,14 +43,14 @@ public class lobbiesGuiController implements Initializable {
 
     public void joinLobby() throws IOException {
         if(lobbyNumber.getText().equals("")) {
-            client.showError("Insert lobby number!");
+            ClientControllerGUI.showError("Insert lobby number!");
         } else {
             System.out.println("Joined lobby " + lobbyNumber.getText() + "!");
             if(!avalaibleLobbies.contains(lobbyNumber.getText())) {
-                client.showError("Insert correct lobby number");
+                ClientControllerGUI.showError("Insert correct lobby number");
             } else {
                 Stage stage = (Stage) joinButton.getScene().getWindow();
-                stage.setScene(new Scene(client.loadScene("PlayerHomeScreen"), 800, 800));
+                stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
             }
         }
     }

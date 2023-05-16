@@ -1,647 +1,385 @@
 package it.polimi.ingsw.client.controller.cli;
 
+
 import it.polimi.ingsw.client.Client_Settings;
+import it.polimi.ingsw.client.connection.*;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.shared.model.*;
-import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.model.ClientModel;
+import it.polimi.ingsw.client.model.ClientModelCLI;
+import it.polimi.ingsw.client.model.ClientModelGUI;
+import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.server.clientonserver.ClientRMI;
+import it.polimi.ingsw.server.clientonserver.ClientSocket;
+import it.polimi.ingsw.shared.ChatMessage;
+import it.polimi.ingsw.shared.model.Move;
+import it.polimi.ingsw.shared.NetworkSettings;
+import it.polimi.ingsw.shared.PrivateChatMessage;
 
-import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.rmi.RemoteException;
+import java.util.Map;
 
-import static it.polimi.ingsw.client.Client_Settings.*;
+import static java.lang.Thread.sleep;
 
-public class ClientControllerCLI extends ClientController {
-    private static Lock cli_lock;
-    private InputSanitizer inputSanitizer;
-    private Scanner scanner;
-    private String placeHolder = stdPlaceHolder;
-    private static boolean placeHolderToRestore = false;
+/**
+ * This class handles the sequence of events on the client side
+ */
+public class ClientControllerCLI implements ClientController {
+    /**
+     * The player name
+     */
+    private String playerName;
+    //Objects that handle connection with server
+    private Server server;
+    private Client client;
+    private ClientModel model;
+    /**
+     * UI View
+     */
+    private CLI_IO cliIO;
 
     /**
-     * Constructor. The cli_lock is built as a Singleton
+     * Join the lobby by creating a Lobby connection object and connecting it to server
      */
-    public ClientControllerCLI(){
-        if(cli_lock == null){
-            cli_lock = new ReentrantLock();
-        }
-        inputSanitizer = new InputSanitizer();
-        scanner = new Scanner(System.in);
-    }
+    private void joinLobby() throws ServerException {
+        Map<Integer, Integer> availableLobbies = server.getAvailableLobbies();
 
-    @Override
-    public LobbyCommand askCommand(){
-            String input;
-            input = scan();
-            //Invalid command
-            if(!inputSanitizer.isValidMessage(input)){
-                synchronized (cli_lock){
-                    printErrorMessage("Invalid format");
-                }
-                return LobbyCommand.Invalid;
-            }
-            else{
-                return LobbyCommand.stringToCommand(input);
-            }
-    }
-
-    @Override
-    public void notifyExit() {
-        synchronized (cli_lock){
-            printErrorMessage("You quit!");
-        }
-    }
-
-    /**
-     * Print all messages in local copy of chat. If none is present "No message yet" will be printed
-     */
-    @Override
-    public void showAllMessages(Chat chat){
-        synchronized (cli_lock){
-            skipPlaceHolder();
-            if(chat == null || chat.size() == 0){
-                printMessage("No messages yet");
-                return;
-            }
-            chat.getAllMessages().stream().map(mes -> mes.toString()).forEach(System.out::println);
-            restorePlaceHolder();
-        }
-    }
-    @Override
-    public Map<String,String> getMessageFromUser(){
-        synchronized (cli_lock){
-            List<String> fields = new ArrayList<>();
-            fields.add("message");
-            return fieldsScan(fields);
-        }
-    }
-
-    @Override
-    public Map<String,String> getPrivateMessageFromUser(){
-        synchronized (cli_lock){
-            List<String> fields = new ArrayList<>();
-            fields.add("receiver");
-            fields.add("message");
-            return fieldsScan(fields);
-        }
-    }
-
-    @Override
-    public Move getMoveFromUser(Board board, Shelf shelf){
-        PartialMove pm = new PartialMove();
-        int column = 0;
-        Move move = null;
-        synchronized (cli_lock){
-            printMessage("Write your move");
-            int posNum = getNumberOfTilesFromUser(shelf);
-            pm = getPartialMoveFromUser(board,posNum);
-            column = getColumnFromUser(shelf,posNum);
-            move = new Move(pm,column);
-            printMessage("Your move:\n" + move.toString());
-        }
-        return move;
-    }
-
-    /**
-     * Get from input a valid number of tiles to pick according to game status
-     * @param shelf the player's sheld
-     * @return the first valid number chosen by user
-     */
-    private int getNumberOfTilesFromUser(Shelf shelf){
-        String posNumStr = "";
-        int posNum = 0;
-        int maxShelfCapacity = shelf.getHighestColumn();
-        boolean validInput = false;
-
-        while(!validInput){
-            validInput = true;
-            printMessage("How many tiles do you want to pick?:");
-            posNumStr =  scan();
-
-            //assure it's a number
-            if(!inputSanitizer.isInteger(posNumStr)){
-                printErrorMessage("Please insert an integer");
-                validInput = false;
-                continue;
-            }
-
-            posNum = Integer.parseInt(posNumStr);
-
-            //assure it's a number that is valid and can fit in at least one column
-            if(!(posNum > 0 && posNum <= 3 && posNum <= maxShelfCapacity)){
-                printErrorMessage("Invalid number");
-                validInput = false;
-            }
-        }
-        return posNum;
-    }
-
-    /**
-     * Build the partila move from the user input
-     * @param board the board
-     * @param posNum the chosen number of positions. The choice of tiles can reduce it
-     * @return the partial move
-     */
-    private PartialMove getPartialMoveFromUser(Board board, int posNum){
-        PartialMove pm = new PartialMove();
-        boolean validInput = false;
-        while(!validInput){
-            validInput = true;
-            for(int i = 0; i < posNum; i++){
-                try{
-
-                    //assure that there are valid positions
-                    if(board.getValidPositions(pm).isEmpty()){
-                        printErrorMessage("There are no more tiles to pick");
-                        posNum = i;
-                        break;
-                    }
-
-                    //show valid moves
-                    printMessage("Here is the list of all the valid moves:");
-                    for(Position p : board.getValidPositions(pm)){
-                        System.out.println("> "+p.toString());
-                    }
-
-                    //get position
-                    printMessage("Position #"+String.valueOf(i+1)+":");
-                    String stringPos = scan();
-                    Position pos = Position.fromString(stringPos);
-
-                    //if invalid
-                    if(pos == null || !board.getValidPositions(pm).contains(pos)){
-                        printErrorMessage("Please enter a valid position");
-                        i--; //ask again the same position
-                    }
-                    else {
-                        //add to move
-                        pm.addPosition(pos);
-                    }
-                }
-                catch (Exception e){
-                    printErrorMessage("Invalid format");
-                    validInput = false;
-                }
-            }
-        }
-        return decideOrder(pm,board);
-    }
-
-    private PartialMove decideOrder(PartialMove pm, Board board){
-        boolean validInput = false;
-        if(pm.size() > 1){
-            List<Position> positions = pm.getBoardPositions();
-            pm = new PartialMove();
-            printMessage("Select insertion order:");
-
-            while(positions.size() > 1 && distinctTiles(positions,board)){
-                validInput = false;
-                printMessage("Pick a tile:");
-                for(int i = 0; i < positions.size(); i++){
-                    try {
-                        System.out.println( i+ "> " + board.getTile(positions.get(i)).toColorFulString() + " "+ positions.get(i));
-                    } catch (BadPositionException e) {
-                        //this should not happend
-                    }
-                }
-                while(!validInput){
-                    validInput = true;
-                    String numStr = scan();
-                    if(!inputSanitizer.isInteger(numStr)){
-                        validInput = false;
-                        printErrorMessage("Please enter an integer");
-                        continue;
-                    }
-                    int num = Integer.parseInt(numStr);
-                    if(num < 0 || num >= positions.size()){
-                        validInput = false;
-                        printErrorMessage("Input a valid integer");
-                    }
-                    else{
-                        try {
-                            pm.addPosition(positions.get(num));
-                            positions.remove(num);
-                        } catch (InvalidMoveException e) {
-                            printErrorMessage("Input a valid integer");
-                            validInput = false;
-                        }
-                    }
-                }
-            }
+        // Checking if we were previously disconnected from a lobby
+        final int previousLobbyId = server.disconnectedFromLobby(playerName);
+        if(previousLobbyId >= 0) {
+            server.joinSelectedLobby(client, previousLobbyId);  // Automatically joining the lobby
             try {
-                for(Position p : positions){
-                    pm.addPosition(p);
+                final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
+
+                cliIO.message("You joined automatically #"+ previousLobbyId +" lobby!\nYou were previously connected to it");
+                cliIO.setLobbyAdmin(isLobbyAdmin);
+
+                return;
+            } catch (LobbyException e) {
+                cliIO.errorMessage("Error while connecting automatically to lobby");
+            }
+        }
+
+        //show the client the lobbies they can join
+        cliIO.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+        cliIO.showLobbies(availableLobbies, "The lobbies that are available");
+
+        boolean successful = false;
+        while(!successful){
+            //ask the user
+            LobbySelectionCommand command = cliIO.askLobby();
+            switch (command){
+                case Random:
+                    server.joinRandomLobby(client);
+                    break;
+                case Number:
+                    server.joinSelectedLobby(client,command.getID());
+                    break;
+                case Create:
+                    server.createLobby(client);
+                    break;
+                case Refresh:
+                    //show the client the lobbies they can join
+                    cliIO.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+                    cliIO.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
+                    break;
+                default:
+                    cliIO.notifyInvalidCommand();
+                    break;
+            }
+            if(command.isValid()){
+                try{
+                    final int joinedLobbyId = server.getLobbyID();
+                    final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
+
+                    cliIO.message("You joined #"+ joinedLobbyId +" lobby!");
+                    cliIO.setLobbyAdmin(isLobbyAdmin);
+                    successful = true;
                 }
-            } catch (InvalidMoveException e) {
-                //This should not happen
-            }
-        }
-        return pm;
-    }
-
-    private boolean distinctTiles(List<Position> positions, Board board){
-        return positions.stream().
-                map(p -> {
-                    try {
-                        return board.getTile((Position) p);
-                    } catch (BadPositionException e) {
-                        return Tile.Invalid; //this should not happend
-                    }
-                }).distinct().count() > 1;
-    }
-
-    /**
-     * Get from input a valid column from user
-     * @param shelf the player's sheld
-     * @param numPos the number of tiles to put in shelf
-     * @return the first valid number column by user
-     */
-    private int getColumnFromUser(Shelf shelf, int numPos){
-        String scannedColumn = "";
-        boolean validInput = false;
-        int column = 0;
-        while(!validInput){
-
-            validInput = true;
-            printMessage("Choose the column");
-            printMessage("Here is a list of the valid columns");
-            for(int choice : columnsToChose(shelf,numPos)){
-                System.out.println("> "+choice);
-            }
-            scannedColumn = scan(); //scan the input
-
-            //assure it's an integer
-            if(!inputSanitizer.isInteger(scannedColumn)){
-                validInput = false;
-                printErrorMessage("Please enter a number");
-                continue;
-            }
-
-            column = Integer.valueOf(scannedColumn);
-
-            //assure the number is inside the bounds og shelf
-            if(!(column >= 0 && column < shelf.getColumns())){
-                validInput = false;
-                printErrorMessage("Please enter a valid number");
-                continue;
-            }
-
-            //assure the tiles will fit int the column
-            if(columnHeigth(shelf,column) + numPos > shelf.getRows()){
-                printErrorMessage("You cannot insert "+numPos+ " tiles in column "+ column);
-                validInput = false;
-            }
-        }
-        return column;
-    }
-
-    /**
-     * @param shelf
-     * @param column
-     * @return the height of a column
-     */
-    private int columnHeigth(Shelf shelf, int column){
-        return (int) shelf.allTilesInColumn(column).stream()
-                .filter(x -> !x.equals(Tile.Empty)).count();
-    }
-
-    /**
-     * @param shelf
-     * @param posNum
-     * @return a list of valid columns to choose from
-     */
-    private List<Integer> columnsToChose(Shelf shelf, int posNum){
-        return  IntStream.range(0,shelf.getColumns()).
-                filter(col -> columnHeigth(shelf,col) + posNum <= shelf.getRows()).
-                boxed().
-                collect(Collectors.toList());
-    }
-
-    public void showGameStatus(Board b,List<CommonGoal> commongoals ,Map<String, Shelf> playerShelves, PlayerGoal goal){
-        synchronized (cli_lock){
-            skipPlaceHolder();
-            showBoard(b);
-            showCommonGoals(commongoals);
-            showShelves(playerShelves);
-            showPersonalGoal(goal);
-        }
-    }
-
-    public void showBoard(Board b) {
-        printMessage(b.toString());
-    }
-
-    public void showCommonGoals(List<CommonGoal> commonGoalList) {
-        String str = "Common Goals:";
-        if(commonGoalList.size() == 0){
-            str = str.concat(Color.coloredString("None",Color.Yellow));
-        }
-        for(CommonGoal cg : commonGoalList){
-            str = str.concat("\n"+cg.toString());
-        }
-        printMessage(str);
-    }
-
-    public void showShelves(Map<String, Shelf> playerShelves) {
-        String output = "Shelves:\n";
-        final String spaceBetween = "     ";
-        int rows = shelfStringRows(playerShelves);
-        for (int k=0; k<shelfStringRows(playerShelves); k++) {  // Iterating over the rows
-            for(String player : playerShelves.keySet()) {
-                output = output.concat(
-                        playerShelves
-                                .get(player)
-                                .toString()
-                                .split("\n")[k]
-                );
-                output = output.concat(spaceBetween);
-            }
-            output = output.concat("\n");
-        }
-        final int shelfRowLenght = shelfStringCols(playerShelves);
-        for (String player : playerShelves.keySet()) {
-            output = player.length()<=shelfRowLenght ? output.concat(player) : output.concat(player).substring(0, shelfRowLenght);
-            int padding = shelfRowLenght - player.length();
-            for (int k=0; k<padding; k++) output = output.concat(" ");
-            //output = output.concat(spaceBetween);  // MISTERY
-        }
-        printMessage(output);
-    }
-
-    private static int shelfStringRows(Map<String, Shelf> playerShelves) {
-        Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());
-
-        return (shelf.toString().split("\n")).length;
-    }
-    private static int shelfStringCols(Map<String, Shelf> playerShelves) {
-        Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());
-
-        return (shelf.toString().split("\n")[0].length());
-    }
-
-    public void showPersonalGoal(PlayerGoal goal) {
-        printMessage(goal.toString());
-    }
-
-    public void showChatMessage(ChatMessage message) {
-        synchronized (cli_lock){
-            skipPlaceHolder();
-            System.out.println(message);
-            restorePlaceHolder();
-        }
-    }
-
-    @Override
-    public void showHelp() {
-        synchronized (cli_lock){
-            String help = "Here are all the commands:\n";
-            List<String> commandList = Arrays.stream(LobbyCommand.values()).
-                    filter(c -> c != LobbyCommand.Help && c != LobbyCommand.Invalid).
-                    map(c -> "    -> " + c.getCode().toUpperCase() + " ["+c.getShortcut()+"] :"+c.getDescription()+"\n").
-                    collect(Collectors.toList());
-            for(String command : commandList){
-                help = help.concat(command);
-            }
-            printMessage(help);
-        }
-    }
-
-    @Override
-    public void notifyInvalidCommand(){
-        printErrorMessage("Please input a valid command");
-    }
-    @Override
-    public String askUserName(){
-        synchronized (cli_lock){
-            System.out.println(gameLogo);
-            String name = "";
-            while(!inputSanitizer.isValidName(name)){
-                printMessage("Enter your username");
-                name = scan();
-                if(!inputSanitizer.isValidName(name)){
-                    printErrorMessage("Please enter a valid name");
+                catch (LobbyException e){
+                    cliIO.errorMessage("Lobby does not exist");
                 }
             }
-            printMessage("Hello "+name+"!");
-            return name;
         }
     }
-    @Override
-    public void showLobbies(Map<Integer,Integer> availableLobbies, String description){
-        synchronized (cli_lock){
-            String lobbyMessage = description;
-            if (!(availableLobbies == null) && !availableLobbies.isEmpty()) {
-                List<String> lobbyList = (List<String>)
-                        availableLobbies.keySet().stream().
-                                map(x -> "\n    -> Lobby " + x + ":  " + availableLobbies.get(x) + " players in").
-                                collect(Collectors.toList());
-                for(String mes : lobbyList){
-                    lobbyMessage = lobbyMessage.concat(mes);
+
+    /**
+     * Execute a lobbyCommand received from view
+     * @param lobbyCommand the lobbyCommand to execute
+     */
+    private void executeUserCommand(LobbyCommand lobbyCommand) throws LobbyException {
+        //execute action for every lobbyCommand
+            switch (lobbyCommand) {
+                case Exit: //quit game
+                    server.quitGame(playerName);
+                    cliIO.notifyExit();
+                    exit = true;
+                    break;
+                case Print: //print all messages
+                    printChat();
+                    break;
+                case Secret: //send private message
+                    postToPrivateChat();
+                    break;
+                case Start:
+                    start();
+                    break;
+                case Move:
+                    postMove();
+                    break;
+                case Message:
+                    postToChat();
+                    break;
+                case Help:
+                    cliIO.showHelp();
+                    break;
+                default: //post message to chat
+                    cliIO.notifyInvalidCommand();
+                    break;
+            }
+    }
+
+    /**
+     * This will print the whole chat into the cli
+     */
+    private void printChat(){
+        try {
+            cliIO.showAllMessages(model.getChat());
+        } catch (RemoteException e) {
+            cliIO.errorMessage("Error while loading resourses");
+        }
+    }
+
+    /**
+     * Check if the reciever of private message is valid
+     * @param message the message
+     * @param receiverName the receiver name
+     * @return true if valid
+     */
+    private boolean checkValidReceiver(ChatMessage message, String receiverName){
+        if (message.getClass().equals(PrivateChatMessage.class)){
+            if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Get message from user and post to Server Chat
+     */
+    private void postToChat() throws LobbyException {
+        Map<String,String> message = cliIO.getMessageFromUser();
+        server.postToLiveChat(
+                playerName,
+                message.get("message"));
+    }
+
+    /**
+     * Get private message from user and post to Server Chat
+     */
+    private void postToPrivateChat() throws LobbyException {
+        Map<String,String> privateMessage = cliIO.getPrivateMessageFromUser();
+        server.postSecretToLiveChat(
+                playerName,
+                privateMessage.get("receiver"),
+                privateMessage.get("message"));
+    }
+
+    /**
+     * Get move from user and post to server
+     */
+    private void postMove() throws LobbyException {
+        if(!server.matchHasStarted()){
+            cliIO.errorMessage("Match has not started");
+            return;
+        }
+        try {
+            if (model.isItMyTurn()) {
+                try {
+                    Move move = cliIO.getMoveFromUser(model.getBoard(), model.getPlayersShelves().get(playerName));
+                    server.postMove(playerName, move);
+                }
+                catch (RemoteException e){
+                    cliIO.errorMessage("Error while loading resources");
                 }
             } else {
-                lobbyMessage = lobbyMessage + "\n       None";
+                cliIO.errorMessage("It's not your turn");
             }
-            printMessage(lobbyMessage);
-        }
-    }
-    @Override
-    public LobbySelectionCommand askLobby(){
-        int lobbyID;
-        String id;
-        LobbySelectionCommand command;
-        synchronized (cli_lock){
-            printMessage("Choose a Lobby (ENTER for random, NEW to create a new one, REFRESH to update lobby list):");
-            id = scan();
-        }
-        if(id.isEmpty()){
-            return LobbySelectionCommand.Random;
-        }
-        else if (id.toLowerCase().equals("new")) {
-            return LobbySelectionCommand.Create;
-        }
-        else if (id.toLowerCase().equals("refresh")) {
-            return LobbySelectionCommand.Refresh;
-        }
-        else if(inputSanitizer.isInteger(id)){
-            lobbyID = Integer.parseInt(id);
-            command = LobbySelectionCommand.Number;
-            command.setId(lobbyID);
-        }
-        else{
-            command = LobbySelectionCommand.Invalid;
-        }
-        return command;
-    }
-    @Override
-    public boolean playAgain(){
-        String answer;
-        synchronized (cli_lock){
-            printMessage("Do you want to play again?");
-            answer = scan();
-            if(answer.toLowerCase().equals("yes") || answer.toLowerCase().equals("y")){
-                return true;
-            }
-            else {
-                return false;
-            }
+        } catch (RemoteException ignored) {
+            // Never thrown
         }
     }
 
-    @Override
-    public void setLobbyAdmin(boolean isAdmin){
-        if(isAdmin){
-            synchronized (cli_lock){
-                printMessage("You are the lobby admin!");
+    private void start(){
+        boolean admin = false;
+        boolean started = false;
+        try {
+            admin = server.isLobbyAdmin(playerName);
+            if(!admin){
+                cliIO.errorMessage("You are not lobby admin");
+                return;
             }
-            setPlaceHolder(Client_Settings.adminPlaceHolder);
+            started = server.startGame(playerName);
+        } catch (LobbyException e) {
+            started = false;
         }
-        else{
-            setPlaceHolder(Client_Settings.stdPlaceHolder);
+        if(!started){
+            cliIO.errorMessage("You can not start lobby now");
         }
     }
 
-    @Override
-    public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
-        synchronized (cli_lock) {
-            //sort the points
-            List<Integer> points = leaderBoard.values().
-                    stream().
-                    sorted(Comparator.reverseOrder()).
-                    collect(Collectors.toList());
-            //sort the names based on points
-            List<String> names = leaderBoard.keySet().
-                    stream().
-                    sorted(Comparator.comparingInt(leaderBoard::get).reversed()). //TODO handle same scores properly
-                            collect(Collectors.toList());
-            String leaderboard = "LeaderBoard:\n";
-
-            for (String player : names) {
-                leaderboard = leaderboard.concat("      -" + player + ": " + leaderBoard.get(player) + "\n");
-            }
-            synchronized (cli_lock) {
-                if (names.get(0).equals(playername)) {
-                    System.out.println(victoryBanner);
-                } else {
-                    System.out.println(defeatBanner);
+    /**
+     * Initiate all the objects that will handle the connection to serer
+     */
+    private void initConnectionInterface() throws ServerException{
+        switch (Client_Settings.connection){
+            case RMI:
+                server = new ServerRMI(NetworkSettings.serverIp, NetworkSettings.RMIport);
+                try {
+                    client = new ClientRMI(model);
+                } catch (RemoteException e) {
+                    throw new ServerException("Impossible to create RMI client object");
                 }
-                printMessage(leaderboard);
-                showBoard(board);
-                showShelves(playerShelves);
+                break;
+            case TCP:
+                server = new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, model);
+                client = new ClientSocket();
+                ((ClientSocket) client).setName(playerName);
+                break;
+            case STUB:
+                server = new ConnectionStub();
+                try {
+                    ClientModelCLI remoteObject = new ClientModelCLI(playerName, new CLI_IO());
+                    client = new ClientRMI(remoteObject); //TODO create stub when completed the real one
+                } catch (RemoteException e) {
+                    throw new ServerException("Impossible to create RMI client object");
+                }
+        }
+    }
+
+    /**
+     * Initiate the connection interface and attempt a login
+     * @return true if login was successful
+     */
+    private boolean connect() {
+        try{
+            //Initiate the server connection interfaces according to settings
+            tryConnect(10,1);
+            //login
+            return tryLogin(3,2);
+        } catch (ServerException e) {
+            return false;
+        }
+    }
+    /**
+     * Try login tries times
+     * @param tries available to connect
+     * @param seconds to wait in case of failure
+     */
+    private void tryConnect(int tries, int seconds) throws ServerException {
+        try {
+            initConnectionInterface();
+        } catch (ServerException e) {
+            cliIO.errorMessage("Connection Error, retying in "+seconds+" seconds");
+            try {
+                sleep(seconds * 1000);
+            } catch (InterruptedException i) {
+                return;
+            }
+            if (tries > 1)
+                tryConnect(tries - 1, seconds);
+            else throw new ServerException("Can't connect to the server");
+        }
+    }
+
+
+    /**
+     * Try login tries times
+     * @param tries available to login
+     * @param seconds to wait in case of failure
+     * @return true if successful
+     */
+    private boolean tryLogin(int tries, int seconds){
+        boolean logged = false;
+        for(int attempt = 0; attempt < tries && !logged; attempt++){
+            logged = server.login(client); //get previous sessions if present
+            if(!logged){
+                cliIO.errorMessage("Connection Error, retying in "+seconds+" seconds");
+                try {
+                    sleep(seconds*1000);
+                } catch (InterruptedException e) {
+                    return false;
+                }
             }
         }
+        return logged;
     }
 
-
     /**
-     * Prints the string (decorated as an error message) in a synchronous way
-     * => never to be called internally!!
-     * @param  message the error message string
+     * Play a match in the lobby
      */
-    @Override
-    public void errorMessage(String message) {
-        synchronized (cli_lock){
-            skipPlaceHolder();
-            printErrorMessage(message);
-            restorePlaceHolder();
+    private void playMatch() throws LobbyException {
+        //Receive and execute commands until "exit" lobbyCommand is launched
+        while(!exit){
+
+            try {
+                if (model !=null && model.gameEnded()) return;
+            } catch (RemoteException ignored) {
+            }
+
+            LobbyCommand lobbyCommand = cliIO.askCommand();
+            executeUserCommand(lobbyCommand);
         }
     }
+    /**
+     * True when the client wants to keep playing
+     */
+    boolean play = true;
+    /**
+     * True when the match has entered or the client has quit
+     */
+    boolean exit = false;
 
     /**
-     * Prints the string (decorated as a message) in a synchronous way
-     * => never to be called internally!!
-     * @param message the message string
+     * the main method that handles the client side application logic
      */
-    @Override
-    public void message(String message) {
-        synchronized (cli_lock){
-            skipPlaceHolder();
-            printMessage(message);
-            restorePlaceHolder();
+    public void startClient(){
+
+        //Initiate the view
+        cliIO = new CLI_IO();
+
+        //ask for username
+        playerName = cliIO.askUserName();
+
+        try {
+            model = new ClientModelCLI(playerName, cliIO);
+        } catch (RemoteException ignored) {
         }
-    }
 
-    //String decorators
-    private void printErrorMessage(String message){
-        System.out.println(errorFormat(message));
-    }
+        //initiate the connection interface and attempt a login
+        boolean successfulLogin = connect();
 
-    private void printMessage(String message){
-        System.out.println(messageFormat(message));
-    }
+        while(play){
+            if(successfulLogin){
+                try{
+                    //ask the client what lobby to join
+                    joinLobby();
 
-    private void skipPlaceHolder(){
-        if(placeHolderToRestore){
-            System.out.println("");
+                    //game starts
+                    playMatch();
+
+                } catch (ServerException | LobbyException e) {
+                    cliIO.errorMessage("Something went wrong connecting to server");
+                    play = false;
+                }
+                //ask the player if they want to play again
+                play = cliIO.playAgain();
+            }
+            else{
+                cliIO.errorMessage("It was impossible to connect to server");
+                play = false;
+            }
         }
-    }
-
-    private void restorePlaceHolder(){
-        if(placeHolderToRestore){
-            printPlaceHolder();
-        }
-    }
-
-    /**
-     * A decorator that formats a message
-     * @param s the message
-     * @return the decorated message (>GAME: mes with colors)
-     */
-    public String messageFormat(String s){
-        return ">"+ Color.coloredString("GAME",GAMEColor)+": " + Color.coloredString(s,messageColor);
-    }
-
-    /**
-     * Prints the placeholder
-     */
-    public void printPlaceHolder(){
-        placeHolderToRestore = true;
-        System.out.print(placeHolder);
-    }
-
-    public void setPlaceHolder(String placeHolder){
-        this.placeHolder = placeHolder;
-    }
-
-    /**
-     * A decorator that formats an error message
-     * @param s the message
-     * @return the decorated message (>GAME: mes with colors)
-     */
-    public String errorFormat(String s){
-        return ">"+ Color.coloredString("GAME",GAMEColor)+": " + Color.coloredString(s,errorColor);
-    }
-
-    //Scan methods
-
-    /**
-     * Scans the input without locking IO
-     * @return the user input
-     */
-    public String scan(){
-        printPlaceHolder();
-        String command = scanner.nextLine();
-        placeHolderToRestore = false;
-        return command;
-    }
-
-    /**
-     * Lock the IO and scans for all the fields
-     * @param fields
-     * @return a map that associates each field with the scanned String
-     */
-    public Map<String,String> fieldsScan(List<String> fields){
-        Map<String,String> result = new HashMap();
-        String value;
-        for(String field : fields){
-            printMessage(field+":");
-            printPlaceHolder();
-            value =  scanner.nextLine();
-            placeHolderToRestore = false;
-            result.put(field,value);
-        }
-        return result;
     }
 }
