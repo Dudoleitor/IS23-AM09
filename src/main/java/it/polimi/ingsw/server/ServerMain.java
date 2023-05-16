@@ -132,7 +132,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         } else {
             Lobby lobby = lobbies.keySet()
                     .stream()
-                    .filter(l -> !l.isFull()) //keep only not full lobbies
+                    .filter(l -> !l.isFull() && !l.matchHasStarted()) //keep only not full lobbies
                     .findFirst() //find first lobby matched
                     .orElse(null);
             if (lobby != null) { //if a lobby exists then add player
@@ -197,7 +197,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.keySet()
                 .stream()
-                .filter(x -> !x.isFull())
+                .filter(x -> !x.isFull() && !x.matchHasStarted())
                 .forEach(x -> lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in
         return lobbyMap;
     }

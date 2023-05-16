@@ -123,7 +123,7 @@ public class ServerTCPViewUpdater extends Thread{
 
     public void refreshShelf(JSONObject content) {
         try {
-            clientController.refreshShelf(content.get("player").toString(),(JSONObject) content.get("board"));
+            clientController.refreshShelf(content.get("player").toString(),(JSONObject) content.get("shelf"));
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
