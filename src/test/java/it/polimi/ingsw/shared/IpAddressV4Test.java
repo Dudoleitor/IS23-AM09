@@ -11,18 +11,24 @@ class IpAddressV4Test {
         IpAddressV4 ip = null;
         try {
             ip = new IpAddressV4("255.2.3.4");
-            System.out.println(ip);
         }
         catch (ParseException e){
             e.printStackTrace();
         }
     }
     @Test
+    void wrongInput(){
+        assertThrows(Exception.class,() -> new IpAddressV4("1.1.1"));
+        assertThrows(Exception.class,() -> new IpAddressV4("256.1.1.1"));
+        assertThrows(Exception.class,() -> new IpAddressV4("hello"));
+        assertThrows(Exception.class,() -> new IpAddressV4(256,0,0,1));
+        assertThrows(Exception.class,() -> new IpAddressV4(127,0,0,-1));
+    }
+    @Test
     void fromInt(){
         IpAddressV4 ip = null;
         try {
             ip = new IpAddressV4(200,0,0,1);
-            System.out.println(ip);
         }
         catch (Exception e){
             e.printStackTrace();
