@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class lobbiesGuiController implements Initializable {
-    private final ClientModelGUI model = ClientControllerGUI.model;
+    private final ClientModelGUI model = ClientControllerGUI.controller.getModel();
     List<String> avalaibleLobbies = new ArrayList<>();
 
     @FXML

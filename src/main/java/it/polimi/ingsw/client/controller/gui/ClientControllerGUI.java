@@ -17,21 +17,27 @@ public class ClientControllerGUI extends Application implements ClientController
 
     public static ClientControllerGUI controller;
 
-    public static ClientModelGUI model;
-    private static Server server;
-    private static Client client;
+    private ClientModelGUI model;
+    private Server server;
+    private Client client;
 
+    public ClientModelGUI getModel(){
+        return model;
+    }
+    public void setModel(ClientModelGUI model) {
+        this.model = model;
+    }
     public Server getServer() {
-        return ClientControllerGUI.server;
+        return server;
     }
     public void setServer(Server server) {
-        ClientControllerGUI.server = server;
+        this.server = server;
     }
     public Client getClient() {
-        return ClientControllerGUI.client;
+        return client;
     }
     public void setClient(Client client) {
-        ClientControllerGUI.client = client;
+        this.client = client;
     }
 
     public static Parent loadScene(String scene) throws IOException {

@@ -30,7 +30,7 @@ public class homeScreenController implements Initializable {
 
     private List<Position> move = new ArrayList<>();
 
-    private final ClientModelGUI model = ClientControllerGUI.model;
+    private final ClientModelGUI model = ClientControllerGUI.controller.getModel();
 
 
     @FXML

@@ -21,7 +21,7 @@ public class ChatController implements Initializable {
 
     Text username = new Text();
 
-    private final ClientModelGUI model = ClientControllerGUI.model;
+    private final ClientModelGUI model = ClientControllerGUI.controller.getModel();
 
 
     @FXML

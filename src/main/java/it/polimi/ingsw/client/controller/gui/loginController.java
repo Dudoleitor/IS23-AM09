@@ -21,9 +21,10 @@ public class loginController {
             ClientControllerGUI.showError("Insert username");
         } else {
             welcome.setText(userName.getText() + " joined the game!");
-            ClientControllerGUI.model = new ClientModelGUI(userName.getText());
+            final ClientModelGUI model = new ClientModelGUI(userName.getText());
+            ClientControllerGUI.controller.setModel(model);
 
-            ClientController.connect(ClientControllerGUI.controller, ClientControllerGUI.model);
+            ClientController.connect(ClientControllerGUI.controller, model);
 
             Stage stage = (Stage) welcome.getScene().getWindow();
             stage.setScene(new Scene(ClientControllerGUI.loadScene("Lobbies"), 800, 800));
