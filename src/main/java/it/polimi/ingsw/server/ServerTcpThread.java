@@ -218,20 +218,18 @@ public class ServerTcpThread extends Thread{ //TODO
 
 
     private int LobbyIni(ServerLobbyInterface lobbyInterface){
-        int lobbyID;
         Lobby lobbyGet;
-        try {
-            lobbyID = lobbyInterface.getID(); //TODO to find better solution that doesn't rely on this interface
-            synchronized (server){
-                lobbyGet = server.getLobbybyID(lobbyID);
-            }
+        synchronized (server){
+            lobbyGet = server.getLobbyInterface(lobbyInterface);
+        }
+        if(lobbyGet != null) {
             this.lobbyAssigned = true;
             this.lobby = lobbyGet;
 
-        } catch (RemoteException e) {
-            lobbyID = 0;
+            return lobbyGet.getID();
+        } else {
+            return 0;
         }
-        return lobbyID;
     }
 
     //LOBBY METHODS

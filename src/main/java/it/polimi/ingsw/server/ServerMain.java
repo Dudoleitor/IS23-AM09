@@ -199,10 +199,10 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                 .forEach(x -> lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in
         return lobbyMap;
     }
-    public Lobby getLobbybyID(int id){
+    public Lobby getLobbyInterface(ServerLobbyInterface lobbyInt){
         Lobby lobby = lobbies.keySet()
                 .stream()
-                .filter(x->x.getID()==id)
+                .filter(x-> lobbies.get(x).equals(lobbyInt))
                 .findFirst()
                 .orElse(null);
         return lobby;
