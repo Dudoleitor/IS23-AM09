@@ -8,6 +8,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.awt.font.GlyphMetrics;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -266,6 +269,51 @@ public class Controller implements Jsonable {
     }
 
     /**
+     * This function builds the name of the file used to save the game
+     * @param players List of players' names
+     * @return String, name of the file
+     */
+    public static String getFileName(List<String> players) {
+        return "SavedGame-" + players.stream()
+                .map(String::toLowerCase)
+                .sorted()
+                .reduce("", (prev, next) ->
+                        ( prev.equals("") ? next : prev + "_" + next))
+                + ".json";
+    }
+
+    /**
+     * This function is used to save the status of the game on file
+     */
+    private void saveGame() {
+        try (
+                final Writer writer = new BufferedWriter(
+                        new FileWriter(
+                                "./" +  getFileName(
+                                        players.stream()
+                                                .map(Player::getName)
+                                                .collect(Collectors.toList()))))
+        ) {
+            this.toJson().writeJSONString(writer);
+        } catch (IOException e) {
+            System.err.println("Error while saving game: " + e.getMessage());
+        }
+    }
+
+    private void deleteSavedGame() {
+        try {
+            Files.deleteIfExists(Path.of(
+                    "./" + getFileName(
+                            players.stream()
+                                    .map(Player::getName)
+                                    .collect(Collectors.toList())))
+            );
+        }catch (IOException e) {
+            System.err.println("Error while deleting saved game: " + e.getMessage());
+        }
+    }
+
+    /**
      * insert Tiles in the player shelf according to move coordinates
      * @param playerName is the current player
      * @param move is the move that player wants to do
@@ -326,12 +374,14 @@ public class Controller implements Jsonable {
 
                 for (Client client : clients)
                     client.endGame(leaderBoard);
+                deleteSavedGame();
             }
             else{
                 prepareForNextPlayer(); //Fill if necessary
                 nextTurn(); //increment turn
                 for (Client client : clients)
                     client.updateTurn(getCurrentPlayerName());
+                saveGame();
             }
         } catch (InvalidMoveException e) {
             throw new ControllerGenericException("Error invalid move");
