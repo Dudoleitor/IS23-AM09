@@ -167,7 +167,6 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     public ServerLobbyInterface createLobby(Client client){
         int minFreeKey;
-        int lobbyPort;
         List<Integer> lobbyIDs= lobbies.keySet()
                 .stream()
                 .map(Lobby::getID)
@@ -179,8 +178,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                     .min(Integer::compareTo).orElse(1);//find the lowest key number available
         } else
             minFreeKey = 1;
-        Lobby lobby = new Lobby(client, minFreeKey); //cretes new lobby
-        lobbyPort =  NetworkSettings.TCPport+minFreeKey;
+        Lobby lobby = new Lobby(client, minFreeKey); //creates new lobby
         try {
             ServerLobbyInterface lobbyStub = (ServerLobbyInterface) UnicastRemoteObject.exportObject(lobby, RMIport); //create stub of adapter of lobby
 
