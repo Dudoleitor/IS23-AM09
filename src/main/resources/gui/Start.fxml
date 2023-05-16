@@ -17,6 +17,7 @@
 
 <AnchorPane  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" >
     <children >
+        <Label fx:id="welcome" layoutX="206.0" layoutY="356.0" />
 
         <Text layoutX="187.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WELCOME TO">
             <font>
@@ -48,7 +49,6 @@
             </image>
         </ImageView>
 
-        <Label fx:id="welcome" layoutX="206.0" layoutY="356.0" />
     </children>
 </AnchorPane>
 

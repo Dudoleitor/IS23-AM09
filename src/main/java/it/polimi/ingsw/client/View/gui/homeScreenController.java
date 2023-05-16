@@ -210,7 +210,8 @@ public class homeScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         boolean turn = client.getController().isItMyTurn();
-        if(!turn) {
+        boolean myTurn = true; //questo sarà da togliere
+        if(!myTurn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
         setBoard();

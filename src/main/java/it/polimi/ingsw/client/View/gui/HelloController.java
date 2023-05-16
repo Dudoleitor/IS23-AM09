@@ -34,7 +34,7 @@ public class HelloController {
             controller = new ClientControllerGUI(userName.getText(), gui);
             client.setController(controller);
             Stage stage = (Stage) welcome.getScene().getWindow();
-            stage.setScene(new Scene(client.loadScene("PlayerHomeScreen"), 800, 800));
+            stage.setScene(new Scene(client.loadScene("Lobbies"), 800, 800));
         }
     }
 
