@@ -38,7 +38,7 @@ public class lobbiesGuiController implements Initializable {
 
     private void nextScene() throws IOException {
         Stage stage = (Stage) createButton.getScene().getWindow();
-        stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
+        stage.setScene(new Scene(ClientControllerGUI.loadScene("WaitingLobby"), 800, 800));
     }
 
     @FXML
