@@ -49,6 +49,7 @@ public class main {
                 .build());
         options.addOption(Option.builder()
                 .longOpt("ip")
+                .required()
                 .hasArg(true)
                 .desc("If set, the client will connect via RMI")
                 .build());
@@ -160,9 +161,15 @@ public class main {
     }
 
     private static void setServerIp() throws ParseException {
-        String ipStr = commandLine.getOptionValue("ip");
+        String ipStr = "";
         IpAddressV4 ip;
-        if(ipStr.equals("localhost")){
+        if(commandLine.hasOption("ip")){
+            ipStr = commandLine.getOptionValue("ip");
+        }
+        else {
+            throw new ParseException("Specify the server ip using --ip");
+        }
+        if(("localhost").equals(ipStr)){
             ip = new IpAddressV4("127.0.0.1");
         }
         else{
