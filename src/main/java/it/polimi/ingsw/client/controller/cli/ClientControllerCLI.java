@@ -10,8 +10,6 @@ import it.polimi.ingsw.shared.model.Move;
 
 import java.rmi.RemoteException;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * This class handles the sequence of events on the client side

@@ -37,6 +37,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private boolean gameEnded;
     private final ExecutorService pingListener;
     private final Object pingLock;
+    private boolean pingListenerStarted;
 
     public ClientModelGUI(String playerName) throws RemoteException {
         super();
@@ -54,7 +55,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
 
         this.pingLock = new Object();
         this.pingListener = Executors.newSingleThreadScheduledExecutor();
-        pingListener.submit(ClientController.getRunnable(pingLock));
+        this.pingListenerStarted = false;
     }
 
     /**
@@ -297,7 +298,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public String ping() {
-        pingLock.notifyAll();
+        if(!pingListenerStarted) {
+            pingListenerStarted = true;
+            pingListener.submit(ClientController.getRunnable(pingLock));
+        }
+        synchronized (pingLock) {
+            pingLock.notifyAll();
+        }
         return "pong";
     }
 }
