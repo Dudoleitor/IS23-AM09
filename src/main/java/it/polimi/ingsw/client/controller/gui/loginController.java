@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -14,6 +15,8 @@ public class loginController {
     Label welcome;
     @FXML
     TextField userName;
+    @FXML
+    VBox vbox;
 
     @FXML
     protected void signInAction() throws IOException {
