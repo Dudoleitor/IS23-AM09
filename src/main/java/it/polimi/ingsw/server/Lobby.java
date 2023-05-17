@@ -5,7 +5,15 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -58,7 +66,8 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             client.setExceptionHandler(this);
             if(controller!=null)
                 controller.clientReconnected(client);
-            client.gameStarted();
+            if (started)
+                client.gameStarted();
             return;
         }
 
@@ -157,12 +166,39 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         started = true;
         disconnectedClients.removeIf(x->true);  /* If a client disconnects before the controller is initialized,
         it won't be added to the match later */
-        controller = new Controller(new ArrayList<>(clients));  // List is given by copy
+
+        controller = null;
+
+        // Determining if there is a previous match with the same players
+        final String prevSaveFilename = Controller.getFileName(clients
+                .stream()
+                .map(Client::getPlayerName)
+                .collect(Collectors.toList()));
+        final Path prevSavePath = Path.of("./" + prevSaveFilename);
+        if (Files.exists(prevSavePath)) {
+            try (InputStream stream = Files.newInputStream(prevSavePath)) {
+                final Reader reader = new InputStreamReader(stream);
+                final JSONObject gameStatus = (JSONObject) new JSONParser().parse(reader);
+                controller = new Controller(gameStatus, new ArrayList<>(clients));
+            } catch (IOException | ParseException | JsonBadParsingException e) {
+                System.err.println("Error while loading previous match: " + e.getMessage());
+                try {
+                    Files.deleteIfExists(prevSavePath);
+                } catch (IOException ignored) {
+                }
+                controller = null;
+            }
+        }
+
+        if (controller == null) {  // No valid previous match found
+            System.out.println("Loaded a new match, lobby #" + id);
+            controller = new Controller(new ArrayList<>(clients));  // List is given by copy
+        } else {
+            System.out.println("Loaded previous match, lobby #" + id);
+        }
 
         for(Client c : clients)
             c.gameStarted();
-
-        System.out.println("MATCH STARTED IN LOBBY #"+id);
         return true;
     }
 
@@ -268,6 +304,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         if(controller==null && !started) {
             // The admin did not start the match yet
             if(clients.remove(client)) {
+                disconnectedClients.add(client.getPlayerName().toLowerCase());
                 System.out.println("Disconnected client " + client.getPlayerName());
                 client.disconnect();
             }
