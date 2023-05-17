@@ -227,26 +227,21 @@ public class ClientControllerCLI implements ClientController {
         //initiate the connection interface and attempt a login
         boolean successfulLogin = ClientController.connect(this, model);
 
-        while(play){
-            if(successfulLogin){
-                try{
-                    //ask the client what lobby to join
-                    joinLobby();
+        if(successfulLogin){
+            try{
+                //ask the client what lobby to join
+                joinLobby();
 
-                    //game starts
-                    playMatch();
+                //game starts
+                playMatch();
 
-                } catch (ServerException | LobbyException e) {
-                    cliIO.errorMessage("Something went wrong connecting to server");
-                    play = false;
-                }
-                //ask the player if they want to play again
-                play = cliIO.playAgain();
-            }
-            else{
-                cliIO.errorMessage("It was impossible to connect to server");
+            } catch (ServerException | LobbyException e) {
+                cliIO.errorMessage("Something went wrong connecting to server");
                 play = false;
             }
+        }
+        else{
+            cliIO.errorMessage("It was impossible to connect to server");
         }
     }
     public void errorMessage(String msg) {

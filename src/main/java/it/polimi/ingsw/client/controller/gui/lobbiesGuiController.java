@@ -54,8 +54,16 @@ public class lobbiesGuiController implements Initializable {
         nextScene();
     }
 
-    public void randomLobby(ActionEvent actionEvent) {
+    public void randomLobby() throws IOException {
+        try {
+            server.joinRandomLobby(client);
+        } catch (ServerException e) {
+            ClientControllerGUI.showError("Server error while creating lobby");
+            return;  // TODO Handle exception
+        }
+
         System.out.println("Joining random Lobby!");
+        nextScene();
     }
 
     public void joinLobby() throws IOException {
@@ -81,6 +89,12 @@ public class lobbiesGuiController implements Initializable {
         if(!availableLobbies.containsKey(lobbyToJoin)) {
             ClientControllerGUI.showError("Insert an existing lobby number!");
             return;
+        }
+        try {
+            server.joinSelectedLobby(client, lobbyToJoin);
+        } catch (ServerException e) {
+            ClientControllerGUI.showError("Server error while joining lobby");
+            return;  // TODO Handle exception
         }
         nextScene();
     }
