@@ -278,8 +278,8 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @param client Client object
      * @param e Exception thrown
      */
-    public synchronized void handleNetworkException(Client client, Exception e) {
-        System.err.println("Exception thrown while trying to reach client: " + e.getMessage());
+    public void handleNetworkException(Client client, Exception e) {
+        System.err.println("Exception thrown while trying to reach client " + client.getPlayerName() + ": " + e.getMessage());
         disconnectClient(client);
     }
 
@@ -288,26 +288,26 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @param client Client object
      */
     public synchronized void disconnectClient(Client client) {
+        if (!clients.remove(client)) {
+            return;
+        }
+
         if (controller!=null && started) {
             /* If game is started and controller is null it's still being initialized,
                     we won't disconnect the player. An exception will be thrown later
                     and the player will be disconnected then. */
-            if (clients.remove(client)) {
-                controller.clientDisconnected(client);
-                disconnectedClients.add(client.getPlayerName().toLowerCase());
-                System.out.println("Disconnected client " + client.getPlayerName());
-            }
+            disconnectedClients.add(client.getPlayerName().toLowerCase());
+            System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
             client.disconnect();
+            controller.clientDisconnected(client);  // It's ok if a network exception is thrown here
             return;
         }
 
         if(controller==null && !started) {
             // The admin did not start the match yet
-            if(clients.remove(client)) {
-                disconnectedClients.add(client.getPlayerName().toLowerCase());
-                System.out.println("Disconnected client " + client.getPlayerName());
-                client.disconnect();
-            }
+            disconnectedClients.add(client.getPlayerName().toLowerCase());
+            System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
+            client.disconnect();
         }
     }
 }
