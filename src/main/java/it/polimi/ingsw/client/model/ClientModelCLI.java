@@ -314,7 +314,9 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public String ping() {
-        pingLock.notifyAll();
+        synchronized (pingLock) {
+            pingLock.notifyAll();
+        }
         return "pong";
     }
 
