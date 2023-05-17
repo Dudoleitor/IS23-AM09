@@ -142,7 +142,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @param client requesting to join the lobby
      * @return id of assigned lobby
      */
-    public synchronized ServerLobbyInterface joinRandomLobby(Client client){
+    public synchronized ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException {
         if (!clientsWithoutLobby.contains(client)) {
             return null; // TODO
         }
@@ -179,24 +179,22 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     /**
      * @param client requesting to join the lobby
      */
-    public synchronized ServerLobbyInterface joinSelectedLobby(Client client, int id) {
-        if (!clientsWithoutLobby.contains(client)) {
-            return null; // TODO
-        }
+    public synchronized ServerLobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException {
+        if (!clientsWithoutLobby.contains(client))
+            throw new RemoteException("Client is not in the list of clients without lobby");
 
         Lobby lobby = lobbies.stream()
-                .filter(x -> x.getID() == id) //verify lobby exists and is not full
+                .filter(x -> x.getID() == id)  //verify lobby exists and is not full
                 .findFirst().orElse(null);
-        if(lobby == null) //if a lobby exists then add player
-            return null;
-        try {
-            lobby.addPlayer(client); //if exists then add player
-            clientsWithoutLobby.remove(client);
-            System.out.println(client.getPlayerName() + " has just joined lobby " + lobby.getID());
-            return lobby;
-        } catch (RuntimeException e) {
-            return null;
-        }
+
+        if(lobby == null)
+            throw new RemoteException("Lobby does not exist");
+
+        //if a lobby exists then add player
+        lobby.addPlayer(client); //if exists then add player
+        clientsWithoutLobby.remove(client);
+        System.out.println(client.getPlayerName() + " has just joined lobby " + lobby.getID());
+        return lobby;
     }
     /**
      * @param client requesting to create the lobby

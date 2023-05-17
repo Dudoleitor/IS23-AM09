@@ -162,7 +162,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (server){
             try {
                 lobbyInterface = server.joinRandomLobby(client);
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | RemoteException  e) {
                  //TODO to send back error message to set username first
             }
         }
@@ -201,7 +201,7 @@ public class ServerTcpThread extends Thread{ //TODO
         synchronized (server){
             try {
                 lobbyInterface = server.joinSelectedLobby(client,(int) lobbyID);
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | RemoteException e) {
                 //TODO to send back error message to set username first
             }
         }

@@ -281,7 +281,6 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         if(controller==null && !started) {
             // The admin did not start the match yet
             if(clients.remove(client)) {
-                disconnectedClients.add(client.getPlayerName().toLowerCase());
                 System.out.println("Disconnected client " + client.getPlayerName());
                 client.disconnect();
             }

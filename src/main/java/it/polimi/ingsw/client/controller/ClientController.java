@@ -156,7 +156,7 @@ public interface ClientController {
 
 class pingRunnable implements Runnable {
     private final Object pingLock;
-    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 4000;
+    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
     protected pingRunnable(Object pingLock){
         this.pingLock = pingLock;
     }
