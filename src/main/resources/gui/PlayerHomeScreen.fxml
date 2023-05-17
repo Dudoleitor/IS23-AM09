@@ -60,6 +60,12 @@
                 </font>
             </Button>
 
+            <Button layoutX="152.0" layoutY="342.0" mnemonicParsing="false" onAction="#gameStatus" style="-fx-background-color: #49be25;" text="Game Status">
+                <font>
+                    <Font name="SF Mono Bold" size="13.0" />
+                </font>
+            </Button>
+
             <Canvas fx:id="canvasBoard" height="258.0" layoutX="32.0" layoutY="71.0" onMousePressed="#clickedMouseBoard" width="268.0" />
             <Canvas fx:id="canvasShelf" height="219.0" layoutX="365.0" layoutY="114.0" onMousePressed="#clickedMouseShelf" width="366.0" />
             <Polygon fx:id="turnFlag" fill="#f4ff1f" layoutX="330.0" layoutY="182.0" points="-12.4967041015625, -29.838958740234375, 10.201263427734375, -29.838958740234375, -2.939666748046875, -48.51679992675781" rotate="180.0" stroke="BLACK" strokeType="INSIDE" />

@@ -200,6 +200,12 @@ public class homeScreenController implements Initializable {
 
     }
 
+    @FXML
+    protected void gameStatus() throws IOException {
+        Stage stage = (Stage) imgPersGoal.getScene().getWindow();
+        stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerShelves"), 800, 800));
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         boolean turn = model.isItMyTurn();

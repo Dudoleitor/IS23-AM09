@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<VBox fx:id="vbox" stylesheets="@PlayerShelves.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.controller.gui.loginController">
+<VBox fx:id="vbox" stylesheets="@PlayerShelves.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.controller.gui.PlayerShelvesController">
         <AnchorPane prefHeight="484.0" prefWidth="600.0">
             <children>
                 <ImageView fitHeight="165.0" fitWidth="167.0" layoutX="99.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
@@ -16,7 +16,7 @@
                         <Image url="@gameGraphics/boards/bookshelf.png" />
                     </image>
                 </ImageView>
-                <Text layoutX="117.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 1" />
+                <Text fx:id="username1" layoutX="117.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 1" />
                 <ImageView fitHeight="165.0" fitWidth="167.0" layoutX="302.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@gameGraphics/boards/bookshelf.png" />
@@ -27,8 +27,8 @@
                         <Image url="@gameGraphics/boards/bookshelf.png" />
                     </image>
                 </ImageView>
-                <Text layoutX="116.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 3" />
-                <Text layoutX="322.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 2" />
+                <Text fx:id="username3" layoutX="116.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 3" />
+                <Text fx:id="username2" layoutX="322.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 2" />
                 <Button layoutX="316.0" layoutY="272.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #49be25;" text="Home" />
                 <Button layoutX="317.0" layoutY="307.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="79.0" style="-fx-background-color: #49be25;" text="Read Chat" />
             </children>
