@@ -148,4 +148,34 @@ public interface ClientController {
             controller.errorMessage("You can not start lobby now");
         }
     }
+
+    static Runnable getRunnable(Object pingLock) {
+        return new pingRunnable(pingLock);
+    }
+}
+
+class pingRunnable implements Runnable {
+    private final Object pingLock;
+    protected pingRunnable(Object pingLock){
+        this.pingLock = pingLock;
+    }
+
+    @Override
+    public void run() {
+        synchronized (pingLock) {
+            while (true) {
+                final long start = System.currentTimeMillis();
+                try {
+                    pingLock.wait(NetworkSettings.WaitingTime * 2);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                if (System.currentTimeMillis() >=
+                        start + NetworkSettings.WaitingTime * 2) {
+                    System.err.println("Server not responding, closing");
+                    System.exit(1);
+                }
+            }
+        }
+    }
 }

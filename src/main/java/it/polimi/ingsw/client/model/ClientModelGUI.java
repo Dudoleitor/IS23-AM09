@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.model;
 
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
@@ -9,10 +10,13 @@ import it.polimi.ingsw.shared.model.*;
 import org.json.simple.JSONObject;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -20,7 +24,7 @@ import java.util.Map;
  * Here a copy of the model is not needed.
  */
 //TODO everything
-public class ClientModelGUI implements ClientModel, ClientRemote {
+public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, ClientRemote {
     private final String playerName;
     private boolean itsMyTurn;
     private Chat chat;
@@ -31,8 +35,11 @@ public class ClientModelGUI implements ClientModel, ClientRemote {
     private final List<String> players;
     private boolean gameStarted;
     private boolean gameEnded;
+    private final ExecutorService pingListener;
+    private final Object pingLock;
 
-    public ClientModelGUI(String playerName) {
+    public ClientModelGUI(String playerName) throws RemoteException {
+        super();
         this.playerName=playerName;
         this.itsMyTurn=false;
         this.chat = new Chat();
@@ -44,6 +51,10 @@ public class ClientModelGUI implements ClientModel, ClientRemote {
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.gameEnded = false;
+
+        this.pingLock = new Object();
+        this.pingListener = Executors.newSingleThreadScheduledExecutor();
+        pingListener.submit(ClientController.getRunnable(pingLock));
     }
 
     /**
@@ -286,6 +297,7 @@ public class ClientModelGUI implements ClientModel, ClientRemote {
      */
     @Override
     public String ping() {
+        pingLock.notifyAll();
         return "pong";
     }
 }

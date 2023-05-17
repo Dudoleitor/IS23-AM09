@@ -10,6 +10,12 @@ import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.NetworkSettings;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.rmi.server.RMISocketFactory;
+
 import static it.polimi.ingsw.client.Client_Settings.Connection.RMI;
 import static it.polimi.ingsw.client.Client_Settings.Connection.TCP;
 import static it.polimi.ingsw.client.Client_Settings.UI.CLI;
@@ -53,6 +59,20 @@ public class main {
                 .hasArg(true)
                 .desc("If set, the client will connect via RMI")
                 .build());
+    }
+
+    private static void setSystemProps(){
+        final String timeout = String.valueOf(NetworkSettings.WaitingTime);
+        System.setProperty("sun.rmi.transport.connectionTimeout", timeout);
+        System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", timeout);
+        System.setProperty("sun.rmi.transport.tcp.responseTimeout", timeout);
+        System.setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
+        System.setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
+        try {
+            RMISocketFactory.setSocketFactory(new SocketFactory());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -193,6 +213,7 @@ public class main {
         controller.startClient();
     }
     public static void main(String[] args) {
+        setSystemProps();
         initOptions();
 
         try {
@@ -225,4 +246,21 @@ public class main {
         }
 
     }
+}
+
+class SocketFactory extends RMISocketFactory {
+    private final int timeout = NetworkSettings.WaitingTime;
+
+    @Override
+    public Socket createSocket(String host, int port) throws IOException {
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress(host, port), timeout);
+        return socket;
+    }
+
+    @Override
+    public ServerSocket createServerSocket(int port) throws IOException {
+        return new ServerSocket(port);
+    }
+
 }

@@ -87,6 +87,10 @@ public class lobbiesGuiController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        updateLobbies();
+    }
+
+    private void updateLobbies() {
         try {
             availableLobbies = server.getAvailableLobbies();
         } catch (ServerException e) {
@@ -94,6 +98,7 @@ public class lobbiesGuiController implements Initializable {
             return;  // TODO Handle exception
         }
 
+        lobbies.clear();
         for(int lobbyId : availableLobbies.keySet()) {
             lobbies.appendText("Lobby number: " + lobbyId + ", players in: " + availableLobbies.get(lobbyId) + "\n");
         }

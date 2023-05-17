@@ -11,6 +11,8 @@ import it.polimi.ingsw.shared.PrivateChatMessage;
 
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class handles the sequence of events on the client side
@@ -28,6 +30,9 @@ public class ClientControllerCLI implements ClientController {
      * UI View
      */
     private CLI_IO cliIO;
+
+    public ClientControllerCLI() {
+    }
 
     public Server getServer() {
         return server;
