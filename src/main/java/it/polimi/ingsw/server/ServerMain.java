@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
@@ -16,20 +17,44 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     private static final int RMIport = NetworkSettings.RMIport;
     private static final int TCPport = NetworkSettings.TCPport;
+    private static Registry registry = null;
 
     /**
      * This list contains the clients connected to the
      * server that did not join a lobby yet.
      */
-    private final List<Client> clientsWithoutLobby = new ArrayList<>();
-    private final List<Lobby> lobbies = new ArrayList<>(); //this hashmap is to remember every couple of Lobby <-> RemoteInterface to communicate with
-    private static Registry registry = null;
-    private static InputSanitizer inputSanitizer;
+    private final List<Client> clientsWithoutLobby;
+    private final List<Lobby> lobbies;
+
+
+    /* Note: methods using the list clientsWithoutLobby need to be synchronized:
+    the pings sent by the executor can result in the handleNetworkException method
+    being called.
+    In addition to that, multiple clients can send requests to the server and
+    they must send commands one at a time. */
+    private final ScheduledExecutorService executor;
+    private final ServerPingSender pingSender;
+    private final long pingIntervalSeconds = NetworkSettings.serverPingIntervalSeconds;
+
+    private ServerMain() {
+        clientsWithoutLobby = new ArrayList<>();
+        lobbies = new ArrayList<>();
+        this.pingSender = new ServerPingSender(this);
+        this.executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
+    }
+
+    public List<Client> getClientsWithoutLobby() {
+        return new ArrayList<>(clientsWithoutLobby);
+    }
 
     public static void startServer(){ //in the main it initializes the serverTCP and the Remote stub
         ServerMain server = new ServerMain();
@@ -92,7 +117,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @return true is login is successful
      * @throws RemoteException is there are problems with connection
      */
-    public boolean login(Client client) throws RemoteException {
+    public synchronized boolean login(Client client) throws RemoteException {
         clientsWithoutLobby.add(client);
         client.setExceptionHandler(this);
         System.out.println(client.getPlayerName() + " has just logged in");
@@ -105,7 +130,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @param nick is the player name
      * @return list of lobby id of matches joined by the player
      */
-    public Map<Integer,Integer> getJoinedLobbies(String nick){
+    public synchronized Map<Integer,Integer> getJoinedLobbies(String nick){
         Map<Integer,Integer> lobbyList = new HashMap<>();//get all lobbies already joined by the client
                 lobbies.stream()
                         .filter(x -> x.getPlayerNames().contains(nick))
@@ -117,7 +142,11 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @param client requesting to join the lobby
      * @return id of assigned lobby
      */
-    public ServerLobbyInterface joinRandomLobby(Client client){
+    public synchronized ServerLobbyInterface joinRandomLobby(Client client){
+        if (!clientsWithoutLobby.contains(client)) {
+            return null; // TODO
+        }
+
         ServerLobbyInterface lobbyInterface;
         Map<Integer,Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
         if(alreadyJoined.size() > 0){
@@ -137,6 +166,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                 lobbyInterface = lobby;
             } else {
                 lobbyInterface = createLobby(client); //otherwise creates new lobby
+                clientsWithoutLobby.remove(client);
             }
         }
         try {
@@ -149,7 +179,11 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     /**
      * @param client requesting to join the lobby
      */
-    public ServerLobbyInterface joinSelectedLobby(Client client, int id){
+    public synchronized ServerLobbyInterface joinSelectedLobby(Client client, int id) {
+        if (!clientsWithoutLobby.contains(client)) {
+            return null; // TODO
+        }
+
         Lobby lobby = lobbies.stream()
                 .filter(x -> x.getID() == id) //verify lobby exists and is not full
                 .findFirst().orElse(null);
@@ -157,6 +191,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             return null;
         try {
             lobby.addPlayer(client); //if exists then add player
+            clientsWithoutLobby.remove(client);
             System.out.println(client.getPlayerName() + " has just joined lobby " + lobby.getID());
             return lobby;
         } catch (RuntimeException e) {
@@ -166,7 +201,11 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     /**
      * @param client requesting to create the lobby
      */
-    public ServerLobbyInterface createLobby(Client client){
+    public synchronized ServerLobbyInterface createLobby(Client client){
+        if (!clientsWithoutLobby.contains(client)) {
+            return null; // TODO
+        }
+
         int minFreeKey;
         List<Integer> lobbyIDs= lobbies.stream()
                 .map(Lobby::getID)
@@ -182,6 +221,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             Lobby lobby = new Lobby(client, minFreeKey); //creates new lobby
 
             lobbies.add(lobby);
+            clientsWithoutLobby.remove(client);
             System.out.println(client.getPlayerName() + " created a new lobby with id " + minFreeKey);
             return lobby;
 
@@ -190,7 +230,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         }
     }
 
-    public Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
+    public synchronized Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.stream()
                 .filter(x -> !x.isFull() && !x.matchHasStarted())
@@ -198,7 +238,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         return lobbyMap;
     }
 
-    public void removeLobby(){
+    public synchronized void removeLobby(){
         //TODO
     }
 
@@ -209,7 +249,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @param e      Exception thrown
      */
     @Override
-    public void handleNetworkException(Client client, Exception e) {
+    public synchronized void handleNetworkException(Client client, Exception e) {
         if(!clientsWithoutLobby.remove(client)) {
             throw new RuntimeException("Provided client was not connected");
         }
@@ -224,8 +264,27 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * -1 if not.
      */
     @Override
-    public int disconnectedFromLobby(String playerName) {
+    public synchronized int disconnectedFromLobby(String playerName) {
         Optional<Lobby> lobbyOpt = lobbies.stream().filter(x-> x.getDisconnectedClients().contains(playerName.toLowerCase())).findFirst();
         return lobbyOpt.map(Lobby::getID).orElse(-1);
     }
+}
+
+class ServerPingSender implements Runnable {
+
+    private final ServerMain server;  // Needed for proper synchronization
+
+    public ServerPingSender(ServerMain server) {
+        this.server = server;
+    }
+
+    /**
+     * This Runnable is used to ping clients, if a client is not available
+     * an exception is thrown and the exception handles kicks in.
+     */
+    public void run() {
+        synchronized (server) {
+            for (Client c : server.getClientsWithoutLobby()) c.ping();
+        }
+    };
 }

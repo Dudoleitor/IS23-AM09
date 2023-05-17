@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,8 +28,8 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     In addition to that, multiple clients can send requests to the lobby and
     they must send commands to the model one at a time. */
     private final ScheduledExecutorService executor;
-    private final PingSender pingSender;
-    private final long pingIntervalSeconds = 3;
+    private final LobbyPingSender pingSender;
+    private final long pingIntervalSeconds = NetworkSettings.serverPingIntervalSeconds;
 
     public Lobby(Client firstPlayer, int id) throws RemoteException {
         super();
@@ -40,7 +39,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         this.id = id;
         this.chat = new Chat();
         chat.addPlayer(firstPlayer);
-        this.pingSender = new PingSender(this);
+        this.pingSender = new LobbyPingSender(this);
         this.executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
     }
@@ -290,11 +289,11 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     }
 }
 
-class PingSender implements Runnable {
+class LobbyPingSender implements Runnable {
 
     private final Lobby lobby;  // Needed for proper synchronization
 
-    public PingSender(Lobby lobby) {
+    public LobbyPingSender(Lobby lobby) {
         this.lobby = lobby;
     }
 

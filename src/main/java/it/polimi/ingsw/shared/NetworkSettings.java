@@ -14,4 +14,6 @@ public class NetworkSettings {
         }
     }
     public static final int WaitingTime = 2000; //the time to wait for a server answer
+
+    public static final long serverPingIntervalSeconds = 3;
 }
