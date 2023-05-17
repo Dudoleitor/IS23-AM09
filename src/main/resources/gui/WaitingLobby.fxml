@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<VBox fx:id="vbox" stylesheets="@WaitingLobby.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.controller.gui.loginController">
+      <AnchorPane fx:id="anchor" prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Text layoutX="246.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby">
+               <font>
+                  <Font name="SF Mono Bold" size="35.0" />
+               </font>
+            </Text>
+            <TextArea layoutX="81.0" layoutY="106.0" prefHeight="156.0" prefWidth="439.0" />
+            <Text layoutX="144.0" layoutY="352.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting the admin to start the match!">
+               <font>
+                  <Font name="SF Mono Regular" size="15.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+</VBox>
