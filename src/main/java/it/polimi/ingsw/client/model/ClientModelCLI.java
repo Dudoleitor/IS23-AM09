@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.model;
 
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.cli.CLI_IO;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
@@ -9,6 +10,8 @@ import org.json.simple.JSONObject;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -27,9 +30,10 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     private final CLI_IO cliIO;
     private boolean gameStarted;
     private boolean itsMyTurn;
-    private LinkedList<Runnable> actionsQueue;
-
+    private final LinkedList<Runnable> actionsQueue;
     private boolean gameEnded;
+    private final ExecutorService pingListener;
+    private final Object pingLock;
 
     public ClientModelCLI(String playerName, CLI_IO cliIO) throws RemoteException {
         super();
@@ -45,6 +49,10 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
         this.itsMyTurn = false;
         this.actionsQueue = new LinkedList<>();
         this.gameEnded = false;
+
+        this.pingLock = new Object();
+        this.pingListener = Executors.newSingleThreadScheduledExecutor();
+        pingListener.submit(ClientController.getRunnable(pingLock));
     }
 
     /**
@@ -306,6 +314,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public String ping() {
+        pingLock.notifyAll();
         return "pong";
     }
 

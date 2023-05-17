@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.model;
 
+import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -32,6 +35,8 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private final List<String> players;
     private boolean gameStarted;
     private boolean gameEnded;
+    private final ExecutorService pingListener;
+    private final Object pingLock;
 
     public ClientModelGUI(String playerName) throws RemoteException {
         super();
@@ -46,6 +51,10 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.gameEnded = false;
+
+        this.pingLock = new Object();
+        this.pingListener = Executors.newSingleThreadScheduledExecutor();
+        pingListener.submit(ClientController.getRunnable(pingLock));
     }
 
     /**
@@ -288,6 +297,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public String ping() {
+        pingLock.notifyAll();
         return "pong";
     }
 }
