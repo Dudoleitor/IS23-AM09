@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.controller.cli;
+package it.polimi.ingsw.client.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class InputSanitizer {
      * @param name the string to test
      * @return true if valid
      */
-    public boolean isValidName(String name){
+    public static boolean isValidName(String name){
         return  name!= null &&
                 name.chars().count() >= 1 &&
                 name.chars().
@@ -24,7 +24,7 @@ public class InputSanitizer {
      * @param id the string to test
      * @return true if valid
      */
-    public boolean isInteger(String id){
+    public static boolean isInteger(String id){
         return id != null &&
                 id.chars().count() >= 1 &&
                 id.chars().allMatch(c ->
@@ -36,7 +36,7 @@ public class InputSanitizer {
      * @param mes the string to test
      * @return true if valid
      */
-    public boolean isValidMessage(String mes){
+    public static boolean isValidMessage(String mes){
         return  mes!= null &&
                 mes.chars().count() >= 0 &&
                 mes.chars().
@@ -51,7 +51,7 @@ public class InputSanitizer {
      * @param c the char to test
      * @return true if lowercase letter
      */
-    public boolean isLowerCaseLetter(Character c){
+    public static boolean isLowerCaseLetter(Character c){
         return c.compareTo('a') >= 0 && c.compareTo('z') <= 0;
     }
     /**
@@ -59,7 +59,7 @@ public class InputSanitizer {
      * @param c the char to test
      * @return true if uppercase letter
      */
-    public boolean isUpperCaseLetter(Character c){
+    public static boolean isUpperCaseLetter(Character c){
         return c.compareTo('A') >= 0 && c.compareTo('Z') <= 0;
     }
     /**
@@ -67,7 +67,7 @@ public class InputSanitizer {
      * @param c the char to test
      * @return true if c is an integer
      */
-    public boolean isInteger(Character c){
+    public static boolean isInteger(Character c){
         return c.compareTo('0') >= 0 && c.compareTo('9') <= 0;
     }
     /**
@@ -75,7 +75,7 @@ public class InputSanitizer {
      * @param c the char to test
      * @return true if is _ or -
      */
-    public boolean isValidSymbol(Character c){
+    public static boolean isValidSymbol(Character c){
         return c.compareTo('_') == 0 || c.compareTo('-') == 0;
     }
     /**
@@ -83,7 +83,7 @@ public class InputSanitizer {
      * @param c the char to test
      * @return true if punctuation mark
      */
-    public boolean isPunctuation(Character c){
+    public static boolean isPunctuation(Character c){
         List<Character> punctuation = new ArrayList<>();
         punctuation.add('.');
         punctuation.add(',');

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.controller.cli.InputSanitizer;
+import it.polimi.ingsw.client.controller.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.NetworkSettings;
@@ -139,6 +139,10 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                 lobbyInterface = createLobby(client); //otherwise creates new lobby
             }
         }
+        try {
+            System.out.println(client.getPlayerName() + " has just joined lobby " + lobbyInterface.getID());
+        } catch (RemoteException ignored) {
+        }
         return lobbyInterface;
     }
 
@@ -153,6 +157,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             return null;
         try {
             lobby.addPlayer(client); //if exists then add player
+            System.out.println(client.getPlayerName() + " has just joined lobby " + lobby.getID());
             return lobby;
         } catch (RuntimeException e) {
             return null;
@@ -177,7 +182,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             Lobby lobby = new Lobby(client, minFreeKey); //creates new lobby
 
             lobbies.add(lobby);
-
+            System.out.println(client.getPlayerName() + " created a new lobby with id " + minFreeKey);
             return lobby;
 
         } catch (RemoteException e) {

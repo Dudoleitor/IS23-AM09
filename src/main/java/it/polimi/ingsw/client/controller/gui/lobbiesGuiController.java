@@ -1,6 +1,10 @@
 package it.polimi.ingsw.client.controller.gui;
 
+import it.polimi.ingsw.client.connection.Server;
+import it.polimi.ingsw.client.connection.ServerException;
+import it.polimi.ingsw.client.controller.InputSanitizer;
 import it.polimi.ingsw.client.model.ClientModelGUI;
+import it.polimi.ingsw.server.clientonserver.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,13 +16,14 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class lobbiesGuiController implements Initializable {
-    private final ClientModelGUI model = ClientControllerGUI.controller.getModel();
-    List<String> avalaibleLobbies = new ArrayList<>();
+    private final ClientControllerGUI controller = ClientControllerGUI.controller;
+    private final ClientModelGUI model = controller.getModel();
+    private final Server server = controller.getServer();
+    private final Client client = controller.getClient();
+    Map<Integer, Integer> availableLobbies = null;
 
     @FXML
     Button createButton;
@@ -31,10 +36,22 @@ public class lobbiesGuiController implements Initializable {
     @FXML
     TextField lobbyNumber;
 
+    private void nextScene() throws IOException {
+        Stage stage = (Stage) createButton.getScene().getWindow();
+        stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
+    }
 
     @FXML
-    protected void createLobby() {
+    protected void createLobby() throws IOException {
+        try {
+            server.createLobby(client);
+        } catch (ServerException e) {
+            ClientControllerGUI.showError("Server error while creating lobby");
+            return;  // TODO Handle exception
+        }
+
         System.out.println("Created Lobby!");
+        nextScene();
     }
 
     public void randomLobby(ActionEvent actionEvent) {
@@ -42,25 +59,43 @@ public class lobbiesGuiController implements Initializable {
     }
 
     public void joinLobby() throws IOException {
-        if(lobbyNumber.getText().equals("")) {
-            ClientControllerGUI.showError("Insert lobby number!");
-        } else {
-            System.out.println("Joined lobby " + lobbyNumber.getText() + "!");
-            if(!avalaibleLobbies.contains(lobbyNumber.getText())) {
-                ClientControllerGUI.showError("Insert correct lobby number");
-            } else {
-                Stage stage = (Stage) joinButton.getScene().getWindow();
-                stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
-            }
+        if(availableLobbies==null) {
+            throw new RuntimeException("Lobbies not initialized!");
         }
+
+        final String userInput = lobbyNumber.getText();
+
+        if(userInput.equals("")) {
+            ClientControllerGUI.showError("Insert lobby number!");
+            return;
+        }
+
+        if(!InputSanitizer.isInteger(userInput)) {
+            ClientControllerGUI.showError("Insert a valid lobby number!");
+            return;
+        }
+
+        final int lobbyToJoin = Integer.parseInt(userInput);
+
+        System.out.println("Joined lobby " + lobbyToJoin + "!");
+        if(!availableLobbies.containsKey(lobbyToJoin)) {
+            ClientControllerGUI.showError("Insert an existing lobby number!");
+            return;
+        }
+        nextScene();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        for(int i = 0; i < 10; i++) {
-            avalaibleLobbies.add("Lobby " + i);
+        try {
+            availableLobbies = server.getAvailableLobbies();
+        } catch (ServerException e) {
+            ClientControllerGUI.showError("Server error while obtaining lobbies");
+            return;  // TODO Handle exception
         }
 
-        avalaibleLobbies.stream().forEach(lobby -> lobbies.appendText("Lobby number: " + lobby + "\n"));
+        for(int lobbyId : availableLobbies.keySet()) {
+            lobbies.appendText("Lobby number: " + lobbyId + ", players in: " + availableLobbies.get(lobbyId) + "\n");
+        }
     }
 }
