@@ -79,12 +79,6 @@ public class ConnectionStub extends Server {
         callsToStub.addLast(playerName+" posted "+message);
     }
 
-    @Override
-    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException {
-        if(verbous)
-            System.out.println(sender+" posted secret "+message+ " for "+receiver);
-        callsToStub.addLast(sender+" posted secret "+message+ " for "+receiver);
-    }
 
     @Override
     public void quitGame(String player) throws LobbyException {

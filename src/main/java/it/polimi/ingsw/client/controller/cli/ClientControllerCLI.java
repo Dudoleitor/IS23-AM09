@@ -7,7 +7,6 @@ import it.polimi.ingsw.client.model.ClientModelCLI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.ChatMessage;
 import it.polimi.ingsw.shared.model.Move;
-import it.polimi.ingsw.shared.PrivateChatMessage;
 
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -133,9 +132,6 @@ public class ClientControllerCLI implements ClientController {
                 case Print: //print all messages
                     printChat();
                     break;
-                case Secret: //send private message
-                    postToPrivateChat();
-                    break;
                 case Start:
                     ClientController.start(this);
                     break;
@@ -161,19 +157,6 @@ public class ClientControllerCLI implements ClientController {
         cliIO.showAllMessages(model.getChat());
     }
 
-    /**
-     * Check if the reciever of private message is valid
-     * @param message the message
-     * @param receiverName the receiver name
-     * @return true if valid
-     */
-    private boolean checkValidReceiver(ChatMessage message, String receiverName){
-        if (message.getClass().equals(PrivateChatMessage.class)){
-            if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
-                return false;
-        }
-        return true;
-    }
 
     /**
      * Get message from user and post to Server Chat
@@ -185,16 +168,6 @@ public class ClientControllerCLI implements ClientController {
                 message.get("message"));
     }
 
-    /**
-     * Get private message from user and post to Server Chat
-     */
-    private void postToPrivateChat() throws LobbyException {
-        Map<String,String> privateMessage = cliIO.getPrivateMessageFromUser();
-        server.postSecretToLiveChat(
-                playerName,
-                privateMessage.get("receiver"),
-                privateMessage.get("message"));
-    }
 
     /**
      * Get move from user and post to server

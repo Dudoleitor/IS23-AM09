@@ -196,19 +196,6 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         }
     }
 
-    /**
-     *
-     * @param sender is the player that is sending a message
-     * @param receiver is the player that is sending a message
-     * @param message is the content
-     */
-    @Override
-    public synchronized void postSecretToLiveChat(String sender, String receiver, String message) {
-        if(sender == null || receiver == null || message == null){
-            throw new RuntimeException("Wrong format of message");
-        }
-        chat.addSecret(sender,receiver,message);
-    }
 
     @Override
     public synchronized void quitGame(String player) {

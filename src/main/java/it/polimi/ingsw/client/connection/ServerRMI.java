@@ -103,15 +103,6 @@ public class ServerRMI extends Server {
         }
     }
 
-    @Override
-    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
-        try{
-            lobby.postSecretToLiveChat(sender,receiver,message);
-        }
-        catch (RemoteException e){
-            throw new LobbyException("Error in Lobby");
-        }
-    }
 
     @Override
     public void quitGame(String player){

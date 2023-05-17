@@ -5,7 +5,6 @@ import java.util.Arrays;
 public enum LobbyCommand {
         Exit("exit", "-q","Quit the game"),
         Print("print","-p","Print all messages in chat"),
-        Secret("secret","-sm","Send a private message to a user"),
         Message("message","-msg","Send a message to all members of lobby"),
         Start("start","-s","Start the game"),
         Move("move","-m","Make your move"),
