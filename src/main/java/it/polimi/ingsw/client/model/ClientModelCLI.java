@@ -212,6 +212,15 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     }
 
     /**
+     * This method is used to observe if the game has started.
+     * @return Boolean, true if the game has started.
+     */
+    @Override
+    public boolean gameIsStarted(){
+        return gameStarted;
+    }
+
+    /**
      * This function is used when the turn of a player ends.
      * It is also used at beginning of the match, before
      * the model is completely set.

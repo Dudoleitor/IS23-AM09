@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.controller.cli;
 
 import it.polimi.ingsw.client.connection.*;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.client.model.ClientModel;
 import it.polimi.ingsw.client.model.ClientModelCLI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.ChatMessage;
@@ -24,7 +23,7 @@ public class ClientControllerCLI implements ClientController {
     //Objects that handle connection with server
     private Server server;
     private Client client;
-    private ClientModel model;
+    private ClientModelCLI model;
     /**
      * UI View
      */
@@ -41,6 +40,12 @@ public class ClientControllerCLI implements ClientController {
     }
     public void setClient(Client client) {
         this.client = client;
+    }
+    public ClientModelCLI getModel() {
+        return model;
+    }
+    public boolean gameIsStarted() {
+        return model.gameIsStarted();
     }
 
     /**
@@ -127,7 +132,7 @@ public class ClientControllerCLI implements ClientController {
                     postToPrivateChat();
                     break;
                 case Start:
-                    start();
+                    ClientController.start(this);
                     break;
                 case Move:
                     postMove();
@@ -148,11 +153,7 @@ public class ClientControllerCLI implements ClientController {
      * This will print the whole chat into the cli
      */
     private void printChat(){
-        try {
-            cliIO.showAllMessages(model.getChat());
-        } catch (RemoteException e) {
-            cliIO.errorMessage("Error while loading resourses");
-        }
+        cliIO.showAllMessages(model.getChat());
     }
 
     /**
@@ -198,45 +199,13 @@ public class ClientControllerCLI implements ClientController {
             cliIO.errorMessage("Match has not started");
             return;
         }
-        try {
-            if (model.isItMyTurn()) {
-                try {
-                    Move move = cliIO.getMoveFromUser(model.getBoard(), model.getPlayersShelves().get(playerName));
-                    server.postMove(playerName, move);
-                }
-                catch (RemoteException e){
-                    cliIO.errorMessage("Error while loading resources");
-                }
-            } else {
-                cliIO.errorMessage("It's not your turn");
-            }
-        } catch (RemoteException ignored) {
-            // Never thrown
+        if (model.isItMyTurn()) {
+            Move move = cliIO.getMoveFromUser(model.getBoard(), model.getPlayersShelves().get(playerName));
+            server.postMove(playerName, move);
+        } else {
+            cliIO.errorMessage("It's not your turn");
         }
     }
-
-    private void start(){
-        boolean admin = false;
-        boolean started = false;
-        try {
-            admin = server.isLobbyAdmin(playerName);
-            if(!admin){
-                cliIO.errorMessage("You are not lobby admin");
-                return;
-            }
-            started = server.startGame(playerName);
-        } catch (LobbyException e) {
-            started = false;
-        }
-        if(!started){
-            cliIO.errorMessage("You can not start lobby now");
-        }
-    }
-
-
-
-
-
 
     /**
      * Play a match in the lobby

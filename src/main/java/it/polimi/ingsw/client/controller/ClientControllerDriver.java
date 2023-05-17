@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.controller;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.cli.LobbyCommand;
 import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
+import it.polimi.ingsw.client.model.ClientModel;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Color;
@@ -105,6 +106,14 @@ public class ClientControllerDriver implements ClientController {
     public void errorMessage(String message) {
         if(verbous)
             System.out.println(Color.coloredString(message,Color.Red));
+    }
+
+    public ClientModel getModel() {
+        return null;
+    }
+
+    public boolean gameIsStarted() {
+        return false;
     }
 
     public void message(String message) {

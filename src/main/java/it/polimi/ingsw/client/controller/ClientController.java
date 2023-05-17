@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.connection.*;
 import it.polimi.ingsw.client.controller.cli.LobbyCommand;
 import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
 import it.polimi.ingsw.client.model.ClientModel;
+import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
@@ -26,6 +27,8 @@ public interface ClientController {
     Client getClient();
     void setClient(Client client);
     void errorMessage(String msg);
+    ClientModel getModel();
+    boolean gameIsStarted();
 
     /**
      * Initiate all the objects that will handle the connection to serer
@@ -113,6 +116,36 @@ public interface ClientController {
             return ClientController.tryLogin(3,2, controller);
         } catch (ServerException e) {
             return false;
+        }
+    }
+
+    static void start(ClientController controller){
+        boolean admin = false;
+        boolean started = false;
+
+        if (controller.gameIsStarted()) {
+            controller.errorMessage("Game already started");
+            return;
+        }
+
+        final Server server = controller.getServer();
+        String playerName = "";
+        try {
+            playerName = controller.getModel().getPlayerName();
+        } catch (RemoteException ignored) {
+        }
+        try {
+            admin = server.isLobbyAdmin(playerName);
+            if(!admin){
+                controller.errorMessage("You are not lobby admin");
+                return;
+            }
+            started = server.startGame(playerName);
+        } catch (LobbyException e) {
+            started = false;
+        }
+        if(!started){
+            controller.errorMessage("You can not start lobby now");
         }
     }
 }

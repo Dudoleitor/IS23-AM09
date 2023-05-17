@@ -27,4 +27,5 @@ public interface ClientModel extends ClientRemote{
     public Chat getChat() throws RemoteException;
 
     public boolean gameEnded() throws RemoteException;
+    public boolean gameIsStarted() throws RemoteException;
 }

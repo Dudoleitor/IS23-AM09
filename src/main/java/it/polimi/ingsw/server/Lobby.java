@@ -78,7 +78,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @return true is the lobby is ready to start
      */
     public synchronized boolean isReady(){
-        return clients.size()>=GameSettings.minSupportedPlayers;
+        return clients.size()>=GameSettings.minSupportedPlayers && !started;
     }
     /**
      * @return true is the lobby is full of players for it's capacity
