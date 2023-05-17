@@ -39,6 +39,9 @@ public class ClientControllerGUI extends Application implements ClientController
     public void setClient(Client client) {
         this.client = client;
     }
+    public boolean gameIsStarted() {
+        return model.gameIsStarted();
+    }
 
     public static Parent loadScene(String scene) throws IOException {
         return FXMLLoader.load(ClientControllerGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
@@ -65,4 +68,5 @@ public class ClientControllerGUI extends Application implements ClientController
     }
 
     public void startClient() {launch();}
+
 }

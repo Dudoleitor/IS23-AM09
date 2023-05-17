@@ -71,6 +71,15 @@ public class ClientModelGUI implements ClientModel, ClientRemote {
         }
     }
 
+    /**
+     * This method is used to observe if the game has started.
+     * @return Boolean, true if the game has started.
+     */
+    @Override
+    public boolean gameIsStarted(){
+        return gameStarted;
+    }
+
     public Map<String, Shelf> getPlayersShelves() {
         return playersShelves;
     }
