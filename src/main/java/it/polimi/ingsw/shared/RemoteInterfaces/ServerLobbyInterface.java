@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
  */
 public interface ServerLobbyInterface extends Remote {
     void postToLiveChat(String playerName, String message) throws RemoteException;
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws RemoteException;
     void quitGame(String player) throws RemoteException;
     boolean matchHasStarted() throws RemoteException;
     void postMove(String player, JSONObject move) throws RemoteException;

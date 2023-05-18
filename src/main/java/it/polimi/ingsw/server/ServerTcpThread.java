@@ -75,6 +75,9 @@ public class ServerTcpThread extends Thread{ //TODO
             case PostToLiveChat:
                 postToLiveChat(content,ID);
                 break;
+            case PostSecretToLiveChat:
+                postSecretToLiveChat(content,ID);
+                break;
             case Quit:
                 quit(content,ID);
                 break;
@@ -247,7 +250,28 @@ public class ServerTcpThread extends Thread{ //TODO
 
         }
     }
+    public void postSecretToLiveChat(JSONObject message, String ID){
+        boolean foundErrors = false;
+        PrivateChatMessage chatMessage = new PrivateChatMessage((JSONObject) message.get("chat"));
+        String sender = chatMessage.getSender();
+        String content = chatMessage.getMessage();
+        String receiver = chatMessage.getReciever();
+        synchronized (lobby) {
+            try {
+                lobby.postSecretToLiveChat(sender,receiver,content);
+            } catch (RuntimeException e) {
+                foundErrors = true;
+            }
+            JSONObject result = new JSONObject();
+            result.put("errors", foundErrors);
+            MessageTcp feedback = new MessageTcp(); //message to send back
+            feedback.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set message command
+            feedback.setContent(result); //set message content
+            feedback.setRequestID(ID);
+            client.out(feedback.toString()); //send object to client
+        }
 
+    }
     public void quit(JSONObject message, String ID){
         boolean foundErrors = false;
         String playername = message.get("player").toString();

@@ -178,6 +178,29 @@ public class ServerTCP extends Server {
     }
 
     @Override
+    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
+        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black); //TODO maybe create a constructor that doesn't need color
+        JSONObject content = new JSONObject();
+        content.put("chat", chatMessage.toJson());
+        MessageTcp postMessage = new MessageTcp();
+        postMessage.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set command
+        postMessage.setContent(content); //set playername as JsonObject
+        postMessage.generateRequestID();
+        out(postMessage.toString());
+        try {
+            MessageTcp response = in(); //wait for response by server and create an object responses
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostSecretToLiveChat) && !response.getRequestID().equals(postMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+                response = in();
+            boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
+            if (errorFound) {
+                //TODO to implement
+            }
+        }catch (RemoteException e){
+            throw new LobbyException(e.getMessage());
+        }
+    }
+
+    @Override
     public void quitGame(String player) throws LobbyException{
         JSONObject content = new JSONObject();
         content.put("player", player);

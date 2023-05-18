@@ -34,8 +34,11 @@ class ClientControllerCLITest {
         viewDriver.putLobbySelectionCommand(lc);
         viewDriver.putCommand(LobbyCommand.Start);
         viewDriver.putCommand(LobbyCommand.Message);
+        viewDriver.putCommand(LobbyCommand.Secret);
         viewDriver.putCommand(LobbyCommand.Message);
         viewDriver.putCommand(LobbyCommand.Message);
+        viewDriver.putCommand(LobbyCommand.Secret);
+        viewDriver.putCommand(LobbyCommand.Secret);
         viewDriver.putCommand(LobbyCommand.Exit);
 
 
@@ -54,8 +57,11 @@ class ClientControllerCLITest {
         callsDouble.addLast("frigioggi asked lobby admin");
         callsDouble.addLast("frigioggi started game");
         callsDouble.addLast("frigioggi posted A really meaningful message");
+        callsDouble.addLast("frigioggi posted secret A really secret message for frigieri");
         callsDouble.addLast("frigioggi posted A really meaningful message");
         callsDouble.addLast("frigioggi posted A really meaningful message");
+        callsDouble.addLast("frigioggi posted secret A really secret message for frigieri");
+        callsDouble.addLast("frigioggi posted secret A really secret message for frigieri");
         callsDouble.addLast("frigioggi quit");
 
         assertEquals(callsDouble.toString(),calls.toString());
