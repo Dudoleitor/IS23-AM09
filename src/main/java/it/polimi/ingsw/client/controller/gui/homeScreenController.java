@@ -59,35 +59,30 @@ public class homeScreenController implements Initializable {
     ImageView commonGoal2;
 
     @FXML
+    ImageView imageScoring1;
+
+    @FXML
+    ImageView imageScoring2;
+
+    @FXML
     javafx.scene.shape.Polygon turnFlag;
 
-    private void getPersonalGoal() {
-        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + model.getPlayerGoal().getGoalId() + ".png"));
+
+    protected void getPersonalGoal() {
+        int number = model.getPlayerGoal().getGoalId() + 1;
+        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + number + ".png"));
     }
 
-    protected void randPG() {
-        Random rand = new Random();
-        int int_random = rand.nextInt(12);
-        int_random += 1;
-        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + int_random + ".png"));
-    }
+    private void getCommonGoals () {
 
-    //qua mi servirà un metodo che mi dà i common goals della partita
-    private void randCG () {
-        Random rand = new Random();
-        int int_random = rand.nextInt(12);
-        int int_random_2 = rand.nextInt(12);
-        while(int_random_2 == int_random) {
-            int_random_2 = rand.nextInt(12);
-        }
-        int_random += 1;
-        int_random_2 += 1;
+        int number1 = model.getCommonGoalList().get(0).getID() + 1;
+        int number2 = model.getCommonGoalList().get(1).getID() + 1;
 
-        //client.getController().getCommonGoalList();
+        commonGoal1.setImage(new Image("gui/gameGraphics/common_goal_cards/" + number1 + ".jpg"));
+        commonGoal2.setImage(new Image("gui/gameGraphics/common_goal_cards/" + number2 + ".jpg"));
 
-        commonGoal1.setImage(new Image("gui/gameGraphics/common_goal_cards/" + int_random + ".jpg"));
-        commonGoal2.setImage(new Image("gui/gameGraphics/common_goal_cards/" + int_random_2 + ".jpg"));
-
+        imageScoring1.setImage(new Image("gui/gameGraphics/scoring_tokens/scoring_" + model.getCommonGoalList().get(0).showPointsStack().get(model.getCommonGoalList().get(0).showPointsStack().size() - 1) + ".jpg"));
+        imageScoring2.setImage(new Image("gui/gameGraphics/scoring_tokens/scoring_" + model.getCommonGoalList().get(1).showPointsStack().get(model.getCommonGoalList().get(1).showPointsStack().size() - 1) + ".jpg"));
     }
 
 
@@ -209,18 +204,13 @@ public class homeScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         boolean turn = model.isItMyTurn();
-        boolean myTurn = true; //questo sarà da togliere
         if(!turn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
         setBoard();
         setShelf();
-        if(model.getPlayerGoal() == null) {
-            randPG();
-        } else {
-            getPersonalGoal();
-        }
-        randCG();
+        getPersonalGoal();
+        getCommonGoals();
         if(model.isItMyTurn()) {
             ImageView Image = new ImageView();
             Image.setImage(new Image("gui/gameGraphics/misc/firstplayertoken.png"));

@@ -38,12 +38,12 @@
 
             <ImageView fx:id="commonGoal1" fitHeight="76.0" fitWidth="121.0" layoutX="328.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
             <ImageView fx:id="commonGoal2" fitHeight="76.0" fitWidth="121.0" layoutX="465.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fitHeight="39.0" fitWidth="39.0" layoutX="395.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
+            <ImageView fx:id="imageScoring1" fitHeight="39.0" fitWidth="39.0" layoutX="395.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
                 <image>
                     <Image url="@gameGraphics/scoring_tokens/scoring_2.jpg" />
                 </image>
             </ImageView>
-            <ImageView fitHeight="39.0" fitWidth="39.0" layoutX="531.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
+            <ImageView fx:id="imageScoring2" fitHeight="39.0" fitWidth="39.0" layoutX="531.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
                 <image>
                     <Image url="@gameGraphics/scoring_tokens/scoring_6.jpg" />
                 </image>
