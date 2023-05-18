@@ -38,6 +38,7 @@ public class MessageTcp {
         GetAvailableLobbies("availableLobbies", TypeMessage.ReplyWait),
         JoinSelectedLobby("joinSelected", TypeMessage.ReplyWait),
         PostToLiveChat("postChat", TypeMessage.ReplyWait),
+        PostSecretToLiveChat("postSecret", TypeMessage.ReplyWait),
         Quit("quit", TypeMessage.ReplyWait),
         MatchHasStarted("matchStarted", TypeMessage.ReplyWait),
         PostMove("move", TypeMessage.ReplyWait),

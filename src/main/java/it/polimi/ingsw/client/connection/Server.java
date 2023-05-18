@@ -63,6 +63,13 @@ public abstract class Server {
      */
     public abstract void postToLiveChat(String playerName, String message) throws LobbyException;
 
+    /**
+     * Post to private chat
+     * @param sender
+     * @param receiver
+     * @param message
+     */
+    abstract public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException;
 
     /**
      * Disconnect the player

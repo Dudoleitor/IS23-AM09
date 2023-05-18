@@ -23,7 +23,11 @@ public class Chat implements Serializable {
         chatMessages = new ArrayList<>();
         JSONArray jsonArray = (JSONArray) jsonChat.get("messageList");
         for(Object c : jsonArray){
-            chatMessages.add(new ChatMessage((JSONObject) c));
+            if(!((JSONObject) c).containsKey("receiver"))
+                chatMessages.add(new ChatMessage((JSONObject) c));
+            else
+                chatMessages.add(new PrivateChatMessage((JSONObject)c));
+
         }
     }
     public void add(ChatMessage newMessage){
@@ -41,6 +45,17 @@ public class Chat implements Serializable {
         this.addMessage(message.getSender(), message.getMessage());
     }
 
+    public void add(PrivateChatMessage newSecret){
+        chatMessages.add(newSecret);
+    }
+    public void addSecret(String sender,String receiver,String text){
+        PrivateChatMessage message = new PrivateChatMessage(
+                sender,
+                receiver,
+                text,
+                MapColorPlayer.get(sender));
+        chatMessages.add(message);
+    }
     public void addPlayer(Client client){
         //only if is a new login
         if(!MapColorPlayer.containsKey(client.getPlayerName())){
