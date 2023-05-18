@@ -7,8 +7,12 @@ import it.polimi.ingsw.shared.JSONFilePath;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.*;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -218,6 +222,16 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public void gameStarted() {
+        ensureModelIsSet();
+        Platform.runLater(() -> {
+            Stage stage = ClientControllerGUI.controller.getStage();
+            try {
+                stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        gameStarted = true;
 
     }
 

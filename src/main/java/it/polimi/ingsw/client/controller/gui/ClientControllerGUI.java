@@ -20,6 +20,7 @@ public class ClientControllerGUI extends Application implements ClientController
     private ClientModelGUI model;
     private Server server;
     private Client client;
+    private Stage stage;
 
     public ClientModelGUI getModel(){
         return model;
@@ -39,6 +40,9 @@ public class ClientControllerGUI extends Application implements ClientController
     public void setClient(Client client) {
         this.client = client;
     }
+    public Stage getStage() {
+        return stage;
+    }
     public boolean gameIsStarted() {
         return model.gameIsStarted();
     }
@@ -52,6 +56,7 @@ public class ClientControllerGUI extends Application implements ClientController
         ClientControllerGUI.controller = this;
         Parent root = loadScene("Start");
         Scene scene = new Scene(root, 800, 800, Color.GREEN);
+        this.stage = stage;
         stage.setTitle("My Shelfie");
         stage.setScene(scene);
         stage.show();

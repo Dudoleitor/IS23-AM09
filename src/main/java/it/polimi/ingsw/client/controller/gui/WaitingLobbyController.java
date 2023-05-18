@@ -20,9 +20,8 @@ import java.util.ResourceBundle;
 
 public class WaitingLobbyController implements Initializable {
     private final ClientControllerGUI controller = ClientControllerGUI.controller;
-    private final ClientModelGUI model = controller.getModel();
     private final Server server = controller.getServer();
-    private final Client client = controller.getClient();
+    private final String playerName = controller.getClient().getPlayerName();
 
     @FXML
     VBox vbox;
@@ -36,20 +35,17 @@ public class WaitingLobbyController implements Initializable {
     @FXML
     protected void startMatch() throws IOException, LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
-        if(server.isLobbyAdmin(client.getPlayerName())) {
-            stage.setScene(new Scene(ClientControllerGUI.loadScene("FirstPlayerHomeScreen"), 800, 800));
-            return;
+        if(server.isLobbyAdmin(playerName)) {
+            server.startGame(playerName);
         }
-        stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
     }
 
     @Override
     //TODO: fix isLobbyAdmin() here
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            if(!server.isLobbyAdmin(client.getPlayerName())) {
+            if(!server.isLobbyAdmin(playerName)) {
                 startButton.setOpacity(0.0);
-                startButton.fire();
             }
         } catch (LobbyException e) {
             e.printStackTrace();
