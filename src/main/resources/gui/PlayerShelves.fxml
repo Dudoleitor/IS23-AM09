@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<VBox fx:id="vbox" stylesheets="@PlayerShelves.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.controller.gui.PlayerShelvesController">
+<VBox fx:id="vbox" stylesheets="@PlayerShelves.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
         <AnchorPane prefHeight="484.0" prefWidth="600.0">
             <children>
                 <ImageView fitHeight="165.0" fitWidth="167.0" layoutX="99.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">

@@ -14,9 +14,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ClientControllerGUI extends Application implements ClientController {
-
-    public static ClientControllerGUI controller;
-
     private ClientModelGUI model;
     private Server server;
     private Client client;
@@ -47,18 +44,24 @@ public class ClientControllerGUI extends Application implements ClientController
         return model.gameIsStarted();
     }
 
-    public static Parent loadScene(String scene) throws IOException {
-        return FXMLLoader.load(ClientControllerGUI.class.getClassLoader().getResource(String.format("gui/%s.fxml", scene)));
+    public void loadScene(SceneEnum scene) {
+        final FXMLLoader loader = new FXMLLoader(scene.getResource());
+        final FxmlController sceneController = scene.getNewController(this);
+        loader.setController(sceneController);
+        final Parent parent;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException("Error while loading scene " + scene);
+        }
+        stage.setScene(new Scene(parent, 800, 800, Color.GREEN));
     }
 
 
     public void start(Stage stage) throws IOException {
-        ClientControllerGUI.controller = this;
-        Parent root = loadScene("Start");
-        Scene scene = new Scene(root, 800, 800, Color.GREEN);
         this.stage = stage;
         stage.setTitle("My Shelfie");
-        stage.setScene(scene);
+        loadScene(SceneEnum.login);
         stage.show();
     }
 

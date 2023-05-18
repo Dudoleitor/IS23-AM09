@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.model;
 
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
 import it.polimi.ingsw.shared.JsonBadParsingException;
@@ -42,8 +43,9 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private final ExecutorService pingListener;
     private final Object pingLock;
     private boolean pingListenerStarted;
+    private final ClientControllerGUI controller;
 
-    public ClientModelGUI(String playerName) throws RemoteException {
+    public ClientModelGUI(String playerName, ClientControllerGUI controller) throws RemoteException {
         super();
         this.playerName=playerName;
         this.itsMyTurn=false;
@@ -60,6 +62,8 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.pingLock = new Object();
         this.pingListener = Executors.newSingleThreadScheduledExecutor();
         this.pingListenerStarted = false;
+
+        this.controller = controller;
     }
 
     /**
@@ -224,12 +228,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     public void gameStarted() {
         ensureModelIsSet();
         Platform.runLater(() -> {
-            Stage stage = ClientControllerGUI.controller.getStage();
-            try {
-                stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            controller.loadScene(SceneEnum.home);
         });
         gameStarted = true;
 

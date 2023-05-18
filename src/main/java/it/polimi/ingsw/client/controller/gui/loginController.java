@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class loginController {
+public class loginController extends FxmlController {
     @FXML
     Label welcome;
     @FXML
@@ -18,19 +18,22 @@ public class loginController {
     @FXML
     VBox vbox;
 
+    public loginController(ClientControllerGUI controller) {
+        super(controller);
+    }
+
     @FXML
     protected void signInAction() throws IOException {
         if(userName.getText().equals("")) {
             ClientControllerGUI.showError("Insert username");
         } else {
             welcome.setText(userName.getText() + " joined the game!");
-            final ClientModelGUI model = new ClientModelGUI(userName.getText());
-            ClientControllerGUI.controller.setModel(model);
+            final ClientModelGUI model = new ClientModelGUI(userName.getText(), controller);
+            controller.setModel(model);
 
-            ClientController.connect(ClientControllerGUI.controller, model);
+            ClientController.connect(controller, model);
 
-            Stage stage = (Stage) welcome.getScene().getWindow();
-            stage.setScene(new Scene(ClientControllerGUI.loadScene("Lobbies"), 800, 800));
+            controller.loadScene(SceneEnum.lobbySelection);
         }
     }
 

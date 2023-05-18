@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="vbox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.polimi.ingsw.client.controller.gui.loginController" stylesheets="@Start.css" >
+      stylesheets="@Start.css" >
 
 <AnchorPane  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" >
     <children >

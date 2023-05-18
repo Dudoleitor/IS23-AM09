@@ -18,11 +18,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class lobbiesGuiController implements Initializable {
-    private final ClientControllerGUI controller = ClientControllerGUI.controller;
-    private final ClientModelGUI model = controller.getModel();
-    private final Server server = controller.getServer();
-    private final Client client = controller.getClient();
+public class lobbiesGuiController extends FxmlController implements Initializable {
+    private final ClientModelGUI model;
+    private final Server server;
+    private final Client client;
     Map<Integer, Integer> availableLobbies = null;
 
     @FXML
@@ -36,9 +35,15 @@ public class lobbiesGuiController implements Initializable {
     @FXML
     TextField lobbyNumber;
 
+    public lobbiesGuiController(ClientControllerGUI controller) {
+        super(controller);
+        this.model = controller.getModel();
+        this.server = controller.getServer();
+        this.client = controller.getClient();
+    }
+
     private void nextScene() throws IOException {
-        Stage stage = (Stage) createButton.getScene().getWindow();
-        stage.setScene(new Scene(ClientControllerGUI.loadScene("WaitingLobby"), 800, 800));
+        controller.loadScene(SceneEnum.lobbyWaiting);
     }
 
     @FXML

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-public class homeScreenController implements Initializable {
+public class homeScreenController extends FxmlController implements Initializable {
     boolean clicked = false;
     private final double iHeight = 85.0;
     private final double iWidth = 49.0;
@@ -30,7 +30,12 @@ public class homeScreenController implements Initializable {
 
     private List<Position> move = new ArrayList<>();
 
-    private final ClientModelGUI model = ClientControllerGUI.controller.getModel();
+    private final ClientModelGUI model;
+
+    public homeScreenController(ClientControllerGUI controller) {
+        super(controller);
+        this.model = controller.getModel();
+    }
 
 
     @FXML
@@ -89,8 +94,7 @@ public class homeScreenController implements Initializable {
     @FXML
     protected void readChat() throws IOException {
         clicked = false;
-        Stage stage = (Stage) imgPersGoal.getScene().getWindow();
-        stage.setScene(new Scene(ClientControllerGUI.loadScene("Chat"), 800, 800));
+        controller.loadScene(SceneEnum.chat);
     }
 
     protected void setBoard() {
@@ -197,8 +201,7 @@ public class homeScreenController implements Initializable {
 
     @FXML
     protected void gameStatus() throws IOException {
-        Stage stage = (Stage) imgPersGoal.getScene().getWindow();
-        stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerShelves"), 800, 800));
+        controller.loadScene(SceneEnum.playerShelves);
     }
 
     @Override

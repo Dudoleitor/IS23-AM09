@@ -18,10 +18,9 @@ import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class WaitingLobbyController implements Initializable {
-    private final ClientControllerGUI controller = ClientControllerGUI.controller;
-    private final Server server = controller.getServer();
-    private final String playerName = controller.getClient().getPlayerName();
+public class WaitingLobbyController extends FxmlController implements Initializable {
+    private final Server server;
+    private final String playerName;
 
     @FXML
     VBox vbox;
@@ -31,6 +30,12 @@ public class WaitingLobbyController implements Initializable {
 
     @FXML
     Button startButton;
+
+    public WaitingLobbyController(ClientControllerGUI controller) {
+        super(controller);
+        this.server = controller.getServer();
+        this.playerName = controller.getClient().getPlayerName();
+    }
 
     @FXML
     protected void startMatch() throws IOException, LobbyException {

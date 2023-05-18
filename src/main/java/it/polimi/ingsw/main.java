@@ -63,11 +63,11 @@ public class main {
 
     private static void setSystemProps(){
         final String timeout = String.valueOf(NetworkSettings.WaitingTime);
-        System.setProperty("sun.rmi.transport.connectionTimeout", timeout);
-        System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", timeout);
-        System.setProperty("sun.rmi.transport.tcp.responseTimeout", timeout);
-        System.setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
-        System.setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
+        System.getProperties().setProperty("sun.rmi.transport.connectionTimeout", timeout);
+        System.getProperties().setProperty("sun.rmi.transport.tcp.handshakeTimeout", timeout);
+        System.getProperties().setProperty("sun.rmi.transport.tcp.responseTimeout", timeout);
+        System.getProperties().setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
+        System.getProperties().setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
         try {
             RMISocketFactory.setSocketFactory(new SocketFactory());
         } catch (IOException e) {

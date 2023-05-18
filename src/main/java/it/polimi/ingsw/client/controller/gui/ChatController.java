@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ChatController implements Initializable {
+public class ChatController extends FxmlController implements Initializable {
     @FXML
     TextField message;
 
@@ -21,8 +21,12 @@ public class ChatController implements Initializable {
 
     Text username = new Text();
 
-    private final ClientModelGUI model = ClientControllerGUI.controller.getModel();
+    private final ClientModelGUI model;
 
+    public ChatController(ClientControllerGUI controller) {
+        super(controller);
+        this.model = controller.getModel();
+    }
 
     @FXML
     protected void SendMsg() {
@@ -36,8 +40,7 @@ public class ChatController implements Initializable {
 
     @FXML
     protected void backHome() throws IOException {
-        Stage stage = (Stage) message.getScene().getWindow();
-        stage.setScene(new Scene(ClientControllerGUI.loadScene("PlayerHomeScreen"), 800, 800));
+        controller.loadScene(SceneEnum.home);
     }
 
     @Override
