@@ -210,7 +210,7 @@ public class homeScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         boolean turn = model.isItMyTurn();
         boolean myTurn = true; //questo sarà da togliere
-        if(!myTurn) {
+        if(!turn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
         setBoard();
@@ -221,5 +221,13 @@ public class homeScreenController implements Initializable {
             getPersonalGoal();
         }
         randCG();
+        if(model.isItMyTurn()) {
+            ImageView Image = new ImageView();
+            Image.setImage(new Image("gui/gameGraphics/misc/firstplayertoken.png"));
+            Image.setLayoutX(318.0);
+            Image.setLayoutX(176.0);
+            Image.setFitHeight(76.0);
+            Image.setFitWidth(45.0);
+        }
     }
 }
