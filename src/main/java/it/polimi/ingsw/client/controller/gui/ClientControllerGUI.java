@@ -42,6 +42,9 @@ public class ClientControllerGUI extends Application implements ClientController
     public boolean gameIsStarted() {
         return model.gameIsStarted();
     }
+    public void setChatUpdate() {
+
+    }
 
     public void loadScene(SceneEnum scene) {
         final FXMLLoader loader = new FXMLLoader(scene.getResource());
