@@ -32,6 +32,7 @@ public class homeScreenController extends FxmlController implements Initializabl
     private final double iWidthShelf = 390.0;
 
     private List<Position> move = new ArrayList<>();
+    private PartialMove partialMove = new PartialMove();
     Move actualMove = null;
 
     private final ClientModelGUI model;
@@ -144,33 +145,34 @@ public class homeScreenController extends FxmlController implements Initializabl
 
         if(move.size() >= 3) {
             ClientControllerGUI.showError("Max number of positions selected");
-        } else {
+            return;
+        }
+
             int column = (int) ((mouseEvent.getX())/25) - 1;
             int row = (int) ((mouseEvent.getY())/25) - 1;
 
             if(row < 0) row += 1;
             if(column < 0) column += 1;
 
+            Position pos = new Position(row, column);
+
+            if(model.getBoard().getValidPositions(partialMove).isEmpty()) {
+                controller.errorMessage("There are no more tiles to pick");
+            }
+
+            if(model.getBoard().getValidPositions(partialMove).contains(pos)) {
+               partialMove.addPosition(pos);
+                move.add(pos);
+            } else {
+                controller.errorMessage("Please enter a valid position");
+            }
+
             PartialMove pm = new PartialMove();
             pm.addPosition(new Position(row, column));
-            System.out.println(model.getBoard().getValidPositions(pm));
 
+            //System.out.println(model.getBoard().getValidPositions(pm));
 
-
-            Position pos = new Position(row, column);
-            move.add(pos);
-            System.out.println(move);
-
-            ImageView imageView = new ImageView();
-            imageView.setImage(loadImage("item_tiles/C1.png"));
-            imageView.setFitHeight(25.0);
-            imageView.setFitWidth(25.0);
-            imageView.setLayoutX(iWidth + column*25.0);
-            imageView.setLayoutY(iHeight + row*25.0);
-            anchor.getChildren().add(imageView);
-
-        }
-
+            System.out.println("Move: " + move);
 
         canvasBoard.toFront();
 
@@ -213,6 +215,7 @@ public class homeScreenController extends FxmlController implements Initializabl
         updateShelf();
         move.clear();
         actualMove = null;
+        partialMove = null;
     }
 
     @FXML
