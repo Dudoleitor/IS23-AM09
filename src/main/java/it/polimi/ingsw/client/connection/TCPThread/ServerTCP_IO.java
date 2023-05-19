@@ -77,6 +77,11 @@ public class ServerTCP_IO{
             }
         }
 
+        if (message.getCommand() == MessageTcp.MessageCommand.Ping) {
+            MessageTcp pongMessage = new MessageTcp();
+            pongMessage.setCommand(MessageTcp.MessageCommand.Ping); //set command
+            out(pongMessage.toString());
+        }
 
         return message;
 

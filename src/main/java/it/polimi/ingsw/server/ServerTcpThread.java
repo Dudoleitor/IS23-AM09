@@ -8,22 +8,26 @@ import org.json.simple.JSONObject;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerTcpThread extends Thread{ //TODO
     private final ClientSocket client;
     private final ServerMain server;
-    private  Lobby lobby;
+    private Lobby lobby;
     private boolean lobbyAssigned;
     private boolean exit;
-
-
+    private final Object pingLock;
+    private final ExecutorService executor;
 
     public ServerTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
         this.client= client;
         this.lobbyAssigned = false;
         this.exit = false;
-
+        this.pingLock = new Object();
+        this.executor = Executors.newSingleThreadExecutor();
+        executor.submit(new clientAlive(pingLock, client));
     }
 
     /**
@@ -63,6 +67,11 @@ public class ServerTcpThread extends Thread{ //TODO
                 break;
             case JoinSelectedLobby:
                 joinSelectedLobby(content,ID);
+                break;
+            case Ping:
+                synchronized (pingLock) {
+                    pingLock.notifyAll();
+                }
                 break;
             default:
                 client.out("Command does not exists");
@@ -363,4 +372,37 @@ public class ServerTcpThread extends Thread{ //TODO
     }
 
 
+}
+
+class clientAlive implements Runnable {
+    private final Object pingLock;
+    private final ClientSocket client;
+    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
+    protected clientAlive(Object pingLock, ClientSocket client){
+        this.pingLock = pingLock;
+        this.client = client;
+    }
+
+    @Override
+    public void run() {
+        long waitStart;
+        synchronized (pingLock) {
+            while (true) {
+                waitStart = System.currentTimeMillis();
+                try {
+                    pingLock.wait(waitTime);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                if (System.currentTimeMillis() >=
+                        waitStart + waitTime) {
+                    System.err.println("Client " + client.getPlayerName() + " has timed out.");
+                    client.getNetworkExceptionHandler()
+                            .handleNetworkException(
+                                    client,
+                                    new RemoteException("Client has timed out."));
+                }
+            }
+        }
+    }
 }

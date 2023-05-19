@@ -182,12 +182,12 @@ public class ServerTCPViewUpdater extends Thread{
         //TODO
     }
 
-    public String ping() {
+    public void ping() {
         try {
             clientModel.ping();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-        return "";
+
     }
 }

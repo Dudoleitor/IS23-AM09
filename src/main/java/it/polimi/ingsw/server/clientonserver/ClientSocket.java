@@ -99,6 +99,16 @@ public class ClientSocket implements Client {
     }
 
     /**
+     * This function is used by the clientAlive runnable
+     * to notify the exception handler when the client is
+     * not reachable anymore.
+     * @return reference to Exception handler
+     */
+    public NetworkExceptionHandler getNetworkExceptionHandler() {
+        return networkExceptionHandler;
+    }
+
+    /**
      * This method is used when a player picks a tile
      * from the board. It sends the message
      * to the remote view to remove the tile
