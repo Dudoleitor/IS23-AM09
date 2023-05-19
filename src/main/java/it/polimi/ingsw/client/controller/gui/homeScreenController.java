@@ -32,6 +32,7 @@ public class homeScreenController extends FxmlController implements Initializabl
     private final double iWidthShelf = 390.0;
 
     private List<Position> move = new ArrayList<>();
+    Move actualMove = null;
 
     private final ClientModelGUI model;
 
@@ -176,11 +177,20 @@ public class homeScreenController extends FxmlController implements Initializabl
         System.out.println("\n");
     }
 
-    public void clickedMouseShelf(MouseEvent mouseEvent) {
+    public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
         System.out.println("Shelf:");
 
         int column = (int) ((mouseEvent.getX())/30) - 1;
         if(column < 0) column += 1;
+
+        PartialMove pm = new PartialMove();
+        for(int i = 0; i < move.size(); i++) {
+            Position pos = new Position(move.get(i).getRow(), move.get(i).getColumn());
+            pm.addPosition(pos);
+        }
+
+        actualMove = new Move(pm, column);
+
 
         System.out.println("Column: " + column);
         System.out.println("\n");
@@ -196,13 +206,12 @@ public class homeScreenController extends FxmlController implements Initializabl
     @FXML
     protected void confirmMove() throws InvalidMoveException, LobbyException {
         System.out.println("Confirm Move");
-        PartialMove pm = new PartialMove();
-        for(int i = 0; i < move.size(); i++) {
-            Position pos = new Position(move.get(i).getRow(), move.get(i).getColumn());
-            pm.addPosition(pos);
-        }
 
-        controller.getServer().postMove(model.getPlayerName(), (Move) pm);
+        if(actualMove == null) {
+            controller.errorMessage("Click a column");
+            return;
+        }
+        controller.getServer().postMove(model.getPlayerName(), actualMove);
         move.clear();
     }
 
