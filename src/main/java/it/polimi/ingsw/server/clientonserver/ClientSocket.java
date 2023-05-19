@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.server.NetworkExceptionHandler;
+import it.polimi.ingsw.server.ServerTcpThread;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
@@ -31,6 +32,7 @@ public class ClientSocket implements Client {
 
     private BufferedReader ClientIn;
     private PrintWriter ClientOut;
+    private ServerTcpThread serverThreadListener;
 
     public ClientSocket() {}
 
@@ -74,6 +76,9 @@ public class ClientSocket implements Client {
         if(playerName == null){
             playerName = name;
         }
+    }
+    public void setThreadReference(ServerTcpThread thread){
+        this.serverThreadListener = thread;
     }
 
     public Socket getClientSocket() {
@@ -293,6 +298,9 @@ public class ClientSocket implements Client {
      */
     public void endGame(Map<String, Integer> leaderBoard){
         // TODO
+
+        if(serverThreadListener != null)
+            serverThreadListener.terminate();
     }
 
     /**
@@ -329,4 +337,5 @@ public class ClientSocket implements Client {
     public int hashCode() {
         return Objects.hash(playerName.toLowerCase());
     }
+
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ServerTcpThread extends Thread{ //TODO
+public class ServerTcpThread extends Thread{
     private final ClientSocket client;
     private final ServerMain server;
     private Lobby lobby;
@@ -23,6 +23,7 @@ public class ServerTcpThread extends Thread{ //TODO
     public ServerTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
         this.client= client;
+        client.setThreadReference(this);
         this.lobbyAssigned = false;
         this.exit = false;
         this.pingLock = new Object();
@@ -45,7 +46,9 @@ public class ServerTcpThread extends Thread{ //TODO
             else
                 executeLobbyCommnad(command,content,ID); //execute if lobby was assigned
         }
-
+        synchronized (executor) {
+            executor.shutdownNow(); //quits all runnable launched
+        }
 
     }
     private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content, String ID){
@@ -259,7 +262,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
         }
     }
-    public void postSecretToLiveChat(JSONObject message, String ID){
+    private void postSecretToLiveChat(JSONObject message, String ID){
         boolean foundErrors = false;
         PrivateChatMessage chatMessage = new PrivateChatMessage((JSONObject) message.get("chat"));
         String sender = chatMessage.getSender();
@@ -281,7 +284,7 @@ public class ServerTcpThread extends Thread{ //TODO
         }
 
     }
-    public void quit(JSONObject message, String ID){
+    private void quit(JSONObject message, String ID){
         boolean foundErrors = false;
         String playername = message.get("player").toString();
         synchronized (lobby) {
@@ -297,10 +300,11 @@ public class ServerTcpThread extends Thread{ //TODO
             feedback.setContent(result); //set message content
             feedback.setRequestID(ID);
             client.out(feedback.toString()); //send object to client
+            exit = true;
         }
 
     }
-    public void matchHasStarted(String ID){
+    private void matchHasStarted(String ID){
         boolean hasStarted;
         synchronized (lobby) {
             hasStarted = lobby.matchHasStarted();
@@ -314,7 +318,7 @@ public class ServerTcpThread extends Thread{ //TODO
         }
 
     }
-    public void postMove(JSONObject message, String ID){
+    private void postMove(JSONObject message, String ID){
         boolean foundErrors = false;
         String player = message.get("player").toString(); //TODO for myself, to find a more clean way
         JSONObject move = (JSONObject) message.get("move");
@@ -335,7 +339,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
     }
 
-    public void startGame(JSONObject player, String ID){
+    private void startGame(JSONObject player, String ID){
         boolean hasStarted;
         String username = player.get("player").toString();
         synchronized (lobby) {
@@ -351,7 +355,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
     }
 
-    public void isLobbyAdmin(JSONObject player, String ID){
+    private void isLobbyAdmin(JSONObject player, String ID){
         boolean isAdmin;
         String username = player.get("player").toString();
         synchronized (lobby) {
@@ -369,6 +373,10 @@ public class ServerTcpThread extends Thread{ //TODO
             client.out(feedback.toString()); //send object to client
         }
 
+    }
+
+    public void terminate(){
+        this.exit = true;
     }
 
 
