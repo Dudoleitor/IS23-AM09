@@ -5,6 +5,19 @@ Implementation of [My Shelfie](https://www.craniocreations.it/prodotto/my-shelfi
 
 The project task is to create a distributed system composed by a single server and multiple clients (one per player) that simulates the board game My Shelfies.  
 Clients can interact with the server both via CLI and GUI.
+
+## Features status
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Base game | :green_circle: ||
+| Complete game | :green_circle: ||
+| Multiple matches | :green_circle: ||
+| Game autosave | :yellow_circle: | Done automagically, user is not aware|
+| Disconnection handling | :yellow_circle: | Disconnection timeout not implemented server-side with TCP |
+| Chat | :yellow_circle: | Private chat non complete |
+| TUI | :green_circle: ||
+| GUI | :orange_circle: | WIP |
+
 ## Team members
 - __Adorni Michele__ _@Mik-Ado_ michele.adorni@mail.polimi.it
 - __Brunetta Giacomo__ _@giacomo-brunetta_ giacomo.brunetta@mail.polimi.it
