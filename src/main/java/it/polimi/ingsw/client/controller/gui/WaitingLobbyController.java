@@ -42,7 +42,7 @@ public class WaitingLobbyController extends FxmlController implements Initializa
     }
 
     @FXML
-    protected void startMatch() throws IOException, LobbyException {
+    protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
         if(server.isLobbyAdmin(playerName)) {
             server.startGame(playerName);

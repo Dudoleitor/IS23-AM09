@@ -1,8 +1,7 @@
 package it.polimi.ingsw.client.controller.gui;
+import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.model.ClientModelGUI;
-import it.polimi.ingsw.shared.model.BadPositionException;
-import it.polimi.ingsw.shared.model.InvalidMoveException;
-import it.polimi.ingsw.shared.model.Position;
+import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -13,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.json.simple.JSONObject;
 
 
 import java.io.IOException;
@@ -123,7 +123,7 @@ public class homeScreenController extends FxmlController implements Initializabl
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 6; j++) {
                 ImageView imageView = new ImageView();
-                imageView.setImage(loadImage("item_tiles/G1.png"));
+                imageView.setImage(loadImage("misc/sfondo_parquet.jpg"));
                 imageView.setFitHeight(24.0);
                 imageView.setFitWidth(24.0);
                 imageView.setLayoutX(iWidthShelf + i*35.0);
@@ -150,9 +150,11 @@ public class homeScreenController extends FxmlController implements Initializabl
             if(row < 0) row += 1;
             if(column < 0) column += 1;
 
-        /*PartialMove pm = new PartialMove();
-        pm.addPosition(new Position(row, column));
-        System.out.println(client.getController().getBoard().getValidPositions(pm));*/
+            PartialMove pm = new PartialMove();
+            pm.addPosition(new Position(row, column));
+            System.out.println(model.getBoard().getValidPositions(pm));
+
+
 
             Position pos = new Position(row, column);
             move.add(pos);
@@ -183,6 +185,25 @@ public class homeScreenController extends FxmlController implements Initializabl
         System.out.println("Column: " + column);
         System.out.println("\n");
 
+    }
+
+    @FXML
+    protected void deleteMove() {
+        move.clear();
+        System.out.println(move);
+    }
+
+    @FXML
+    protected void confirmMove() throws InvalidMoveException, LobbyException {
+        System.out.println("Confirm Move");
+        PartialMove pm = new PartialMove();
+        for(int i = 0; i < move.size(); i++) {
+            Position pos = new Position(move.get(i).getRow(), move.get(i).getColumn());
+            pm.addPosition(pos);
+        }
+
+        controller.getServer().postMove(model.getPlayerName(), (Move) pm);
+        move.clear();
     }
 
     @FXML
