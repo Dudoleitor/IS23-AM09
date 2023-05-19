@@ -191,7 +191,6 @@ public class homeScreenController extends FxmlController implements Initializabl
 
         actualMove = new Move(pm, column);
 
-
         System.out.println("Column: " + column);
         System.out.println("\n");
 
@@ -200,11 +199,10 @@ public class homeScreenController extends FxmlController implements Initializabl
     @FXML
     protected void deleteMove() {
         move.clear();
-        System.out.println(move);
     }
 
     @FXML
-    protected void confirmMove() throws InvalidMoveException, LobbyException {
+    protected void confirmMove() throws InvalidMoveException, LobbyException, BadPositionException {
         System.out.println("Confirm Move");
 
         if(actualMove == null) {
@@ -212,12 +210,35 @@ public class homeScreenController extends FxmlController implements Initializabl
             return;
         }
         controller.getServer().postMove(model.getPlayerName(), actualMove);
+        updateShelf();
         move.clear();
+        actualMove = null;
     }
 
     @FXML
     protected void gameStatus() throws IOException {
         controller.loadScene(SceneEnum.playerShelves);
+    }
+
+    public void updateShelf() throws BadPositionException {
+        Shelf playerShelf = model.getPlayersShelves().get(model.getPlayerName());
+        for(int i = 0; i < playerShelf.getRows(); i++) {
+            for(int j = 0; j < playerShelf.getColumns(); j++) {
+
+                if(!playerShelf.getTile(i, j).toString().equals("I") && !playerShelf.getTile(i, j).toString().equals("E")) {
+
+                    ImageView imageView = new ImageView();
+                    imageView.setImage(loadImage("item_tiles/" + playerShelf.getTile(i, j) + "2.png"));
+                    imageView.setFitHeight(24.0);
+                    imageView.setFitWidth(24.0);
+                    imageView.setLayoutX(iWidthShelf + j * 35.0);
+                    imageView.setLayoutY(iHeightShelf + i * 30.0);
+                    anchor.getChildren().add(imageView);
+                }
+            }
+        }
+
+        canvasShelf.toFront();
     }
 
     @Override
