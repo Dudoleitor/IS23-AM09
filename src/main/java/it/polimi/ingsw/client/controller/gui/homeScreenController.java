@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.controller.gui;
+import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.model.ClientModelGUI;
-import it.polimi.ingsw.shared.model.InvalidMoveException;
-import it.polimi.ingsw.shared.model.Position;
+import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.json.simple.JSONObject;
 
 
 import java.io.IOException;
@@ -31,6 +32,8 @@ public class homeScreenController extends FxmlController implements Initializabl
     private final double iWidthShelf = 390.0;
 
     private List<Position> move = new ArrayList<>();
+    private PartialMove partialMove = new PartialMove();
+    Move actualMove = null;
 
     private final ClientModelGUI model;
 
@@ -99,37 +102,22 @@ public class homeScreenController extends FxmlController implements Initializabl
         controller.loadScene(SceneEnum.chat);
     }
 
-    protected void setBoard() {
-        for(int i = 0; i < 9; i++) {
-            for(int j = 0; j < 9; j++) {
-                if((j == 0 && i == 0) || (j == 0 && i == 1) || (j == 0 && i == 2) || (j == 0 && i == 5) || (j == 0 && i == 6) || (j == 0 && i == 7) || (j == 0 && i == 8)
-                        || (j == 1 && i == 0) || (j == 1 && i == 1) || (j == 1 && i == 2) || (j == 1 && i == 6) || (j == 1 && i == 7) || (j == 1 && i == 8)) {
-                    j++;
+    protected void setBoard() throws BadPositionException {
+
+        for(int i = 0; i < model.getBoard().getNumRows(); i++) {
+            for(int j = 0; j < model.getBoard().getNumColumns(); j++) {
+                if(!model.getBoard().getTile(i, j).toString().equals("I") && !model.getBoard().getTile(i, j).toString().equals("E")) {
+                    ImageView imageView = new ImageView();
+                    imageView.setImage(loadImage("item_tiles/" + model.getBoard().getTile(i, j).toString() + "2.png"));
+                    imageView.setFitHeight(25.0);
+                    imageView.setFitWidth(25.0);
+                    imageView.setLayoutX(iWidth + j*25.0);
+                    imageView.setLayoutY(iHeight + i*25.0);
+
+                    anchor.getChildren().add(imageView);
                 }
-                ImageView imageView = new ImageView();
-                imageView.setImage(loadImage("item_tiles/Piante1_3.png"));
-                imageView.setFitHeight(25.0);
-                imageView.setFitWidth(25.0);
-                imageView.setLayoutX(iWidth + i*25.0);
-                imageView.setLayoutY(iHeight + j*25.0);
-                anchor.getChildren().add(imageView);
             }
         }
-
-        //Alla fine dovrà essere tipo così
-        /*for(int i = 0; i < client.getController().getBoard().getNumRows(); i++) {
-            for (int j = 0; j < client.getController().getBoard().getNumColumns(); j++) {
-                ImageView imageView = new ImageView();
-                client.getController().getBoard().getTile(i, j).toString();
-                imageView.setImage(loadImage("item_tiles/Piante1_3.png"));
-                imageView.setFitHeight(25.0);
-                imageView.setFitWidth(25.0);
-                imageView.setLayoutX(iWidth + i*25.0);
-                imageView.setLayoutY(iHeight + j*25.0);
-                anchor.getChildren().add(imageView);
-
-            }
-        }*/
         canvasBoard.toFront();
     }
 
@@ -137,7 +125,7 @@ public class homeScreenController extends FxmlController implements Initializabl
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 6; j++) {
                 ImageView imageView = new ImageView();
-                imageView.setImage(loadImage("item_tiles/Giochi1.1.png"));
+                imageView.setImage(loadImage("misc/sfondo_parquet.jpg"));
                 imageView.setFitHeight(24.0);
                 imageView.setFitWidth(24.0);
                 imageView.setLayoutX(iWidthShelf + i*35.0);
@@ -157,44 +145,53 @@ public class homeScreenController extends FxmlController implements Initializabl
 
         if(move.size() >= 3) {
             ClientControllerGUI.showError("Max number of positions selected");
-        } else {
+            return;
+        }
+
             int column = (int) ((mouseEvent.getX())/25) - 1;
             int row = (int) ((mouseEvent.getY())/25) - 1;
 
             if(row < 0) row += 1;
             if(column < 0) column += 1;
-            System.out.println(mouseEvent.getSource().toString());
-            System.out.println("Row: " + row);
-            System.out.println("Column: " + column);
-        /*PartialMove pm = new PartialMove();
-        pm.addPosition(new Position(row, column));
-        System.out.println(client.getController().getBoard().getValidPositions(pm));*/
 
             Position pos = new Position(row, column);
-            move.add(pos);
-            System.out.println(move);
 
-            ImageView imageView = new ImageView();
-            imageView.setImage(loadImage("item_tiles/Gatti1.1.png"));
-            imageView.setFitHeight(25.0);
-            imageView.setFitWidth(25.0);
-            imageView.setLayoutX(iWidth + column*25.0);
-            imageView.setLayoutY(iHeight + row*25.0);
-            anchor.getChildren().add(imageView);
+            if(model.getBoard().getValidPositions(partialMove).isEmpty()) {
+                controller.errorMessage("There are no more tiles to pick");
+            }
 
-        }
+            if(model.getBoard().getValidPositions(partialMove).contains(pos)) {
+               partialMove.addPosition(pos);
+                move.add(pos);
+            } else {
+                controller.errorMessage("Please enter a valid position");
+            }
 
+            PartialMove pm = new PartialMove();
+            pm.addPosition(new Position(row, column));
+
+            //System.out.println(model.getBoard().getValidPositions(pm));
+
+            System.out.println("Move: " + move);
 
         canvasBoard.toFront();
 
         System.out.println("\n");
     }
 
-    public void clickedMouseShelf(MouseEvent mouseEvent) {
+    public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
         System.out.println("Shelf:");
 
         int column = (int) ((mouseEvent.getX())/30) - 1;
         if(column < 0) column += 1;
+
+        PartialMove pm = new PartialMove();
+        for(int i = 0; i < move.size(); i++) {
+            Position pos = new Position(move.get(i).getRow(), move.get(i).getColumn());
+            pm.addPosition(pos);
+        }
+
+        actualMove = new Move(pm, column);
 
         System.out.println("Column: " + column);
         System.out.println("\n");
@@ -202,8 +199,49 @@ public class homeScreenController extends FxmlController implements Initializabl
     }
 
     @FXML
+    protected void deleteMove() {
+        move.clear();
+    }
+
+    @FXML
+    protected void confirmMove() throws InvalidMoveException, LobbyException, BadPositionException {
+        System.out.println("Confirm Move");
+
+        if(actualMove == null) {
+            controller.errorMessage("Click a column");
+            return;
+        }
+        controller.getServer().postMove(model.getPlayerName(), actualMove);
+        updateShelf();
+        move.clear();
+        actualMove = null;
+        partialMove = null;
+    }
+
+    @FXML
     protected void gameStatus() throws IOException {
         controller.loadScene(SceneEnum.playerShelves);
+    }
+
+    public void updateShelf() throws BadPositionException {
+        Shelf playerShelf = model.getPlayersShelves().get(model.getPlayerName());
+        for(int i = 0; i < playerShelf.getRows(); i++) {
+            for(int j = 0; j < playerShelf.getColumns(); j++) {
+
+                if(!playerShelf.getTile(i, j).toString().equals("I") && !playerShelf.getTile(i, j).toString().equals("E")) {
+
+                    ImageView imageView = new ImageView();
+                    imageView.setImage(loadImage("item_tiles/" + playerShelf.getTile(i, j) + "2.png"));
+                    imageView.setFitHeight(24.0);
+                    imageView.setFitWidth(24.0);
+                    imageView.setLayoutX(iWidthShelf + j * 35.0);
+                    imageView.setLayoutY(iHeightShelf + i * 30.0);
+                    anchor.getChildren().add(imageView);
+                }
+            }
+        }
+
+        canvasShelf.toFront();
     }
 
     @Override
@@ -212,7 +250,11 @@ public class homeScreenController extends FxmlController implements Initializabl
         if(!turn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
-        setBoard();
+        try {
+            setBoard();
+        } catch (BadPositionException e) {
+            e.printStackTrace();
+        }
         setShelf();
         getPersonalGoal();
         getCommonGoals();

@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -26,10 +27,13 @@ public class WaitingLobbyController extends FxmlController implements Initializa
     VBox vbox;
 
     @FXML
-    TextArea lobbyPlayers;
+    TextArea lobbyChat;
 
     @FXML
     Button startButton;
+
+    @FXML
+    TextField message;
 
     public WaitingLobbyController(ClientControllerGUI controller) {
         super(controller);
@@ -38,19 +42,30 @@ public class WaitingLobbyController extends FxmlController implements Initializa
     }
 
     @FXML
-    protected void startMatch() throws IOException, LobbyException {
+    protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
         if(server.isLobbyAdmin(playerName)) {
             server.startGame(playerName);
         }
     }
 
+    @FXML
+    protected void sendMessage() throws LobbyException {
+        controller.getServer().postToLiveChat(controller.getModel().getPlayerName(), message.getText());
+        lobbyChat.appendText(controller.getModel().getPlayerName() + ": " + message.getText() + "\n");
+        message.setText("");
+    }
+
     @Override
-    //TODO: fix isLobbyAdmin() here
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             if(!server.isLobbyAdmin(playerName)) {
                 startButton.setOpacity(0.0);
+            }
+            if(controller.getModel().getChat().getAllMessages().size() == 0)
+                return;
+            for(int i = 0; i < controller.getModel().getChat().getAllMessages().size(); i++) {
+                lobbyChat.appendText( controller.getModel().getChat().getAllMessages().get(i).getSender() + ": " +controller.getModel().getChat().getAllMessages().get(i).getMessage() + "\n");
             }
         } catch (LobbyException e) {
             e.printStackTrace();
