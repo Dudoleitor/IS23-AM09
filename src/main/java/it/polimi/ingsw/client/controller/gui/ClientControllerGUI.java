@@ -8,10 +8,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.net.URL;
 
 public class ClientControllerGUI extends Application implements ClientController {
     private ClientModelGUI model;
@@ -37,9 +39,6 @@ public class ClientControllerGUI extends Application implements ClientController
     public void setClient(Client client) {
         this.client = client;
     }
-    public Stage getStage() {
-        return stage;
-    }
     public boolean gameIsStarted() {
         return model.gameIsStarted();
     }
@@ -54,9 +53,23 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
-        stage.setScene(new Scene(parent, 800, 800, Color.GREEN));
+        stage.setScene(new Scene(parent, 800, 800));
     }
 
+    public static Image loadImage(String fileName) {
+        try {
+            final URL url = ClientControllerGUI
+                    .class
+                    .getClassLoader()
+                    .getResource("gui/gameGraphics/" + fileName);
+            if(url == null) {
+                throw new IOException("File not found");
+            }
+            return new Image(url.openStream());
+        } catch (IOException e) {
+            throw new RuntimeException("Error while loading image " + fileName + " :" + e.getMessage());
+        }
+    }
 
     public void start(Stage stage) throws IOException {
         this.stage = stage;

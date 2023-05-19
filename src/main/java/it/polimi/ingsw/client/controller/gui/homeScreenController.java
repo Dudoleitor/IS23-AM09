@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
+
 public class homeScreenController extends FxmlController implements Initializable {
     boolean clicked = false;
     private final double iHeight = 85.0;
@@ -75,19 +77,19 @@ public class homeScreenController extends FxmlController implements Initializabl
 
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
-        imgPersGoal.setImage(new Image("gui/gameGraphics/personal_goal_cards/Personal_Goals" + number + ".png"));
+        imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
     }
 
     private void getCommonGoals () {
 
-        int number1 = model.getCommonGoalList().get(0).getID() + 1;
-        int number2 = model.getCommonGoalList().get(1).getID() + 1;
+        int number1 = model.getCommonGoalList().get(0).getID();
+        int number2 = model.getCommonGoalList().get(1).getID();
 
-        commonGoal1.setImage(new Image("gui/gameGraphics/common_goal_cards/" + number1 + ".jpg"));
-        commonGoal2.setImage(new Image("gui/gameGraphics/common_goal_cards/" + number2 + ".jpg"));
+        commonGoal1.setImage(loadImage( "common_goal_cards/" + number1 + ".jpg"));
+        commonGoal2.setImage(loadImage("common_goal_cards/" + number2 + ".jpg"));
 
-        imageScoring1.setImage(new Image("gui/gameGraphics/scoring_tokens/scoring_" + model.getCommonGoalList().get(0).showPointsStack().get(model.getCommonGoalList().get(0).showPointsStack().size() - 1) + ".jpg"));
-        imageScoring2.setImage(new Image("gui/gameGraphics/scoring_tokens/scoring_" + model.getCommonGoalList().get(1).showPointsStack().get(model.getCommonGoalList().get(1).showPointsStack().size() - 1) + ".jpg"));
+        imageScoring1.setImage(loadImage("scoring_tokens/scoring_" + model.getCommonGoalList().get(0).showPointsStack().get(model.getCommonGoalList().get(0).showPointsStack().size() - 1) + ".jpg"));
+        imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + model.getCommonGoalList().get(1).showPointsStack().get(model.getCommonGoalList().get(1).showPointsStack().size() - 1) + ".jpg"));
     }
 
 
@@ -105,7 +107,7 @@ public class homeScreenController extends FxmlController implements Initializabl
                     j++;
                 }
                 ImageView imageView = new ImageView();
-                imageView.setImage(new Image("gui/gameGraphics/item_tiles/Piante1_3.png"));
+                imageView.setImage(loadImage("item_tiles/Piante1_3.png"));
                 imageView.setFitHeight(25.0);
                 imageView.setFitWidth(25.0);
                 imageView.setLayoutX(iWidth + i*25.0);
@@ -119,7 +121,7 @@ public class homeScreenController extends FxmlController implements Initializabl
             for (int j = 0; j < client.getController().getBoard().getNumColumns(); j++) {
                 ImageView imageView = new ImageView();
                 client.getController().getBoard().getTile(i, j).toString();
-                imageView.setImage(new Image("gui/gameGraphics/item_tiles/Piante1_3.png"));
+                imageView.setImage(loadImage("item_tiles/Piante1_3.png"));
                 imageView.setFitHeight(25.0);
                 imageView.setFitWidth(25.0);
                 imageView.setLayoutX(iWidth + i*25.0);
@@ -135,7 +137,7 @@ public class homeScreenController extends FxmlController implements Initializabl
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 6; j++) {
                 ImageView imageView = new ImageView();
-                imageView.setImage(new Image("gui/gameGraphics/item_tiles/Giochi1.1.png"));
+                imageView.setImage(loadImage("item_tiles/Giochi1.1.png"));
                 imageView.setFitHeight(24.0);
                 imageView.setFitWidth(24.0);
                 imageView.setLayoutX(iWidthShelf + i*35.0);
@@ -173,7 +175,7 @@ public class homeScreenController extends FxmlController implements Initializabl
             System.out.println(move);
 
             ImageView imageView = new ImageView();
-            imageView.setImage(new Image("gui/gameGraphics/item_tiles/Gatti1.1.png"));
+            imageView.setImage(loadImage("item_tiles/Gatti1.1.png"));
             imageView.setFitHeight(25.0);
             imageView.setFitWidth(25.0);
             imageView.setLayoutX(iWidth + column*25.0);
@@ -216,7 +218,7 @@ public class homeScreenController extends FxmlController implements Initializabl
         getCommonGoals();
         if(model.isItMyTurn()) {
             ImageView Image = new ImageView();
-            Image.setImage(new Image("gui/gameGraphics/misc/firstplayertoken.png"));
+            Image.setImage(loadImage("misc/firstplayertoken.png"));
             Image.setLayoutX(318.0);
             Image.setLayoutX(176.0);
             Image.setFitHeight(76.0);
