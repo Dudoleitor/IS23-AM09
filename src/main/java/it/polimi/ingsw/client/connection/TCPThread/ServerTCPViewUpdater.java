@@ -9,6 +9,7 @@ import it.polimi.ingsw.shared.model.TileGenericException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,11 @@ public class ServerTCPViewUpdater extends Thread{
     private boolean exit = false;
     private ClientModel clientModel;
     private final ArrayList<MessageTcp> update;
-    ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update){
+    private final PrintWriter serverOut;
+    ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update, PrintWriter serverOut){
         this.clientModel = clientModel;
         this.update = update;
+        this.serverOut = serverOut;
     }
     @Override
     public void run() {
@@ -192,5 +195,10 @@ public class ServerTCPViewUpdater extends Thread{
             throw new RuntimeException(e);
         }
 
+        MessageTcp pongMessage = new MessageTcp();
+        pongMessage.setCommand(MessageTcp.MessageCommand.Ping); //set command
+        synchronized (serverOut) {
+            serverOut.println(pongMessage);
+        }
     }
 }

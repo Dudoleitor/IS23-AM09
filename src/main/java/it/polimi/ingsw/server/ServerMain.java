@@ -282,7 +282,8 @@ class ServerPingSender implements Runnable {
      */
     public void run() {
         synchronized (server) {
-            for (Client c : server.getClientsWithoutLobby()) c.ping();
+            for (Client c : server.getClientsWithoutLobby())
+                c.ping();
         }
     };
 }
