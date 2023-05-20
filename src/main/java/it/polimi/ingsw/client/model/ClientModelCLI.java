@@ -218,7 +218,11 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
 
         enqueueTask(() -> cliIO.showGameStatus(board,commonGoalList,playersShelves,playerGoal));
         gameStarted = true;
-        enqueueTask(() -> cliIO.message("Match has started"));
+
+        final String message = newMatch ? "New match started" :
+                "Match started, loaded from previous save or you reconnected";
+
+        enqueueTask(() -> cliIO.message(message));
 
         executeTasks();
     }
