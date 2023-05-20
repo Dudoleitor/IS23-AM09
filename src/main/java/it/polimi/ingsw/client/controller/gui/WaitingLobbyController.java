@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class WaitingLobbyController extends FxmlController implements Initializable {
@@ -35,6 +37,9 @@ public class WaitingLobbyController extends FxmlController implements Initializa
     @FXML
     TextField message;
 
+    @FXML
+    CheckBox checkBox;
+
     public WaitingLobbyController(ClientControllerGUI controller) {
         super(controller);
         this.server = controller.getServer();
@@ -47,10 +52,21 @@ public class WaitingLobbyController extends FxmlController implements Initializa
         if(server.isLobbyAdmin(playerName)) {
             server.startGame(playerName, false);
         }
+
+        //TODO: here I need to set a flag which will be send to the server in order to load an existing match
+        if(checkBox.isSelected()) {
+            System.out.println("Selected");
+        } else {
+            System.out.println("Not selected");
+        }
     }
 
     @FXML
     protected void sendMessage() throws LobbyException {
+        if(message.getText().equals("")){
+            controller.errorMessage("Insert a message");
+            return;
+        }
         controller.getServer().postToLiveChat(controller.getModel().getPlayerName(), message.getText());
         lobbyChat.appendText(controller.getModel().getPlayerName() + ": " + message.getText() + "\n");
         message.setText("");
@@ -61,6 +77,7 @@ public class WaitingLobbyController extends FxmlController implements Initializa
         try {
             if(!server.isLobbyAdmin(playerName)) {
                 startButton.setOpacity(0.0);
+                checkBox.setOpacity(0.0);
             }
             if(controller.getModel().getChat().getAllMessages().size() == 0)
                 return;

@@ -31,6 +31,10 @@ public class ChatController extends FxmlController implements Initializable {
     @FXML
     protected void SendMsg() {
         //System.out.println(client.getController().getChat().getAllMessages());
+        if(message.getText().equals("")){
+            controller.errorMessage("Insert a message");
+            return;
+        }
         model.postChatMessage(model.getPlayerName(), message.getText());
         username.setText(model.getPlayerName());
         username.setStyle("-fx-text-background-color: green");
