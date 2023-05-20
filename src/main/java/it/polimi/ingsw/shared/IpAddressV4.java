@@ -27,6 +27,13 @@ public class IpAddressV4 {
     }
 
     public IpAddressV4(String str) throws ParseException{
+        if("localhost".equals(str)){
+            this.Byte1 = 127;
+            this.Byte2 = 0;
+            this.Byte3 = 0;
+            this.Byte4 = 1;
+            return;
+        }
         List<String> bytesStr = List.of(str.split("\\."));
         if(bytesStr.size() != 4){
             throw new ParseException("wrong IP parsing");
