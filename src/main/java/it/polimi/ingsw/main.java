@@ -30,6 +30,10 @@ import static it.polimi.ingsw.client.Client_Settings.UI.GUI;
 public class main {
     static private Options options;
     static private CommandLine commandLine;
+
+    /**
+     * Set options to Apache CLI starting from the OptionsParameters enum entries
+     */
     static private void initOptions(){
         options = new Options();
         Arrays.stream(OptionsParameters.values())
@@ -40,6 +44,9 @@ public class main {
                         .build()));
     }
 
+    /**
+     * Set RMI options
+     */
     private static void setSystemProps(){
         final String timeout = String.valueOf(NetworkSettings.WaitingTime);
         System.getProperties().setProperty("sun.rmi.transport.connectionTimeout", timeout);
@@ -54,6 +61,11 @@ public class main {
         }
     }
 
+    /**
+     * Ask the user between two mutually exclusive options
+     * @param a
+     * @param b
+     */
     private static void chooseBetween(OptionsParameters a, OptionsParameters b){
         System.out.println(messageFormat("Select "+a.getName()+" or "+b.getName()));
         String response = scan();
@@ -68,6 +80,10 @@ public class main {
         }
     }
 
+    /**
+     * Set the View option for client
+     * @param cs
+     */
     private static void setClientView(Client_Settings cs){
         while(!(Cli.isSet() || Gui.isSet())){
             chooseBetween(Cli,Gui);
@@ -81,6 +97,10 @@ public class main {
         }
     }
 
+    /**
+     * Set the connection option for Client
+     * @param cs
+     */
     private static void setClientConnection(Client_Settings cs){
         setServerIp();
         while(!(Tcp.isSet() || Rmi.isSet())){
@@ -98,16 +118,29 @@ public class main {
         }
     }
 
+    /**
+     * Set Ip and Ports for Server
+     */
     private static void setServerConnection(){
         setServerIp();
         setPort(Tcp);
         setPort(Rmi);
     }
 
+    /**
+     * Check if the integer is a valid port
+     * @param port
+     * @return true is a valid port
+     */
     private static boolean isValidPort(int port){
         return port < 65535 && port > 1024;
     }
 
+    /**
+     * Ask the user for a port
+     * @param opt
+     * @return the port int
+     */
     private static int askPort(OptionsParameters opt){
         boolean isValid = false;
         int port = 0;
@@ -131,6 +164,10 @@ public class main {
         return port;
     }
 
+    /**
+     * Set a port option
+     * @param opt
+     */
     private static void setPort(OptionsParameters opt){
         int port = 0;
         if(opt.isSet()){
@@ -164,6 +201,9 @@ public class main {
         }
     }
 
+    /**
+     * Set the server ip
+     */
     private static void setServerIp(){
         String ipStr = "";
         IpAddressV4 ip = null;
@@ -182,6 +222,10 @@ public class main {
         NetworkSettings.serverIp = ip;
     }
 
+    /**
+     * ask the client for an Ip address
+     * @return the ip address
+     */
     private static IpAddressV4 askIP(){
         boolean set = false;
         IpAddressV4 res = null;
@@ -199,6 +243,9 @@ public class main {
         return res;
     }
 
+    /**
+     * start clint according to settings
+     */
     private static void startClient(){
         final ClientController controller;
         switch (Client_Settings.ui) {
@@ -215,6 +262,9 @@ public class main {
         controller.startClient();
     }
 
+    /**
+     * start the server according to settings
+     */
     private static void startServer(){
         System.out.println("Starting server");
         ServerMain.startServer();
