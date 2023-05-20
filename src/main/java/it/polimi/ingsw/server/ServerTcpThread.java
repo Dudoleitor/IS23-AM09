@@ -46,9 +46,7 @@ public class ServerTcpThread extends Thread{
             else
                 executeLobbyCommnad(command,content,ID); //execute if lobby was assigned
         }
-        synchronized (executor) {
-            executor.shutdownNow(); //quits all runnable launched
-        }
+        executor.shutdownNow(); //quits all runnable launched
 
     }
     private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content, String ID){
@@ -378,8 +376,9 @@ public class ServerTcpThread extends Thread{
 
     public void terminate(){
         this.exit = true;
+        executor.shutdownNow();
+        Thread.currentThread().interrupt();
     }
-
 
 }
 
