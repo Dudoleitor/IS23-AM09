@@ -227,11 +227,18 @@ public class ClientSocket implements Client {
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
+     * @param newMatch true if the game is new,
+     *        false if it was loaded from a save or the player
+     *        reconnected.
      */
     @Override
-    public void gameStarted() {
+    public void gameStarted(boolean newMatch) {
+        JSONObject content= new JSONObject();
+        content.put("newMatch", newMatch);
+
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.NotifyStart);
+        update.setContent(content);
         out(update.toString());
 
     }

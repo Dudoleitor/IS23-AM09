@@ -88,8 +88,11 @@ public interface Client {
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
+     * @param newMatch true if the game is new,
+     *        false if it was loaded from a save or the player
+     *        reconnected.
      */
-    public void gameStarted();
+    public void gameStarted(boolean newMatch);
 
     /**
      * This function is used when the turn of a player ends.

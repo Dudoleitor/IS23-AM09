@@ -52,13 +52,9 @@ public class ClientStub implements Client {
 
     }
 
-    /**
-     * This method is used when the lobby is ready and the
-     * admin started the game.
-     *
-     */
+
     @Override
-    public void gameStarted() {
+    public void gameStarted(boolean loadedFromSave) {
 
     }
 

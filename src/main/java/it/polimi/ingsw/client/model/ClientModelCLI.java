@@ -208,9 +208,12 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
+     * @param newMatch true if the game is new,
+     *        false if it was loaded from a save or the player
+     *        reconnected.
      */
     @Override
-    public void gameStarted() {
+    public void gameStarted(boolean newMatch) {
         ensureModelIsSet();
 
         enqueueTask(() -> cliIO.showGameStatus(board,commonGoalList,playersShelves,playerGoal));

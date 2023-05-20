@@ -22,4 +22,5 @@ public interface ServerLobbyInterface extends Remote {
     boolean isLobbyAdmin(String player) throws RemoteException;
     int getID() throws RemoteException;
     String getCurrentPlayer() throws RemoteException;
+    void eraseSavedMatches(String player) throws RemoteException;
 }

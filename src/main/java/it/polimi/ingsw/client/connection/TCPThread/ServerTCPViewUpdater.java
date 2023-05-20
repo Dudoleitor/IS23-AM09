@@ -65,7 +65,7 @@ public class ServerTCPViewUpdater extends Thread{
                 refreshChat(content);
                 break;
             case NotifyStart:
-                gameStarted();
+                gameStarted(content);
                 break;
             case UpdateTurn:
                 updateTurn(content);
@@ -143,9 +143,10 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void gameStarted() {
+    public void gameStarted(JSONObject content) {
+        final boolean newMatch = Boolean.parseBoolean(content.get("newMatch").toString());
         try {
-            clientModel.gameStarted();
+            clientModel.gameStarted(newMatch);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

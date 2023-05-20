@@ -38,6 +38,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     private final ScheduledExecutorService executor;
     private final LobbyPingSender pingSender;
     private final long pingIntervalSeconds = NetworkSettings.serverPingIntervalSeconds;
+    private boolean erasePreviousMatches;
 
     public Lobby(Client firstPlayer, int id) throws RemoteException {
         super();
@@ -50,6 +51,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         this.pingSender = new LobbyPingSender(this);
         this.executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
+        this.erasePreviousMatches = false;
     }
 
     /**
@@ -67,7 +69,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             if(controller!=null)
                 controller.clientReconnected(client);
             if (started)
-                client.gameStarted();
+                client.gameStarted(false);
             return;
         }
 
@@ -78,7 +80,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             clients.add(client);
             client.setExceptionHandler(this);
             chat.addPlayer(client);
-        }else
+        } else
             throw new RuntimeException("Lobby already full");
     }
 
@@ -175,16 +177,28 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
                 .map(Client::getPlayerName)
                 .collect(Collectors.toList()));
         final Path prevSavePath = Path.of("./" + prevSaveFilename);
-        if (Files.exists(prevSavePath)) {
+
+        boolean loadedFromSave = false;
+        if(Files.exists(prevSavePath) && erasePreviousMatches) {
+            try {
+                Files.delete(prevSavePath);
+            } catch (IOException e) {
+                System.err.println("Error while deleting previous match: " + e.getMessage());
+            }
+        }
+
+        if (Files.exists(prevSavePath) && !erasePreviousMatches) {
             try (InputStream stream = Files.newInputStream(prevSavePath)) {
                 final Reader reader = new InputStreamReader(stream);
                 final JSONObject gameStatus = (JSONObject) new JSONParser().parse(reader);
                 controller = new Controller(gameStatus, new ArrayList<>(clients));
+                loadedFromSave = true;
             } catch (IOException | ParseException | JsonBadParsingException e) {
                 System.err.println("Error while loading previous match: " + e.getMessage());
                 try {
                     Files.deleteIfExists(prevSavePath);
-                } catch (IOException ignored) {
+                } catch (IOException ex) {
+                    System.err.println("Error while deleting invalid match: " + ex.getMessage());
                 }
                 controller = null;
             }
@@ -198,7 +212,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         }
 
         for(Client c : clients)
-            c.gameStarted();
+            c.gameStarted(!loadedFromSave);
         return true;
     }
 
@@ -322,6 +336,19 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
             client.disconnect();
         }
+    }
+
+    /**
+     * This method is used by the lobby admin to
+     * ignored matches previously saved.
+     * Must be called before starting a new match.
+     * Does nothing if the player is not the admin.
+     * @param player String, name of the player performing the request
+     */
+    @Override
+    public synchronized void eraseSavedMatches(String player) {
+        if(!isLobbyAdmin(player)) return;
+        erasePreviousMatches = true;
     }
 }
 

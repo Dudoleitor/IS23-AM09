@@ -60,7 +60,7 @@ public interface ClientRemote extends Remote, Serializable {
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client
      */
-    public void gameStarted() throws RemoteException;
+    public void gameStarted(boolean newMatch) throws RemoteException;
 
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client
