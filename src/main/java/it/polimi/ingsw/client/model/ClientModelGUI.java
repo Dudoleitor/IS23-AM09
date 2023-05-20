@@ -229,9 +229,9 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public void gameStarted(boolean newMatch) {
-        // TODO notify user the match is new or loaded
         ensureModelIsSet();
         Platform.runLater(() -> {
+            controller.setNewMatch(newMatch);
             controller.loadScene(SceneEnum.home);
         });
         gameStarted = true;
