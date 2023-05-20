@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.TextField?>
 <VBox fx:id="vbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@WaitingLobby.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
       <AnchorPane fx:id="anchor" prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -22,9 +23,14 @@
                   <Font name="SF Mono Regular" size="15.0" />
                </font>
             </Text>
-         <Button fx:id="startButton" layoutX="300.0" layoutY="319.0" mnemonicParsing="false" style="-fx-background-color: #49be25;" text="Start Match" onAction="#startMatch" />
-            <Button layoutX="197.0" layoutY="319.0" mnemonicParsing="false" style="-fx-background-color: #49be25;" text="Send Message" onAction="#sendMessage" />
+         <Button fx:id="startButton" layoutX="300.0" layoutY="319.0" mnemonicParsing="false" onAction="#startMatch" style="-fx-background-color: #49be25;" text="Start Match" />
+            <Button layoutX="197.0" layoutY="319.0" mnemonicParsing="false" onAction="#sendMessage" style="-fx-background-color: #49be25;" text="Send Message" />
             <TextField fx:id="message" layoutX="83.0" layoutY="276.0" prefHeight="26.0" prefWidth="439.0" promptText="Message" />
+         <CheckBox fx:id="checkBox" layoutX="393.0" layoutY="323.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="125.0" text="Load previous match">
+            <font>
+               <Font size="11.0" />
+            </font>
+         </CheckBox>
 
          </children>
       </AnchorPane>

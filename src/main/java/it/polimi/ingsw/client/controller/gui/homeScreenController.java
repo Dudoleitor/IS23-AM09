@@ -61,7 +61,6 @@ public class homeScreenController extends FxmlController implements Initializabl
     @FXML
     Canvas canvasShelf;
 
-
     @FXML
    ImageView commonGoal1;
 
@@ -95,6 +94,16 @@ public class homeScreenController extends FxmlController implements Initializabl
         imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + model.getCommonGoalList().get(1).showPointsStack().get(model.getCommonGoalList().get(1).showPointsStack().size() - 1) + ".jpg"));
     }
 
+    /**
+     * @param turn: if turn == true, then it is my turn
+     */
+    public void setMyTurn(boolean turn) {
+        if(turn) {
+            turnFlag.setStyle("-fx-fill: yellow;");
+        } else {
+            turnFlag.setStyle("-fx-fill: grey;");
+        }
+    }
 
     @FXML
     protected void readChat() throws IOException {
@@ -140,8 +149,13 @@ public class homeScreenController extends FxmlController implements Initializabl
     //BOARD: 25 (column getX) x 25 (getY)
     //SHELF: 24 (getY) x 24 (getX)
 
-    public void clickedMouseBoard(MouseEvent mouseEvent) throws InvalidMoveException {
+    public void clickedMouseBoard(MouseEvent mouseEvent) throws InvalidMoveException, BadPositionException {
         System.out.println("Board:");
+
+        if(!model.isItMyTurn()) {
+            controller.errorMessage("Wait your turn");
+            return;
+        }
 
         if(move.size() >= 3) {
             ClientControllerGUI.showError("Max number of positions selected");
@@ -169,6 +183,8 @@ public class homeScreenController extends FxmlController implements Initializabl
 
             PartialMove pm = new PartialMove();
             pm.addPosition(new Position(row, column));
+
+            //setBoardValidPositions(partialMove);
 
             //System.out.println(model.getBoard().getValidPositions(pm));
 
