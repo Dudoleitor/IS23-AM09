@@ -170,14 +170,14 @@ public class main {
      */
     private static void setPort(OptionsParameters opt){
         int port = 0;
-        if(opt.isSet()){
+        if(commandLine.hasOption(opt.getName())){
             try{
                 port = Integer.parseInt(commandLine.getOptionValue(opt.getName()));
                 if(!isValidPort(port)){
                     opt.reset();
                 }
                 else{
-                    opt.reset();
+                    opt.set();
                 }
             }
             catch (Exception e){
@@ -188,6 +188,8 @@ public class main {
             port = askPort(opt);
             opt.set();
         }
+
+        System.out.println(messageFormat(opt.getName()+" port set to "+port));
 
         switch (opt){
             case Rmi:
