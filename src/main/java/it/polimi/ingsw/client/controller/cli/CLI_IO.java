@@ -29,6 +29,7 @@ public class CLI_IO {
         }
         inputSanitizer = new InputSanitizer();
         scanner = new Scanner(System.in);
+        System.out.println(gameLogo);
     }
 
     protected LobbyCommand askCommand(){
@@ -406,7 +407,6 @@ public class CLI_IO {
     }
     protected String askUserName(){
         synchronized (cli_lock){
-            System.out.println(gameLogo);
             String name = "";
             while(!inputSanitizer.isValidName(name)){
                 printMessage("Enter your username");

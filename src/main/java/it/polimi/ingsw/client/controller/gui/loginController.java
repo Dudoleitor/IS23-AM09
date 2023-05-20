@@ -24,17 +24,18 @@ public class loginController extends FxmlController {
 
     @FXML
     protected void signInAction() throws IOException {
-        if(userName.getText().equals("")) {
+        if (userName.getText().equals("")) {
             ClientControllerGUI.showError("Insert username");
-        } else {
-            welcome.setText(userName.getText() + " joined the game!");
-            final ClientModelGUI model = new ClientModelGUI(userName.getText(), controller);
-            controller.setModel(model);
-
-            ClientController.connect(controller, model);
-
-            controller.loadScene(SceneEnum.lobbySelection);
+            return;
         }
+        final ClientModelGUI model = new ClientModelGUI(userName.getText(), controller);
+
+        if (!ClientController.connect(controller, model))  // Login failed
+            return;
+
+        welcome.setText(userName.getText() + " joined the game!");
+        controller.setModel(model);
+        controller.loadScene(SceneEnum.lobbySelection);
     }
 
 }

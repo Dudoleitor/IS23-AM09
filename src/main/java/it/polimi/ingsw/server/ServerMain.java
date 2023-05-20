@@ -118,6 +118,21 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @throws RemoteException is there are problems with connection
      */
     public synchronized boolean login(Client client) throws RemoteException {
+        final String playerName = client.getPlayerName().toLowerCase();
+
+        if(clientsWithoutLobby.stream()
+                .anyMatch(x ->
+                        x.getPlayerName().toLowerCase().equals(playerName))){
+            return false;
+        }
+        for (Lobby l : lobbies) {
+            if (l.getPlayerNames().stream()
+                    .anyMatch(x ->
+                            x.toLowerCase().equals(playerName))) {
+                return false;
+            }
+        }
+
         clientsWithoutLobby.add(client);
         client.setExceptionHandler(this);
         System.out.println(client.getPlayerName() + " has just logged in");

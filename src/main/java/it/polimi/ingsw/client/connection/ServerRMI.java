@@ -35,8 +35,7 @@ public class ServerRMI extends Server {
                 server = (ServerInterface) registry.lookup("interface");
                 //try to log in
             }
-            server.login((ClientRMI) client);
-            return true;
+            return server.login((ClientRMI) client);
         } catch (RemoteException | NotBoundException e) {
             return false;
         }
