@@ -12,30 +12,29 @@ public class ServerTCPListener extends Thread{
     private final ArrayList<MessageTcp> responses;
     private final ArrayList<MessageTcp> updates;
 
+    private boolean exit = false;
+
     public ServerTCPListener(BufferedReader serverIn, ArrayList responses, ArrayList updates) {
         this.serverIn = serverIn;
         this.responses = responses;
         this.updates = updates;
     }
     @Override
-    public void run(){
-        boolean exit = false;
-        while (!exit){
+    public void run() {
+        while (!exit) {
             MessageTcp incomingMessage = in();
-            if(incomingMessage.isReplyMessage()) {
-                synchronized (responses){
+            if (incomingMessage.isReplyMessage()) {
+                synchronized (responses) {
                     responses.add(incomingMessage);
                     responses.notifyAll();
                 }
-            } else if (incomingMessage.isUpdateMessage()){
-                synchronized (updates){
+            } else if (incomingMessage.isUpdateMessage()) {
+                synchronized (updates) {
                     updates.add(incomingMessage);
                     updates.notifyAll();
                 }
             }
-
         }
-
     }
 
     public MessageTcp in() {
@@ -49,5 +48,9 @@ public class ServerTCPListener extends Thread{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void terminate(){
+        this.exit = true;
     }
 }

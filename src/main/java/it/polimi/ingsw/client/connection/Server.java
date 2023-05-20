@@ -92,10 +92,12 @@ public abstract class Server {
 
     /**
      * Start the game on Server
-     * @param player
+     * @param player is the player who asked to start the game
+     * @param erasePreviousMatches if true, the previous match with the same players will be erased
+     *                             if false, the previous match with the same players will be loaded
      * @return true if match has actually started (the player is the admin)
      */
-    abstract public boolean startGame(String player) throws LobbyException;
+    abstract public boolean startGame(String player, boolean erasePreviousMatches) throws LobbyException;
 
     /**
      * Ask Server if player is admin. Admin can Change if old admin disconnects

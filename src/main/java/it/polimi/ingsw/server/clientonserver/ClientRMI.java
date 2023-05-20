@@ -144,11 +144,14 @@ public class ClientRMI implements Client, Serializable {
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
+     * @param newMatch true if the game is new,
+     *        false if it was loaded from a save or the player
+     *        reconnected.
      */
     @Override
-    public void gameStarted() {
+    public void gameStarted(boolean newMatch) {
         try {
-            clientRemote.gameStarted();
+            clientRemote.gameStarted(newMatch);
         } catch (RemoteException e) {
             exceptionHandler.handleNetworkException(this, e);
         }

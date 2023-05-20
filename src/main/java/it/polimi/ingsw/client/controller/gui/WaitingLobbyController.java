@@ -50,7 +50,7 @@ public class WaitingLobbyController extends FxmlController implements Initializa
     protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
         if(server.isLobbyAdmin(playerName)) {
-            server.startGame(playerName);
+            server.startGame(playerName, false);
         }
 
         //TODO: here I need to set a flag which will be send to the server in order to load an existing match

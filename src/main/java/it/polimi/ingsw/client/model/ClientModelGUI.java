@@ -223,11 +223,15 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
+     * @param newMatch true if the game is new,
+     *        false if it was loaded from a save or the player
+     *        reconnected.
      */
     @Override
-    public void gameStarted() {
+    public void gameStarted(boolean newMatch) {
         ensureModelIsSet();
         Platform.runLater(() -> {
+            controller.setNewMatch(newMatch);
             controller.loadScene(SceneEnum.home);
         });
         gameStarted = true;

@@ -8,22 +8,27 @@ import org.json.simple.JSONObject;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class ServerTcpThread extends Thread{ //TODO
+public class ServerTcpThread extends Thread{
     private final ClientSocket client;
     private final ServerMain server;
-    private  Lobby lobby;
+    private Lobby lobby;
     private boolean lobbyAssigned;
     private boolean exit;
-
-
+    private final Object pingLock;
+    private final ExecutorService executor;
 
     public ServerTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
         this.client= client;
+        client.setThreadReference(this);
         this.lobbyAssigned = false;
         this.exit = false;
-
+        this.pingLock = new Object();
+        this.executor = Executors.newSingleThreadExecutor();
+        executor.submit(new clientAlive(pingLock, client));
     }
 
     /**
@@ -32,7 +37,7 @@ public class ServerTcpThread extends Thread{ //TODO
     @Override
     public void run() {
         while(!exit){
-            MessageTcp message = client.in(); //TODO to make it wait on input ready
+            MessageTcp message = client.in();
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
             String ID = message.getRequestID();
             JSONObject content = message.getContent(); //content in JSON
@@ -41,7 +46,7 @@ public class ServerTcpThread extends Thread{ //TODO
             else
                 executeLobbyCommnad(command,content,ID); //execute if lobby was assigned
         }
-
+        executor.shutdownNow(); //quits all runnable launched
 
     }
     private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content, String ID){
@@ -63,6 +68,11 @@ public class ServerTcpThread extends Thread{ //TODO
                 break;
             case JoinSelectedLobby:
                 joinSelectedLobby(content,ID);
+                break;
+            case Ping:
+                synchronized (pingLock) {
+                    pingLock.notifyAll();
+                }
                 break;
             default:
                 client.out("Command does not exists");
@@ -250,7 +260,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
         }
     }
-    public void postSecretToLiveChat(JSONObject message, String ID){
+    private void postSecretToLiveChat(JSONObject message, String ID){
         boolean foundErrors = false;
         PrivateChatMessage chatMessage = new PrivateChatMessage((JSONObject) message.get("chat"));
         String sender = chatMessage.getSender();
@@ -272,7 +282,7 @@ public class ServerTcpThread extends Thread{ //TODO
         }
 
     }
-    public void quit(JSONObject message, String ID){
+    private void quit(JSONObject message, String ID){
         boolean foundErrors = false;
         String playername = message.get("player").toString();
         synchronized (lobby) {
@@ -288,10 +298,11 @@ public class ServerTcpThread extends Thread{ //TODO
             feedback.setContent(result); //set message content
             feedback.setRequestID(ID);
             client.out(feedback.toString()); //send object to client
+            terminate();
         }
 
     }
-    public void matchHasStarted(String ID){
+    private void matchHasStarted(String ID){
         boolean hasStarted;
         synchronized (lobby) {
             hasStarted = lobby.matchHasStarted();
@@ -305,7 +316,7 @@ public class ServerTcpThread extends Thread{ //TODO
         }
 
     }
-    public void postMove(JSONObject message, String ID){
+    private void postMove(JSONObject message, String ID){
         boolean foundErrors = false;
         String player = message.get("player").toString(); //TODO for myself, to find a more clean way
         JSONObject move = (JSONObject) message.get("move");
@@ -326,11 +337,12 @@ public class ServerTcpThread extends Thread{ //TODO
 
     }
 
-    public void startGame(JSONObject player, String ID){
+    private void startGame(JSONObject content, String ID){
         boolean hasStarted;
-        String username = player.get("player").toString();
+        String username = content.get("player").toString();
+        final boolean erasePreviousMatches = content.get("erasePreviousMatches").toString().equals("true");
         synchronized (lobby) {
-            hasStarted = lobby.startGame(username);
+            hasStarted = lobby.startGame(username, erasePreviousMatches);
             JSONObject result = new JSONObject();
             result.put("start", hasStarted);
             MessageTcp feedback = new MessageTcp(); //message to send back
@@ -342,7 +354,7 @@ public class ServerTcpThread extends Thread{ //TODO
 
     }
 
-    public void isLobbyAdmin(JSONObject player, String ID){
+    private void isLobbyAdmin(JSONObject player, String ID){
         boolean isAdmin;
         String username = player.get("player").toString();
         synchronized (lobby) {
@@ -362,5 +374,43 @@ public class ServerTcpThread extends Thread{ //TODO
 
     }
 
+    public void terminate(){
+        this.exit = true;
+        executor.shutdownNow();
+        Thread.currentThread().interrupt();
+    }
 
+}
+
+class clientAlive implements Runnable {
+    private final Object pingLock;
+    private final ClientSocket client;
+    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
+    protected clientAlive(Object pingLock, ClientSocket client){
+        this.pingLock = pingLock;
+        this.client = client;
+    }
+
+    @Override
+    public void run() {
+        long waitStart;
+        synchronized (pingLock) {
+            while (true) {
+                waitStart = System.currentTimeMillis();
+                try {
+                    pingLock.wait(waitTime);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                if (System.currentTimeMillis() >=
+                        waitStart + waitTime) {
+                    System.err.println("Client " + client.getPlayerName() + " has timed out.");
+                    client.getNetworkExceptionHandler()
+                            .handleNetworkException(
+                                    client,
+                                    new RemoteException("Client has timed out."));
+                }
+            }
+        }
+    }
 }

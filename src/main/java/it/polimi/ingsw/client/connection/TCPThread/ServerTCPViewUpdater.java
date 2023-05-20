@@ -9,6 +9,7 @@ import it.polimi.ingsw.shared.model.TileGenericException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,11 @@ public class ServerTCPViewUpdater extends Thread{
     private boolean exit = false;
     private ClientModel clientModel;
     private final ArrayList<MessageTcp> update;
-    ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update){
+    private final PrintWriter serverOut;
+    ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update, PrintWriter serverOut){
         this.clientModel = clientModel;
         this.update = update;
+        this.serverOut = serverOut;
     }
     @Override
     public void run() {
@@ -65,7 +68,7 @@ public class ServerTCPViewUpdater extends Thread{
                 refreshChat(content);
                 break;
             case NotifyStart:
-                gameStarted();
+                gameStarted(content);
                 break;
             case UpdateTurn:
                 updateTurn(content);
@@ -85,9 +88,6 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void exit(){
-        exit = true;
-    }
     public void changeView(ClientModel clientModel){
         this.clientModel = clientModel;
     }
@@ -143,9 +143,10 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void gameStarted() {
+    public void gameStarted(JSONObject content) {
+        final boolean newMatch = Boolean.parseBoolean(content.get("newMatch").toString());
         try {
-            clientModel.gameStarted();
+            clientModel.gameStarted(newMatch);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -178,16 +179,26 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void disconnect() {
+    public void disconnect(){
         //TODO
+        //terminate()
     }
 
-    public String ping() {
+    public void terminate() {
+        this.exit = true;
+    }
+
+    public void ping() {
         try {
             clientModel.ping();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-        return "";
+
+        MessageTcp pongMessage = new MessageTcp();
+        pongMessage.setCommand(MessageTcp.MessageCommand.Ping); //set command
+        synchronized (serverOut) {
+            serverOut.println(pongMessage);
+        }
     }
 }

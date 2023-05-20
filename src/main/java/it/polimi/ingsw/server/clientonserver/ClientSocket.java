@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.server.NetworkExceptionHandler;
+import it.polimi.ingsw.server.ServerTcpThread;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
@@ -31,6 +32,7 @@ public class ClientSocket implements Client {
 
     private BufferedReader ClientIn;
     private PrintWriter ClientOut;
+    private ServerTcpThread serverThreadListener;
 
     public ClientSocket() {}
 
@@ -38,7 +40,7 @@ public class ClientSocket implements Client {
      * socket input buffer
      * @return the read line of the buffer
      */
-    public MessageTcp in(){ //TODO to handle with a thread, otherwise I can't send an update while waiting for a message
+    public MessageTcp in(){
         boolean ready = false;
         try {
             while(!ready){
@@ -75,6 +77,9 @@ public class ClientSocket implements Client {
             playerName = name;
         }
     }
+    public void setThreadReference(ServerTcpThread thread){
+        this.serverThreadListener = thread;
+    }
 
     public Socket getClientSocket() {
         return clientSocket;
@@ -96,6 +101,16 @@ public class ClientSocket implements Client {
     @Override
     public void setExceptionHandler(NetworkExceptionHandler e) {
         this.networkExceptionHandler = e;
+    }
+
+    /**
+     * This function is used by the clientAlive runnable
+     * to notify the exception handler when the client is
+     * not reachable anymore.
+     * @return reference to Exception handler
+     */
+    public NetworkExceptionHandler getNetworkExceptionHandler() {
+        return networkExceptionHandler;
     }
 
     /**
@@ -212,11 +227,18 @@ public class ClientSocket implements Client {
     /**
      * This method is used when the lobby is ready and the
      * admin started the game.
+     * @param newMatch true if the game is new,
+     *        false if it was loaded from a save or the player
+     *        reconnected.
      */
     @Override
-    public void gameStarted() {
+    public void gameStarted(boolean newMatch) {
+        JSONObject content= new JSONObject();
+        content.put("newMatch", newMatch);
+
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.NotifyStart);
+        update.setContent(content);
         out(update.toString());
 
     }
@@ -283,6 +305,9 @@ public class ClientSocket implements Client {
      */
     public void endGame(Map<String, Integer> leaderBoard){
         // TODO
+
+        if(serverThreadListener != null)
+            serverThreadListener.terminate();
     }
 
     /**
@@ -319,4 +344,5 @@ public class ClientSocket implements Client {
     public int hashCode() {
         return Objects.hash(playerName.toLowerCase());
     }
+
 }

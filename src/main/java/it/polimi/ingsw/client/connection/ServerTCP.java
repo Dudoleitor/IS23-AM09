@@ -219,8 +219,8 @@ public class ServerTCP extends Server {
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
-        } finally{
-            //TODO TO QUIT anyway
+        } finally {
+            serverIO.terminate();
         }
 
     }
@@ -266,9 +266,10 @@ public class ServerTCP extends Server {
     }
 
     @Override
-    public boolean startGame(String player)throws LobbyException {
+    public boolean startGame(String player, boolean erasePreviousMatches)throws LobbyException {
         JSONObject content = new JSONObject();
         content.put("player", player);
+        content.put("erasePreviousMatches", erasePreviousMatches);
         MessageTcp startGame = new MessageTcp();
         startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command
         startGame.setContent(content); //set playername as JsonObject

@@ -71,7 +71,6 @@ public interface ClientController {
         try {
             ClientController.initConnectionInterface(controller, model);
         } catch (ServerException e) {
-            controller.errorMessage("Connection Error, retying in "+seconds+" seconds");
             try {
                 sleep(seconds * 1000);
             } catch (InterruptedException i) {
@@ -84,23 +83,13 @@ public interface ClientController {
     }
 
     /**
-     * Try login tries times
-     * @param tries available to login
-     * @param seconds to wait in case of failure
+     * Try login
      * @return true if successful
      */
-    static boolean tryLogin(int tries, int seconds, ClientController controller){
-        boolean logged = false;
-        for(int attempt = 0; attempt < tries && !logged; attempt++){
-            logged = controller.getServer().login(controller.getClient()); //get previous sessions if present
-            if(!logged){
-                controller.errorMessage("Connection Error, retying in "+seconds+" seconds");
-                try {
-                    sleep(seconds*1000);
-                } catch (InterruptedException e) {
-                    return false;
-                }
-            }
+    static boolean tryLogin(ClientController controller){
+        boolean logged = controller.getServer().login(controller.getClient()); //get previous sessions if present
+        if(!logged){
+            controller.errorMessage("Login error, username already taken");
         }
         return logged;
     }
@@ -113,13 +102,14 @@ public interface ClientController {
             //Initiate the server connection interfaces according to settings
             ClientController.tryConnect(10,1, controller, model);
             //login
-            return ClientController.tryLogin(3,2, controller);
+            return ClientController.tryLogin(controller);
         } catch (ServerException e) {
+            controller.errorMessage(e.getMessage());
             return false;
         }
     }
 
-    static void start(ClientController controller){
+    static void start(ClientController controller,boolean erasePreviousMatches){
         boolean admin = false;
         boolean started = false;
 
@@ -140,7 +130,7 @@ public interface ClientController {
                 controller.errorMessage("You are not lobby admin");
                 return;
             }
-            started = server.startGame(playerName);
+            started = server.startGame(playerName, erasePreviousMatches);
         } catch (LobbyException e) {
             started = false;
         }

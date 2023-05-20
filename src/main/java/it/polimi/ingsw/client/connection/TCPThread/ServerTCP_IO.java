@@ -35,7 +35,7 @@ public class ServerTCP_IO{
     }
     private void initializeThreads(ClientModel clientModel){
         serverListener = new ServerTCPListener(serverIn, responses, updates);
-        serverViewUpdater = new ServerTCPViewUpdater(clientModel, updates);
+        serverViewUpdater = new ServerTCPViewUpdater(clientModel, updates, serverOut);
         serverListener.start();
         serverViewUpdater.start();
     }
@@ -60,7 +60,7 @@ public class ServerTCP_IO{
                         throw new RemoteException("Waited too much");
 
                 }
-        } catch (InterruptedException | RemoteException e) {
+        } catch (InterruptedException e) {
                 throw new RemoteException(e.getMessage());
         }
 
@@ -70,15 +70,16 @@ public class ServerTCP_IO{
             responses.remove(0);
         }
 
-        if (message.getCommand() == MessageTcp.MessageCommand.Quit) {
-            synchronized (serverViewUpdater) {
-                serverViewUpdater.exit();
-                serverViewUpdater.notifyAll();
-            }
-        }
-
-
         return message;
+
+    }
+    public void terminate(){
+        synchronized (serverListener){
+            serverListener.terminate();
+        }
+        synchronized (serverViewUpdater){
+            serverViewUpdater.terminate();
+        }
 
     }
 
@@ -87,6 +88,8 @@ public class ServerTCP_IO{
      * @param message is the message to send
      */
     public void out(String message){
-        serverOut.println(message);
+        synchronized (serverOut) {
+            serverOut.println(message);
+        }
     }
 }

@@ -29,6 +29,7 @@ public class CLI_IO {
         }
         inputSanitizer = new InputSanitizer();
         scanner = new Scanner(System.in);
+        System.out.println(gameLogo);
     }
 
     protected LobbyCommand askCommand(){
@@ -406,7 +407,6 @@ public class CLI_IO {
     }
     protected String askUserName(){
         synchronized (cli_lock){
-            System.out.println(gameLogo);
             String name = "";
             while(!inputSanitizer.isValidName(name)){
                 printMessage("Enter your username");
@@ -507,7 +507,6 @@ public class CLI_IO {
             for (String player : names) {
                 leaderboard = leaderboard.concat("      -" + player + ": " + leaderBoard.get(player) + "\n");
             }
-            synchronized (cli_lock) {
                 if (names.get(0).equals(playername)) {
                     System.out.println(victoryBanner);
                 } else {
@@ -516,7 +515,6 @@ public class CLI_IO {
                 printMessage(leaderboard);
                 showBoard(board);
                 showShelves(playerShelves);
-            }
         }
     }
 
@@ -545,6 +543,20 @@ public class CLI_IO {
             printMessage(message);
             restorePlaceHolder();
         }
+    }
+
+    public boolean askToLoadOldMatch(){
+        boolean resp = false;
+        synchronized (cli_lock){
+            skipPlaceHolder();
+            printMessage("Do you want to create a new game over writing all your previous matches with this lobby?");
+            String answer = scan();
+            if(("yes").equals(answer.toLowerCase())){
+                resp = true;
+            }
+            restorePlaceHolder();
+        }
+        return resp;
     }
 
     //String decorators

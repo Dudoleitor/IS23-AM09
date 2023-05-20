@@ -12,6 +12,8 @@ import it.polimi.ingsw.shared.PrivateChatMessage;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+import static java.lang.Thread.sleep;
+
 /**
  * This class handles the sequence of events on the client side
  */
@@ -28,6 +30,7 @@ public class ClientControllerCLI implements ClientController {
      * UI View
      */
     private CLI_IO cliIO;
+
 
     public ClientControllerCLI() {
     }
@@ -135,7 +138,8 @@ public class ClientControllerCLI implements ClientController {
                     postToPrivateChat();
                     break;
                 case Start:
-                    ClientController.start(this);
+                    boolean reloadOldGame = cliIO.askToLoadOldMatch();
+                    ClientController.start(this,reloadOldGame);
                     break;
                 case Move:
                     postMove();
@@ -243,32 +247,41 @@ public class ClientControllerCLI implements ClientController {
         //Initiate the view
         cliIO = new CLI_IO();
 
-        //ask for username
-        playerName = cliIO.askUserName();
+        while(play) {
 
-        try {
-            model = new ClientModelCLI(playerName, cliIO);
-        } catch (RemoteException ignored) {
-        }
+            //ask for username
+            playerName = cliIO.askUserName();
 
-        //initiate the connection interface and attempt a login
-        boolean successfulLogin = ClientController.connect(this, model);
-
-        if(successfulLogin){
-            try{
-                //ask the client what lobby to join
-                joinLobby();
-
-                //game starts
-                playMatch();
-
-            } catch (ServerException | LobbyException e) {
-                cliIO.errorMessage("Something went wrong connecting to server");
-                play = false;
+            try {
+                model = new ClientModelCLI(playerName, cliIO);
+            } catch (RemoteException ignored) {
             }
-        }
-        else{
-            cliIO.errorMessage("It was impossible to connect to server");
+
+            //initiate the connection interface and attempt a login
+            boolean successfulLogin = ClientController.connect(this, model);
+
+            if(!successfulLogin)
+                cliIO.errorMessage("It was impossible to connect to the server");
+
+            if (successfulLogin && play) {
+                try {
+                    //ask the client what lobby to join
+                    joinLobby();
+
+                    //game starts
+                    playMatch();
+
+                } catch (ServerException | LobbyException e) {
+                    cliIO.errorMessage("Something went wrong connecting to server");
+                    play = false;
+                }
+            }
+            try {
+                sleep(1000);
+            } catch (InterruptedException ignored) {
+                play = false;
+                break;
+            }
         }
     }
     public void errorMessage(String msg) {

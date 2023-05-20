@@ -21,6 +21,12 @@ public class ClientControllerGUI extends Application implements ClientController
     private Client client;
     private Stage stage;
 
+    /**
+     * newMatch true if the game is new,
+     * false if it was loaded from a save or the player reconnected.
+     */
+    private boolean newMatch;
+
     public ClientModelGUI getModel(){
         return model;
     }
@@ -44,6 +50,12 @@ public class ClientControllerGUI extends Application implements ClientController
     }
     public void setChatUpdate() {
 
+    }
+    public void setNewMatch(boolean newMatch) {
+        this.newMatch = newMatch;
+    }
+    public boolean isNewMatch() {
+        return newMatch;
     }
 
     public void loadScene(SceneEnum scene) {

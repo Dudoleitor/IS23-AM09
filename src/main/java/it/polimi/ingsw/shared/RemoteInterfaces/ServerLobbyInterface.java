@@ -18,7 +18,7 @@ public interface ServerLobbyInterface extends Remote {
     void quitGame(String player) throws RemoteException;
     boolean matchHasStarted() throws RemoteException;
     void postMove(String player, JSONObject move) throws RemoteException;
-    boolean startGame(String player) throws RemoteException;
+    boolean startGame(String player, boolean erasePreviousMatches) throws RemoteException;
     boolean isLobbyAdmin(String player) throws RemoteException;
     int getID() throws RemoteException;
     String getCurrentPlayer() throws RemoteException;
