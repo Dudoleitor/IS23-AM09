@@ -40,7 +40,7 @@ public class ClientSocket implements Client {
      * socket input buffer
      * @return the read line of the buffer
      */
-    public MessageTcp in(){ //TODO to handle with a thread, otherwise I can't send an update while waiting for a message
+    public MessageTcp in(){
         boolean ready = false;
         try {
             while(!ready){

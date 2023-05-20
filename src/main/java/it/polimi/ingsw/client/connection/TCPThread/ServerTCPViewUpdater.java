@@ -85,9 +85,6 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void exit(){
-        exit = true;
-    }
     public void changeView(ClientModel clientModel){
         this.clientModel = clientModel;
     }
@@ -179,8 +176,13 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void disconnect() {
+    public void disconnect(){
         //TODO
+        //terminate()
+    }
+
+    public void terminate() {
+        this.exit = true;
     }
 
     public void ping() {

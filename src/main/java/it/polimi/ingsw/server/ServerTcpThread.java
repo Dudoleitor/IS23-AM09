@@ -37,7 +37,7 @@ public class ServerTcpThread extends Thread{
     @Override
     public void run() {
         while(!exit){
-            MessageTcp message = client.in(); //TODO to make it wait on input ready
+            MessageTcp message = client.in();
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
             String ID = message.getRequestID();
             JSONObject content = message.getContent(); //content in JSON
@@ -300,7 +300,7 @@ public class ServerTcpThread extends Thread{
             feedback.setContent(result); //set message content
             feedback.setRequestID(ID);
             client.out(feedback.toString()); //send object to client
-            exit = true;
+            terminate();
         }
 
     }

@@ -70,12 +70,6 @@ public class ServerTCP_IO{
             responses.remove(0);
         }
 
-        if (message.getCommand() == MessageTcp.MessageCommand.Quit) {
-            synchronized (serverViewUpdater) {
-                serverViewUpdater.exit();
-                serverViewUpdater.notifyAll();
-            }
-        }
 
         if (message.getCommand() == MessageTcp.MessageCommand.Ping) {
             MessageTcp pongMessage = new MessageTcp();
@@ -84,6 +78,15 @@ public class ServerTCP_IO{
         }
 
         return message;
+
+    }
+    public void terminate(){
+        synchronized (serverListener){
+            serverListener.terminate();
+        }
+        synchronized (serverViewUpdater){
+            serverViewUpdater.terminate();
+        }
 
     }
 

@@ -219,8 +219,8 @@ public class ServerTCP extends Server {
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
-        } finally{
-            //TODO TO QUIT anyway
+        } finally {
+            serverIO.terminate();
         }
 
     }
