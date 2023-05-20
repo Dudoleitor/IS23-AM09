@@ -339,11 +339,12 @@ public class ServerTcpThread extends Thread{
 
     }
 
-    private void startGame(JSONObject player, String ID){
+    private void startGame(JSONObject content, String ID){
         boolean hasStarted;
-        String username = player.get("player").toString();
+        String username = content.get("player").toString();
+        final boolean erasePreviousMatches = content.get("erasePreviousMatches").toString().equals("true");
         synchronized (lobby) {
-            hasStarted = lobby.startGame(username);
+            hasStarted = lobby.startGame(username, erasePreviousMatches);
             JSONObject result = new JSONObject();
             result.put("start", hasStarted);
             MessageTcp feedback = new MessageTcp(); //message to send back

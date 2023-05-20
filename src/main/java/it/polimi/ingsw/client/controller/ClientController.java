@@ -140,7 +140,7 @@ public interface ClientController {
                 controller.errorMessage("You are not lobby admin");
                 return;
             }
-            started = server.startGame(playerName);
+            started = server.startGame(playerName, false);
         } catch (LobbyException e) {
             started = false;
         }

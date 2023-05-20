@@ -142,10 +142,10 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public boolean startGame(String player) throws LobbyException{
+    public boolean startGame(String player, boolean erasePreviousMatches) throws LobbyException{
         boolean hasStarted = false;
         try{
-            hasStarted = lobby.startGame(player);
+            hasStarted = lobby.startGame(player, erasePreviousMatches);
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new LobbyException("Error in Lobby");

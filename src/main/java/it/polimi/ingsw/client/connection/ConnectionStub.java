@@ -106,7 +106,7 @@ public class ConnectionStub extends Server {
     }
 
     @Override
-    public boolean startGame(String player) throws LobbyException {
+    public boolean startGame(String player, boolean erasePreviousMatches) throws LobbyException {
         if(verbous)
             System.out.println(player + " started game");
         callsToStub.addLast(player + " started game");
