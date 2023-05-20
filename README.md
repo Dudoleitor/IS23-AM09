@@ -8,12 +8,12 @@ Clients can interact with the server both via CLI and GUI.
 
 ## Features status
 | Feature | Status | Notes |
-| --- | --- | --- |
+| --- | :---: | --- |
 | Base game | :green_circle: ||
 | Complete game | :green_circle: ||
 | Multiple matches | :green_circle: ||
-| Game autosave | :yellow_circle: | Done automagically, user is not aware|
-| Disconnection handling | :yellow_circle: | Disconnection timeout not implemented server-side with TCP |
+| Game autosave | :yellow_circle: | Mostly done, user is just not aware |
+| Disconnection handling | :green_circle: ||
 | Chat | :yellow_circle: | Private chat non complete |
 | TUI | :green_circle: ||
 | GUI | :orange_circle: | WIP |
