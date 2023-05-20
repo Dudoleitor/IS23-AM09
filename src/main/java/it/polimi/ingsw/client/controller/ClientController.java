@@ -109,7 +109,7 @@ public interface ClientController {
         }
     }
 
-    static void start(ClientController controller){
+    static void start(ClientController controller,boolean erasePreviousMatches){
         boolean admin = false;
         boolean started = false;
 
@@ -130,7 +130,7 @@ public interface ClientController {
                 controller.errorMessage("You are not lobby admin");
                 return;
             }
-            started = server.startGame(playerName, false);
+            started = server.startGame(playerName, erasePreviousMatches);
         } catch (LobbyException e) {
             started = false;
         }

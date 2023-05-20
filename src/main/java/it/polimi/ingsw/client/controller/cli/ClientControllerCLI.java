@@ -138,7 +138,8 @@ public class ClientControllerCLI implements ClientController {
                     postToPrivateChat();
                     break;
                 case Start:
-                    ClientController.start(this);
+                    boolean reloadOldGame = cliIO.askToLoadOldMatch();
+                    ClientController.start(this,reloadOldGame);
                     break;
                 case Move:
                     postMove();
