@@ -58,29 +58,31 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @param client is the player object to add to the lobby
      */
     public synchronized void addPlayer(Client client) {
-        if (clients.contains(client)) //if player logged in previously
-            return;
+        synchronized (client) {
+            if (clients.contains(client)) //if player logged in previously
+                return;
 
-        if (disconnectedClients.contains(client.getPlayerName().toLowerCase())) {
-            disconnectedClients.remove(client.getPlayerName().toLowerCase());
-            clients.add(client);
-            client.setExceptionHandler(this);
-            if (controller != null)
-                controller.clientReconnected(client);
+            if (disconnectedClients.contains(client.getPlayerName().toLowerCase())) {
+                disconnectedClients.remove(client.getPlayerName().toLowerCase());
+                clients.add(client);
+                client.setExceptionHandler(this);
+                if (controller != null)
+                    controller.clientReconnected(client);
+                if (started)
+                    client.gameStarted(false);
+                return;
+            }
+
             if (started)
-                client.gameStarted(false);
-            return;
+                throw new RuntimeException("Cannot add a client after the game has stated");
+
+            if (clients.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
+                clients.add(client);
+                client.setExceptionHandler(this);
+                chat.addPlayer(client);
+            } else
+                throw new RuntimeException("Lobby already full");
         }
-
-        if (started)
-            throw new RuntimeException("Cannot add a client after the game has stated");
-
-        if (clients.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
-            clients.add(client);
-            client.setExceptionHandler(this);
-            chat.addPlayer(client);
-        } else
-            throw new RuntimeException("Lobby already full");
     }
 
     /**
@@ -313,7 +315,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @param e      Exception thrown
      */
     public void handleNetworkException(Client client, Exception e) {
-        System.err.println("Exception thrown while trying to reach client " + client.getPlayerName() + ": " + e.getMessage());
+        System.err.println("Exception thrown (in lobby) while trying to reach client " + client.getPlayerName() + ": " + e.getMessage());
         disconnectClient(client);
     }
 
@@ -323,7 +325,9 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @param client Client object
      */
     public synchronized void disconnectClient(Client client) {
+        client.disconnect();
         if (!clients.remove(client)) {
+            System.err.println("Called disconnectClient but client " + client.getPlayerName() + " is not in lobby #" + id);
             return;
         }
 
@@ -332,9 +336,8 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
                     we won't disconnect the player. An exception will be thrown later
                     and the player will be disconnected then. */
             disconnectedClients.add(client.getPlayerName().toLowerCase());
-            System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
-            client.disconnect();
             controller.clientDisconnected(client);  // It's ok if a network exception is thrown here
+            System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
             return;
         }
 
@@ -342,7 +345,6 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             // The admin did not start the match yet
             disconnectedClients.add(client.getPlayerName().toLowerCase());
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
-            client.disconnect();
         }
     }
 }

@@ -191,7 +191,7 @@ public class ServerTcpThread extends Thread{
         synchronized (server){
             try {
                 lobbyInterface = server.createLobby(client);
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | RemoteException e) {
                 //TODO to send back error message to set username first
             }
         }
@@ -403,11 +403,17 @@ class clientAlive implements Runnable {
                 }
                 if (System.currentTimeMillis() >=
                         waitStart + waitTime) {
-                    System.err.println("Client " + client.getPlayerName() + " has timed out.");
-                    client.getNetworkExceptionHandler()
-                            .handleNetworkException(
+                    synchronized (client) {
+                        System.err.println("Client " + client.getPlayerName() + " has timed out.");
+                        NetworkExceptionHandler handler = client.getNetworkExceptionHandler();
+                        if (handler == null) {
+                            client.disconnect();
+                        } else {
+                            handler.handleNetworkException(
                                     client,
                                     new RemoteException("Client has timed out."));
+                        }
+                    }
                 }
             }
         }
