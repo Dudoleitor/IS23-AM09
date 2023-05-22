@@ -1,8 +1,10 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
+import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -23,30 +25,43 @@ public class ChatController extends SceneController implements Initializable {
     Text username = new Text();
 
     private final ClientModelGUI model;
+    private final String playerName;
 
     public ChatController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
+        this.playerName = controller.getClient().getPlayerName();
     }
 
+    /**
+     * This method is used to post a message in the chat,
+     * it is called by the server when a new message is received
+     * @param sender the sender of the message
+     * @param message the message
+     */
     public void postChatMessage(String sender, String message){
-        // TODO
+        textArea.appendText(sender + ": " + message + "\n");
     }
+
+    /**
+     * This method is used to refresh the chat, it is called by the server
+     * @param chat Chat object containing all the messages
+     */
     public void refreshChat(Chat chat) {
-        // TODO
+        textArea.clear();
+        for (ChatMessage cm : chat.getAllMessages())
+            postChatMessage(cm.getSender(), cm.getMessage());
     }
 
     @FXML
-    protected void SendMsg() {
-        //System.out.println(client.getController().getChat().getAllMessages());
+    protected void SendMsg() throws LobbyException {
         if(message.getText().equals("")){
             controller.errorMessage("Insert a message");
             return;
         }
-        model.postChatMessage(model.getPlayerName(), message.getText());
+        controller.getServer().postToLiveChat(playerName, message.getText());
         username.setText(model.getPlayerName());
         username.setStyle("-fx-text-background-color: green");
-        textArea.appendText(username.getText() + ": " + message.getText() + "\n");
         message.setText("");
     }
 
@@ -57,13 +72,7 @@ public class ChatController extends SceneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        if(model.getChat().getAllMessages().size() > 0) {
-            for(int i = 0; i < model.getChat().getAllMessages().size(); i++) {
-                textArea.appendText(model.getChat().getAllMessages().get(i).getSender() + ": " +
-                        model.getChat().getAllMessages().get(i).getMessage() + "\n");
-
-            }
-        }
+        refreshChat(model.getChat());
     }
 
 }

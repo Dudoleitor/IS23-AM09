@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -41,11 +42,24 @@ public class WaitingLobbyController extends SceneController implements Initializ
         this.playerName = controller.getClient().getPlayerName();
     }
 
+    /**
+     * This method is used to post a message in the chat,
+     * it is called by the server when a new message is received
+     * @param sender the sender of the message
+     * @param message the message
+     */
     public void postChatMessage(String sender, String message){
-        // TODO
+        lobbyChat.appendText(sender + ": " + message + "\n");
     }
+
+    /**
+     * This method is used to refresh the chat, it is called by the server
+     * @param chat Chat object containing all the messages
+     */
     public void refreshChat(Chat chat) {
-        // TODO
+        lobbyChat.clear();
+        for (ChatMessage cm : chat.getAllMessages())
+            postChatMessage(cm.getSender(), cm.getMessage());
     }
     @FXML
     protected void startMatch() throws LobbyException {
@@ -61,8 +75,7 @@ public class WaitingLobbyController extends SceneController implements Initializ
             controller.errorMessage("Insert a message");
             return;
         }
-        controller.getServer().postToLiveChat(controller.getModel().getPlayerName(), message.getText());
-        lobbyChat.appendText(controller.getModel().getPlayerName() + ": " + message.getText() + "\n");
+        controller.getServer().postToLiveChat(playerName, message.getText());
         message.setText("");
     }
 
@@ -75,9 +88,7 @@ public class WaitingLobbyController extends SceneController implements Initializ
             }
             if(controller.getModel().getChat().getAllMessages().size() == 0)
                 return;
-            for(int i = 0; i < controller.getModel().getChat().getAllMessages().size(); i++) {
-                lobbyChat.appendText( controller.getModel().getChat().getAllMessages().get(i).getSender() + ": " +controller.getModel().getChat().getAllMessages().get(i).getMessage() + "\n");
-            }
+            refreshChat(controller.getModel().getChat());
         } catch (LobbyException e) {
             e.printStackTrace();
         }
