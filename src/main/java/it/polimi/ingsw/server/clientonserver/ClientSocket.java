@@ -318,6 +318,8 @@ public class ClientSocket implements Client {
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.Disconnect);
         out(update.toString());
+        if (serverThreadListener!=null)
+            serverThreadListener.terminate();
     }
 
     /**

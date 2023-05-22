@@ -23,6 +23,7 @@ public class ServerTCPListener extends Thread{
     public void run() {
         while (!exit) {
             MessageTcp incomingMessage = in();
+            System.out.println("Received: " + incomingMessage);
             if (incomingMessage.isReplyMessage()) {
                 synchronized (responses) {
                     responses.add(incomingMessage);
