@@ -51,14 +51,7 @@ public class WaitingLobbyController extends SceneController implements Initializ
     protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
         if(server.isLobbyAdmin(playerName)) {
-            server.startGame(playerName, false);
-        }
-
-        //TODO: here I need to set a flag which will be send to the server in order to load an existing match
-        if(checkBox.isSelected()) {
-            System.out.println("Selected");
-        } else {
-            System.out.println("Not selected");
+            server.startGame(playerName, checkBox.isSelected());
         }
     }
 

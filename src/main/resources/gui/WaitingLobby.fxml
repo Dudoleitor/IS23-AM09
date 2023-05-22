@@ -26,7 +26,7 @@
             </Text>
          <Button fx:id="startButton" layoutX="300.0" layoutY="319.0" mnemonicParsing="false" onAction="#startMatch" style="-fx-background-color: #49be25;" text="Start Match" />
             <Button layoutX="197.0" layoutY="319.0" mnemonicParsing="false" onAction="#sendMessage" style="-fx-background-color: #49be25;" text="Send Message" />
-         <CheckBox fx:id="checkBox" layoutX="393.0" layoutY="323.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="125.0" text="Load previous match">
+         <CheckBox fx:id="checkBox" layoutX="393.0" layoutY="323.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="125.0" text="Erase old matches">
             <font>
                <Font size="11.0" />
             </font>
