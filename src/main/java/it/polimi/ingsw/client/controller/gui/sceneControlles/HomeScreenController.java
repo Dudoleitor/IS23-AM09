@@ -7,6 +7,7 @@ import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -73,6 +74,9 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     javafx.scene.shape.Polygon turnFlag;
 
+    @FXML
+    Button readChatButton;
+
 
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
@@ -99,6 +103,17 @@ public class HomeScreenController extends SceneController implements Initializab
             turnFlag.setStyle("-fx-fill: yellow;");
         } else {
             turnFlag.setStyle("-fx-fill: grey;");
+        }
+    }
+
+    /**
+     * @param newMessage, if true there is a new message and the chat button gets blue
+     */
+    public void setNewMessage(boolean newMessage) {
+        if(newMessage) {
+            readChatButton.setStyle("-fx-background-color: blue;");
+        } else {
+            readChatButton.setStyle("-fx-background-color: #49be25;");
         }
     }
 

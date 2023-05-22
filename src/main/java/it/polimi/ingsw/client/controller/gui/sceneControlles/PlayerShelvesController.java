@@ -7,6 +7,7 @@ import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
@@ -56,9 +57,23 @@ public class PlayerShelvesController extends SceneController implements Initiali
     @FXML
     ImageView shelf3;
 
+    @FXML
+    Button readChatButton;
+
     public PlayerShelvesController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
+    }
+
+    /**
+     * @param newMessage, if true there is a new message and the chat button gets blue
+     */
+    public void setNewMessage(boolean newMessage) {
+        if(newMessage) {
+            readChatButton.setStyle("-fx-background-color: blue;");
+        } else {
+            readChatButton.setStyle("-fx-background-color: #49be25;");
+        }
     }
 
     //dimensione = 19x19

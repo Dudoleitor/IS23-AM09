@@ -31,7 +31,7 @@
                 <Text fx:id="username3" layoutX="116.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 3" />
                 <Text fx:id="username2" layoutX="322.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 2" />
                 <Button layoutX="316.0" layoutY="272.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #49be25;" text="Home" onAction="#getHome" />
-                <Button layoutX="317.0" layoutY="307.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="79.0" style="-fx-background-color: #49be25;" text="Read Chat" onAction="#readChat" />
+                <Button fx:id="readChatButton" layoutX="317.0" layoutY="307.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="79.0" style="-fx-background-color: #49be25;" text="Read Chat" onAction="#readChat" />
 
                 <Canvas fx:id="canvasShelf1" height="165.0" layoutX="99.0" layoutY="33.0"  width="167.0" />
                 <Canvas fx:id="canvasShelf2" height="165.0" layoutX="302.0" layoutY="33.0"  width="167.0" />

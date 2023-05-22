@@ -54,7 +54,7 @@
                 </image>
             </ImageView>
 
-            <Button layoutX="37.0" layoutY="342.0" mnemonicParsing="false" onAction="#readChat" style="-fx-background-color: #49be25;" text="Read Chat">
+            <Button fx:id="readChatButton" layoutX="37.0" layoutY="342.0" mnemonicParsing="false" onAction="#readChat" style="-fx-background-color: #49be25;" text="Read Chat">
                 <font>
                     <Font name="SF Mono Bold" size="13.0" />
                 </font>
