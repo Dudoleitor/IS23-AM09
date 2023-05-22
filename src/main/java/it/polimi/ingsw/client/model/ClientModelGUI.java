@@ -1,8 +1,10 @@
 package it.polimi.ingsw.client.model;
 
 import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.gui.ChatController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
+import it.polimi.ingsw.client.controller.gui.WaitingLobbyController;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
 import it.polimi.ingsw.shared.JsonBadParsingException;
@@ -196,6 +198,14 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
+
+        ChatController sceneController = (ChatController) controller.getSceneController(SceneEnum.chat);
+        if (sceneController!=null)
+            sceneController.postChatMessage(sender, message);
+
+        WaitingLobbyController waitingLobbyController = (WaitingLobbyController) controller.getSceneController(SceneEnum.lobbyWaiting);
+        if (waitingLobbyController!=null)
+            waitingLobbyController.postChatMessage(sender, message);
     }
 
     /**
@@ -206,6 +216,14 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     public void refreshChat(Chat chat) {
         this.chat = chat;
+
+        ChatController sceneController = ((ChatController) controller.getSceneController(SceneEnum.chat));
+        if (sceneController!=null)
+            sceneController.refreshChat(chat);
+
+        WaitingLobbyController waitingLobbyController = (WaitingLobbyController) controller.getSceneController(SceneEnum.lobbyWaiting);
+        if (waitingLobbyController!=null)
+            waitingLobbyController.refreshChat(chat);
     }
 
     /**

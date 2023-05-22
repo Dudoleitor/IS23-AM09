@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.connection.ServerException;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.shared.Chat;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -46,6 +47,12 @@ public class WaitingLobbyController extends FxmlController implements Initializa
         this.playerName = controller.getClient().getPlayerName();
     }
 
+    public void postChatMessage(String sender, String message){
+        // TODO
+    }
+    public void refreshChat(Chat chat) {
+        // TODO
+    }
     @FXML
     protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();

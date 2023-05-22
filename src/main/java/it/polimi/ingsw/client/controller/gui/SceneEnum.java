@@ -37,4 +37,8 @@ public enum SceneEnum {
             throw new RuntimeException("Invalid class in scene enum, " + e.getMessage());
         }
     }
+
+    Class<?> getControllerClass() {
+        return controllerClass;
+    }
 }

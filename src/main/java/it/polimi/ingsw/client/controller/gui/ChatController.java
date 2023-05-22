@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.controller.gui;
 import it.polimi.ingsw.client.model.ClientModelGUI;
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -26,6 +28,13 @@ public class ChatController extends FxmlController implements Initializable {
     public ChatController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
+    }
+
+    public void postChatMessage(String sender, String message){
+        // TODO
+    }
+    public void refreshChat(Chat chat) {
+        // TODO
     }
 
     @FXML
