@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientControllerGUI extends Application implements ClientController {
     private ClientModelGUI model;
@@ -26,6 +28,9 @@ public class ClientControllerGUI extends Application implements ClientController
      * false if it was loaded from a save or the player reconnected.
      */
     private boolean newMatch;
+
+    private final Map<SceneEnum, FxmlController> sceneControllers = new HashMap<>();
+    private SceneEnum currentScene = SceneEnum.login;
 
     public ClientModelGUI getModel(){
         return model;
@@ -51,6 +56,10 @@ public class ClientControllerGUI extends Application implements ClientController
     public void setChatUpdate() {
 
     }
+    public SceneEnum getCurrentScene() {
+        return currentScene;
+    }
+
     public void setNewMatch(boolean newMatch) {
         this.newMatch = newMatch;
     }
@@ -58,6 +67,10 @@ public class ClientControllerGUI extends Application implements ClientController
         return newMatch;
     }
 
+    /**
+     * This method is used to load a scene.
+     * @param scene the scene to be loaded.
+     */
     public void loadScene(SceneEnum scene) {
         final FXMLLoader loader = new FXMLLoader(scene.getResource());
         final FxmlController sceneController = scene.getNewController(this);
@@ -68,7 +81,18 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
+        sceneControllers.put(scene, sceneController);
+        currentScene = scene;
         stage.setScene(new Scene(parent, 800, 800));
+    }
+
+    /**
+     * This method is used to get the controller of a scene.
+     * @param scene the scene of which we want the controller.
+     * @return FxmlController the controller of the scene.
+     */
+    public FxmlController getSceneController(SceneEnum scene) {
+        return sceneControllers.get(scene);
     }
 
     public static Image loadImage(String fileName) {
