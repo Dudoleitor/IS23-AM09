@@ -8,7 +8,7 @@ Clients can interact with the server both via CLI and GUI.
 
 ## Features status
 | Feature | Status | Notes |
-|  | :---: | --- |
+| --- | :---: | --- |
 | Base game | :green_circle: ||
 | Complete game | :green_circle: ||
 | Multiple matches | :green_circle: ||
