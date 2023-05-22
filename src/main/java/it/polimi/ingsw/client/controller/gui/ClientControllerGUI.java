@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controller.gui;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.SceneController;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import javafx.application.Application;
@@ -89,7 +90,7 @@ public class ClientControllerGUI extends Application implements ClientController
      */
     private Scene generateNewScene(SceneEnum scene) {
         final FXMLLoader loader = new FXMLLoader(scene.getResource());
-        final FxmlController sceneController = scene.getNewController(this);
+        final SceneController sceneController = scene.getNewController(this);
         loader.setController(sceneController);
         final Parent parent;
         try {
@@ -109,7 +110,7 @@ public class ClientControllerGUI extends Application implements ClientController
      * @return null if the scene was never loaded,
      *      FxmlController the controller of the scene otherwise
      */
-    public FxmlController getSceneController(SceneEnum scene) {
+    public SceneController getSceneController(SceneEnum scene) {
         FXMLSceneWithController sceneWithController = scenes.get(scene);
         if (sceneWithController == null)
             return null;
@@ -158,8 +159,8 @@ public class ClientControllerGUI extends Application implements ClientController
  */
 class FXMLSceneWithController{
     private final Scene scene;
-    private final FxmlController controller;
-    FXMLSceneWithController(Scene scene, FxmlController controller) {
+    private final SceneController controller;
+    FXMLSceneWithController(Scene scene, SceneController controller) {
         this.scene = scene;
         this.controller = controller;
     }
@@ -168,7 +169,7 @@ class FXMLSceneWithController{
         return scene;
     }
 
-    public FxmlController getController() {
+    public SceneController getController() {
         return controller;
     }
 }

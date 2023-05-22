@@ -1,16 +1,16 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class loginController extends FxmlController {
+public class LoginController extends SceneController {
     @FXML
     Label welcome;
     @FXML
@@ -18,7 +18,7 @@ public class loginController extends FxmlController {
     @FXML
     VBox vbox;
 
-    public loginController(ClientControllerGUI controller) {
+    public LoginController(ClientControllerGUI controller) {
         super(controller);
     }
 

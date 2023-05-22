@@ -1,12 +1,14 @@
 package it.polimi.ingsw.client.controller.gui;
 
+import it.polimi.ingsw.client.controller.gui.sceneControlles.*;
+
 import java.net.URL;
 
 public enum SceneEnum {
-    login("Start", loginController.class),
-    lobbySelection("Lobbies", lobbiesGuiController.class),
+    login("Login", LoginController.class),
+    lobbySelection("Lobbies", LobbiesController.class),
     lobbyWaiting("WaitingLobby", WaitingLobbyController.class),
-    home("PlayerHomeScreen", homeScreenController.class),
+    home("HomeScreen", HomeScreenController.class),
     chat("Chat", ChatController.class),
     playerShelves("PlayerShelves", PlayerShelvesController.class)
     ;
@@ -28,9 +30,9 @@ public enum SceneEnum {
                 );
     }
 
-    FxmlController getNewController(ClientControllerGUI clientControllerGUI) {
+    SceneController getNewController(ClientControllerGUI clientControllerGUI) {
         try {
-            return (FxmlController) this.controllerClass
+            return (SceneController) this.controllerClass
                     .getDeclaredConstructor(ClientControllerGUI.class)
                     .newInstance(clientControllerGUI);
         } catch (Exception e) {

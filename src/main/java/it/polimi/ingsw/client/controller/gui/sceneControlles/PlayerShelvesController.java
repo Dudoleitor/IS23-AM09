@@ -1,22 +1,22 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
-public class PlayerShelvesController extends FxmlController implements Initializable {
+public class PlayerShelvesController extends SceneController implements Initializable {
     private final ClientModelGUI model;
     private final double iWidthShelf1 = 122.0;
     private final double iHeightShelf1 = 45.0;

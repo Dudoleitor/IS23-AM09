@@ -1,30 +1,27 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.connection.LobbyException;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import org.json.simple.JSONObject;
 
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
-public class homeScreenController extends FxmlController implements Initializable {
+public class HomeScreenController extends SceneController implements Initializable {
     boolean clicked = false;
     private final double iHeight = 85.0;
     private final double iWidth = 49.0;
@@ -37,7 +34,7 @@ public class homeScreenController extends FxmlController implements Initializabl
 
     private final ClientModelGUI model;
 
-    public homeScreenController(ClientControllerGUI controller) {
+    public HomeScreenController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
     }

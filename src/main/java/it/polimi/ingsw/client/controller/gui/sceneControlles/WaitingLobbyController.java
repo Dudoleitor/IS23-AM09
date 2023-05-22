@@ -1,14 +1,11 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
-import it.polimi.ingsw.client.connection.ServerException;
-import it.polimi.ingsw.client.model.ClientModelGUI;
-import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
@@ -16,13 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class WaitingLobbyController extends FxmlController implements Initializable {
+public class WaitingLobbyController extends SceneController implements Initializable {
     private final Server server;
     private final String playerName;
 

@@ -1,24 +1,23 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.connection.ServerException;
 import it.polimi.ingsw.client.controller.InputSanitizer;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class lobbiesGuiController extends FxmlController implements Initializable {
+public class LobbiesController extends SceneController implements Initializable {
     private final ClientModelGUI model;
     private final Server server;
     private final Client client;
@@ -35,7 +34,7 @@ public class lobbiesGuiController extends FxmlController implements Initializabl
     @FXML
     TextField lobbyNumber;
 
-    public lobbiesGuiController(ClientControllerGUI controller) {
+    public LobbiesController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
         this.server = controller.getServer();

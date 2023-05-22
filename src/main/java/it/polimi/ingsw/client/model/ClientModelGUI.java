@@ -1,21 +1,18 @@
 package it.polimi.ingsw.client.model;
 
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.client.controller.gui.ChatController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.ChatController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
-import it.polimi.ingsw.client.controller.gui.WaitingLobbyController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.WaitingLobbyController;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
 import it.polimi.ingsw.shared.JsonBadParsingException;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.*;
 import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
