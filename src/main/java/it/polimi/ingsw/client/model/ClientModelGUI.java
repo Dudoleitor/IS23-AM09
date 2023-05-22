@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.ChatController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.WaitingLobbyController;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
@@ -27,7 +28,6 @@ import java.util.concurrent.Executors;
  * This object is used to wrap the GUI and call the proper methods of JavaFX.
  * Here a copy of the model is not needed.
  */
-//TODO everything
 public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, ClientRemote {
     private final String playerName;
     private boolean itsMyTurn;
@@ -119,6 +119,11 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         return gameStarted;
     }
 
+    @Override
+    public boolean gameEnded() throws RemoteException {
+        return gameEnded;
+    }
+
     /**
      * This method is used when a player picks a tile
      * from the board. It sends the message
@@ -128,7 +133,19 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * @param position position
      */
     public void pickedFromBoard(JSONObject position) {
+        final Position pos = new Position(position);
+        try {
+            board.pickTile(pos);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
 
+        final HomeScreenController sceneController =
+                (HomeScreenController) controller.getSceneController(SceneEnum.home);
+        if(sceneController!=null)
+            Platform.runLater(() -> {
+                sceneController.removeFromBoard(pos);
+            });
     }
 
     /**
@@ -145,6 +162,12 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
 
+        final HomeScreenController sceneController =
+                (HomeScreenController) controller.getSceneController(SceneEnum.home);
+        if(sceneController!=null)
+            Platform.runLater(() -> {
+                sceneController.setBoard(this.board);
+            });
     }
 
     /**
@@ -160,11 +183,19 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     public void putIntoShelf(String player, int column, Tile tile) {
         try{
-            Shelf shelf = playersShelves.get(player);
+            final Shelf shelf = playersShelves.get(player);
             shelf.insertTile(tile, column);
             playersShelves.replace(player, shelf);
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
+        if(player.equalsIgnoreCase(playerName)) {
+            final HomeScreenController sceneController =
+                    (HomeScreenController) controller.getSceneController(SceneEnum.home);
+            if(sceneController!=null)
+                Platform.runLater(() -> {
+                    sceneController.putIntoShelf(column, tile);
+                });
         }
 
     }
@@ -179,10 +210,20 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     public void refreshShelf(String player, JSONObject shelf) {
         playersShelves.remove(player);
+        final Shelf shelf1;
         try {
-            this.playersShelves.put(player, new Shelf(shelf));
+            shelf1 = new Shelf(shelf);
+            this.playersShelves.put(player, shelf1);
         } catch (JsonBadParsingException e) {
             throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
+        }
+        if(player.equalsIgnoreCase(playerName)) {
+            final HomeScreenController sceneController =
+                    (HomeScreenController) controller.getSceneController(SceneEnum.home);
+            if(sceneController!=null)
+                Platform.runLater(() -> {
+                    sceneController.updateShelf(shelf1);
+                });
         }
 
     }
@@ -196,13 +237,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     public void postChatMessage(String sender, String message) {
         chat.addMessage(sender, message);
 
-        ChatController sceneController = (ChatController) controller.getSceneController(SceneEnum.chat);
+        final ChatController sceneController = (ChatController) controller.getSceneController(SceneEnum.chat);
         if (sceneController!=null)
-            sceneController.postChatMessage(sender, message);
+            Platform.runLater(() -> {
+                sceneController.postChatMessage(sender, message);
+            });
 
-        WaitingLobbyController waitingLobbyController = (WaitingLobbyController) controller.getSceneController(SceneEnum.lobbyWaiting);
+        final WaitingLobbyController waitingLobbyController = (WaitingLobbyController) controller.getSceneController(SceneEnum.lobbyWaiting);
         if (waitingLobbyController!=null)
-            waitingLobbyController.postChatMessage(sender, message);
+            Platform.runLater(() -> {
+                waitingLobbyController.postChatMessage(sender, message);
+            });
     }
 
     /**
@@ -214,13 +259,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     public void refreshChat(Chat chat) {
         this.chat = chat;
 
-        ChatController sceneController = ((ChatController) controller.getSceneController(SceneEnum.chat));
+        final ChatController sceneController = ((ChatController) controller.getSceneController(SceneEnum.chat));
         if (sceneController!=null)
-            sceneController.refreshChat(chat);
+            Platform.runLater(() -> {
+                sceneController.refreshChat(chat);
+            });
 
-        WaitingLobbyController waitingLobbyController = (WaitingLobbyController) controller.getSceneController(SceneEnum.lobbyWaiting);
+        final WaitingLobbyController waitingLobbyController = (WaitingLobbyController) controller.getSceneController(SceneEnum.lobbyWaiting);
         if (waitingLobbyController!=null)
-            waitingLobbyController.refreshChat(chat);
+            Platform.runLater(() -> {
+                waitingLobbyController.refreshChat(chat);
+            });
     }
 
     /**
@@ -265,6 +314,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         } else {
             itsMyTurn=false;
         }
+
+        final HomeScreenController sceneController =
+                (HomeScreenController) controller.getSceneController(SceneEnum.home);
+        if(sceneController!=null)
+            Platform.runLater(() -> {
+                sceneController.setMyTurn(itsMyTurn);
+            });
     }
 
     /**
@@ -319,10 +375,6 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.gameEnded = true;
     }
 
-    @Override
-    public boolean gameEnded() throws RemoteException {
-        return gameEnded;
-    }
 
     /**
      * This function is used to ensure the client is still connected.
