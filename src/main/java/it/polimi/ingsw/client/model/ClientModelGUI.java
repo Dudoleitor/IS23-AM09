@@ -264,6 +264,14 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
             Platform.runLater(() -> {
                 waitingLobbyController.postChatMessage(sender, message);
             });
+
+        if(controller.getCurrentScene().equals(SceneEnum.home) || controller.getCurrentScene().equals(SceneEnum.playerShelves)) {
+            final HomeScreenController homeScreenController = (HomeScreenController) controller.getSceneController(SceneEnum.home);
+            if(homeScreenController!=null)
+                Platform.runLater(() -> {
+                    homeScreenController.setNewMessage(true);
+                });
+        }
     }
 
     /**

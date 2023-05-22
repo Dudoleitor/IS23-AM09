@@ -20,7 +20,9 @@ public class ControllerTest {
         clients.add(new ClientStub("fridgeoggi"));
         clients.add(new ClientStub("fridgedomani"));
         Controller testCont1 = new Controller(clients);
+        testCont1.setTurn_testing_only(0);
         Controller testCont2 = new Controller(testCont1.toJson(), clients);
+        testCont2.setTurn_testing_only(0);
 
         assertEquals(testCont1.toJson().toJSONString(), testCont2.toJson().toJSONString());
         //null list
@@ -83,6 +85,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
         List<Player> playerList = null;
         try {
             playerList = (List<Player>) players.stream().map(p -> {
@@ -112,6 +115,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
 
 
         for (int i = 0; i < 100; i++) {
@@ -129,6 +133,7 @@ public class ControllerTest {
         playernames.add("fridgedomani");
         List<Client> clients = playernames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
 
         List<Player> players = c.getPlayers();
         assertEquals("fridgeieri", c.getCurrentPlayerName());
@@ -152,6 +157,7 @@ public class ControllerTest {
         playerNames.add("fridgedopodomani");
         List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
 
         List<Player> players = c.getPlayers();
         c.setActivity(players.get(1).getName(),false);
@@ -174,6 +180,7 @@ public class ControllerTest {
         playerNames.add("fridgedopodomani");
         List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
 
         List<Player> players = c.getPlayers();
         //modify a copy of the list
@@ -191,6 +198,8 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
+
         List<Player> playerList = null;
         try {
             playerList = (List<Player>) players.stream().map(p -> {

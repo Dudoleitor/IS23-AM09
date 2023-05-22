@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controller.gui;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.SceneController;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
@@ -80,6 +81,14 @@ public class ClientControllerGUI extends Application implements ClientController
         }
         currentScene = scene;
         stage.setScene(javafxScene);
+
+        if(scene.equals(SceneEnum.chat)) {
+            final HomeScreenController homeScreenController =
+                    (HomeScreenController) scenes.get(SceneEnum.home).getController();
+            if (homeScreenController!=null){
+                homeScreenController.setNewMessage(false);
+            }
+        }
     }
 
     /**
