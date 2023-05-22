@@ -12,6 +12,7 @@
 <VBox fx:id="vbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@WaitingLobby.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
       <AnchorPane fx:id="anchor" prefHeight="400.0" prefWidth="600.0">
          <children>
+            <TextField fx:id="message" layoutX="83.0" layoutY="276.0" prefHeight="26.0" prefWidth="439.0" promptText="Message" />
             <Text layoutX="246.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby">
                <font>
                   <Font name="SF Mono Bold" size="35.0" />
@@ -25,7 +26,6 @@
             </Text>
          <Button fx:id="startButton" layoutX="300.0" layoutY="319.0" mnemonicParsing="false" onAction="#startMatch" style="-fx-background-color: #49be25;" text="Start Match" />
             <Button layoutX="197.0" layoutY="319.0" mnemonicParsing="false" onAction="#sendMessage" style="-fx-background-color: #49be25;" text="Send Message" />
-            <TextField fx:id="message" layoutX="83.0" layoutY="276.0" prefHeight="26.0" prefWidth="439.0" promptText="Message" />
          <CheckBox fx:id="checkBox" layoutX="393.0" layoutY="323.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="125.0" text="Load previous match">
             <font>
                <Font size="11.0" />

@@ -227,7 +227,10 @@ public class homeScreenController extends FxmlController implements Initializabl
             controller.errorMessage("Click a column");
             return;
         }
+
         controller.getServer().postMove(model.getPlayerName(), actualMove);
+        removeFromBoard(actualMove);
+
         updateShelf();
         move.clear();
         actualMove = null;
@@ -258,6 +261,20 @@ public class homeScreenController extends FxmlController implements Initializabl
         }
 
         canvasShelf.toFront();
+    }
+
+    private void removeFromBoard(Move move) {
+        for(int i = 0; i < move.getBoardPositions().size(); i++) {
+            for(int j = 0; j < anchor.getChildren().size(); j++) {
+                if(anchor.getChildren().get(j).getLayoutX() == (iWidth + move.getBoardPositions().get(i).getColumn()*25.0)
+                && anchor.getChildren().get(j).getLayoutY() == (iHeight + move.getBoardPositions().get(i).getRow()*25.0)) {
+                    anchor.getChildren().get(j).setOpacity(0.0);
+                    anchor.getChildren().get(j).setOpacity(0.0);
+                    break;
+                }
+            }
+        }
+
     }
 
     @Override

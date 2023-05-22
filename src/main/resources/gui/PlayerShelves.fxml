@@ -8,29 +8,35 @@
 <?import javafx.scene.text.Text?>
 
 
+<?import javafx.scene.canvas.Canvas?>
 <VBox fx:id="vbox" stylesheets="@PlayerShelves.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
-        <AnchorPane prefHeight="484.0" prefWidth="600.0">
+        <AnchorPane fx:id="anchor" prefHeight="484.0" prefWidth="600.0">
             <children>
-                <ImageView fitHeight="165.0" fitWidth="167.0" layoutX="99.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="shelf1" fitHeight="165.0" fitWidth="167.0" layoutX="99.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@gameGraphics/boards/bookshelf.png" />
                     </image>
                 </ImageView>
                 <Text fx:id="username1" layoutX="117.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 1" />
-                <ImageView fitHeight="165.0" fitWidth="167.0" layoutX="302.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="shelf2" fitHeight="165.0" fitWidth="167.0" layoutX="302.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@gameGraphics/boards/bookshelf.png" />
                     </image>
                 </ImageView>
-                <ImageView fitHeight="165.0" fitWidth="167.0" layoutX="99.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="shelf3" fitHeight="165.0" fitWidth="167.0" layoutX="99.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@gameGraphics/boards/bookshelf.png" />
                     </image>
                 </ImageView>
                 <Text fx:id="username3" layoutX="116.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 3" />
                 <Text fx:id="username2" layoutX="322.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username 2" />
-                <Button layoutX="316.0" layoutY="272.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #49be25;" text="Home" />
-                <Button layoutX="317.0" layoutY="307.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="79.0" style="-fx-background-color: #49be25;" text="Read Chat" />
+                <Button layoutX="316.0" layoutY="272.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #49be25;" text="Home" onAction="#getHome" />
+                <Button layoutX="317.0" layoutY="307.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="79.0" style="-fx-background-color: #49be25;" text="Read Chat" onAction="#readChat" />
+
+                <Canvas fx:id="canvasShelf1" height="165.0" layoutX="99.0" layoutY="33.0"  width="167.0" />
+                <Canvas fx:id="canvasShelf2" height="165.0" layoutX="302.0" layoutY="33.0"  width="167.0" />
+                <Canvas fx:id="canvasShelf3" height="165.0" layoutX="99.0" layoutY="224.0"  width="167.0" />
+
             </children>
         </AnchorPane>
 </VBox>
