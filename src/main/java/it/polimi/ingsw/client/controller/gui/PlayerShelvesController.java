@@ -60,18 +60,7 @@ public class PlayerShelvesController extends FxmlController implements Initializ
 
     //dimensione = 19x19
 
-    public void setShelf1(String player) throws BadPositionException {
-        /*for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 6; j++) {
-                ImageView imageView = new ImageView();
-                imageView.setImage(loadImage("item_tiles/B1.png"));
-                imageView.setFitHeight(19.0);
-                imageView.setFitWidth(19.0);
-                imageView.setLayoutX(iWidthShelf1 + i*24.0);
-                imageView.setLayoutY(iHeightShelf1 + j*22.0);
-                anchor.getChildren().add(imageView);
-            }
-        }*/
+    public void setShelf(String player, double width, double height) throws BadPositionException {
         for(int i = 0; i < model.getPlayersShelves().get(player).getRows(); i++) {
             for(int j = 0; j < model.getPlayersShelves().get(player).getColumns(); j++) {
                 ImageView imageView = new ImageView();
@@ -80,55 +69,13 @@ public class PlayerShelvesController extends FxmlController implements Initializ
                     imageView.setImage(loadImage("item_tiles/" + model.getPlayersShelves().get(player).getTile(i, j).toString() + "1.png"));
                     imageView.setFitHeight(19.0);
                     imageView.setFitWidth(19.0);
-                    imageView.setLayoutX(iWidthShelf1 + j*24.0);
-                    imageView.setLayoutY(iHeightShelf1 + i*22.0);
+                    imageView.setLayoutX(width + j*24.0);
+                    imageView.setLayoutY(height + i*22.0);
                     anchor.getChildren().add(imageView);
                 }
 
             }
         }
-        canvasShelf1.toFront();
-    }
-
-    public void setShelf2(String player) throws BadPositionException {
-
-        for(int i = 0; i < model.getPlayersShelves().get(player).getRows(); i++) {
-            for(int j = 0; j < model.getPlayersShelves().get(player).getColumns(); j++) {
-                ImageView imageView = new ImageView();
-                if(!model.getPlayersShelves().get(player).getTile(i, j).toString().equals("I") &&
-                        !model.getPlayersShelves().get(player).getTile(i, j).toString().equals("E")) {
-                    imageView.setImage(loadImage("item_tiles/" + model.getPlayersShelves().get(player).getTile(i, j).toString() + "1.png"));
-                    imageView.setFitHeight(19.0);
-                    imageView.setFitWidth(19.0);
-                    imageView.setLayoutX(iWidthShelf2 + j*24.0);
-                    imageView.setLayoutY(iHeightShelf2 + i*22.0);
-                    anchor.getChildren().add(imageView);
-                }
-
-            }
-        }
-        canvasShelf2.toFront();
-
-    }
-
-    public void setShelf3(String player) throws BadPositionException {
-
-        for(int i = 0; i < model.getPlayersShelves().get(player).getRows(); i++) {
-            for(int j = 0; j < model.getPlayersShelves().get(player).getColumns(); j++) {
-                ImageView imageView = new ImageView();
-                if(!model.getPlayersShelves().get(player).getTile(i, j).toString().equals("I") &&
-                        !model.getPlayersShelves().get(player).getTile(i, j).toString().equals("E")) {
-                    imageView.setImage(loadImage("item_tiles/" + model.getPlayersShelves().get(player).getTile(i, j).toString() + "1.png"));
-                    imageView.setFitHeight(19.0);
-                    imageView.setFitWidth(19.0);
-                    imageView.setLayoutX(iWidthShelf3 + j*25.0);
-                    imageView.setLayoutY(iHeightShelf3 + i*22.0);
-                    anchor.getChildren().add(imageView);
-                }
-
-            }
-        }
-        canvasShelf3.toFront();
     }
 
     @FXML
@@ -152,7 +99,7 @@ public class PlayerShelvesController extends FxmlController implements Initializ
                 if(!player.equals(model.getPlayerName())) {
                     username1.setText(player);
                     try {
-                        setShelf1(player);
+                        setShelf(player, iWidthShelf1, iHeightShelf1);
                     } catch (BadPositionException e) {
                         e.printStackTrace();
                     }
@@ -171,14 +118,14 @@ public class PlayerShelvesController extends FxmlController implements Initializ
                     if(username1.getText().equals("Username 1")) {
                         username1.setText(player);
                         try {
-                            setShelf1(player);
+                            setShelf(player, iWidthShelf1, iHeightShelf1);
                         } catch (BadPositionException e) {
                             e.printStackTrace();
                         }
                     } else {
                         username2.setText(player);
                         try {
-                            setShelf2(player);
+                            setShelf(player, iWidthShelf2, iHeightShelf2);
                         } catch (BadPositionException e) {
                             e.printStackTrace();
                         }
@@ -197,21 +144,21 @@ public class PlayerShelvesController extends FxmlController implements Initializ
                 if(username1.getText().equals("Username 1")) {
                     username1.setText(player);
                     try {
-                        setShelf1(player);
+                        setShelf(player, iWidthShelf1, iHeightShelf1);
                     } catch (BadPositionException e) {
                         e.printStackTrace();
                     }
                 } else if(username2.getText().equals("Username 2")) {
                     username2.setText(player);
                     try {
-                        setShelf2(player);
+                        setShelf(player, iWidthShelf2, iHeightShelf2);
                     } catch (BadPositionException e) {
                         e.printStackTrace();
                     }
                 } else {
                     username3.setText(player);
                     try {
-                        setShelf3(player);
+                        setShelf(player, iWidthShelf3, iHeightShelf3);
                     } catch (BadPositionException e) {
                         e.printStackTrace();
                     }
