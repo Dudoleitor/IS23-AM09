@@ -47,6 +47,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
         List<Player> playerList = new ArrayList<>();
         try{
             playerList = (List<Player>) players.stream().map(p -> {
@@ -217,6 +218,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(new ArrayList<>(clients));
+        c.setTurn_testing_only(0);
 
         c.clientDisconnected(clients.get(2));
         clients.remove(clients.get(2));
