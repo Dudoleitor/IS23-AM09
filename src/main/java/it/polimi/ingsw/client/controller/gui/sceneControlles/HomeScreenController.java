@@ -123,43 +123,31 @@ public class HomeScreenController extends SceneController implements Initializab
         controller.loadScene(SceneEnum.chat);
     }
 
-    protected void setBoard() throws BadPositionException {
+    /**
+     * This method is used to completely refresh the board
+     * @param board new Board object
+     */
+    public void setBoard(Board board) {
+        try {
+            for (int i = 0; i < board.getNumRows(); i++) {
+                for (int j = 0; j < board.getNumColumns(); j++) {
+                    if (!board.getTile(i, j).toString().equals("I") && !board.getTile(i, j).toString().equals("E")) {
+                        ImageView imageView = new ImageView();
+                        imageView.setImage(loadImage("item_tiles/" + board.getTile(i, j).toString() + "2.png"));
+                        imageView.setFitHeight(25.0);
+                        imageView.setFitWidth(25.0);
+                        imageView.setLayoutX(iWidth + j * 25.0);
+                        imageView.setLayoutY(iHeight + i * 25.0);
 
-        for(int i = 0; i < model.getBoard().getNumRows(); i++) {
-            for(int j = 0; j < model.getBoard().getNumColumns(); j++) {
-                if(!model.getBoard().getTile(i, j).toString().equals("I") && !model.getBoard().getTile(i, j).toString().equals("E")) {
-                    ImageView imageView = new ImageView();
-                    imageView.setImage(loadImage("item_tiles/" + model.getBoard().getTile(i, j).toString() + "2.png"));
-                    imageView.setFitHeight(25.0);
-                    imageView.setFitWidth(25.0);
-                    imageView.setLayoutX(iWidth + j*25.0);
-                    imageView.setLayoutY(iHeight + i*25.0);
-
-                    anchor.getChildren().add(imageView);
+                        anchor.getChildren().add(imageView);
+                    }
                 }
             }
+            canvasBoard.toFront();
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
         }
-        canvasBoard.toFront();
     }
-
-    protected void setShelf() throws BadPositionException {
-        for(int i = 0; i < model.getPlayersShelves().get(model.getPlayerName()).getRows(); i++) {
-            for(int j = 0; j < model.getPlayersShelves().get(model.getPlayerName()).getColumns(); j++) {
-                if(!model.getPlayersShelves().get(model.getPlayerName()).getTile(i, j).toString().equals("I") &&
-                !model.getPlayersShelves().get(model.getPlayerName()).getTile(i , j).toString().equals("E")) {
-                    ImageView imageView = new ImageView();
-                    imageView.setImage(loadImage("item_tiles/" + model.getPlayersShelves().get(model.getPlayerName()).getTile(i , j).toString() + "2.png"));
-                    imageView.setFitHeight(24.0);
-                    imageView.setFitWidth(24.0);
-                    imageView.setLayoutX(iWidthShelf + i*35.0);
-                    imageView.setLayoutY(iHeightShelf + j*30.0);
-                    anchor.getChildren().add(imageView);
-                }
-            }
-        }
-        canvasShelf.toFront();
-    }
-
 
     //BOARD: 25 (column getX) x 25 (getY)
     //SHELF: 24 (getY) x 24 (getX)
@@ -244,9 +232,9 @@ public class HomeScreenController extends SceneController implements Initializab
         }
 
         controller.getServer().postMove(model.getPlayerName(), actualMove);
-        removeFromBoard(actualMove);
+        //removeFromBoard(actualMove);
 
-        updateShelf();
+        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
         move.clear();
         actualMove = null;
         partialMove = null;
@@ -257,39 +245,54 @@ public class HomeScreenController extends SceneController implements Initializab
         controller.loadScene(SceneEnum.playerShelves);
     }
 
-    public void updateShelf() throws BadPositionException {
-        Shelf playerShelf = model.getPlayersShelves().get(model.getPlayerName());
-        for(int i = 0; i < playerShelf.getRows(); i++) {
-            for(int j = 0; j < playerShelf.getColumns(); j++) {
+    public void updateShelf(Shelf shelf) {
+        try {
+            for (int i = 0; i < shelf.getRows(); i++) {
+                for (int j = 0; j < shelf.getColumns(); j++) {
 
-                if(!playerShelf.getTile(i, j).toString().equals("I") && !playerShelf.getTile(i, j).toString().equals("E")) {
+                    if (!shelf.getTile(i, j).toString().equals("I") && !shelf.getTile(i, j).toString().equals("E")) {
 
-                    ImageView imageView = new ImageView();
-                    imageView.setImage(loadImage("item_tiles/" + playerShelf.getTile(i, j) + "2.png"));
-                    imageView.setFitHeight(24.0);
-                    imageView.setFitWidth(24.0);
-                    imageView.setLayoutX(iWidthShelf + j * 35.0);
-                    imageView.setLayoutY(iHeightShelf + i * 30.0);
-                    anchor.getChildren().add(imageView);
+                        ImageView imageView = new ImageView();
+                        imageView.setImage(loadImage("item_tiles/" + shelf.getTile(i, j) + "2.png"));
+                        imageView.setFitHeight(24.0);
+                        imageView.setFitWidth(24.0);
+                        imageView.setLayoutX(iWidthShelf + j * 35.0);
+                        imageView.setLayoutY(iHeightShelf + i * 30.0);
+                        anchor.getChildren().add(imageView);
+                    }
                 }
             }
+            canvasShelf.toFront();
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Invalid shelf in updateShelf: " + e.getMessage());
         }
-
-        canvasShelf.toFront();
     }
 
-    private void removeFromBoard(Move move) {
-        for(int i = 0; i < move.getBoardPositions().size(); i++) {
-            for(int j = 0; j < anchor.getChildren().size(); j++) {
-                if(anchor.getChildren().get(j).getLayoutX() == (iWidth + move.getBoardPositions().get(i).getColumn()*25.0)
-                && anchor.getChildren().get(j).getLayoutY() == (iHeight + move.getBoardPositions().get(i).getRow()*25.0)) {
-                    anchor.getChildren().get(j).setOpacity(0.0);
-                    anchor.getChildren().get(j).setOpacity(0.0);
-                    break;
-                }
+    /**
+     * This function is invoked from the server when the current
+     * player puts a tile into his shelf.
+     * @param column destination column of the shelf
+     * @param tile   Tile to insert
+     */
+    public void putIntoShelf(int column, Tile tile) {
+        //TODO
+        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
+    }
+
+    /**
+     * This function is invoked when a player makes a move, it picks
+     * a single tile from the board.
+     * @param position the position of the tile to be removed
+     */
+    public void removeFromBoard(Position position) {
+        for(int j = 0; j < anchor.getChildren().size(); j++) {
+            if(anchor.getChildren().get(j).getLayoutX() == (iWidth + position.getColumn()*25.0)
+            && anchor.getChildren().get(j).getLayoutY() == (iHeight + position.getRow()*25.0)) {
+                anchor.getChildren().get(j).setOpacity(0.0);
+                anchor.getChildren().get(j).setOpacity(0.0);
+                break;
             }
         }
-
     }
 
     @Override
@@ -298,12 +301,8 @@ public class HomeScreenController extends SceneController implements Initializab
         if(!turn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
-        try {
-            setBoard();
-            setShelf();
-        } catch (BadPositionException e) {
-            e.printStackTrace();
-        }
+        setBoard(model.getBoard());
+        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
 
         getPersonalGoal();
         getCommonGoals();
