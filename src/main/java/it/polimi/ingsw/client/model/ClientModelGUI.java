@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.controller.gui.sceneControlles.ChatController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.PlayerShelvesController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.WaitingLobbyController;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.JSONFilePath;
@@ -189,6 +190,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
+
         if(player.equalsIgnoreCase(playerName)) {
             final HomeScreenController sceneController =
                     (HomeScreenController) controller.getSceneController(SceneEnum.home);
@@ -196,8 +198,14 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
                 Platform.runLater(() -> {
                     sceneController.putIntoShelf(column, tile);
                 });
+        } else {
+            final PlayerShelvesController sceneController =
+                    (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
+            if(sceneController!=null)
+                Platform.runLater(() -> {
+                    sceneController.putIntoShelf(player, column, tile);
+                });
         }
-
     }
 
     /**
@@ -206,23 +214,31 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * it uses a json string.
      *
      * @param player name of the player
-     * @param shelf  JSONObject
+     * @param jsonShelf  JSONObject
      */
-    public void refreshShelf(String player, JSONObject shelf) {
+    public void refreshShelf(String player, JSONObject jsonShelf) {
         playersShelves.remove(player);
-        final Shelf shelf1;
+        final Shelf shelf;
         try {
-            shelf1 = new Shelf(shelf);
-            this.playersShelves.put(player, shelf1);
+            shelf = new Shelf(jsonShelf);
+            this.playersShelves.put(player, shelf);
         } catch (JsonBadParsingException e) {
-            throw new RuntimeException("Received invalid shelf from server: " + e.getMessage());
+            throw new RuntimeException("Received invalid jsonShelf from server: " + e.getMessage());
         }
+
         if(player.equalsIgnoreCase(playerName)) {
             final HomeScreenController sceneController =
                     (HomeScreenController) controller.getSceneController(SceneEnum.home);
             if(sceneController!=null)
                 Platform.runLater(() -> {
-                    sceneController.updateShelf(shelf1);
+                    sceneController.updateShelf(shelf);
+                });
+        } else {
+            final PlayerShelvesController sceneController =
+                    (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
+            if(sceneController!=null)
+                Platform.runLater(() -> {
+                    sceneController.refreshShelf(player, shelf);
                 });
         }
 
