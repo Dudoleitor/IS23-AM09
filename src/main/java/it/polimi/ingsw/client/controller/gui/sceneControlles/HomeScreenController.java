@@ -127,16 +127,19 @@ public class HomeScreenController extends SceneController implements Initializab
         canvasBoard.toFront();
     }
 
-    protected void setShelf() {
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 6; j++) {
-                ImageView imageView = new ImageView();
-                imageView.setImage(loadImage("misc/sfondo_parquet.jpg"));
-                imageView.setFitHeight(24.0);
-                imageView.setFitWidth(24.0);
-                imageView.setLayoutX(iWidthShelf + i*35.0);
-                imageView.setLayoutY(iHeightShelf + j*30.0);
-                anchor.getChildren().add(imageView);
+    protected void setShelf() throws BadPositionException {
+        for(int i = 0; i < model.getPlayersShelves().get(model.getPlayerName()).getRows(); i++) {
+            for(int j = 0; j < model.getPlayersShelves().get(model.getPlayerName()).getColumns(); j++) {
+                if(!model.getPlayersShelves().get(model.getPlayerName()).getTile(i, j).toString().equals("I") &&
+                !model.getPlayersShelves().get(model.getPlayerName()).getTile(i , j).toString().equals("E")) {
+                    ImageView imageView = new ImageView();
+                    imageView.setImage(loadImage("item_tiles/" + model.getPlayersShelves().get(model.getPlayerName()).getTile(i , j).toString() + "2.png"));
+                    imageView.setFitHeight(24.0);
+                    imageView.setFitWidth(24.0);
+                    imageView.setLayoutX(iWidthShelf + i*35.0);
+                    imageView.setLayoutY(iHeightShelf + j*30.0);
+                    anchor.getChildren().add(imageView);
+                }
             }
         }
         canvasShelf.toFront();
@@ -282,10 +285,11 @@ public class HomeScreenController extends SceneController implements Initializab
         }
         try {
             setBoard();
+            setShelf();
         } catch (BadPositionException e) {
             e.printStackTrace();
         }
-        setShelf();
+
         getPersonalGoal();
         getCommonGoals();
         if(model.isItMyTurn()) {
