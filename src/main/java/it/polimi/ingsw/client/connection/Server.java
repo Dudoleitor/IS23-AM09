@@ -23,7 +23,7 @@ public abstract class Server {
      * @param client
      * @return true if login was successful
      */
-    public abstract boolean login(Client client);
+    public abstract boolean login(Client client) throws ServerException;
 
     /**
      * Join the first available Lobby
@@ -45,10 +45,11 @@ public abstract class Server {
 
     /**
      * Get all lobbies in which the client is present
+     *
      * @param playerName playerName of client
      * @return the lobbies that the player has joined
      */
-    public abstract Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException;
+    public abstract int getJoinedLobby(String playerName) throws ServerException;
 
     /**
      * Join a specific lobby

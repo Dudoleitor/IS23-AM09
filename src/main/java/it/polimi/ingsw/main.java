@@ -174,7 +174,8 @@ public class main {
             try{
                 port = Integer.parseInt(commandLine.getOptionValue(opt.getName()));
                 if(!isValidPort(port)){
-                    opt.reset();
+                    port = askPort(opt);
+                    opt.set();
                 }
                 else{
                     opt.set();
@@ -184,7 +185,7 @@ public class main {
                 opt.reset();
             }
         }
-        if(!opt.isSet()){
+        else{
             port = askPort(opt);
             opt.set();
         }

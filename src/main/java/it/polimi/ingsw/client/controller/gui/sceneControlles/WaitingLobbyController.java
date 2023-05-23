@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
+import it.polimi.ingsw.client.controller.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.ChatMessage;
@@ -73,6 +74,10 @@ public class WaitingLobbyController extends SceneController implements Initializ
     protected void sendMessage() throws LobbyException {
         if(message.getText().equals("")){
             controller.errorMessage("Insert a message");
+            return;
+        }
+        if(!InputSanitizer.isValidMessage(message.getText())){
+            controller.errorMessage("Illegal characters in message");
             return;
         }
         controller.getServer().postToLiveChat(playerName, message.getText());

@@ -87,7 +87,12 @@ public interface ClientController {
      * @return true if successful
      */
     static boolean tryLogin(ClientController controller){
-        boolean logged = controller.getServer().login(controller.getClient()); //get previous sessions if present
+        final boolean logged;
+        try {
+            logged = controller.getServer().login(controller.getClient()); //get previous sessions if present
+        } catch (ServerException e) {
+            return false;
+        }
         if(!logged){
             controller.errorMessage("Login error, username already taken");
         }

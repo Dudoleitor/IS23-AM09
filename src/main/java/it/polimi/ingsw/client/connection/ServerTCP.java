@@ -45,7 +45,7 @@ public class ServerTCP extends Server {
         serverIO.out(message);
     }
     @Override
-    public boolean login(Client client) {
+    public boolean login(Client client) throws ServerException {
         JSONObject content = new JSONObject();
         content.put("player", client.getPlayerName());
         MessageTcp login = new MessageTcp();
@@ -59,25 +59,25 @@ public class ServerTCP extends Server {
                 response = in();
             return Boolean.parseBoolean(response.getContent().get("result").toString());
         }catch (RemoteException e){
-            return false;
+            throw new ServerException("Error while connecting to server, " + e.getMessage());
         }
     }
 
 
     @Override
-    public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
+    public int getJoinedLobby(String playerName) throws ServerException {
         JSONObject content = new JSONObject();
         content.put("player", playerName);
         MessageTcp requestLobbies = new MessageTcp();
-        requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set command
+        requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set command
         requestLobbies.setContent(content); //set playername as JsonObject
         requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobbies) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobby) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2mapInt((JSONObject) response.getContent().get("lobbies"));
+            return (int) Long.parseLong(response.getContent().get("lobby").toString());
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -318,7 +318,18 @@ public class ServerTCP extends Server {
      */
     @Override
     public String getCurrentPlayer() throws LobbyException {
-        return ""; // TODO
+        MessageTcp getPlayer = new MessageTcp();
+        getPlayer.setCommand(MessageTcp.MessageCommand.GetCurrentPlayer); //set command
+        getPlayer.generateRequestID();
+        out(getPlayer.toString());
+        try {
+            MessageTcp response = in(); //wait for response by server and create an object response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetCurrentPlayer) && !response.getRequestID().equals(getPlayer.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+                response = in();
+            return response.getContent().get("player").toString();
+        }catch (RemoteException | NullPointerException e){
+            throw new LobbyException(e.getMessage());
+        }
     }
 
     /**
@@ -331,6 +342,20 @@ public class ServerTCP extends Server {
      */
     @Override
     public int disconnectedFromLobby(String playerName) throws ServerException {
-        return -1; //TODO
+        MessageTcp disconnectedLobby = new MessageTcp();
+        JSONObject content = new JSONObject();
+        content.put("player", playerName);
+        disconnectedLobby.setCommand(MessageTcp.MessageCommand.DisconnectedFromLobby); //set command
+        disconnectedLobby.generateRequestID();
+        disconnectedLobby.setContent(content);
+        out(disconnectedLobby.toString());
+        try {
+            MessageTcp response = in(); //wait for response by server and create an object response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.DisconnectedFromLobby) && !response.getRequestID().equals(disconnectedLobby.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+                response = in();
+            return Integer.parseInt(response.getContent().get("lobby").toString());
+        }catch (RemoteException | NullPointerException e){
+            throw new ServerException(e.getMessage());
+        }
     }
 }

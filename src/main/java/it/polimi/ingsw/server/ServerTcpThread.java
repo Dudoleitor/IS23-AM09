@@ -60,7 +60,7 @@ public class ServerTcpThread extends Thread{
             case Login:
                 login(content,ID);
                 break;
-            case GetJoinedLobbies:
+            case GetJoinedLobby:
                 getJoinedLobbies(content,ID);
                 break;
             case JoinRandomLobby:
@@ -75,6 +75,8 @@ public class ServerTcpThread extends Thread{
             case JoinSelectedLobby:
                 joinSelectedLobby(content,ID);
                 break;
+            case DisconnectedFromLobby:
+                disconnectedFromLobby(content, ID);
             default:
                 break;
         }
@@ -103,6 +105,9 @@ public class ServerTcpThread extends Thread{
             case IsLobbyAdmin:
                 isLobbyAdmin(content,ID);
                 break;
+            case GetCurrentPlayer:
+                getCurrentPlayer(ID);
+                break;
             default:
                 break;
         }
@@ -130,19 +135,19 @@ public class ServerTcpThread extends Thread{
         client.out(feedback.toString()); //send object to client
     }
     private void getJoinedLobbies(JSONObject message, String ID){
-        Map<Integer,Integer> lobbies;
+        int lobby;
         String username = message.get("player").toString();
         synchronized (server){
             try {
-                lobbies = server.getJoinedLobbies(username);
+                lobby = server.getJoinedLobby(username);
             } catch (NullPointerException e) {
-                lobbies = new HashMap<>(); //TODO to send back error message to set username first
+                lobby = -1;
             }
         }
         JSONObject result = new JSONObject();
-        result.put("lobbies", Jsonable.map2json(lobbies));
+        result.put("lobby", lobby);
         MessageTcp feedback = new MessageTcp(); //message to send back
-        feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set message command
+        feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set message command
         feedback.setContent(result); //set message content
         feedback.setRequestID(ID);
         client.out(feedback.toString()); //send object to client
@@ -223,6 +228,25 @@ public class ServerTcpThread extends Thread{
         feedback.setRequestID(ID);
         client.out(feedback.toString()); //send object to client
     }
+    private void disconnectedFromLobby(JSONObject messaage, String ID){
+        String user = messaage.get("player").toString();
+        int lobby;
+        synchronized (server){
+            try {
+                lobby = server.disconnectedFromLobby(user);
+            } catch (NullPointerException e) {
+                lobby = -1;
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("lobby", lobby);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.DisconnectedFromLobby); //set message command
+        feedback.setContent(result); //set message content
+        feedback.setRequestID(ID);
+        client.out(feedback.toString()); //send object to client
+    }
+
 
 
     private int LobbyIni(ServerLobbyInterface lobbyInterface){
@@ -377,6 +401,24 @@ public class ServerTcpThread extends Thread{
         this.exit = true;
         executor.shutdownNow();
         Thread.currentThread().interrupt();
+    }
+
+    private void getCurrentPlayer(String ID){
+        String player;
+        synchronized (lobby){
+            try {
+                player = lobby.getCurrentPlayer();
+            } catch (NullPointerException e) {
+                player = null;
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("player", player);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.GetCurrentPlayer); //set message command
+        feedback.setContent(result); //set message content
+        feedback.setRequestID(ID);
+        client.out(feedback.toString()); //send object to client
     }
 
 }

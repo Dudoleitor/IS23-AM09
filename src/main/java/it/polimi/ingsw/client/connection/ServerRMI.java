@@ -26,7 +26,7 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public boolean login(Client client) {
+    public boolean login(Client client) throws ServerException {
         try {
             if(server == null){
                 //get remote registry that points to 127.0.0.1:port
@@ -36,22 +36,20 @@ public class ServerRMI extends Server {
                 //try to log in
             }
             return server.login((ClientRMI) client);
-        } catch (RemoteException | NotBoundException e) {
-            return false;
+        } catch (NotBoundException | RemoteException e) {
+            throw new ServerException("Error while connecting to server, " + e.getMessage());
         }
     }
 
     @Override
-    public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException{
-        Map<Integer,Integer> lobbies;
+    public int getJoinedLobby(String playerName) throws ServerException{
+        int lobbyId;
         try {
-            lobbies = server.getJoinedLobbies(playerName);
+            lobbyId = server.getJoinedLobby(playerName);
         } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
-        if(lobbies != null)
-            return lobbies;
-        return new HashMap<>();
+        return lobbyId;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class MessageTcp {
     }
     public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP
         Login("login",TypeMessage.ReplyWait),
-        GetJoinedLobbies("getJoined", TypeMessage.ReplyWait),
+        GetJoinedLobby("getJoined", TypeMessage.ReplyWait),
         JoinRandomLobby("joinRandom", TypeMessage.ReplyWait),
         CreateLobby("createLobby", TypeMessage.ReplyWait),
         GetAvailableLobbies("availableLobbies", TypeMessage.ReplyWait),
@@ -44,6 +44,8 @@ public class MessageTcp {
         PostMove("move", TypeMessage.ReplyWait),
         StartGame("start", TypeMessage.ReplyWait),
         IsLobbyAdmin("isAdmin", TypeMessage.ReplyWait),
+        GetCurrentPlayer("currentPlayer", TypeMessage.ReplyWait),
+        DisconnectedFromLobby("disconnectedFromLobby", TypeMessage.ReplyWait),
         PickedFromBoard("pickedTile", TypeMessage.Update),
         RefreshBoard("refreshBoard", TypeMessage.Update),
         PutIntoShelf("putShelf",TypeMessage.Update),
