@@ -107,7 +107,7 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
-        Scene javafxScene = new Scene(parent, 800, 800);
+        Scene javafxScene = new Scene(parent, 800, 800); //TODO decorate and remove magic numbers
         scenes.put(scene,
                 new FXMLSceneWithController(javafxScene, sceneController));
         return javafxScene;

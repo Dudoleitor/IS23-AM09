@@ -89,14 +89,14 @@ public class HomeScreenController extends SceneController implements Initializab
 
     private void getCommonGoals () {
 
-        int number1 = model.getCommonGoalList().get(0).getID();
-        int number2 = model.getCommonGoalList().get(1).getID();
+        CommonGoal cg1 = model.getCommonGoalList().get(0);
+        CommonGoal cg2 = model.getCommonGoalList().get(1);
 
-        commonGoal1.setImage(loadImage( "common_goal_cards/" + number1 + ".jpg"));
-        commonGoal2.setImage(loadImage("common_goal_cards/" + number2 + ".jpg"));
+        commonGoal1.setImage(loadImage( "common_goal_cards/" + cg1.getID() + ".jpg"));
+        commonGoal2.setImage(loadImage("common_goal_cards/" + cg2.getID() + ".jpg"));
 
-        imageScoring1.setImage(loadImage("scoring_tokens/scoring_" + model.getCommonGoalList().get(0).showPointsStack().get(model.getCommonGoalList().get(0).showPointsStack().size() - 1) + ".jpg"));
-        imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + model.getCommonGoalList().get(1).showPointsStack().get(model.getCommonGoalList().get(1).showPointsStack().size() - 1) + ".jpg"));
+        imageScoring1.setImage(loadImage("scoring_tokens/scoring_" + cg1.peekTopOfPointsStack() + ".jpg"));
+        imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + cg2.peekTopOfPointsStack() + ".jpg"));
     }
 
     /**

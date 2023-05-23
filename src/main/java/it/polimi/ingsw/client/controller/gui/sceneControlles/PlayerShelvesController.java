@@ -77,12 +77,12 @@ public class PlayerShelvesController extends SceneController implements Initiali
     }
 
     //dimensione = 19x19
-
+    //TODO portare a fattor comune
     private void setShelf(Shelf shelf, double width, double height) throws BadPositionException {
         for(int i = 0; i < shelf.getRows(); i++) {
             for(int j = 0; j < shelf.getColumns(); j++) {
                 ImageView imageView = new ImageView();
-                if(!shelf.getTile(i, j).toString().equals("I") &&
+                if(!shelf.getTile(i, j).toString().equals("I") && //TODO use enum instance
                         !shelf.getTile(i, j).toString().equals("E")) {
                     imageView.setImage(loadImage("item_tiles/" + shelf.getTile(i, j).toString() + "1.png"));
                     imageView.setFitHeight(19.0);
@@ -130,7 +130,6 @@ public class PlayerShelvesController extends SceneController implements Initiali
         } catch (BadPositionException e) {
             throw new RuntimeException("Bad position in shelf of " + playerName + ": " + e.getMessage());
         }
-
     }
 
     @FXML
@@ -143,7 +142,7 @@ public class PlayerShelvesController extends SceneController implements Initiali
         controller.loadScene(SceneEnum.chat);
     }
 
-
+    //TODO refactor
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

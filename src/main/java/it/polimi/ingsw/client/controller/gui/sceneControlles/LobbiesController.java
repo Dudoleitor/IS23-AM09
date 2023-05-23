@@ -74,7 +74,6 @@ public class LobbiesController extends SceneController implements Initializable 
         if(availableLobbies==null) {
             throw new RuntimeException("Lobbies not initialized!");
         }
-
         final String userInput = lobbyNumber.getText();
 
         if(userInput.equals("")) {

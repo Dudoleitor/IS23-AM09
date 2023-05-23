@@ -164,8 +164,12 @@ public class CommonGoal implements Jsonable{
      * Shows the state of the Points Stack
      * @return the Points Stack as an ArrayList
      */
-    public List<Integer> showPointsStack(){ //useful in debugging
+    public List<Integer> showPointsStack(){
         return new ArrayList<>(points);
+    }
+
+    public int peekTopOfPointsStack(){
+        return points.peek();
     }
 
     //MODIFIERS

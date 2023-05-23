@@ -140,7 +140,6 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
-
         final HomeScreenController sceneController =
                 (HomeScreenController) controller.getSceneController(SceneEnum.home);
         if(sceneController!=null)
