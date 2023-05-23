@@ -10,7 +10,8 @@ public enum SceneEnum {
     lobbyWaiting("WaitingLobby", WaitingLobbyController.class),
     home("HomeScreen", HomeScreenController.class),
     chat("Chat", ChatController.class),
-    playerShelves("PlayerShelves", PlayerShelvesController.class)
+    playerShelves("PlayerShelves", PlayerShelvesController.class),
+    winnerScreen("winnerScreen", winnerSceneController.class)
     ;
 
     private final String sceneFile;
