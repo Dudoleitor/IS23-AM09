@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 
 
 import java.io.IOException;
@@ -77,6 +78,9 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     Button readChatButton;
 
+    @FXML
+    Circle notificationCircle;
+
 
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
@@ -111,9 +115,11 @@ public class HomeScreenController extends SceneController implements Initializab
      */
     public void setNewMessage(boolean newMessage) {
         if(newMessage) {
-            readChatButton.setStyle("-fx-background-color: blue;");
+            readChatButton.setStyle("-fx-background-color: #456938;");
+            notificationCircle.setOpacity(1.0);
         } else {
             readChatButton.setStyle("-fx-background-color: #49be25;");
+            notificationCircle.setOpacity(0.0);
         }
     }
 
