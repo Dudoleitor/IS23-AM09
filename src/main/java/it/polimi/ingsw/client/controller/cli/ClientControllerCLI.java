@@ -77,7 +77,7 @@ public class ClientControllerCLI implements ClientController {
         }
 
         //show the client the lobbies they can join
-        cliIO.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+        cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
         cliIO.showLobbies(availableLobbies, "The lobbies that are available");
 
         boolean successful = false;
@@ -96,7 +96,7 @@ public class ClientControllerCLI implements ClientController {
                     break;
                 case Refresh:
                     //show the client the lobbies they can join
-                    cliIO.showLobbies(server.getJoinedLobbies(playerName),"The lobbies you already joined");
+                    cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
                     cliIO.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
                     break;
                 default:

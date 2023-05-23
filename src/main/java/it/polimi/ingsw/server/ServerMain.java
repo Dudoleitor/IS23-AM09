@@ -147,12 +147,13 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @param nick is the player name
      * @return list of lobby id of matches joined by the player
      */
-    public synchronized Map<Integer,Integer> getJoinedLobbies(String nick){
-        Map<Integer,Integer> lobbyList = new HashMap<>();//get all lobbies already joined by the client
-                lobbies.stream()
+    public synchronized int getJoinedLobby(String nick){
+        int lobby;//get lobby already joined by the client
+                lobby = lobbies.stream()
                         .filter(x -> x.getPlayerNames().contains(nick))
-                        .forEach(x -> lobbyList.put(x.getID(),x.getPlayerNames().size()));
-        return lobbyList;
+                        .map(Lobby::getID)
+                        .findFirst().orElse(-1);
+        return lobby;
     }
 
     /**
@@ -164,14 +165,9 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             throw new RemoteException("Client is not in the list of clients without lobby");
 
         ServerLobbyInterface lobbyInterface;
-        Map<Integer,Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
-        if(alreadyJoined.size() > 0){
-            int alreadyJoinedID = alreadyJoined.
-                    keySet().
-                    stream().
-                    findFirst().
-                    orElse(-1);
-            lobbyInterface = joinSelectedLobby(client,alreadyJoinedID);
+        int alreadyJoined = getJoinedLobby(client.getPlayerName());
+        if(alreadyJoined > 0){
+            lobbyInterface = joinSelectedLobby(client,alreadyJoined);
         } else {
             Lobby lobby = lobbies.stream()
                     .filter(l -> !l.isFull() && !l.matchHasStarted()) //keep only not full lobbies

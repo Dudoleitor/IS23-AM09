@@ -42,16 +42,14 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException{
-        Map<Integer,Integer> lobbies;
+    public int getJoinedLobby(String playerName) throws ServerException{
+        int lobbyId;
         try {
-            lobbies = server.getJoinedLobbies(playerName);
+            lobbyId = server.getJoinedLobby(playerName);
         } catch (RemoteException e) {
             throw new ServerException("Error in Server");
         }
-        if(lobbies != null)
-            return lobbies;
-        return new HashMap<>();
+        return lobbyId;
     }
 
     @Override

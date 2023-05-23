@@ -16,7 +16,7 @@ import java.util.Map;
 public interface ServerInterface extends Remote {
     boolean login(Client client) throws RemoteException;
     ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException;
-    Map<Integer,Integer> getJoinedLobbies(String nick) throws RemoteException;
+    int getJoinedLobby(String nick) throws RemoteException;
     ServerLobbyInterface createLobby(Client client) throws RemoteException;
     Map<Integer,Integer> showAvailableLobbies() throws RemoteException;
     ServerLobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException;

@@ -436,6 +436,17 @@ public class CLI_IO {
             printMessage(lobbyMessage);
         }
     }
+    public void showJoinedLobby(int availableLobby, String description){
+        synchronized (cli_lock){
+            String lobbyMessage = description;
+            if (availableLobby > 0) {
+                lobbyMessage = " -> Lobby :" + availableLobby;
+            } else {
+                lobbyMessage = lobbyMessage + "\n       None";
+            }
+            printMessage(lobbyMessage);
+        }
+    }
     protected LobbySelectionCommand askLobby(){
         int lobbyID;
         String id;

@@ -60,7 +60,7 @@ public class ServerTcpThread extends Thread{
             case Login:
                 login(content,ID);
                 break;
-            case GetJoinedLobbies:
+            case GetJoinedLobby:
                 getJoinedLobbies(content,ID);
                 break;
             case JoinRandomLobby:
@@ -130,19 +130,19 @@ public class ServerTcpThread extends Thread{
         client.out(feedback.toString()); //send object to client
     }
     private void getJoinedLobbies(JSONObject message, String ID){
-        Map<Integer,Integer> lobbies;
+        int lobby;
         String username = message.get("player").toString();
         synchronized (server){
             try {
-                lobbies = server.getJoinedLobbies(username);
+                lobby = server.getJoinedLobby(username);
             } catch (NullPointerException e) {
-                lobbies = new HashMap<>(); //TODO to send back error message to set username first
+                lobby = -1;
             }
         }
         JSONObject result = new JSONObject();
-        result.put("lobbies", Jsonable.map2json(lobbies));
+        result.put("lobby", lobby);
         MessageTcp feedback = new MessageTcp(); //message to send back
-        feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set message command
+        feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set message command
         feedback.setContent(result); //set message content
         feedback.setRequestID(ID);
         client.out(feedback.toString()); //send object to client

@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.connection;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.IpAddressV4;
 import it.polimi.ingsw.shared.model.Move;
-import org.apache.commons.cli.ParseException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,11 +57,11 @@ public class ConnectionStub extends Server {
     }
 
     @Override
-    public Map<Integer, Integer> getJoinedLobbies(String playerName) throws ServerException {
+    public int getJoinedLobby(String playerName) throws ServerException {
         callsToStub.addLast("joined lobbies");
         if(verbous)
             System.out.println("joined lobbies");
-        return new HashMap<>();
+        return -1;
     }
 
     @Override

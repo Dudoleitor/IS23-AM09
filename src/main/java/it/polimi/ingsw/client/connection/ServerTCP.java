@@ -65,19 +65,20 @@ public class ServerTCP extends Server {
 
 
     @Override
-    public Map<Integer,Integer> getJoinedLobbies(String playerName) throws ServerException {
+    public int getJoinedLobby(String playerName) throws ServerException {
         JSONObject content = new JSONObject();
         content.put("player", playerName);
         MessageTcp requestLobbies = new MessageTcp();
-        requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobbies); //set command
+        requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set command
         requestLobbies.setContent(content); //set playername as JsonObject
         requestLobbies.generateRequestID();
         out(requestLobbies.toString());
         try {
             MessageTcp response = in(); //wait for response by server and create an object response
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobbies) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
+            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobby) && !response.getRequestID().equals(requestLobbies.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
                 response = in();
-            return Jsonable.json2mapInt((JSONObject) response.getContent().get("lobbies"));
+            int LobbyId = (int) Long.parseLong(response.getContent().get("lobby").toString());
+            return LobbyId;
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
