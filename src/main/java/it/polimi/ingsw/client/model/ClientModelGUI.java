@@ -401,7 +401,9 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     public void endGame(Map<String, Integer> leaderBoard){
         this.gameEnded = true;
         this.leaderBoard = leaderBoard;
-        controller.loadScene(SceneEnum.winnerScreen);
+        Platform.runLater(() -> {
+            controller.loadScene(SceneEnum.winnerScreen);
+        });
     }
 
 
