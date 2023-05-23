@@ -31,13 +31,11 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     private Controller controller;
 
     /* Note: methods using the list clients need to be synchronized:
-    the pings sent by the executor can result in the handleNetworkException method
+    the pings sent by the thread can result in the handleNetworkException method
     being called.
     In addition to that, multiple clients can send requests to the lobby and
     they must send commands to the model one at a time. */
-    private final ScheduledExecutorService executor;
     private final LobbyPingSender pingSender;
-    private final long pingIntervalSeconds = NetworkSettings.serverPingIntervalSeconds;
 
     public Lobby(Client firstPlayer, int id) throws RemoteException {
         super();
@@ -48,8 +46,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         this.chat = new Chat();
         chat.addPlayer(firstPlayer);
         this.pingSender = new LobbyPingSender(this);
-        this.executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
+        pingSender.start();
     }
 
     /**
@@ -349,7 +346,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     }
 }
 
-class LobbyPingSender implements Runnable {
+class LobbyPingSender extends Thread {
 
     private final Lobby lobby;  // Needed for proper synchronization
 
@@ -361,9 +358,18 @@ class LobbyPingSender implements Runnable {
      * This Runnable is used to ping clients, if a client is not available
      * an exception is thrown and the exception handles kicks in.
      */
+    @Override
     public void run() {
-        synchronized (lobby) {
-            for (Client c : lobby.getClients()) c.ping();
+        while(true) {
+            synchronized (lobby) {
+                for (Client c : lobby.getClients())
+                    c.ping();
+            }
+            try {
+                Thread.sleep(NetworkSettings.serverPingIntervalSeconds * 1000);
+            } catch (InterruptedException ignored) {
+                return;
+            }
         }
     };
 }

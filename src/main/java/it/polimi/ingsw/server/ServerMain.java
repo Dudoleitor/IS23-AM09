@@ -36,20 +36,17 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
 
 
     /* Note: methods using the list clientsWithoutLobby need to be synchronized:
-    the pings sent by the executor can result in the handleNetworkException method
+    the pings sent by the thread can result in the handleNetworkException method
     being called.
     In addition to that, multiple clients can send requests to the server and
     they must send commands one at a time. */
-    private final ScheduledExecutorService executor;
     private final ServerPingSender pingSender;
-    private final long pingIntervalSeconds = NetworkSettings.serverPingIntervalSeconds;
 
     private ServerMain() {
         clientsWithoutLobby = new ArrayList<>();
         lobbies = new ArrayList<>();
         this.pingSender = new ServerPingSender(this);
-        this.executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
+        pingSender.start();
     }
 
     public synchronized List<Client> getClientsWithoutLobby() {
@@ -281,7 +278,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     }
 }
 
-class ServerPingSender implements Runnable {
+class ServerPingSender extends Thread {
 
     private final ServerMain server;  // Needed for proper synchronization
 
@@ -293,10 +290,18 @@ class ServerPingSender implements Runnable {
      * This Runnable is used to ping clients, if a client is not available
      * an exception is thrown and the exception handles kicks in.
      */
+    @Override
     public void run() {
-        synchronized (server) {
-            for (Client c : server.getClientsWithoutLobby())
-                c.ping();
+        while(true) {
+            synchronized (server) {
+                for (Client c : server.getClientsWithoutLobby())
+                    c.ping();
+            }
+            try {
+                Thread.sleep(NetworkSettings.serverPingIntervalSeconds * 1000);
+            } catch (InterruptedException ignored) {
+                return;
+            }
         }
     };
 }
