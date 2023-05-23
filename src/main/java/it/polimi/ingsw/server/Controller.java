@@ -348,6 +348,61 @@ public class Controller implements Jsonable {
     }
 
     /**
+     * This function is used to notify each
+     * client the game has ended.
+     */
+    private void handleGameEnd() {
+        Map<String, Integer> leaderBoard = new HashMap<>();
+        for(Player p : players){
+            leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
+        }
+
+        for (Client client : clients)
+            client.endGame(leaderBoard);
+        deleteSavedGame();
+    }
+
+    /**
+     * This method is used to load a Player object
+     * given its name.
+     * @param playerName String, name of the player
+     * @return Player object
+     */
+    private Player getPlayerFromName(String playerName) throws ControllerGenericException {
+        final Player player = players.stream().
+                filter(p -> p.getName().equals(playerName)).
+                findFirst().orElse(null);
+        if (player == null) {
+            throw new ControllerGenericException("No player found with that name");
+        }
+        return player;
+    }
+
+    /**
+     * This method is the core functionality of moveTiles.
+     * It checks if the move is valid and then updates the model.
+     * @param player Player object
+     * @param move Move object
+     */
+    private void doMoveTiles(Player player, Move move) throws InvalidMoveException, BadPositionException {
+        final Shelf playerShelf = player.getShelf();
+        final int freeSpaceInColumn = (int) playerShelf.
+                allTilesInColumn(move.getColumn()).stream().
+                filter(x -> x.equals(Tile.Empty)).
+                count();
+        if (move.getBoardPositions().size() > freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
+            throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
+        }
+        if (!checkValidMove(move))
+            throw new InvalidMoveException("Tiles selection is not allowed");
+
+        final List<Position> positions = move.getBoardPositions();
+        for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
+            player.insertTile(board.pickTile(p), move.getColumn());
+        }
+    }
+
+    /**
      * insert Tiles in the player shelf according to move coordinates
      * @param playerName is the current player
      * @param move is the move that player wants to do
@@ -362,53 +417,22 @@ public class Controller implements Jsonable {
             return;
         }
 
-        Player player; //doesnt work as an Optional TODO for @Jack
+        if(move == null || move.getBoardPositions() == null || move.getBoardPositions().contains(null)){
+            throw new ControllerGenericException("Invalid move");
+        }
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
         }
-        else if(move == null || move.getBoardPositions() == null || move.getBoardPositions().contains(null)){
-            throw new ControllerGenericException("Invalid move");
-        }
-        else {
-            player = players.stream().
-                    filter(p -> p.getName().equals(playerName)).
-                    findFirst().orElse(null);
-            if (player == null) {
-                throw new ControllerGenericException("No player found with that name");
-            }
+        if (!playerName.equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
+            throw new ControllerGenericException("Player is not the current player");
         }
 
+        final Player player = getPlayerFromName(playerName);
         try {
-            if (!player.getName().equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
-                throw new ControllerGenericException("Player is not the current player");
-            }
-
-            Shelf playerShelf = player.getShelf();
-            int freeSpaceInColumn = (int) playerShelf.
-                    allTilesInColumn(move.getColumn()).stream().
-                    filter(x -> x.equals(Tile.Empty)).
-                    count();
-            if (move.getBoardPositions().size() > freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
-                throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
-            }
-            if (!checkValidMove(move))
-                throw new InvalidMoveException("Tiles selection is not allowed");
-
-            List<Position> positions = move.getBoardPositions();
-            for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
-                player.insertTile(board.pickTile(p), move.getColumn());
-            }
+            doMoveTiles(player, move);
 
             if(gameFinished()){
-
-                Map<String, Integer> leaderBoard = new HashMap<>();
-                for(Player p : players){
-                    leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
-                }
-
-                for (Client client : clients)
-                    client.endGame(leaderBoard);
-                deleteSavedGame();
+                handleGameEnd();
             }
             else{
                 prepareForNextPlayer(); //Fill if necessary
