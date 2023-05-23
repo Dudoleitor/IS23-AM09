@@ -8,6 +8,7 @@ import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,8 +49,8 @@ public class ClientSocket implements Client {
                     ready = true;
             }
             return new MessageTcp(ClientIn.readLine());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ParseException e) {
+            return new MessageTcp();
         }
     }
 

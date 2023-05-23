@@ -37,6 +37,8 @@ public class ServerTcpThread extends Thread{
         while(!exit) {
             MessageTcp message = client.in();
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
+            if (command==null)
+                continue; // TODO this is just a temporary solution, we need to find a way to handle this
             String ID = message.getRequestID();
             JSONObject content = message.getContent(); //content in JSON
 

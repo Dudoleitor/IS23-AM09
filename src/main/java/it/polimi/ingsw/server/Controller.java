@@ -27,7 +27,68 @@ public class Controller implements Jsonable {
     private final List<VirtualView> virtualViews;
     private int turn;
 
+    /**
+     * This method is used to randomly generate a list
+     * of PlayerGoal objects.
+     * @return List of PlayerGoal objects
+     */
+    private List<PlayerGoal> initPlayersGoals() throws JsonBadParsingException {
+        List<PlayerGoal> playerGoals = new ArrayList<>();
+        PlayerGoal playerGoal;
 
+        // Generating players' goals
+        if (PlayerGoal.playerGoalsAmount(PlayerGoals) < clients.size()) {
+            throw new ControllerGenericException("Unable to generate players goals: not enough goals in file!");
+        }
+        for (int goalToGen = 0; goalToGen < clients.size(); goalToGen++) {
+            playerGoal = new PlayerGoal(PlayerGoals);
+            while (playerGoals.contains(playerGoal)) {
+                playerGoal = new PlayerGoal(PlayerGoals);
+            }
+            playerGoals.add(playerGoal);
+        }
+        return playerGoals;
+    }
+    /**
+     * This method is used to init the list of players,
+     * it creates the player, assigns him a shelf and a goal,
+     * update the list of virtual views.
+     * @param playerGoals List of PlayerGoal objects
+     */
+    private List<Player> initPlayers(List<PlayerGoal> playerGoals) {
+        List<Player> players = new ArrayList<>();
+        PlayerGoal playerGoal;
+        Player player;
+        for (Client client : clients) {
+            playerGoal = playerGoals.get(0);
+            playerGoals.remove(playerGoal);
+
+            player = new Player(client.getPlayerName(),
+                    new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns),
+                    playerGoal);
+
+            players.add(player);
+            virtualViews.add(player.getVirtualShelf());
+        }
+        return players;
+    }
+
+    /**
+     * This method is used to init the board.
+     * @return Board object
+     */
+    private Board initBoard() throws JsonBadParsingException {
+        final Board board;
+        board = new Board(clients.size());
+        try {
+            board.fill();
+        } catch (OutOfTilesException e) {
+            throw new RuntimeException("A new board should never be out of tiles");
+        }
+        virtualViews.add(board.getVirtualBoard());
+        virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));
+        return board;
+    }
     /**
      * Constructor used to initialize the controller
      * @param clients is a List of Client objects
@@ -39,52 +100,15 @@ public class Controller implements Jsonable {
 
         this.virtualViews = new ArrayList<>();
         this.clients = clients;
+        this.turn = ThreadLocalRandom.current().nextInt(0, clients.size());
 
         try {
-            players = new ArrayList<>();
-            Player player;
-
-            List<PlayerGoal> playerGoals = new ArrayList<>();
-            PlayerGoal playerGoal;
-
-            turn = ThreadLocalRandom.current().nextInt(0, clients.size());
-
-            // Generating players' goals
-            if (PlayerGoal.playerGoalsAmount(PlayerGoals) < clients.size()) {
-                throw new ControllerGenericException("Unable to generate players goals: not enough goals in file!");
-            }
-            for (int goalToGen = 0; goalToGen < clients.size(); goalToGen++) {
-                playerGoal = new PlayerGoal(PlayerGoals);
-                while (playerGoals.contains(playerGoal)) {
-                    playerGoal = new PlayerGoal(PlayerGoals);
-                }
-                playerGoals.add(playerGoal);
-            }
-
-            board = new Board(clients.size());
-            board.fill();
-            virtualViews.add(board.getVirtualBoard());
-            virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));
-
-
-            for (Client client : clients) {
-                playerGoal = playerGoals.get(0);
-                playerGoals.remove(playerGoal);
-
-                player = new Player(client.getPlayerName(),
-                        new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns),
-                        playerGoal);
-
-                players.add(player);
-                virtualViews.add(player.getVirtualShelf());
-            }
-
+            this.board = initBoard();
+            this.players = initPlayers(initPlayersGoals());
         } catch (NullPointerException e) {
             throw new ControllerGenericException("Error while creating the Controller : Json file doesn't exists");
         } catch (ClassCastException | JsonBadParsingException e) {
             throw new ControllerGenericException("Error while creating the Controller : bad Json parsing");
-        } catch (OutOfTilesException e) {
-            throw new RuntimeException("A new board should never be out of tiles");
         }
 
         for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);
@@ -102,6 +126,29 @@ public class Controller implements Jsonable {
     }
 
     /**
+     * This method is used to load a list of players
+     * from a JSONArray.
+     * @param playersJson JSONArray with the players
+     * @return List of Player objects
+     */
+    private List<Player> loadPlayers(JSONArray playersJson) throws JsonBadParsingException {
+        List<Player> players = new ArrayList<>();
+        JSONObject jsonPlayer;
+        Player player;
+        for (Object objPlayer : playersJson) {
+            jsonPlayer = (JSONObject) objPlayer;
+            player = new Player(jsonPlayer);
+            players.add(player);
+            virtualViews.add(player.getVirtualShelf());
+
+            if (nameAbsentInClients(player.getName(), clients)) {
+                throw new JsonBadParsingException("No client with playername " + player.getName() + " provided");
+            }
+        }
+        return players;
+    }
+
+    /**
      * This constructor is used to load the state of the game from a jsonfile.
      * @param gameStatus JSONObject with the status
      * @throws JsonBadParsingException when a parsing error happens
@@ -109,6 +156,7 @@ public class Controller implements Jsonable {
     public Controller(JSONObject gameStatus, List<Client> clients) throws JsonBadParsingException {
         virtualViews = new ArrayList<>();
         try {
+            this.clients = clients;
             JSONArray commonGoalsJson = (JSONArray) gameStatus.get("commonGoals");
 
             this.board = new Board((JSONObject) gameStatus.get("board"), new ArrayList<>(commonGoalsJson));
@@ -117,24 +165,11 @@ public class Controller implements Jsonable {
             this.turn = Math.toIntExact((Long) gameStatus.get("turn"));
 
             // Loading players
-            this.players = new ArrayList<>();
-            this.clients = clients;
             JSONArray playersJson = (JSONArray) gameStatus.get("players");
             if (playersJson==null) {throw new JsonBadParsingException("Error while loading game status from json: players field not found");}
+            this.players = loadPlayers(playersJson);
 
-            JSONObject jsonPlayer;
-            Player player;
-            for (Object objPlayer : playersJson) {
-                jsonPlayer = (JSONObject) objPlayer;
-                player = new Player(jsonPlayer);
-                this.players.add(player);
-                virtualViews.add(player.getVirtualShelf());
-
-                if (nameAbsentInClients(player.getName(), clients)) {
-                    throw new JsonBadParsingException("No client with playername " + player.getName() + " provided");
-                }
-            }
-        } catch (Exception e) {
+        } catch (ClassCastException | JsonBadParsingException e) {
             throw new JsonBadParsingException("Error while loading game status from json: " + e.getMessage());
         }
 
@@ -313,6 +348,61 @@ public class Controller implements Jsonable {
     }
 
     /**
+     * This function is used to notify each
+     * client the game has ended.
+     */
+    private void handleGameEnd() {
+        Map<String, Integer> leaderBoard = new HashMap<>();
+        for(Player p : players){
+            leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
+        }
+
+        for (Client client : clients)
+            client.endGame(leaderBoard);
+        deleteSavedGame();
+    }
+
+    /**
+     * This method is used to load a Player object
+     * given its name.
+     * @param playerName String, name of the player
+     * @return Player object
+     */
+    private Player getPlayerFromName(String playerName) throws ControllerGenericException {
+        final Player player = players.stream().
+                filter(p -> p.getName().equals(playerName)).
+                findFirst().orElse(null);
+        if (player == null) {
+            throw new ControllerGenericException("No player found with that name");
+        }
+        return player;
+    }
+
+    /**
+     * This method is the core functionality of moveTiles.
+     * It checks if the move is valid and then updates the model.
+     * @param player Player object
+     * @param move Move object
+     */
+    private void doMoveTiles(Player player, Move move) throws InvalidMoveException, BadPositionException {
+        final Shelf playerShelf = player.getShelf();
+        final int freeSpaceInColumn = (int) playerShelf.
+                allTilesInColumn(move.getColumn()).stream().
+                filter(x -> x.equals(Tile.Empty)).
+                count();
+        if (move.getBoardPositions().size() > freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
+            throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
+        }
+        if (!checkValidMove(move))
+            throw new InvalidMoveException("Tiles selection is not allowed");
+
+        final List<Position> positions = move.getBoardPositions();
+        for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
+            player.insertTile(board.pickTile(p), move.getColumn());
+        }
+    }
+
+    /**
      * insert Tiles in the player shelf according to move coordinates
      * @param playerName is the current player
      * @param move is the move that player wants to do
@@ -327,53 +417,22 @@ public class Controller implements Jsonable {
             return;
         }
 
-        Player player; //doesnt work as an Optional TODO for @Jack
+        if(move == null || move.getBoardPositions() == null || move.getBoardPositions().contains(null)){
+            throw new ControllerGenericException("Invalid move");
+        }
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
         }
-        else if(move == null || move.getBoardPositions() == null || move.getBoardPositions().contains(null)){
-            throw new ControllerGenericException("Invalid move");
-        }
-        else {
-            player = players.stream().
-                    filter(p -> p.getName().equals(playerName)).
-                    findFirst().orElse(null);
-            if (player == null) {
-                throw new ControllerGenericException("No player found with that name");
-            }
+        if (!playerName.equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
+            throw new ControllerGenericException("Player is not the current player");
         }
 
+        final Player player = getPlayerFromName(playerName);
         try {
-            if (!player.getName().equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception
-                throw new ControllerGenericException("Player is not the current player");
-            }
-
-            Shelf playerShelf = player.getShelf();
-            int freeSpaceInColumn = (int) playerShelf.
-                    allTilesInColumn(move.getColumn()).stream().
-                    filter(x -> x.equals(Tile.Empty)).
-                    count();
-            if (move.getBoardPositions().size() > freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception
-                throw new InvalidMoveException("Number of tiles selected greater than empty fields in shelf");
-            }
-            if (!checkValidMove(move))
-                throw new InvalidMoveException("Tiles selection is not allowed");
-
-            List<Position> positions = move.getBoardPositions();
-            for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
-                player.insertTile(board.pickTile(p), move.getColumn());
-            }
+            doMoveTiles(player, move);
 
             if(gameFinished()){
-
-                Map<String, Integer> leaderBoard = new HashMap<>();
-                for(Player p : players){
-                    leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
-                }
-
-                for (Client client : clients)
-                    client.endGame(leaderBoard);
-                deleteSavedGame();
+                handleGameEnd();
             }
             else{
                 prepareForNextPlayer(); //Fill if necessary

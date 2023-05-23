@@ -54,16 +54,12 @@ public interface Jsonable {
      * @param string is the input to parse
      * @return JsonObject corresponding to the String format
      */
-    static JSONObject parseString(String string){
+    static JSONObject parseString(String string) throws ParseException {
         if (string == null)
             return null;
         JSONParser parser = new JSONParser();
         JSONObject jsonObj;
-        try {
-            jsonObj = (JSONObject) parser.parse(string);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        jsonObj = (JSONObject) parser.parse(string);
         return jsonObj;
     }
     /**
