@@ -36,12 +36,18 @@ public class ServerTcpThread extends Thread{
      */
     @Override
     public void run() {
-        while(!exit){
+        while(!exit) {
             MessageTcp message = client.in();
             MessageTcp.MessageCommand command = message.getCommand(); //header of message
             String ID = message.getRequestID();
             JSONObject content = message.getContent(); //content in JSON
-            if(!lobbyAssigned)
+
+            if (command == MessageTcp.MessageCommand.Ping) {
+                synchronized (pingLock) {
+                    pingLock.notifyAll();
+                }
+            }
+            else if(!lobbyAssigned)
                 exectuteServerCommand(command,content,ID); //execute if still searching for a lobby
             else
                 executeLobbyCommnad(command,content,ID); //execute if lobby was assigned
@@ -69,13 +75,7 @@ public class ServerTcpThread extends Thread{
             case JoinSelectedLobby:
                 joinSelectedLobby(content,ID);
                 break;
-            case Ping:
-                synchronized (pingLock) {
-                    pingLock.notifyAll();
-                }
-                break;
             default:
-                client.out("Command does not exists");
                 break;
         }
 
@@ -104,7 +104,6 @@ public class ServerTcpThread extends Thread{
                 isLobbyAdmin(content,ID);
                 break;
             default:
-                client.out("Command does not exists");
                 break;
         }
 
@@ -192,7 +191,7 @@ public class ServerTcpThread extends Thread{
         synchronized (server){
             try {
                 lobbyInterface = server.createLobby(client);
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | RemoteException e) {
                 //TODO to send back error message to set username first
             }
         }
@@ -404,11 +403,17 @@ class clientAlive implements Runnable {
                 }
                 if (System.currentTimeMillis() >=
                         waitStart + waitTime) {
-                    System.err.println("Client " + client.getPlayerName() + " has timed out.");
-                    client.getNetworkExceptionHandler()
-                            .handleNetworkException(
+                    synchronized (client) {
+                        System.err.println("Client " + client.getPlayerName() + " has timed out.");
+                        NetworkExceptionHandler handler = client.getNetworkExceptionHandler();
+                        if (handler == null) {
+                            client.disconnect();
+                        } else {
+                            handler.handleNetworkException(
                                     client,
                                     new RemoteException("Client has timed out."));
+                        }
+                    }
                 }
             }
         }

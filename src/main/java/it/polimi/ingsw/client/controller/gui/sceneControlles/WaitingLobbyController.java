@@ -1,13 +1,12 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
-import it.polimi.ingsw.client.connection.ServerException;
-import it.polimi.ingsw.client.model.ClientModelGUI;
-import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.ChatMessage;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
@@ -15,13 +14,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class WaitingLobbyController extends FxmlController implements Initializable {
+public class WaitingLobbyController extends SceneController implements Initializable {
     private final Server server;
     private final String playerName;
 
@@ -46,18 +42,30 @@ public class WaitingLobbyController extends FxmlController implements Initializa
         this.playerName = controller.getClient().getPlayerName();
     }
 
+    /**
+     * This method is used to post a message in the chat,
+     * it is called by the server when a new message is received
+     * @param sender the sender of the message
+     * @param message the message
+     */
+    public void postChatMessage(String sender, String message){
+        lobbyChat.appendText(sender + ": " + message + "\n");
+    }
+
+    /**
+     * This method is used to refresh the chat, it is called by the server
+     * @param chat Chat object containing all the messages
+     */
+    public void refreshChat(Chat chat) {
+        lobbyChat.clear();
+        for (ChatMessage cm : chat.getAllMessages())
+            postChatMessage(cm.getSender(), cm.getMessage());
+    }
     @FXML
     protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
         if(server.isLobbyAdmin(playerName)) {
-            server.startGame(playerName, false);
-        }
-
-        //TODO: here I need to set a flag which will be send to the server in order to load an existing match
-        if(checkBox.isSelected()) {
-            System.out.println("Selected");
-        } else {
-            System.out.println("Not selected");
+            server.startGame(playerName, checkBox.isSelected());
         }
     }
 
@@ -67,8 +75,7 @@ public class WaitingLobbyController extends FxmlController implements Initializa
             controller.errorMessage("Insert a message");
             return;
         }
-        controller.getServer().postToLiveChat(controller.getModel().getPlayerName(), message.getText());
-        lobbyChat.appendText(controller.getModel().getPlayerName() + ": " + message.getText() + "\n");
+        controller.getServer().postToLiveChat(playerName, message.getText());
         message.setText("");
     }
 
@@ -81,9 +88,7 @@ public class WaitingLobbyController extends FxmlController implements Initializa
             }
             if(controller.getModel().getChat().getAllMessages().size() == 0)
                 return;
-            for(int i = 0; i < controller.getModel().getChat().getAllMessages().size(); i++) {
-                lobbyChat.appendText( controller.getModel().getChat().getAllMessages().get(i).getSender() + ": " +controller.getModel().getChat().getAllMessages().get(i).getMessage() + "\n");
-            }
+            refreshChat(controller.getModel().getChat());
         } catch (LobbyException e) {
             e.printStackTrace();
         }

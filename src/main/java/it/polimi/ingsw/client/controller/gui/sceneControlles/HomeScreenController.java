@@ -1,30 +1,29 @@
-package it.polimi.ingsw.client.controller.gui;
+package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.connection.LobbyException;
+import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.image.Image;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import org.json.simple.JSONObject;
+import javafx.scene.shape.Circle;
 
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
-public class homeScreenController extends FxmlController implements Initializable {
+public class HomeScreenController extends SceneController implements Initializable {
     boolean clicked = false;
     private final double iHeight = 85.0;
     private final double iWidth = 49.0;
@@ -37,7 +36,7 @@ public class homeScreenController extends FxmlController implements Initializabl
 
     private final ClientModelGUI model;
 
-    public homeScreenController(ClientControllerGUI controller) {
+    public HomeScreenController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
     }
@@ -76,6 +75,12 @@ public class homeScreenController extends FxmlController implements Initializabl
     @FXML
     javafx.scene.shape.Polygon turnFlag;
 
+    @FXML
+    Button readChatButton;
+
+    @FXML
+    Circle notificationCircle;
+
 
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
@@ -105,46 +110,50 @@ public class homeScreenController extends FxmlController implements Initializabl
         }
     }
 
+    /**
+     * @param newMessage, if true there is a new message and the chat button gets blue
+     */
+    public void setNewMessage(boolean newMessage) {
+        if(newMessage) {
+            readChatButton.setStyle("-fx-background-color: #456938;");
+            notificationCircle.setOpacity(1.0);
+        } else {
+            readChatButton.setStyle("-fx-background-color: #49be25;");
+            notificationCircle.setOpacity(0.0);
+        }
+    }
+
     @FXML
     protected void readChat() throws IOException {
         clicked = false;
         controller.loadScene(SceneEnum.chat);
     }
 
-    protected void setBoard() throws BadPositionException {
+    /**
+     * This method is used to completely refresh the board
+     * @param board new Board object
+     */
+    public void setBoard(Board board) {
+        try {
+            for (int i = 0; i < board.getNumRows(); i++) {
+                for (int j = 0; j < board.getNumColumns(); j++) {
+                    if (!board.getTile(i, j).toString().equals("I") && !board.getTile(i, j).toString().equals("E")) {
+                        ImageView imageView = new ImageView();
+                        imageView.setImage(loadImage("item_tiles/" + board.getTile(i, j).toString() + "2.png"));
+                        imageView.setFitHeight(25.0);
+                        imageView.setFitWidth(25.0);
+                        imageView.setLayoutX(iWidth + j * 25.0);
+                        imageView.setLayoutY(iHeight + i * 25.0);
 
-        for(int i = 0; i < model.getBoard().getNumRows(); i++) {
-            for(int j = 0; j < model.getBoard().getNumColumns(); j++) {
-                if(!model.getBoard().getTile(i, j).toString().equals("I") && !model.getBoard().getTile(i, j).toString().equals("E")) {
-                    ImageView imageView = new ImageView();
-                    imageView.setImage(loadImage("item_tiles/" + model.getBoard().getTile(i, j).toString() + "2.png"));
-                    imageView.setFitHeight(25.0);
-                    imageView.setFitWidth(25.0);
-                    imageView.setLayoutX(iWidth + j*25.0);
-                    imageView.setLayoutY(iHeight + i*25.0);
-
-                    anchor.getChildren().add(imageView);
+                        anchor.getChildren().add(imageView);
+                    }
                 }
             }
+            canvasBoard.toFront();
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
         }
-        canvasBoard.toFront();
     }
-
-    protected void setShelf() {
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 6; j++) {
-                ImageView imageView = new ImageView();
-                imageView.setImage(loadImage("misc/sfondo_parquet.jpg"));
-                imageView.setFitHeight(24.0);
-                imageView.setFitWidth(24.0);
-                imageView.setLayoutX(iWidthShelf + i*35.0);
-                imageView.setLayoutY(iHeightShelf + j*30.0);
-                anchor.getChildren().add(imageView);
-            }
-        }
-        canvasShelf.toFront();
-    }
-
 
     //BOARD: 25 (column getX) x 25 (getY)
     //SHELF: 24 (getY) x 24 (getX)
@@ -227,8 +236,11 @@ public class homeScreenController extends FxmlController implements Initializabl
             controller.errorMessage("Click a column");
             return;
         }
+
         controller.getServer().postMove(model.getPlayerName(), actualMove);
-        updateShelf();
+        //removeFromBoard(actualMove);
+
+        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
         move.clear();
         actualMove = null;
         partialMove = null;
@@ -239,25 +251,54 @@ public class homeScreenController extends FxmlController implements Initializabl
         controller.loadScene(SceneEnum.playerShelves);
     }
 
-    public void updateShelf() throws BadPositionException {
-        Shelf playerShelf = model.getPlayersShelves().get(model.getPlayerName());
-        for(int i = 0; i < playerShelf.getRows(); i++) {
-            for(int j = 0; j < playerShelf.getColumns(); j++) {
+    public void updateShelf(Shelf shelf) {
+        try {
+            for (int i = 0; i < shelf.getRows(); i++) {
+                for (int j = 0; j < shelf.getColumns(); j++) {
 
-                if(!playerShelf.getTile(i, j).toString().equals("I") && !playerShelf.getTile(i, j).toString().equals("E")) {
+                    if (!shelf.getTile(i, j).toString().equals("I") && !shelf.getTile(i, j).toString().equals("E")) {
 
-                    ImageView imageView = new ImageView();
-                    imageView.setImage(loadImage("item_tiles/" + playerShelf.getTile(i, j) + "2.png"));
-                    imageView.setFitHeight(24.0);
-                    imageView.setFitWidth(24.0);
-                    imageView.setLayoutX(iWidthShelf + j * 35.0);
-                    imageView.setLayoutY(iHeightShelf + i * 30.0);
-                    anchor.getChildren().add(imageView);
+                        ImageView imageView = new ImageView();
+                        imageView.setImage(loadImage("item_tiles/" + shelf.getTile(i, j) + "2.png"));
+                        imageView.setFitHeight(24.0);
+                        imageView.setFitWidth(24.0);
+                        imageView.setLayoutX(iWidthShelf + j * 35.0);
+                        imageView.setLayoutY(iHeightShelf + i * 30.0);
+                        anchor.getChildren().add(imageView);
+                    }
                 }
             }
+            canvasShelf.toFront();
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Invalid shelf in updateShelf: " + e.getMessage());
         }
+    }
 
-        canvasShelf.toFront();
+    /**
+     * This function is invoked from the server when the current
+     * player puts a tile into his shelf.
+     * @param column destination column of the shelf
+     * @param tile   Tile to insert
+     */
+    public void putIntoShelf(int column, Tile tile) {
+        //TODO
+        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
+    }
+
+    /**
+     * This function is invoked when a player makes a move, it picks
+     * a single tile from the board.
+     * @param position the position of the tile to be removed
+     */
+    public void removeFromBoard(Position position) {
+        for(int j = 0; j < anchor.getChildren().size(); j++) {
+            if(anchor.getChildren().get(j).getLayoutX() == (iWidth + position.getColumn()*25.0)
+            && anchor.getChildren().get(j).getLayoutY() == (iHeight + position.getRow()*25.0)) {
+                anchor.getChildren().get(j).setOpacity(0.0);
+                anchor.getChildren().get(j).setOpacity(0.0);
+                break;
+            }
+        }
     }
 
     @Override
@@ -266,12 +307,9 @@ public class homeScreenController extends FxmlController implements Initializabl
         if(!turn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
-        try {
-            setBoard();
-        } catch (BadPositionException e) {
-            e.printStackTrace();
-        }
-        setShelf();
+        setBoard(model.getBoard());
+        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
+
         getPersonalGoal();
         getCommonGoals();
         if(model.isItMyTurn()) {

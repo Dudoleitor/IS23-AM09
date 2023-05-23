@@ -26,7 +26,7 @@ public class ServerRMI extends Server {
     }
 
     @Override
-    public boolean login(Client client) {
+    public boolean login(Client client) throws ServerException {
         try {
             if(server == null){
                 //get remote registry that points to 127.0.0.1:port
@@ -36,8 +36,8 @@ public class ServerRMI extends Server {
                 //try to log in
             }
             return server.login((ClientRMI) client);
-        } catch (RemoteException | NotBoundException e) {
-            return false;
+        } catch (NotBoundException | RemoteException e) {
+            throw new ServerException("Error while connecting to server, " + e.getMessage());
         }
     }
 

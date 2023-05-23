@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client.controller.gui;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.SceneController;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import javafx.application.Application;
@@ -11,9 +13,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientControllerGUI extends Application implements ClientController {
     private ClientModelGUI model;
@@ -26,6 +29,9 @@ public class ClientControllerGUI extends Application implements ClientController
      * false if it was loaded from a save or the player reconnected.
      */
     private boolean newMatch;
+
+    private final Map<SceneEnum, FXMLSceneWithController> scenes = new HashMap<>();
+    private SceneEnum currentScene = SceneEnum.login;
 
     public ClientModelGUI getModel(){
         return model;
@@ -51,6 +57,10 @@ public class ClientControllerGUI extends Application implements ClientController
     public void setChatUpdate() {
 
     }
+    public SceneEnum getCurrentScene() {
+        return currentScene;
+    }
+
     public void setNewMatch(boolean newMatch) {
         this.newMatch = newMatch;
     }
@@ -58,9 +68,38 @@ public class ClientControllerGUI extends Application implements ClientController
         return newMatch;
     }
 
+    /**
+     * This method is used to load a scene.
+     * @param scene the scene to be loaded.
+     */
     public void loadScene(SceneEnum scene) {
+        final Scene javafxScene;
+        if (scenes.containsKey(scene)) { // Scene was previously loaded
+            javafxScene = scenes.get(scene).getScene();
+        } else {
+            javafxScene = generateNewScene(scene);
+        }
+        currentScene = scene;
+        stage.setScene(javafxScene);
+
+        if(scene.equals(SceneEnum.chat)) {
+            final HomeScreenController homeScreenController =
+                    (HomeScreenController) scenes.get(SceneEnum.home).getController();
+            if (homeScreenController!=null){
+                homeScreenController.setNewMessage(false);
+            }
+        }
+    }
+
+    /**
+     * This method is used to generate a new scene with its controller.
+     * The method also adds the scene to the scenes map.
+     * @param scene the scene to be generated
+     * @return Scene object
+     */
+    private Scene generateNewScene(SceneEnum scene) {
         final FXMLLoader loader = new FXMLLoader(scene.getResource());
-        final FxmlController sceneController = scene.getNewController(this);
+        final SceneController sceneController = scene.getNewController(this);
         loader.setController(sceneController);
         final Parent parent;
         try {
@@ -68,7 +107,23 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
-        stage.setScene(new Scene(parent, 800, 800));
+        Scene javafxScene = new Scene(parent, 800, 800);
+        scenes.put(scene,
+                new FXMLSceneWithController(javafxScene, sceneController));
+        return javafxScene;
+    }
+
+    /**
+     * This method is used to get the controller of a scene.
+     * @param scene the scene of which we want the controller.
+     * @return null if the scene was never loaded,
+     *      FxmlController the controller of the scene otherwise
+     */
+    public SceneController getSceneController(SceneEnum scene) {
+        FXMLSceneWithController sceneWithController = scenes.get(scene);
+        if (sceneWithController == null)
+            return null;
+        return sceneWithController.getController();
     }
 
     public static Image loadImage(String fileName) {
@@ -105,4 +160,25 @@ public class ClientControllerGUI extends Application implements ClientController
 
     public void startClient() {launch();}
 
+}
+
+/**
+ * This class is used to bind together a javafx scene
+ * with its controller
+ */
+class FXMLSceneWithController{
+    private final Scene scene;
+    private final SceneController controller;
+    FXMLSceneWithController(Scene scene, SceneController controller) {
+        this.scene = scene;
+        this.controller = controller;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public SceneController getController() {
+        return controller;
+    }
 }

@@ -23,6 +23,7 @@ public class RiemannTest { //an integration test
         playerNames.add("friededopodomani");
         List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
+        c.setTurn_testing_only(0);
         List<Player> playerList = null;
         try{
             playerList = (List<Player>) playerNames.stream().map(p -> {

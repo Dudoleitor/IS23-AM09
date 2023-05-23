@@ -15,7 +15,7 @@ import java.util.Map;
 import static java.lang.Thread.sleep;
 
 /**
- * This class handles the sequence of events on the client side
+ * This class handles the sequence of events on the client side.
  */
 public class ClientControllerCLI implements ClientController {
     /**

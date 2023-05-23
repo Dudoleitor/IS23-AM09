@@ -52,7 +52,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         executor.scheduleWithFixedDelay(pingSender, pingIntervalSeconds, pingIntervalSeconds, TimeUnit.SECONDS);
     }
 
-    public List<Client> getClientsWithoutLobby() {
+    public synchronized List<Client> getClientsWithoutLobby() {
         return new ArrayList<>(clientsWithoutLobby);
     }
 
@@ -118,26 +118,28 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @throws RemoteException is there are problems with connection
      */
     public synchronized boolean login(Client client) throws RemoteException {
-        final String playerName = client.getPlayerName().toLowerCase();
+        synchronized (client) {
+            final String playerName = client.getPlayerName().toLowerCase();
 
-        if(clientsWithoutLobby.stream()
-                .anyMatch(x ->
-                        x.getPlayerName().toLowerCase().equals(playerName))){
-            return false;
-        }
-        for (Lobby l : lobbies) {
-            if (l.getPlayerNames().stream()
+            if (clientsWithoutLobby.stream()
                     .anyMatch(x ->
-                            x.toLowerCase().equals(playerName))) {
+                            x.getPlayerName().toLowerCase().equals(playerName))) {
                 return false;
             }
-        }
+            for (Lobby l : lobbies) {
+                if (l.getPlayerNames().stream()
+                        .anyMatch(x ->
+                                x.toLowerCase().equals(playerName))) {
+                    return false;
+                }
+            }
 
-        clientsWithoutLobby.add(client);
-        client.setExceptionHandler(this);
-        System.out.println(client.getPlayerName() + " has just logged in");
-        client.postChatMessage("Server", "You joined");
-        return true;
+            clientsWithoutLobby.add(client);
+            client.setExceptionHandler(this);
+            System.out.println(client.getPlayerName() + " has just logged in");
+            client.postChatMessage("Server", "You joined");
+            return true;
+        }
     }
 
     /**
@@ -158,9 +160,8 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @return id of assigned lobby
      */
     public synchronized ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException {
-        if (!clientsWithoutLobby.contains(client)) {
-            return null; // TODO
-        }
+        if (!clientsWithoutLobby.contains(client))
+            throw new RemoteException("Client is not in the list of clients without lobby");
 
         ServerLobbyInterface lobbyInterface;
         Map<Integer,Integer> alreadyJoined = getJoinedLobbies(client.getPlayerName());
@@ -178,10 +179,10 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                     .orElse(null);
             if (lobby != null) { //if a lobby exists then add player
                 lobby.addPlayer(client); //if exists then add player
+                clientsWithoutLobby.remove(client);
                 lobbyInterface = lobby;
             } else {
                 lobbyInterface = createLobby(client); //otherwise creates new lobby
-                clientsWithoutLobby.remove(client);
             }
         }
         try {
@@ -214,10 +215,9 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     /**
      * @param client requesting to create the lobby
      */
-    public synchronized ServerLobbyInterface createLobby(Client client){
-        if (!clientsWithoutLobby.contains(client)) {
-            return null; // TODO
-        }
+    public synchronized ServerLobbyInterface createLobby(Client client) throws RemoteException {
+        if (!clientsWithoutLobby.contains(client))
+            throw new RemoteException("Client is not in the list of clients without lobby");
 
         int minFreeKey;
         List<Integer> lobbyIDs= lobbies.stream()
@@ -263,10 +263,12 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     @Override
     public synchronized void handleNetworkException(Client client, Exception e) {
-        if(!clientsWithoutLobby.remove(client)) {
-            throw new RuntimeException("Provided client was not connected");
-        }
-        System.err.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
+        System.err.println("Exception thrown (in server main) while trying to reach client " + client.getPlayerName() + ": " + e.getMessage());
+        client.disconnect();
+        if(clientsWithoutLobby.remove(client))
+            System.out.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
+        else
+            System.err.println("Called handleNetworkException on client " + client.getPlayerName() + " that is not in the list of clients without lobby");
     }
 
     /**

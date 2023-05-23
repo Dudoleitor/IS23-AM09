@@ -23,7 +23,7 @@ public abstract class Server {
      * @param client
      * @return true if login was successful
      */
-    public abstract boolean login(Client client);
+    public abstract boolean login(Client client) throws ServerException;
 
     /**
      * Join the first available Lobby

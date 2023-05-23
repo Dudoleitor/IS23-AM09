@@ -7,11 +7,11 @@ import it.polimi.ingsw.shared.virtualview.VirtualView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.awt.font.GlyphMetrics;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
@@ -21,7 +21,7 @@ public class Controller implements Jsonable {
     private final Board board;
 
     // This list MUST always have the same size
-    // When a player disconnects it's marked as unactive
+    // When a player disconnects it's marked as inactive
     private final List<Player> players;
     private final List<Client> clients;
     private final List<VirtualView> virtualViews;
@@ -47,7 +47,7 @@ public class Controller implements Jsonable {
             List<PlayerGoal> playerGoals = new ArrayList<>();
             PlayerGoal playerGoal;
 
-            turn = 0;
+            turn = ThreadLocalRandom.current().nextInt(0, clients.size());
 
             // Generating players' goals
             if (PlayerGoal.playerGoalsAmount(PlayerGoals) < clients.size()) {
@@ -66,7 +66,6 @@ public class Controller implements Jsonable {
             virtualViews.add(board.getVirtualBoard());
             virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));
 
-            // TODO Chose first player
 
             for (Client client : clients) {
                 playerGoal = playerGoals.get(0);
@@ -506,5 +505,14 @@ public class Controller implements Jsonable {
 
         clients.add(client);
         refreshClient(client);
+    }
+
+    /**
+     * WARNING: this method should be used only for testing purposes.
+     * This method is used to manually set the turn.
+     * @param turn int representing the turn
+     */
+    protected void setTurn_testing_only(int turn){
+        this.turn = turn;
     }
 }
