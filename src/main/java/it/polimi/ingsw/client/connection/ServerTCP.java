@@ -45,7 +45,7 @@ public class ServerTCP extends Server {
         serverIO.out(message);
     }
     @Override
-    public boolean login(Client client) {
+    public boolean login(Client client) throws ServerException {
         JSONObject content = new JSONObject();
         content.put("player", client.getPlayerName());
         MessageTcp login = new MessageTcp();
@@ -59,7 +59,7 @@ public class ServerTCP extends Server {
                 response = in();
             return Boolean.parseBoolean(response.getContent().get("result").toString());
         }catch (RemoteException e){
-            return false;
+            throw new ServerException("Error while connecting to server, " + e.getMessage());
         }
     }
 
