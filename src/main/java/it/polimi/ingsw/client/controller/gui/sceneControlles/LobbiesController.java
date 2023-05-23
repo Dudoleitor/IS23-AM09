@@ -51,7 +51,7 @@ public class LobbiesController extends SceneController implements Initializable 
             server.createLobby(client);
         } catch (ServerException e) {
             ClientControllerGUI.showError("Server error while creating lobby");
-            return;  // TODO Handle exception
+            return;
         }
 
         System.out.println("Created Lobby!");

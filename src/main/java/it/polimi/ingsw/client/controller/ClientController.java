@@ -2,21 +2,13 @@ package it.polimi.ingsw.client.controller;
 
 import it.polimi.ingsw.client.Client_Settings;
 import it.polimi.ingsw.client.connection.*;
-import it.polimi.ingsw.client.controller.cli.LobbyCommand;
-import it.polimi.ingsw.client.controller.cli.LobbySelectionCommand;
 import it.polimi.ingsw.client.model.ClientModel;
-import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
-import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.NetworkSettings;
-import it.polimi.ingsw.shared.model.Board;
-import it.polimi.ingsw.shared.model.Move;
-import it.polimi.ingsw.shared.model.Shelf;
 
 import java.rmi.RemoteException;
-import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
@@ -144,15 +136,15 @@ public interface ClientController {
         }
     }
 
-    static Runnable getRunnable(Object pingLock) {
-        return new pingRunnable(pingLock);
+    static Thread getThread(Object pingLock) {
+        return new PingRunnable(pingLock);
     }
 }
 
-class pingRunnable implements Runnable {
+class PingRunnable extends Thread {
     private final Object pingLock;
     private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
-    protected pingRunnable(Object pingLock){
+    protected PingRunnable(Object pingLock){
         this.pingLock = pingLock;
     }
 

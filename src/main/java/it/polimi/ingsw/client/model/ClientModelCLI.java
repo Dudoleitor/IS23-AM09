@@ -10,8 +10,6 @@ import org.json.simple.JSONObject;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -32,9 +30,8 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     private boolean itsMyTurn;
     private final LinkedList<Runnable> actionsQueue;
     private boolean gameEnded;
-    private final ExecutorService pingListener;
+    private Thread pingListener;
     private final Object pingLock;
-    private boolean pingListenerStarted;
 
     public ClientModelCLI(String playerName, CLI_IO cliIO) throws RemoteException {
         super();
@@ -52,8 +49,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
         this.gameEnded = false;
 
         this.pingLock = new Object();
-        this.pingListener = Executors.newSingleThreadScheduledExecutor();
-        this.pingListenerStarted = false;
+        this.pingListener = ClientController.getThread(pingLock);
     }
 
     /**
@@ -322,9 +318,8 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public String ping() {
-        if(!pingListenerStarted) {
-            pingListenerStarted = true;
-            pingListener.submit(ClientController.getRunnable(pingLock));
+        if(pingListener.getState().equals(Thread.State.NEW)) {
+            pingListener.start();
         }
         synchronized (pingLock) {
             pingLock.notifyAll();
