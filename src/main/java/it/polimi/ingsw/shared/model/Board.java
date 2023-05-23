@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 import static it.polimi.ingsw.shared.JSONFilePath.Board;
 
 
-public class Board implements Jsonable {
+public class Board implements Jsonable, Grid {
 
     private final Tile[][] boardTiles;
     private List<Tile> tilesToDraw;
@@ -181,8 +181,8 @@ public class Board implements Jsonable {
     @Override
     public String toString(){
         String str = Color.coloredString("Board:\n",Color.Yellow);
-        int rows = getNumRows();
-        int columns = getNumColumns();
+        int rows = getRows();
+        int columns = getColumns();
         String boardTiles = "";
         String upperBorder = "╔═";
         String lowerBorder = "╚═";
@@ -224,7 +224,7 @@ public class Board implements Jsonable {
             if (this == o) return true; //if it's same object
             if (o == null || getClass() != o.getClass()) return false; //if they are of different classes
             Board board = (Board) o;
-            if (numRows != board.getNumRows() || numColumns != board.getNumColumns() || numPlayers != getNumPlayers()) //if they have different sizes or num of players
+            if (numRows != board.getRows() || numColumns != board.getColumns() || numPlayers != getNumPlayers()) //if they have different sizes or num of players
                 return false;
             for (int i = 0; i < numRows; i++) { //check they have same tiles in board
                 for (int j = 0; j < numColumns; j++) {
@@ -266,7 +266,7 @@ public class Board implements Jsonable {
         if(this == other){
             return true;
         }
-        if (numRows != other.getNumRows() || numColumns != other.getNumColumns()) //if they have different sizes or num of players
+        if (numRows != other.getRows() || numColumns != other.getColumns()) //if they have different sizes or num of players
             return false;
         for (int i = 0; i < numRows; i++) { //check they have same tiles in board
             for (int j = 0; j < numColumns; j++) {
@@ -302,14 +302,16 @@ public class Board implements Jsonable {
     /**
      * @return numRows attribute
      */
-    public int getNumRows() {
+    @Override
+    public int getRows() {
         return numRows;
     }
 
     /**
      * @return numColumns attribute
      */
-    public int getNumColumns() {
+    @Override
+    public int getColumns() {
         return numColumns;
     }
 
@@ -319,6 +321,7 @@ public class Board implements Jsonable {
      * @return Tile in position pos
      * @throws BadPositionException when getting position is out of bound or pos is NullPointer
      */
+    @Override
     public Tile getTile(Position pos) throws BadPositionException {
         try {
             return getTile(pos.getRow(), pos.getColumn());
@@ -334,6 +337,7 @@ public class Board implements Jsonable {
      * @return Tile in position (i,j)
      * @throws BadPositionException when getting coordinates are out of bound
      */
+    @Override
     public Tile getTile(int row, int column) throws BadPositionException{
         try {
             return boardTiles[row][column];
@@ -382,8 +386,8 @@ public class Board implements Jsonable {
      * @return true if no valid tile has a valid adjacent
      */
     public boolean toFill(){
-        int rows = getNumRows();
-        int columns = getNumColumns();
+        int rows = getRows();
+        int columns = getColumns();
         int adjacents = 0;
         Position current;
         for(int row = 0; row < rows; row++){
@@ -467,8 +471,8 @@ public class Board implements Jsonable {
 
         switch(movePositions.size()) {
             case 0: //case when partialMove has no positions inside
-                IntStream.range(0, getNumRows()).forEach(i -> //create stream of i
-                        IntStream.range(0, getNumColumns()) // create stream of j
+                IntStream.range(0, getRows()).forEach(i -> //create stream of i
+                        IntStream.range(0, getColumns()) // create stream of j
                                 .filter(j -> hasFreeSide(i, j))
                                 .forEach(j -> temL.add(new Position(i, j))));
                 positions.addAll(temL);
@@ -527,8 +531,8 @@ public class Board implements Jsonable {
 
         if(position.getRow() == 0 ||
                 position.getColumn() == 0 ||
-                position.getRow() == getNumRows() - 1 ||
-                position.getColumn() == getNumColumns() - 1)
+                position.getRow() == getRows() - 1 ||
+                position.getColumn() == getColumns() - 1)
             //check the extreme cases where pos has at least one free side for sure
             return true;
 
@@ -552,9 +556,9 @@ public class Board implements Jsonable {
      */
     public boolean isOutOfBounds(int row, int column){
         return row < 0 ||
-                row >= getNumRows() ||
+                row >= getRows() ||
                 column < 0 ||
-                column >= getNumColumns();
+                column >= getColumns();
     }
 
     public boolean isOutOfBounds(Position pos){

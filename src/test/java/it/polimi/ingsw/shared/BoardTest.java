@@ -47,8 +47,8 @@ class BoardTest {
         b1.fill();
 
         boolean noEmptyFound = true;
-        for(int i = 0; noEmptyFound && i < b1.getNumRows(); i++){
-            for(int j = 0; noEmptyFound && j < b1.getNumColumns(); j++){
+        for(int i = 0; noEmptyFound && i < b1.getRows(); i++){
+            for(int j = 0; noEmptyFound && j < b1.getColumns(); j++){
                 if(b1.getTile(i,j).equals(Tile.Empty)){
                     noEmptyFound = false;
                 }
@@ -64,8 +64,8 @@ class BoardTest {
     void getterTest() throws JsonBadParsingException {
         Board b = new Board(3);
         assertEquals(3, b.getNumPlayers());
-        assertEquals(9, b.getNumColumns());
-        assertEquals(9, b.getNumRows());
+        assertEquals(9, b.getColumns());
+        assertEquals(9, b.getRows());
     }
     @Test
     void tileGetPickTest() throws JsonBadParsingException, BadPositionException {

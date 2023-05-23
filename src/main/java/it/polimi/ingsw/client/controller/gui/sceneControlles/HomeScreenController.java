@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.GridHandler;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.model.*;
@@ -26,11 +27,8 @@ import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImag
 
 public class HomeScreenController extends SceneController implements Initializable {
     boolean clicked = false;
-    private final double iHeight = 85.0;
-    private final double iWidth = 49.0;
-    private final double iHeightShelf = 130.0;
-    private final double iWidthShelf = 390.0;
-
+    private GridHandler shelfHandler;
+    private GridHandler boardHandler;
     private List<Position> move = new ArrayList<>();
     private PartialMove partialMove = new PartialMove();
     Move actualMove = null;
@@ -140,25 +138,8 @@ public class HomeScreenController extends SceneController implements Initializab
      * @param board new Board object
      */
     public void setBoard(Board board) {
-        try {
-            for (int i = 0; i < board.getNumRows(); i++) {
-                for (int j = 0; j < board.getNumColumns(); j++) {
-                    if (!board.getTile(i, j).toString().equals("I") && !board.getTile(i, j).toString().equals("E")) {
-                        ImageView imageView = new ImageView();
-                        imageView.setImage(loadImage("item_tiles/" + board.getTile(i, j).toString() + "2.png"));
-                        imageView.setFitHeight(25.0);
-                        imageView.setFitWidth(25.0);
-                        imageView.setLayoutX(iWidth + j * 25.0);
-                        imageView.setLayoutY(iHeight + i * 25.0);
-
-                        anchor.getChildren().add(imageView);
-                    }
-                }
-            }
-            canvasBoard.toFront();
-        } catch (BadPositionException e) {
-            throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
-        }
+        boardHandler.resetGrid(board);
+        boardHandler.displayGrid();
     }
 
     //BOARD: 25 (column getX) x 25 (getY)
@@ -177,13 +158,7 @@ public class HomeScreenController extends SceneController implements Initializab
             return;
         }
 
-            int column = (int) ((mouseEvent.getX())/25) - 1;
-            int row = (int) ((mouseEvent.getY())/25) - 1;
-
-            if(row < 0) row += 1;
-            if(column < 0) column += 1;
-
-            Position pos = new Position(row, column);
+            Position pos = boardHandler.getPosition(mouseEvent);
 
             if(model.getBoard().getValidPositions(partialMove).isEmpty()) {
                 controller.errorMessage("There are no more tiles to pick");
@@ -197,7 +172,7 @@ public class HomeScreenController extends SceneController implements Initializab
             }
 
             PartialMove pm = new PartialMove();
-            pm.addPosition(new Position(row, column));
+            pm.addPosition(pos);
 
             System.out.println("Move: " + move);
 
@@ -209,8 +184,7 @@ public class HomeScreenController extends SceneController implements Initializab
     public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
         System.out.println("Shelf:");
 
-        int column = (int) ((mouseEvent.getX())/30) - 1;
-        if(column < 0) column += 1;
+        int column = shelfHandler.getPosition(mouseEvent).getColumn();
 
         PartialMove pm = new PartialMove();
         for(int i = 0; i < move.size(); i++) {
@@ -222,7 +196,6 @@ public class HomeScreenController extends SceneController implements Initializab
 
         System.out.println("Column: " + column);
         System.out.println("\n");
-
     }
 
     @FXML
@@ -254,26 +227,8 @@ public class HomeScreenController extends SceneController implements Initializab
     }
 
     public void updateShelf(Shelf shelf) {
-        try {
-            for (int i = 0; i < shelf.getRows(); i++) {
-                for (int j = 0; j < shelf.getColumns(); j++) {
-
-                    if (!shelf.getTile(i, j).toString().equals("I") && !shelf.getTile(i, j).toString().equals("E")) {
-
-                        ImageView imageView = new ImageView();
-                        imageView.setImage(loadImage("item_tiles/" + shelf.getTile(i, j) + "2.png"));
-                        imageView.setFitHeight(24.0);
-                        imageView.setFitWidth(24.0);
-                        imageView.setLayoutX(iWidthShelf + j * 35.0);
-                        imageView.setLayoutY(iHeightShelf + i * 30.0);
-                        anchor.getChildren().add(imageView);
-                    }
-                }
-            }
-            canvasShelf.toFront();
-        } catch (BadPositionException e) {
-            throw new RuntimeException("Invalid shelf in updateShelf: " + e.getMessage());
-        }
+        shelfHandler.resetGrid(shelf);
+        shelfHandler.displayGrid();
     }
 
     /**
@@ -293,6 +248,8 @@ public class HomeScreenController extends SceneController implements Initializab
      * @param position the position of the tile to be removed
      */
     public void removeFromBoard(Position position) {
+        int iWidth = 0;
+        int iHeight = 0;
         for(int j = 0; j < anchor.getChildren().size(); j++) {
             if(anchor.getChildren().get(j).getLayoutX() == (iWidth + position.getColumn()*25.0)
             && anchor.getChildren().get(j).getLayoutY() == (iHeight + position.getRow()*25.0)) {
@@ -309,7 +266,9 @@ public class HomeScreenController extends SceneController implements Initializab
         if(!turn) {
             turnFlag.setStyle("-fx-fill: grey;");
         }
+        boardHandler = new GridHandler(anchor,canvasBoard,model.getBoard());
         setBoard(model.getBoard());
+        shelfHandler = new GridHandler(anchor,canvasShelf,model.getPlayersShelves().get(model.getPlayerName()));
         updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
 
         getPersonalGoal();

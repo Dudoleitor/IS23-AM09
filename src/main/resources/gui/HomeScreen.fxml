@@ -64,7 +64,7 @@
                 </font>
             </Button>
 
-            <Canvas fx:id="canvasBoard" height="238.0" layoutX="42.0" layoutY="81.0" onMousePressed="#clickedMouseBoard" width="238.0" />
+            <Canvas fx:id="canvasBoard" height="236.0" layoutX="42.0" layoutY="81.0" onMousePressed="#clickedMouseBoard" width="236.0" />
             <Canvas fx:id="canvasShelf" height="172.0" layoutX="391.0" layoutY="129.0" onMousePressed="#clickedMouseShelf" width="164.0" />
             <Polygon fx:id="turnFlag" fill="#f4ff1f" layoutX="330.0" layoutY="182.0" points="-12.4967041015625, -29.838958740234375, 10.201263427734375, -29.838958740234375, -2.939666748046875, -48.51679992675781" rotate="180.0" stroke="BLACK" strokeType="INSIDE" />
          <Button layoutX="217.0" layoutY="342.0" mnemonicParsing="false" onAction="#deleteMove" prefHeight="26.0" prefWidth="76.0" style="-fx-background-color: red;" text="Delete Move">
