@@ -53,7 +53,7 @@ public class LobbiesController extends SceneController implements Initializable 
             server.createLobby(client);
         } catch (ServerException e) {
             ClientControllerGUI.showError("Server error while creating lobby");
-            return;  // TODO Handle exception
+            return;
         }
 
         System.out.println("Created Lobby!");
@@ -65,7 +65,7 @@ public class LobbiesController extends SceneController implements Initializable 
             server.joinRandomLobby(client);
         } catch (ServerException e) {
             ClientControllerGUI.showError("Server error while creating lobby");
-            return;  // TODO Handle exception
+            return;
         }
 
         System.out.println("Joining random Lobby!");
@@ -99,7 +99,7 @@ public class LobbiesController extends SceneController implements Initializable 
             server.joinSelectedLobby(client, lobbyToJoin);
         } catch (ServerException e) {
             ClientControllerGUI.showError("Server error while joining lobby");
-            return;  // TODO Handle exception
+            return;
         }
         nextScene();
     }
@@ -115,7 +115,7 @@ public class LobbiesController extends SceneController implements Initializable 
             availableLobbies = server.getAvailableLobbies();
         } catch (ServerException e) {
             ClientControllerGUI.showError("Server error while obtaining lobbies");
-            return;  // TODO Handle exception
+            return;
         }
 
         lobbies.clear();

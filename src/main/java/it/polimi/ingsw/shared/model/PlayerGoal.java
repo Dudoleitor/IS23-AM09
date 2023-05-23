@@ -268,6 +268,12 @@ public class PlayerGoal {
                     .sum();
             return countToPoints(count);
     }
+
+    /**
+     * This function returns the id of the goal.
+     * Ids start from 0.
+     * @return int goalId
+     */
     public int getGoalId() { return goalId; }
 
     @Override

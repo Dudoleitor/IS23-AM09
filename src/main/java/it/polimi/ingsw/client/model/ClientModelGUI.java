@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -40,9 +38,8 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private final List<String> players;
     private boolean gameStarted;
     private boolean gameEnded;
-    private final ExecutorService pingListener;
+    private final Thread pingListener;
     private final Object pingLock;
-    private boolean pingListenerStarted;
     private final ClientControllerGUI controller;
 
     public ClientModelGUI(String playerName, ClientControllerGUI controller) throws RemoteException {
@@ -60,8 +57,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.gameEnded = false;
 
         this.pingLock = new Object();
-        this.pingListener = Executors.newSingleThreadScheduledExecutor();
-        this.pingListenerStarted = false;
+        this.pingListener = ClientController.getThread(pingLock);
 
         this.controller = controller;
     }
@@ -405,9 +401,8 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public String ping() {
-        if(!pingListenerStarted) {
-            pingListenerStarted = true;
-            pingListener.submit(ClientController.getRunnable(pingLock));
+        if(pingListener.getState().equals(Thread.State.NEW)) {
+            pingListener.start();
         }
         synchronized (pingLock) {
             pingLock.notifyAll();

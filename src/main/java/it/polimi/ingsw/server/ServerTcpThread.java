@@ -8,8 +8,6 @@ import org.json.simple.JSONObject;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ServerTcpThread extends Thread{
     private final ClientSocket client;
@@ -18,7 +16,7 @@ public class ServerTcpThread extends Thread{
     private boolean lobbyAssigned;
     private boolean exit;
     private final Object pingLock;
-    private final ExecutorService executor;
+    private final ClientAlive clientAlive;
 
     public ServerTcpThread(ServerMain server, ClientSocket client){
         this.server = server;
@@ -27,8 +25,8 @@ public class ServerTcpThread extends Thread{
         this.lobbyAssigned = false;
         this.exit = false;
         this.pingLock = new Object();
-        this.executor = Executors.newSingleThreadExecutor();
-        executor.submit(new clientAlive(pingLock, client));
+        this.clientAlive = new ClientAlive(pingLock, client);
+        clientAlive.start();
     }
 
     /**
@@ -52,7 +50,7 @@ public class ServerTcpThread extends Thread{
             else
                 executeLobbyCommnad(command,content,ID); //execute if lobby was assigned
         }
-        executor.shutdownNow(); //quits all runnable launched
+        clientAlive.interrupt();
 
     }
     private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content, String ID){
@@ -399,7 +397,7 @@ public class ServerTcpThread extends Thread{
 
     public void terminate(){
         this.exit = true;
-        executor.shutdownNow();
+        clientAlive.interrupt();
         Thread.currentThread().interrupt();
     }
 
@@ -423,11 +421,11 @@ public class ServerTcpThread extends Thread{
 
 }
 
-class clientAlive implements Runnable {
+class ClientAlive extends Thread {
     private final Object pingLock;
     private final ClientSocket client;
     private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
-    protected clientAlive(Object pingLock, ClientSocket client){
+    protected ClientAlive(Object pingLock, ClientSocket client){
         this.pingLock = pingLock;
         this.client = client;
     }
