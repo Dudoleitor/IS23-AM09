@@ -97,7 +97,7 @@ public interface ClientController {
     static boolean connect(ClientController controller, ClientModel model) {
         try{
             //Initiate the server connection interfaces according to settings
-            ClientController.tryConnect(10,1, controller, model);
+            ClientController.tryConnect(5,1, controller, model);
             //login
             return ClientController.tryLogin(controller);
         } catch (ServerException e) {

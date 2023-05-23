@@ -38,7 +38,6 @@ public class LoginController extends SceneController {
         final ClientModelGUI model = new ClientModelGUI(userName.getText(), controller);
 
         if (!ClientController.connect(controller, model)) { // Login failed
-            ClientControllerGUI.showError("Failed connecting to server");
             return;
         }
 
