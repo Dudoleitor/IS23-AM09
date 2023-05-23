@@ -12,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -82,6 +84,13 @@ public class WaitingLobbyController extends SceneController implements Initializ
         }
         controller.getServer().postToLiveChat(playerName, message.getText());
         message.setText("");
+    }
+
+    @FXML
+    protected void enterSendMessage(KeyEvent keyEvent) throws LobbyException {
+        if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+            sendMessage();
+        }
     }
 
     @Override

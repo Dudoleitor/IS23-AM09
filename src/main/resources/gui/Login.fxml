@@ -31,7 +31,7 @@
             </image>
         </ImageView>
 
-        <TextField fx:id="userName" layoutX="179.0" layoutY="207.0" prefHeight="29.0" prefWidth="277.0" promptText="Username" />
+        <TextField onKeyReleased="#enterLogin" fx:id="userName" layoutX="179.0" layoutY="207.0" prefHeight="29.0" prefWidth="277.0" promptText="Username" />
 
         <Button styleClass="button" contentDisplay="CENTER" layoutX="286.0" layoutY="308.0" mnemonicParsing="false" onAction="#signInAction" style="-fx-background-color: white;" text="Join" textAlignment="CENTER">
             <font>
