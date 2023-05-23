@@ -113,7 +113,9 @@ public class ServerRMI extends Server {
     @Override
     public void quitGame(String player){
         try{
-            lobby.quitGame(player);
+            if(lobby != null) {
+                lobby.quitGame(player);
+            }
         } catch (RemoteException ignored) {
         }
     }
