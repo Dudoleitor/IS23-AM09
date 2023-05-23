@@ -62,9 +62,18 @@ public class ClientControllerGUI extends Application implements ClientController
         return currentScene;
     }
 
+    /**
+     * This method is used to set the newMatch flag.
+     */
     public void setNewMatch(boolean newMatch) {
         this.newMatch = newMatch;
     }
+
+    /**
+     * This method is used to check if the game was loaded
+     * from a previous one or if it is a new game.
+     * @return true if the game is new, false otherwise.
+     */
     public boolean isNewMatch() {
         return newMatch;
     }
