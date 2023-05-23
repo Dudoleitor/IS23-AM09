@@ -199,10 +199,6 @@ public class HomeScreenController extends SceneController implements Initializab
             PartialMove pm = new PartialMove();
             pm.addPosition(new Position(row, column));
 
-            //setBoardValidPositions(partialMove);
-
-            //System.out.println(model.getBoard().getValidPositions(pm));
-
             System.out.println("Move: " + move);
 
         canvasBoard.toFront();
