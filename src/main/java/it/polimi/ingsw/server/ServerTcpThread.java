@@ -75,6 +75,8 @@ public class ServerTcpThread extends Thread{
             case JoinSelectedLobby:
                 joinSelectedLobby(content,ID);
                 break;
+            case DisconnectedFromLobby:
+                disconnectedFromLobby(content, ID);
             default:
                 break;
         }
@@ -102,6 +104,9 @@ public class ServerTcpThread extends Thread{
                 break;
             case IsLobbyAdmin:
                 isLobbyAdmin(content,ID);
+                break;
+            case GetCurrentPlayer:
+                getCurrentPlayer(ID);
                 break;
             default:
                 break;
@@ -223,6 +228,25 @@ public class ServerTcpThread extends Thread{
         feedback.setRequestID(ID);
         client.out(feedback.toString()); //send object to client
     }
+    private void disconnectedFromLobby(JSONObject messaage, String ID){
+        String user = messaage.get("player").toString();
+        int lobby;
+        synchronized (server){
+            try {
+                lobby = server.disconnectedFromLobby(user);
+            } catch (NullPointerException e) {
+                lobby = -1;
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("lobby", lobby);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.DisconnectedFromLobby); //set message command
+        feedback.setContent(result); //set message content
+        feedback.setRequestID(ID);
+        client.out(feedback.toString()); //send object to client
+    }
+
 
 
     private int LobbyIni(ServerLobbyInterface lobbyInterface){
@@ -377,6 +401,24 @@ public class ServerTcpThread extends Thread{
         this.exit = true;
         executor.shutdownNow();
         Thread.currentThread().interrupt();
+    }
+
+    private void getCurrentPlayer(String ID){
+        String player;
+        synchronized (lobby){
+            try {
+                player = lobby.getCurrentPlayer();
+            } catch (NullPointerException e) {
+                player = null;
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("player", player);
+        MessageTcp feedback = new MessageTcp(); //message to send back
+        feedback.setCommand(MessageTcp.MessageCommand.GetCurrentPlayer); //set message command
+        feedback.setContent(result); //set message content
+        feedback.setRequestID(ID);
+        client.out(feedback.toString()); //send object to client
     }
 
 }
