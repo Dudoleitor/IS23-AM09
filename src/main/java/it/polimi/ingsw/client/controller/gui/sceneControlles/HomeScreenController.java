@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 
 
 import java.io.IOException;
@@ -81,6 +82,11 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     Circle notificationCircle;
 
+    @FXML
+    Text newMatchText;
+
+    //metto un label/text il cui testo sarà:
+    //è una nuova partita o no
 
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
@@ -319,6 +325,12 @@ public class HomeScreenController extends SceneController implements Initializab
             Image.setLayoutX(176.0);
             Image.setFitHeight(76.0);
             Image.setFitWidth(45.0);
+        }
+
+        if(controller.isNewMatch()) {
+            newMatchText.setText("You are playing a new match!");
+        } else {
+            newMatchText.setText("You are playing a loaded match!");
         }
     }
 }

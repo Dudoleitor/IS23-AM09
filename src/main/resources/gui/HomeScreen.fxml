@@ -9,6 +9,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <VBox fx:id="vbox" alignment="CENTER" spacing="20.0" stylesheets="@HomeScreen.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
 
@@ -80,7 +81,8 @@
                <Font size="10.0" />
             </font>
          </Button>
-         <Circle fx:id="notificationCircle" fill="red" layoutX="43.0" layoutY="341.0" radius="9.0" stroke="red" strokeType="INSIDE" opacity="0.0" />
+         <Circle fx:id="notificationCircle" fill="red" layoutX="43.0" layoutY="341.0" opacity="0.0" radius="9.0" stroke="red" strokeType="INSIDE" />
+         <Text fx:id="newMatchText" layoutX="223.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
 
         </children>
     </AnchorPane>
