@@ -24,7 +24,7 @@
                 <Font name="SF Mono Bold" size="30.0" />
             </font>
         </Text>
-        <TextField fx:id="message" layoutX="220.0"  layoutY="321.0" promptText="Write a message" />
+        <TextField onKeyReleased="#enterSendMessage" fx:id="message" layoutX="220.0"  layoutY="321.0" promptText="Write a message" />
         <Button layoutX="388.0" layoutY="321.0" mnemonicParsing="false" onAction="#SendMsg" prefHeight="21.0" prefWidth="26.0" textFill="WHITE" />
         <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="389.0" layoutY="321.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#SendMsg">
             <image>

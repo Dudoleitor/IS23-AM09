@@ -12,7 +12,7 @@
 <VBox fx:id="vbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@WaitingLobby.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
       <AnchorPane fx:id="anchor" prefHeight="400.0" prefWidth="600.0">
          <children>
-            <TextField fx:id="message" layoutX="83.0" layoutY="276.0" prefHeight="26.0" prefWidth="439.0" promptText="Message" />
+            <TextField onKeyReleased="#enterSendMessage" fx:id="message" layoutX="83.0" layoutY="276.0" prefHeight="26.0" prefWidth="439.0" promptText="Message" />
             <Text layoutX="246.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby">
                <font>
                   <Font name="SF Mono Bold" size="35.0" />

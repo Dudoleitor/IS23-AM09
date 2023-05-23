@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -73,6 +75,13 @@ public class ChatController extends SceneController implements Initializable {
     @FXML
     protected void backHome() throws IOException {
         controller.loadScene(SceneEnum.home);
+    }
+
+    @FXML
+    protected void enterSendMessage(KeyEvent keyEvent) throws LobbyException {
+        if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+            SendMsg();
+        }
     }
 
     @Override

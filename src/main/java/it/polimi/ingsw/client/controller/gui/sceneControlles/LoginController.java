@@ -7,6 +7,8 @@ import it.polimi.ingsw.client.model.ClientModelGUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -43,5 +45,12 @@ public class LoginController extends SceneController {
         welcome.setText(userName.getText() + " joined the game!");
         controller.setModel(model);
         controller.loadScene(SceneEnum.lobbySelection);
+    }
+
+    @FXML
+    protected void enterLogin(KeyEvent keyEvent) throws IOException {
+        if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+            signInAction();
+        }
     }
 }
