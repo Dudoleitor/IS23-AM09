@@ -1,4 +1,5 @@
 package it.polimi.ingsw.client.controller.gui;
+import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
@@ -155,6 +156,16 @@ public class ClientControllerGUI extends Application implements ClientController
         this.stage = stage;
         stage.setTitle("My Shelfie");
         stage.getIcons().add(loadImage("/Publisher_material/Icon_50x50px.png"));
+        stage.setOnCloseRequest((e) -> {
+            if(server != null) {
+                try {
+                    System.out.println("Quit");
+                    server.quitGame(client.getPlayerName());
+                } catch (LobbyException ignored) {
+                }
+            }
+            stage.close();
+        });
         loadScene(SceneEnum.login);
         stage.show();
     }
