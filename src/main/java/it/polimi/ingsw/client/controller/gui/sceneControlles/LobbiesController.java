@@ -107,7 +107,8 @@ public class LobbiesController extends SceneController implements Initializable 
         updateLobbies();
     }
 
-    private void updateLobbies() {
+    @FXML
+    protected void updateLobbies() {
         try {
             availableLobbies = server.getAvailableLobbies();
         } catch (ServerException e) {
