@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ClientControllerGUI extends Application implements ClientController {
     private ClientModelGUI model;
@@ -144,6 +145,7 @@ public class ClientControllerGUI extends Application implements ClientController
     public void start(Stage stage) throws IOException {
         this.stage = stage;
         stage.setTitle("My Shelfie");
+        stage.getIcons().add(loadImage("/Publisher_material/Icon_50x50px.png"));
         loadScene(SceneEnum.login);
         stage.show();
     }

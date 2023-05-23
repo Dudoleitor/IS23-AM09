@@ -10,8 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<VBox fx:id="vbox" spacing="20" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@Lobbies.css"  xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="vbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="20" stylesheets="@Lobbies.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
 
       <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -27,9 +26,10 @@
             </Text>
             <TextField fx:id="lobbyNumber" layoutX="219.0" layoutY="297.0" prefHeight="26.0" prefWidth="163.0" promptText="Number of the lobby to join" />
             <TextArea fx:id="lobbies" layoutX="88.0" layoutY="69.0" prefHeight="200.0" prefWidth="425.0" />
-            <Button fx:id="createButton" onAction="#createLobby" layoutX="126.0" layoutY="297.0" mnemonicParsing="false" style="-fx-background-color: #49be25;" text="Create" textAlignment="CENTER" />
-            <Button fx:id="randomButton" onAction="#randomLobby" layoutX="412.0" layoutY="297.0" mnemonicParsing="false" style="-fx-background-color: #49be25;" text="Random" textAlignment="CENTER" />
-            <Button fx:id="joinButton" onAction="#joinLobby" layoutX="273.0" layoutY="329.0" mnemonicParsing="false" style="-fx-background-color: #49be25;" text="Join" textAlignment="CENTER" />
+            <Button fx:id="createButton" layoutX="126.0" layoutY="297.0" mnemonicParsing="false" onAction="#createLobby" style="-fx-background-color: #49be25;" text="Create" textAlignment="CENTER" />
+            <Button fx:id="randomButton" layoutX="412.0" layoutY="297.0" mnemonicParsing="false" onAction="#randomLobby" style="-fx-background-color: #49be25;" text="Random" textAlignment="CENTER" />
+            <Button fx:id="joinButton" layoutX="273.0" layoutY="329.0" mnemonicParsing="false" onAction="#joinLobby" style="-fx-background-color: #49be25;" text="Join" textAlignment="CENTER" />
+            <Button layoutX="453.0" layoutY="31.0" mnemonicParsing="false" style="-fx-background-color: #3ba1c5;" text="Refresh" onAction="#updateLobbies" />
          </children>
       </AnchorPane>
 </VBox>
