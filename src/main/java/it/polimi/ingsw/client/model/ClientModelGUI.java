@@ -38,6 +38,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private final List<String> players;
     private boolean gameStarted;
     private boolean gameEnded;
+    private Map<String, Integer> leaderBoard;
     private final Thread pingListener;
     private final Object pingLock;
     private final ClientControllerGUI controller;
@@ -55,6 +56,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.gameEnded = false;
+        this.leaderBoard = new HashMap<>();
 
         this.pingLock = new Object();
         this.pingListener = ClientController.getThread(pingLock);
@@ -119,6 +121,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     @Override
     public boolean gameEnded() throws RemoteException {
         return gameEnded;
+    }
+
+    /**
+     * @return Map: player's name - points
+     */
+    public Map<String, Integer> getLeaderBoard() {
+        return new HashMap<>(leaderBoard);
     }
 
     /**
@@ -390,8 +399,11 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        // TODO update gui
         this.gameEnded = true;
+        this.leaderBoard = leaderBoard;
+        Platform.runLater(() -> {
+            controller.loadScene(SceneEnum.winnerScreen);
+        });
     }
 
 
