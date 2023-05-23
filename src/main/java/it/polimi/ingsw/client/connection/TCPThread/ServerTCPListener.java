@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.connection.TCPThread;
 
 import it.polimi.ingsw.shared.MessageTcp;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;;
 import java.io.IOException;
@@ -45,8 +46,8 @@ public class ServerTCPListener extends Thread{
                     ready = true;
             }
             return new MessageTcp(serverIn.readLine());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ParseException e) {
+            return new MessageTcp();
         }
     }
 
