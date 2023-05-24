@@ -289,3 +289,46 @@ public class HomeScreenController extends SceneController implements Initializab
         }
     }
 }
+
+class MoveBuilder{
+    PartialMove pm;
+    Move move;
+    int column;
+    public MoveBuilder(){
+        pm = new PartialMove();
+        move = null;
+        column = -1;
+    }
+    public void addPosition(Position pos) throws Exception {
+        if(pm.size() >= 3){
+            throw new Exception();
+        }
+        else{
+            pm.addPosition(pos);
+        }
+    }
+    public List<Position> suggestedPositions(Board board){
+        try {
+            return board.getValidPositions(pm);
+        } catch (InvalidMoveException e) {
+            return new ArrayList<>();
+        }
+    }
+    public void setColumn(int column){
+        this.column = column;
+    }
+    public Move getMove() throws Exception{
+        if(column == -1){
+            throw new Exception();
+        }
+        if(pm.size() == 0){
+            throw new Exception();
+        }
+        return new Move(pm,column);
+    }
+    public void resetMove(){
+        pm = new PartialMove();
+        move = null;
+        column = -1;
+    }
+}
