@@ -24,15 +24,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
+import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.showError;
 
 public class HomeScreenController extends SceneController implements Initializable {
     boolean clicked = false;
     private GridHandler shelfHandler;
     private GridHandler boardHandler;
     private List<Position> move = new ArrayList<>();
-    private PartialMove partialMove = new PartialMove();
-    Move actualMove = null;
-
+    private MoveBuilder moveBuilder;
     private final ClientModelGUI model;
 
     public HomeScreenController(ClientControllerGUI controller) {
@@ -146,79 +145,60 @@ public class HomeScreenController extends SceneController implements Initializab
     //SHELF: 24 (getY) x 24 (getX)
 
     public void clickedMouseBoard(MouseEvent mouseEvent) throws InvalidMoveException, BadPositionException {
-        System.out.println("Board:");
-
+        //check if it is player's turn
         if(!model.isItMyTurn()) {
             controller.errorMessage("Wait your turn");
             return;
         }
 
-        if(move.size() >= 3) {
-            ClientControllerGUI.showError("Max number of positions selected");
+        Position pos = boardHandler.getPosition(mouseEvent);
+
+        //check if move is valid
+        if(!moveBuilder.validPositions(model.getBoard()).contains(pos)) {
+            controller.errorMessage("Please enter a valid position");
             return;
         }
 
-            Position pos = boardHandler.getPosition(mouseEvent);
-
-            if(model.getBoard().getValidPositions(partialMove).isEmpty()) {
-                controller.errorMessage("There are no more tiles to pick");
-            }
-
-            if(model.getBoard().getValidPositions(partialMove).contains(pos)) {
-               partialMove.addPosition(pos);
-                move.add(pos);
-            } else {
-                controller.errorMessage("Please enter a valid position");
-            }
-
-            PartialMove pm = new PartialMove();
-            pm.addPosition(pos);
-
-            System.out.println("Move: " + move);
+        //check if position fits in partial move
+        try {
+            moveBuilder.addPosition(pos);
+        } catch (Exception e) {
+            showError(e.getMessage());
+        }
 
         canvasBoard.toFront();
-
-        System.out.println("\n");
     }
 
     public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
         System.out.println("Shelf:");
 
         int column = shelfHandler.getPosition(mouseEvent).getColumn();
-
-        PartialMove pm = new PartialMove();
-        for(int i = 0; i < move.size(); i++) {
-            Position pos = new Position(move.get(i).getRow(), move.get(i).getColumn());
-            pm.addPosition(pos);
-        }
-
-        actualMove = new Move(pm, column);
+        moveBuilder.setColumn(column);
 
         System.out.println("Column: " + column);
-        System.out.println("\n");
     }
 
     @FXML
     protected void deleteMove() {
-        move.clear();
+        moveBuilder.resetMove();
     }
 
     @FXML
     protected void confirmMove() throws InvalidMoveException, LobbyException, BadPositionException {
         System.out.println("Confirm Move");
 
-        if(actualMove == null) {
-            controller.errorMessage("Click a column");
+        Move move = null;
+        try {
+            move = moveBuilder.getMove();
+        } catch (Exception e) {
+            showError(e.getMessage());
+            moveBuilder.resetMove();
             return;
         }
-
-        controller.getServer().postMove(model.getPlayerName(), actualMove);
+        controller.getServer().postMove(model.getPlayerName(), move);
         //removeFromBoard(actualMove);
 
         updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
-        move.clear();
-        actualMove = null;
-        partialMove = null;
     }
 
     @FXML
@@ -247,6 +227,7 @@ public class HomeScreenController extends SceneController implements Initializab
      * a single tile from the board.
      * @param position the position of the tile to be removed
      */
+    //TODO redo
     public void removeFromBoard(Position position) {
         int iWidth = 0;
         int iHeight = 0;
@@ -287,5 +268,55 @@ public class HomeScreenController extends SceneController implements Initializab
         } else {
             newMatchText.setText("You are playing a loaded match!");
         }
+        moveBuilder = new MoveBuilder();
+    }
+}
+
+class MoveBuilder{
+    private PartialMove  pm;
+    private Move move;
+    private int column;
+    public MoveBuilder(){
+        pm = new PartialMove();
+        move = null;
+        column = -1;
+    }
+    public void addPosition(Position pos) throws Exception {
+        if(pm.size() >= 3){
+            throw new Exception("Max number of positions selected");
+        }
+        else{
+            pm.addPosition(pos);
+        }
+    }
+    public List<Position> validPositions(Board board){
+        try {
+            return board.getValidPositions(pm);
+        } catch (InvalidMoveException e) {
+            return new ArrayList<>();
+        }
+    }
+    public void setColumn(int column){
+        this.column = column;
+    }
+    public Move getMove() throws Exception{
+        if(column == -1){
+            throw new Exception("Pleas select a column");
+        }
+        if(pm.size() == 0){
+            throw new Exception("Please select at least one tile");
+        }
+        return new Move(pm,column);
+    }
+    public PartialMove getPartialMove() {
+        return pm;
+    }
+    public int getColumn(){
+        return column;
+    }
+    public void resetMove(){
+        pm = new PartialMove();
+        move = null;
+        column = -1;
     }
 }
