@@ -190,18 +190,17 @@ public class HomeScreenController extends SceneController implements Initializab
     protected void confirmMove() throws LobbyException{
         System.out.println("Confirm Move");
 
-        Move move = null;
         try {
-            move = moveBuilder.getMove();
+            controller.getServer().postMove(model.getPlayerName(), moveBuilder.getMove());
+            updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
         } catch (Exception e) {
+            deleteMove();
             showError(e.getMessage());
-            moveBuilder.resetMove();
-            return;
         }
-        controller.getServer().postMove(model.getPlayerName(), move);
-        //removeFromBoard(actualMove);
+        finally {
+            moveBuilder.resetMove();
+        }
 
-        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
     }
 
     @FXML
