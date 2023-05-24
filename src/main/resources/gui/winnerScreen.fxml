@@ -9,7 +9,7 @@
 
 <VBox fx:id="vbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@Login.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <AnchorPane prefHeight="412.0" prefWidth="600.0">
+      <AnchorPane fx:id="anchor" prefHeight="412.0" prefWidth="600.0">
          <children>
             <Text fx:id="winnerText" layoutX="203.0" layoutY="93.0" strokeType="OUTSIDE" strokeWidth="0.0" text="YOU WON">
                <font>
@@ -34,10 +34,10 @@
                   <Font name="SF Mono Bold" size="27.0" />
                </font>
             </Text>
-            <Text fx:id="username4" layoutX="14.0" layoutY="383.0" strokeType="OUTSIDE" strokeWidth="0.0" text="username4" />
-            <Text fx:id="username3" layoutX="164.0" layoutY="275.0" strokeType="OUTSIDE" strokeWidth="0.0" text="username3" />
-            <Text fx:id="username1" layoutX="269.0" layoutY="167.0" strokeType="OUTSIDE" strokeWidth="0.0" text="username1" />
-            <Text fx:id="username2" layoutX="374.0" layoutY="234.0" strokeType="OUTSIDE" strokeWidth="0.0" text="username2" />
+            <Text fx:id="username4" layoutX="14.0" layoutY="383.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text fx:id="username3" layoutX="164.0" layoutY="275.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text fx:id="username1" layoutX="269.0" layoutY="167.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text fx:id="username2" layoutX="374.0" layoutY="234.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
          </children>
       </AnchorPane>
    </children>

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -32,6 +33,9 @@ public class winnerSceneController extends SceneController implements Initializa
     @FXML
     Text username4;
 
+    @FXML
+    AnchorPane anchor;
+
     public winnerSceneController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
@@ -47,6 +51,14 @@ public class winnerSceneController extends SceneController implements Initializa
             players.add(new PlayerWithPoints(entry.getKey(), entry.getValue()));
         }
         players.sort((o1, o2) -> o2.getPoints() - o1.getPoints());
+
+        for(int i = 0; i < players.size(); i++) {
+           Text text = (Text) anchor.lookup("#username" + (i+1));
+           text.setText(players.get(i).getPlayerName() + ": " + players.get(i).getPoints());
+        }
+
+        if(!players.get(0).equals(playerName))
+            winnerText.setText("You lost");
 
     }
 }
