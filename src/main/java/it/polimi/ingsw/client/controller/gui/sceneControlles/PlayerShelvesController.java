@@ -113,6 +113,7 @@ public class PlayerShelvesController extends SceneController implements Initiali
         Arrays.stream(userNames).forEach(text -> text.setText(""));
         int i = 0;
         //for all the players but the user
+        //TODO understand
         for(String playerName : model.getPlayers()){
             if(!playerName.equals(model.getPlayerName())){
                 userNames[i].setText(playerName); //set a username
@@ -125,10 +126,30 @@ public class PlayerShelvesController extends SceneController implements Initiali
             }
         }
         //hide all the shelves and text fields with no username
-        for(;i < shelves.length && i<userNames.length;i++){
+        //TODO remove i = 1
+        for(i=2;i < shelves.length && i<userNames.length;i++){
             userNames[i].setStyle("-fx-opacity:0.0");
             shelves[i].setStyle("-fx-opacity:0.0");
         }
+        //TODO remove test
+        Shelf testShelf = new Shelf(5,6);
+        try{
+            testShelf.insertTile(Tile.Cat,0);
+            testShelf.insertTile(Tile.Trophy,0);
+        }
+        catch (Exception e){
+            throw new RuntimeException();
+        }
+        shelvesHandlers.put("Player 1",
+                new GridHandler(
+                        anchor,
+                        shelvesCanvas[0],
+                        testShelf));
+        shelvesHandlers.put("Player 2",
+                new GridHandler(
+                        anchor,
+                        shelvesCanvas[1],
+                        testShelf));
         displayAll();
     }
 }
