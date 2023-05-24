@@ -24,7 +24,6 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     private final Map<String, Shelf> playersShelves;
     private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
-    private final List<String> players;
     private final CLI_IO cliIO;
     private boolean gameStarted;
     private boolean itsMyTurn;
@@ -41,7 +40,6 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
         this.playersShelves = new HashMap<>();
         this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
-        this.players = new ArrayList<>();
         this.cliIO = cliIO;
         this.gameStarted = false;
         this.itsMyTurn = false;

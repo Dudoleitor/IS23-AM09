@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -35,7 +36,6 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private final Map<String, Shelf> playersShelves;
     private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
-    private final List<String> players;
     private boolean gameStarted;
     private boolean gameEnded;
     private Map<String, Integer> leaderBoard;
@@ -52,7 +52,6 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.playersShelves = new HashMap<>();
         this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
-        this.players = new ArrayList<>();
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.gameEnded = false;
@@ -99,7 +98,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     }
 
     public Map<String, Shelf> getPlayersShelves() {
-        return playersShelves;
+        return new HashMap<>(playersShelves);
     }
 
     public PlayerGoal getPlayerGoal() {
@@ -107,11 +106,11 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     }
 
     public List<CommonGoal> getCommonGoalList() {
-        return commonGoalList;
+        return new ArrayList<>(commonGoalList);
     }
 
     public List<String> getPlayers() {
-        return players;
+        return new ArrayList<>(playersShelves.keySet());
     }
 
     public boolean isGameStarted() {
