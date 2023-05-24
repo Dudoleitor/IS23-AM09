@@ -4,10 +4,14 @@ import it.polimi.ingsw.shared.model.BadPositionException;
 import it.polimi.ingsw.shared.model.Grid;
 import it.polimi.ingsw.shared.model.Position;
 import it.polimi.ingsw.shared.model.Tile;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+
+import java.util.ArrayList;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
@@ -27,19 +31,32 @@ public class GridHandler {
     }
     public void resetGrid(Grid grid){
         this.grid = grid;
+        try {
+            for (int row = 0; row < grid.getRows(); row++) {
+                for (int col = 0; col < grid.getColumns(); col++) {
+                    if (!(grid.getTile(row, col) == Tile.Invalid) && !(grid.getTile(row, col) == Tile.Empty)) {
+                        removeTile(new Position(row,col));
+                    }
+                }
+            }
+            canvas.toFront();
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
+        }
     }
 
     public void displayGrid(){
         try {
-            for (int i = 0; i < grid.getRows(); i++) {
-                for (int j = 0; j < grid.getColumns(); j++) {
-                    if (!(grid.getTile(i, j) == Tile.Invalid) && !(grid.getTile(i, j) == Tile.Empty)) {
+            for (int row = 0; row < grid.getRows(); row++) {
+                for (int col = 0; col < grid.getColumns(); col++) {
+                    if (!(grid.getTile(row, col) == Tile.Invalid) && !(grid.getTile(row, col) == Tile.Empty)) {
                         ImageView imageView = new ImageView();
-                        imageView.setImage(loadImage("item_tiles/" + grid.getTile(i, j).toString() + "2.png"));
+                        imageView.setImage(loadImage("item_tiles/" + grid.getTile(row, col).toString() + "2.png"));
                         imageView.setFitHeight(elemHeight);
                         imageView.setFitWidth(elemWidth);
-                        imageView.setLayoutX(canvas.getLayoutX() + j * elemWidth);
-                        imageView.setLayoutY(canvas.getLayoutY() + i * elemHeight);
+                        imageView.setLayoutX(getElemX(col));
+                        imageView.setLayoutY(getElemY(row));
+                        imageView.applyCss();
                         anchor.getChildren().add(imageView);
                     }
                 }
@@ -53,9 +70,31 @@ public class GridHandler {
         return grid;
     }
 
+    private double getElemX(int column){
+        return  canvas.getLayoutX() + column * elemWidth;
+    }
+
+    private double getElemY(int row){
+        return canvas.getLayoutY() + row * elemHeight;
+    }
+
     public Position getPosition(MouseEvent mouseEvent){
         int column = (int) Math.floor(mouseEvent.getX()/elemWidth);
         int row = (int) Math.floor(mouseEvent.getY()/elemHeight);
         return new Position(row,column);
     }
+
+    public void removeTile(Position pos){
+        Node toDelete =  anchor.getChildren()
+                .stream()
+                .filter(node ->
+                        node.getLayoutX() == getElemX(pos.getColumn()) &&
+                        node.getLayoutY() == getElemY(pos.getRow()))
+                .findFirst().orElse(null);
+
+        if(toDelete != null){
+            anchor.getChildren().remove(toDelete);
+        }
+    }
+
 }

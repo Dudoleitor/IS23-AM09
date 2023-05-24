@@ -162,6 +162,7 @@ public class HomeScreenController extends SceneController implements Initializab
         //check if position fits in partial move
         try {
             moveBuilder.addPosition(pos);
+            boardHandler.removeTile(pos);
         } catch (Exception e) {
             showError(e.getMessage());
         }
@@ -181,10 +182,12 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     protected void deleteMove() {
         moveBuilder.resetMove();
+        boardHandler.resetGrid(model.getBoard());
+        boardHandler.displayGrid();
     }
 
     @FXML
-    protected void confirmMove() throws InvalidMoveException, LobbyException, BadPositionException {
+    protected void confirmMove() throws LobbyException{
         System.out.println("Confirm Move");
 
         Move move = null;
@@ -218,7 +221,7 @@ public class HomeScreenController extends SceneController implements Initializab
      * @param tile   Tile to insert
      */
     public void putIntoShelf(int column, Tile tile) {
-        //TODO
+        //TODO with delta
         updateShelf(model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
     }
 
@@ -227,18 +230,8 @@ public class HomeScreenController extends SceneController implements Initializab
      * a single tile from the board.
      * @param position the position of the tile to be removed
      */
-    //TODO redo
     public void removeFromBoard(Position position) {
-        int iWidth = 0;
-        int iHeight = 0;
-        for(int j = 0; j < anchor.getChildren().size(); j++) {
-            if(anchor.getChildren().get(j).getLayoutX() == (iWidth + position.getColumn()*25.0)
-            && anchor.getChildren().get(j).getLayoutY() == (iHeight + position.getRow()*25.0)) {
-                anchor.getChildren().get(j).setOpacity(0.0);
-                anchor.getChildren().get(j).setOpacity(0.0);
-                break;
-            }
-        }
+        boardHandler.removeTile(position);
     }
 
     @Override

@@ -8,6 +8,7 @@ import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -90,7 +91,8 @@ public class PlayerShelvesController extends SceneController implements Initiali
         //TODO
     }
     private void displayAll(){
-        shelvesHandlers.values().forEach(x -> x.displayGrid());
+        shelvesHandlers.values().forEach(GridHandler::displayGrid);
+        Arrays.stream(new ImageView[]{shelf1,shelf2,shelf3}).forEach(Node::toFront);
     }
 
     @FXML
@@ -126,10 +128,9 @@ public class PlayerShelvesController extends SceneController implements Initiali
         }
         //hide all the shelves and text fields with no username
         for(;i < shelves.length && i<userNames.length;i++){
-            userNames[i].setStyle("-fx-opacity:0.0");
-            shelves[i].setStyle("-fx-opacity:0.0");
+            userNames[i].setOpacity(0.0);
+            shelves[i].setOpacity(0.0);
         }
-
         displayAll();
     }
 }
