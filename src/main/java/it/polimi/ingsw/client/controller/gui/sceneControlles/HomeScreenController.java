@@ -126,6 +126,10 @@ public class HomeScreenController extends SceneController implements Initializab
         }
     }
 
+    /**
+     * button that redirects to chat screen
+     * @throws IOException
+     */
     @FXML
     protected void readChat() throws IOException {
         clicked = false;
@@ -144,6 +148,13 @@ public class HomeScreenController extends SceneController implements Initializab
     //BOARD: 25 (column getX) x 25 (getY)
     //SHELF: 24 (getY) x 24 (getX)
 
+    /**
+     * creates a position based on mouseEvent and adds it to move builder
+     * in order to create the partialMove
+     * @param mouseEvent
+     * @throws InvalidMoveException
+     * @throws BadPositionException
+     */
     public void clickedMouseBoard(MouseEvent mouseEvent) throws InvalidMoveException, BadPositionException {
         //check if it is player's turn
         if(!model.isItMyTurn()) {
@@ -170,6 +181,11 @@ public class HomeScreenController extends SceneController implements Initializab
         canvasBoard.toFront();
     }
 
+    /**
+     * by clicking on the shelf, the user can choose the column
+     * @param mouseEvent
+     * @throws InvalidMoveException
+     */
     public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
         System.out.println("Shelf:");
 
@@ -179,6 +195,9 @@ public class HomeScreenController extends SceneController implements Initializab
         System.out.println("Column: " + column);
     }
 
+    /**
+     * button that resets the move
+     */
     @FXML
     protected void deleteMove() {
         moveBuilder.resetMove();
@@ -186,6 +205,12 @@ public class HomeScreenController extends SceneController implements Initializab
         boardHandler.displayGrid();
     }
 
+    /**
+     * button that confirms the move
+     * if the user confirms: the controller posts the move to the server
+     * and the shelf is updated
+     * @throws LobbyException
+     */
     @FXML
     protected void confirmMove() throws LobbyException{
         System.out.println("Confirm Move");
@@ -199,10 +224,15 @@ public class HomeScreenController extends SceneController implements Initializab
         }
         finally {
             moveBuilder.resetMove();
+            canvasShelf.toFront();
         }
 
     }
 
+    /**
+     * it redirects to the shelves page where the user can see opponents shelves
+     * @throws IOException
+     */
     @FXML
     protected void gameStatus() throws IOException {
         controller.loadScene(SceneEnum.playerShelves);
@@ -211,6 +241,7 @@ public class HomeScreenController extends SceneController implements Initializab
     public void updateShelf(Shelf shelf) {
         shelfHandler.resetGrid(shelf);
         shelfHandler.displayGrid();
+        canvasShelf.toFront();
     }
 
     /**
@@ -233,6 +264,12 @@ public class HomeScreenController extends SceneController implements Initializab
         boardHandler.removeTile(position);
     }
 
+    /**
+     * sets the turn, prepares the board and the shelf, prepares personal and common goals
+     * if the user is the first player, the first player token it is shown
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         boolean turn = model.isItMyTurn();
@@ -261,7 +298,9 @@ public class HomeScreenController extends SceneController implements Initializab
             newMatchText.setText("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
+        canvasShelf.toFront();
     }
+
 }
 
 class MoveBuilder{
@@ -293,7 +332,7 @@ class MoveBuilder{
     }
     public Move getMove() throws Exception{
         if(column == -1){
-            throw new Exception("Pleas select a column");
+            throw new Exception("Please select a column");
         }
         if(pm.size() == 0){
             throw new Exception("Please select at least one tile");

@@ -42,7 +42,12 @@ public class winnerSceneController extends SceneController implements Initializa
         this.playerName = controller.getClient().getPlayerName();
     }
 
-
+    /**
+     * creates a list of players with their points, sort it and put them (in the correct order)
+     * in the podium
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         final Map<String, Integer> leaderboard = model.getLeaderBoard();
@@ -64,9 +69,8 @@ public class winnerSceneController extends SceneController implements Initializa
             userNames[i].setStyle("-fx-opacity:0.0");
         }
 
-        if(!players.get(0).equals(playerName))
+        if(!players.get(0).getPlayerName().equals(playerName))
             winnerText.setText("You lost");
-
     }
 }
 
