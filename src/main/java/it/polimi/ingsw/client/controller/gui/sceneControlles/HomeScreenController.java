@@ -199,6 +199,7 @@ public class HomeScreenController extends SceneController implements Initializab
         }
         finally {
             moveBuilder.resetMove();
+            canvasShelf.toFront();
         }
 
     }
@@ -211,6 +212,7 @@ public class HomeScreenController extends SceneController implements Initializab
     public void updateShelf(Shelf shelf) {
         shelfHandler.resetGrid(shelf);
         shelfHandler.displayGrid();
+        canvasShelf.toFront();
     }
 
     /**
@@ -261,7 +263,9 @@ public class HomeScreenController extends SceneController implements Initializab
             newMatchText.setText("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
+        canvasShelf.toFront();
     }
+
 }
 
 class MoveBuilder{
@@ -293,7 +297,7 @@ class MoveBuilder{
     }
     public Move getMove() throws Exception{
         if(column == -1){
-            throw new Exception("Pleas select a column");
+            throw new Exception("Please select a column");
         }
         if(pm.size() == 0){
             throw new Exception("Please select at least one tile");

@@ -64,9 +64,8 @@ public class winnerSceneController extends SceneController implements Initializa
             userNames[i].setStyle("-fx-opacity:0.0");
         }
 
-        if(!players.get(0).equals(playerName))
+        if(!players.get(0).getPlayerName().equals(playerName))
             winnerText.setText("You lost");
-
     }
 }
 
