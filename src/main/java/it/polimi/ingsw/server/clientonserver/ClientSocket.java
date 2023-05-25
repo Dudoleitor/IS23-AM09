@@ -28,7 +28,6 @@ import java.util.Objects;
 public class ClientSocket implements Client {
     private String playerName = null;
     private NetworkExceptionHandler networkExceptionHandler;
-    private Chat chat;
     private Socket clientSocket;
 
     private BufferedReader ClientIn;
@@ -36,6 +35,19 @@ public class ClientSocket implements Client {
     private ServerTcpThread serverThreadListener;
 
     public ClientSocket() {}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientSocket that = (ClientSocket) o;
+        return Objects.equals(playerName.toLowerCase(), that.playerName.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerName.toLowerCase());
+    }
 
     /**
      * socket input buffer
@@ -333,19 +345,6 @@ public class ClientSocket implements Client {
         update.setCommand(MessageTcp.MessageCommand.Ping);
         out(update.toString());
         return "";
-    }
-
-    @Override
-    public boolean equals(Object o) {  // Checking using LOWERCASE name
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClientSocket clientSocket = (ClientSocket) o;
-        return Objects.equals(playerName.toLowerCase(), clientSocket.playerName.toLowerCase());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(playerName.toLowerCase());
     }
 
 }

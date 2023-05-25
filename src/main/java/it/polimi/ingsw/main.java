@@ -17,6 +17,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.server.RMISocketFactory;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.OptionsParameters.*;
@@ -49,11 +50,12 @@ public class main {
      */
     private static void setSystemProps(){
         final String timeout = String.valueOf(NetworkSettings.WaitingTime);
-        System.getProperties().setProperty("sun.rmi.transport.connectionTimeout", timeout);
-        System.getProperties().setProperty("sun.rmi.transport.tcp.handshakeTimeout", timeout);
-        System.getProperties().setProperty("sun.rmi.transport.tcp.responseTimeout", timeout);
-        System.getProperties().setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
-        System.getProperties().setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
+        final Properties properties = System.getProperties();
+        properties.setProperty("sun.rmi.transport.connectionTimeout", timeout);
+        properties.setProperty("sun.rmi.transport.tcp.handshakeTimeout", timeout);
+        properties.setProperty("sun.rmi.transport.tcp.responseTimeout", timeout);
+        properties.setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
+        properties.setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
         try {
             RMISocketFactory.setSocketFactory(new SocketFactory());
         } catch (IOException e) {
