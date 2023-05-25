@@ -64,6 +64,11 @@ public class WaitingLobbyController extends SceneController implements Initializ
         for (ChatMessage cm : chat.getAllMessages())
             postChatMessage(cm.getSender(), cm.getMessage());
     }
+
+    /**
+     * the admin can click the start button and start the match
+     * @throws LobbyException
+     */
     @FXML
     protected void startMatch() throws LobbyException {
         Stage stage = (Stage) vbox.getScene().getWindow();
@@ -72,6 +77,10 @@ public class WaitingLobbyController extends SceneController implements Initializ
         }
     }
 
+    /**
+     * button method that can be used to send messages and post them to the chat
+     * @throws LobbyException
+     */
     @FXML
     protected void sendMessage() throws LobbyException {
         if(message.getText().equals("")){
@@ -86,6 +95,11 @@ public class WaitingLobbyController extends SceneController implements Initializ
         message.setText("");
     }
 
+    /**
+     * equals to the sendMessage() but instead of a button the user can push enter
+     * @param keyEvent
+     * @throws LobbyException
+     */
     @FXML
     protected void enterSendMessage(KeyEvent keyEvent) throws LobbyException {
         if(keyEvent.getCode().equals(KeyCode.ENTER)) {
@@ -93,6 +107,11 @@ public class WaitingLobbyController extends SceneController implements Initializ
         }
     }
 
+    /**
+     * if the client is not the admin, he can't see startButton and checkBox
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {

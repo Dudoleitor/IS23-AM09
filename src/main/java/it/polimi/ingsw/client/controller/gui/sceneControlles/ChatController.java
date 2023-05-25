@@ -56,6 +56,10 @@ public class ChatController extends SceneController implements Initializable {
             postChatMessage(cm.getSender(), cm.getMessage());
     }
 
+    /**
+     * this method is used to send messages and post them to the server.
+     * @throws LobbyException
+     */
     @FXML
     protected void SendMsg() throws LobbyException {
         if(message.getText().equals("")){
@@ -72,11 +76,20 @@ public class ChatController extends SceneController implements Initializable {
         message.setText("");
     }
 
+    /**
+     * button method that redirects to the home page
+     * @throws IOException
+     */
     @FXML
     protected void backHome() throws IOException {
         controller.loadScene(SceneEnum.home);
     }
 
+    /**
+     * equal to sendMsg() but user can use it by pushing enter
+     * @param keyEvent
+     * @throws LobbyException
+     */
     @FXML
     protected void enterSendMessage(KeyEvent keyEvent) throws LobbyException {
         if(keyEvent.getCode().equals(KeyCode.ENTER)) {
@@ -84,6 +97,11 @@ public class ChatController extends SceneController implements Initializable {
         }
     }
 
+    /**
+     * this method is useful to refresh the chat when the scene is opened
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         refreshChat(model.getChat());
