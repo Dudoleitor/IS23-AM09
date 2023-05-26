@@ -93,15 +93,7 @@ public class HomeScreenController extends SceneController implements Initializab
         imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
     }
 
-    protected void updateCommonGoals() {
-        getCommonGoals();
-    }
-
-    private void getCommonGoals () {
-
-        CommonGoal cg1 = model.getCommonGoalList().get(0);
-        CommonGoal cg2 = model.getCommonGoalList().get(1);
-
+    public void updateCommonGoals(CommonGoal cg1, CommonGoal cg2) {
         commonGoal1.setImage(loadImage( "common_goal_cards/" + cg1.getID() + ".jpg"));
         commonGoal2.setImage(loadImage("common_goal_cards/" + cg2.getID() + ".jpg"));
 
@@ -288,7 +280,7 @@ public class HomeScreenController extends SceneController implements Initializab
         canvasShelf.toFront();
 
         getPersonalGoal();
-        getCommonGoals();
+        updateCommonGoals(model.getCommonGoalList().get(0), model.getCommonGoalList().get(1));
         if(model.isItMyTurn()) {
             ImageView Image = new ImageView();
             Image.setImage(loadImage("misc/firstplayertoken.png"));

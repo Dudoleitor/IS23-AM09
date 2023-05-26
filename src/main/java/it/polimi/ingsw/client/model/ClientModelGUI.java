@@ -374,6 +374,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         commonGoalList.remove(commonGoal);
         commonGoalList.add(commonGoal);
         commonGoalList.sort((x,y) -> x.getID() > y.getID() ? 1 : -1);
+
+        final HomeScreenController sceneController =
+                (HomeScreenController) controller.getSceneController(SceneEnum.home);
+        if(sceneController!=null)
+            Platform.runLater(() -> {
+                sceneController.updateCommonGoals(commonGoalList.get(0), commonGoalList.get(1));
+            });
     }
 
     /**
