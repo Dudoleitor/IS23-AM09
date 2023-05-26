@@ -88,7 +88,8 @@ public class PlayerShelvesController extends SceneController implements Initiali
     }
 
     public void putIntoShelf(String playerName, int column, Tile tile) {
-        //TODO
+        //TODO with delta
+        refreshShelf(playerName,model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
     }
     private void displayAll(){
         shelvesHandlers.values().forEach(GridHandler::displayGrid);
