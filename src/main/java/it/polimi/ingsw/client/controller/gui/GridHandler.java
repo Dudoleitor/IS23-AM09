@@ -6,13 +6,12 @@ import it.polimi.ingsw.shared.model.Position;
 import it.polimi.ingsw.shared.model.Tile;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
@@ -25,6 +24,7 @@ public class GridHandler {
     int columns;
     double elemHeight;
     double elemWidth;
+    private static Map<Tile, Image> images = null;
 
     public GridHandler(AnchorPane anchor, Canvas canvas, Grid grid){
         this.anchor = anchor;
@@ -68,6 +68,18 @@ public class GridHandler {
         anchor.getChildren().removeAll(toRemove);
     }
 
+    private Image getImage(Tile tile){
+        synchronized (GridHandler.class){
+            if(images == null){
+                images = new HashMap<>();
+                Arrays.stream(Tile.values()).
+                        filter(t -> t != Tile.Empty && t != Tile.Invalid).
+                        forEach(t -> images.put(t,loadImage("item_tiles/" + t + "2.png")));
+            }
+        }
+        return images.get(tile);
+    }
+
     private void appendImages(){
         List<Node> anchorChildren= anchor.getChildren();
 
@@ -96,7 +108,7 @@ public class GridHandler {
             throw new RuntimeException("Bad image creation request");
         }
         ImageView imageView = new ImageView();
-        imageView.setImage(loadImage("item_tiles/" + tile + "2.png"));
+        imageView.setImage(getImage(tile));
         imageView.setFitHeight(elemHeight);
         imageView.setFitWidth(elemWidth);
         imageView.setLayoutX(getElemX(pos.getColumn()));
