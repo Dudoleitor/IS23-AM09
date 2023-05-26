@@ -87,7 +87,7 @@ public class PlayerShelvesController extends SceneController implements Initiali
         shelvesHandlers.get(playerName).displayGrid();
     }
 
-    public void putIntoShelf(String playerName, int column, Tile tile) {
+    public void putIntoShelf(String playerName, Position position, Tile tile) {
         //TODO with delta
         refreshShelf(playerName,model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
     }

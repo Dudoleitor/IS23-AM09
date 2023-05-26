@@ -244,10 +244,10 @@ public class HomeScreenController extends SceneController implements Initializab
     /**
      * This function is invoked from the server when the current
      * player puts a tile into his shelf.
-     * @param column destination column of the shelf
+     * @param pos destination in the shelf
      * @param tile   Tile to insert
      */
-    public void putIntoShelf(int column, Tile tile) {
+    public void putIntoShelf(Position pos, Tile tile) {
         //TODO with delta
         updateShelf(model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
     }

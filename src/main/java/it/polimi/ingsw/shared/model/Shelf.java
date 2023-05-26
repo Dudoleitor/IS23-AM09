@@ -476,4 +476,18 @@ public class Shelf implements Jsonable, Grid {
     public void setVirtualShelf(VirtualShelf virtualShelf) {
         this.virtualShelf = virtualShelf;
     }
+
+    /**
+     * This method is used to return the highest free position in a column
+     * @param column int, index of the column
+     * @return Position, the first free position in the column
+     */
+    public Position getFreePosition(int column) throws BadPositionException{
+        for (int i = rows - 1; i >= 0; i--) {
+            if (tiles[i][column] == Tile.Empty) {
+                return new Position(i, column);
+            }
+        }
+        throw new BadPositionException("Error while getting free position in Shelf : selected column is already full");
+    }
 }

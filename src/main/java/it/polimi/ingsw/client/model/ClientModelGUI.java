@@ -186,10 +186,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * @param tile   Tile to insert
      */
     public void putIntoShelf(String player, int column, Tile tile) {
+        final Shelf shelf = playersShelves.get(player);
         try{
-            final Shelf shelf = playersShelves.get(player);
             shelf.insertTile(tile, column);
             playersShelves.replace(player, shelf);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
+
+        final Position position;
+        try {
+            position = shelf.getFreePosition(column);
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
@@ -197,16 +204,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         if(player.equalsIgnoreCase(playerName)) {
             final HomeScreenController sceneController =
                     (HomeScreenController) controller.getSceneController(SceneEnum.home);
-            if(sceneController!=null)
+            if(sceneController!=null) {
                 Platform.runLater(() -> {
-                    sceneController.putIntoShelf(column, tile);
+                    sceneController.putIntoShelf(position, tile);
                 });
+            }
         } else {
             final PlayerShelvesController sceneController =
                     (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
             if(sceneController!=null)
                 Platform.runLater(() -> {
-                    sceneController.putIntoShelf(player, column, tile);
+                    sceneController.putIntoShelf(player, position, tile);
                 });
         }
     }
