@@ -105,6 +105,7 @@ public class ChatController extends SceneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         refreshChat(model.getChat());
+        textArea.setEditable(false);
     }
 
 }
