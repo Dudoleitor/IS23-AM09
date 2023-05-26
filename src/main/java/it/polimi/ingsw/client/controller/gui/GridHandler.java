@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
@@ -21,6 +22,7 @@ public class GridHandler {
     private Grid grid;
     double elemHeight;
     double elemWidth;
+    List<Position> validPositions;
 
     public GridHandler(AnchorPane anchor, Canvas canvas, Grid grid){
         this.anchor = anchor;
@@ -28,6 +30,13 @@ public class GridHandler {
         this.grid = grid;
         this.elemHeight = canvas.getHeight()/grid.getRows();
         this.elemWidth = canvas.getWidth()/ grid.getColumns();
+        this.validPositions = new ArrayList<>();
+    }
+
+    public void setValidPositions(List<Position> validPositions){
+        if(validPositions != null){
+            this.validPositions = validPositions;
+        }
     }
     public void resetGrid(Grid grid){
         this.grid = grid;
@@ -47,25 +56,40 @@ public class GridHandler {
 
     public void displayGrid(){
         try {
-            for (int row = 0; row < grid.getRows(); row++) {
-                for (int col = 0; col < grid.getColumns(); col++) {
-                    if (!(grid.getTile(row, col) == Tile.Invalid) && !(grid.getTile(row, col) == Tile.Empty)) {
-                        ImageView imageView = new ImageView();
-                        imageView.setImage(loadImage("item_tiles/" + grid.getTile(row, col).toString() + "2.png"));
-                        imageView.setFitHeight(elemHeight);
-                        imageView.setFitWidth(elemWidth);
-                        imageView.setLayoutX(getElemX(col));
-                        imageView.setLayoutY(getElemY(row));
-                        imageView.applyCss();
-                        anchor.getChildren().add(imageView);
-                    }
-                }
-            }
+            addImagesToScene();
             canvas.toFront();
         } catch (BadPositionException e) {
             throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
         }
     }
+
+    public void displayGridBehind(ImageView image){
+        try {
+            addImagesToScene();
+            image.toFront();
+            canvas.toFront();
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
+        }
+    }
+
+    private void addImagesToScene() throws BadPositionException {
+        for (int row = 0; row < grid.getRows(); row++) {
+            for (int col = 0; col < grid.getColumns(); col++) {
+                if (!(grid.getTile(row, col) == Tile.Invalid) && !(grid.getTile(row, col) == Tile.Empty)) {
+                    ImageView imageView = new ImageView();
+                    imageView.setImage(loadImage("item_tiles/" + grid.getTile(row, col).toString() + "2.png"));
+                    imageView.setFitHeight(elemHeight);
+                    imageView.setFitWidth(elemWidth);
+                    imageView.setLayoutX(getElemX(col));
+                    imageView.setLayoutY(getElemY(row));
+                    imageView.getStyleClass().add("validTile");
+                    anchor.getChildren().add(imageView);
+                }
+            }
+        }
+    }
+
     public Grid getGrid(){
         return grid;
     }

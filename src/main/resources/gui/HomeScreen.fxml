@@ -27,7 +27,7 @@
                     <Image url="@gameGraphics/misc/Sacchetto_Aperto.png" />
                 </image>
             </ImageView>
-            <ImageView fitHeight="219.0" fitWidth="221.0" layoutX="365.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="shelfImage" fitHeight="219.0" fitWidth="221.0" layoutX="365.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/boards/bookshelf.png" />
                 </image>

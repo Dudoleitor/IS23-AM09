@@ -82,6 +82,9 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     Text newMatchText;
 
+    @FXML
+    ImageView shelfImage;
+
     //metto un label/text il cui testo sarà:
     //è una nuova partita o no
 
@@ -240,7 +243,7 @@ public class HomeScreenController extends SceneController implements Initializab
 
     public void updateShelf(Shelf shelf) {
         shelfHandler.resetGrid(shelf);
-        shelfHandler.displayGrid();
+        shelfHandler.displayGridBehind(shelfImage);
         canvasShelf.toFront();
     }
 
