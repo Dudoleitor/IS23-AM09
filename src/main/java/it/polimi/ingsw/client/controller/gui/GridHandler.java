@@ -13,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
@@ -40,18 +41,23 @@ public class GridHandler {
     }
     public void resetGrid(Grid grid){
         this.grid = grid;
-        try {
-            for (int row = 0; row < grid.getRows(); row++) {
-                for (int col = 0; col < grid.getColumns(); col++) {
-                    if (!(grid.getTile(row, col) == Tile.Invalid) && !(grid.getTile(row, col) == Tile.Empty)) {
-                        removeTile(new Position(row,col));
-                    }
-                }
+            List<Node> toDelete =  anchor.getChildren()
+                    .stream()
+                    .filter(node -> node.getClass() == ImageView.class &&
+                            isInsideCanvas(node))
+                    .collect(Collectors.toList());
+
+            for(Node tile : toDelete){
+                anchor.getChildren().remove(tile);
             }
-            canvas.toFront();
-        } catch (BadPositionException e) {
-            throw new RuntimeException("Invalid board in setBoard: " + e.getMessage());
-        }
+    }
+
+    private boolean isInsideCanvas(Node node){
+        return node.getLayoutX() >= canvas.getLayoutX() &&
+                node.getLayoutX() <= canvas.getLayoutX()+canvas.getWidth()-elemWidth &&
+                node.getLayoutY() >= canvas.getLayoutY() &&
+                node.getLayoutY() <= canvas.getLayoutY()+canvas.getHeight()-elemHeight;
+
     }
 
     public void displayGrid(){
@@ -112,10 +118,10 @@ public class GridHandler {
         Node toDelete =  anchor.getChildren()
                 .stream()
                 .filter(node ->
+                        node.getClass() == ImageView.class &&
                         node.getLayoutX() == getElemX(pos.getColumn()) &&
                         node.getLayoutY() == getElemY(pos.getRow()))
                 .findFirst().orElse(null);
-
         if(toDelete != null){
             anchor.getChildren().remove(toDelete);
         }

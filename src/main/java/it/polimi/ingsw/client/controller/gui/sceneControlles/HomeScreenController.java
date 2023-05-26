@@ -247,7 +247,6 @@ public class HomeScreenController extends SceneController implements Initializab
     public void updateShelf(Shelf shelf) {
         shelfHandler.resetGrid(shelf);
         shelfHandler.displayGridBehind(shelfImage);
-        canvasShelf.toFront();
     }
 
     /**
