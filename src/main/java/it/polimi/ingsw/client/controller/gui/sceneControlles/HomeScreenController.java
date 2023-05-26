@@ -144,9 +144,6 @@ public class HomeScreenController extends SceneController implements Initializab
         boardHandler.displayGrid();
     }
 
-    //BOARD: 25 (column getX) x 25 (getY)
-    //SHELF: 24 (getY) x 24 (getX)
-
     /**
      * creates a position based on mouseEvent and adds it to move builder
      * in order to create the partialMove
@@ -176,8 +173,6 @@ public class HomeScreenController extends SceneController implements Initializab
         } catch (Exception e) {
             showError(e.getMessage());
         }
-
-        canvasBoard.toFront();
     }
 
     /**
@@ -215,14 +210,12 @@ public class HomeScreenController extends SceneController implements Initializab
         System.out.println("Confirm Move");
         try {
             controller.getServer().postMove(model.getPlayerName(), moveBuilder.getMove());
-            updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
         } catch (Exception e) {
             deleteMove();
             showError(e.getMessage());
         }
         finally {
             moveBuilder.resetMove();
-            canvasShelf.toFront();
         }
 
     }
@@ -248,8 +241,7 @@ public class HomeScreenController extends SceneController implements Initializab
      * @param tile   Tile to insert
      */
     public void putIntoShelf(Position pos, Tile tile) {
-        //TODO with delta
-        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
+        shelfHandler.putTileBehind(shelfImage,pos,tile);
     }
 
     /**
@@ -274,10 +266,9 @@ public class HomeScreenController extends SceneController implements Initializab
             turnFlag.setStyle("-fx-fill: grey;");
         }
         boardHandler = new GridHandler(anchor,canvasBoard,model.getBoard());
-        setBoard(model.getBoard());
+        boardHandler.displayGrid();
         shelfHandler = new GridHandler(anchor,canvasShelf,model.getPlayersShelves().get(model.getPlayerName()));
-        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
-        canvasShelf.toFront();
+        shelfHandler.displayGridBehind(shelfImage);
 
         getPersonalGoal();
         updateCommonGoals(model.getCommonGoalList().get(0), model.getCommonGoalList().get(1));
@@ -297,7 +288,6 @@ public class HomeScreenController extends SceneController implements Initializab
         }
         moveBuilder = new MoveBuilder();
     }
-
 }
 
 class MoveBuilder{

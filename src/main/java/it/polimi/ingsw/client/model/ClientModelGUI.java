@@ -187,16 +187,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     public void putIntoShelf(String player, int column, Tile tile) {
         final Shelf shelf = playersShelves.get(player);
-        try{
-            shelf.insertTile(tile, column);
-            playersShelves.replace(player, shelf);
-        } catch (BadPositionException e) {
-            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
-        }
 
         final Position position;
         try {
             position = shelf.getFreePosition(column);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
+
+        try{
+            shelf.insertTile(tile, column);
+            playersShelves.replace(player, shelf);
         } catch (BadPositionException e) {
             throw new RuntimeException("Received invalid position from server: " + e.getMessage());
         }
