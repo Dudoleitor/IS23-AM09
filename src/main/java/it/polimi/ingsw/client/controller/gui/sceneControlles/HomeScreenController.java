@@ -90,6 +90,10 @@ public class HomeScreenController extends SceneController implements Initializab
         imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
     }
 
+    protected void updateCommonGoals() {
+        getCommonGoals();
+    }
+
     private void getCommonGoals () {
 
         CommonGoal cg1 = model.getCommonGoalList().get(0);
@@ -214,7 +218,6 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     protected void confirmMove() throws LobbyException{
         System.out.println("Confirm Move");
-
         try {
             controller.getServer().postMove(model.getPlayerName(), moveBuilder.getMove());
             updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
@@ -280,6 +283,7 @@ public class HomeScreenController extends SceneController implements Initializab
         setBoard(model.getBoard());
         shelfHandler = new GridHandler(anchor,canvasShelf,model.getPlayersShelves().get(model.getPlayerName()));
         updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
+        canvasShelf.toFront();
 
         getPersonalGoal();
         getCommonGoals();
@@ -298,7 +302,6 @@ public class HomeScreenController extends SceneController implements Initializab
             newMatchText.setText("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
-        canvasShelf.toFront();
     }
 
 }

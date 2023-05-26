@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,6 +41,11 @@ public class winnerSceneController extends SceneController implements Initializa
         super(controller);
         this.model = controller.getModel();
         this.playerName = controller.getClient().getPlayerName();
+    }
+
+    @FXML
+    protected void playAgain() {
+        controller.loadScene(SceneEnum.lobbySelection);
     }
 
     /**

@@ -114,6 +114,7 @@ public class WaitingLobbyController extends SceneController implements Initializ
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        lobbyChat.setEditable(false);
         try {
             if(!server.isLobbyAdmin(playerName)) {
                 startButton.setOpacity(0.0);
