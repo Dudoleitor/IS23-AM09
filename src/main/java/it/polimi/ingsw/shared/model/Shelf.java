@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.LongStream;
 
 
-public class Shelf implements Jsonable {
+public class Shelf implements Jsonable, Grid {
     private final Tile[][] tiles; //matrix coordinate (0,0) is the top-left corner of the shelf
     private final int rows;
     private final int columns;
@@ -100,12 +100,14 @@ public class Shelf implements Jsonable {
     /**
      * @return rows attribute
      */
+    @Override
     public int getRows() {
         return rows;
     }
     /**
      * @return columns attribute
      */
+    @Override
     public int getColumns() {
         return columns;
     }
@@ -473,5 +475,19 @@ public class Shelf implements Jsonable {
      */
     public void setVirtualShelf(VirtualShelf virtualShelf) {
         this.virtualShelf = virtualShelf;
+    }
+
+    /**
+     * This method is used to return the highest free position in a column
+     * @param column int, index of the column
+     * @return Position, the first free position in the column
+     */
+    public Position getFreePosition(int column) throws BadPositionException{
+        for (int i = rows - 1; i >= 0; i--) {
+            if (tiles[i][column] == Tile.Empty) {
+                return new Position(i, column);
+            }
+        }
+        throw new BadPositionException("Error while getting free position in Shelf : selected column is already full");
     }
 }

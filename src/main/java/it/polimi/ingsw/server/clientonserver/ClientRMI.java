@@ -11,22 +11,81 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This object is used to send updates to a specific client.
  * A copy of this object will reside on the server.
  * It is a wrapper for ClientRemoteObject: it's
  * needed to handle RemoteExceptions.
+ * Remote network invocations are done inside a dedicated
+ * thread to avoid blocking the caller.
  */
 public class ClientRMI implements Client, Serializable {
     private final String playerName;
     private final ClientRemote clientRemote;
     private NetworkExceptionHandler exceptionHandler;
-    private Chat chat;
+
+    /**
+     * The queue and the consumer are used to implement a
+     * multithreading consumer-producer pattern in order to
+     * make remote network invocations in a separate thread,
+     * without blocking the caller.
+     * These two must be used only calling the
+     * submitRunnable method.
+     */
+    private transient BlockingQueue<Runnable> runnablesQueue;
+    private transient Thread queueConsumer;
 
     public ClientRMI(ClientRemote clientRemote) throws RemoteException {
         this.playerName = clientRemote.getPlayerName();
         this.clientRemote = clientRemote;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientRMI clientRMI = (ClientRMI) o;
+        return Objects.equals(playerName.toLowerCase(), clientRMI.playerName.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerName.toLowerCase());
+    }
+
+    /**
+     * This method is used to execute a network update
+     * by submitting a runnable to the runnable consumer.
+     * Always use this method to add a runnable to the queue.
+     * @param toRun Runnable to run
+     */
+    private void submitRunnable(Runnable toRun) {
+        if (this.runnablesQueue==null)
+            this.runnablesQueue = new LinkedBlockingQueue<>();
+        if(this.queueConsumer==null) {
+            this.queueConsumer = new Thread() {
+                final BlockingQueue<Runnable> queue = runnablesQueue;
+
+                @Override
+                public void run() {
+                    while (true) {
+                        final Runnable toRun;
+                        try {
+                            toRun = queue.take();
+                        } catch (InterruptedException ignored) {
+                            return;
+                        }
+                        toRun.run();
+                    }
+                }
+            };
+            this.queueConsumer.start();
+        }
+        runnablesQueue.add(toRun);
     }
 
     /**
@@ -56,11 +115,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void pickedFromBoard(JSONObject position) {
-        try {
-            clientRemote.pickedFromBoard(position);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(() -> {
+            try {
+                clientRemote.pickedFromBoard(position);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -71,11 +132,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void refreshBoard(JSONObject board) {
-        try {
-            clientRemote.refreshBoard(board);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.refreshBoard(board);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -90,11 +153,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void putIntoShelf(String player, int column, Tile tile) {
-        try {
-            clientRemote.putIntoShelf(player, column, tile);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.putIntoShelf(player, column, tile);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -106,11 +171,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void refreshShelf(String player, JSONObject shelf) {
-        try {
-            clientRemote.refreshShelf(player, shelf);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.refreshShelf(player, shelf);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -120,11 +187,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void postChatMessage(String sender, String message) {
-        try {
-            clientRemote.postChatMessage(sender, message);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(() -> {
+            try {
+                clientRemote.postChatMessage(sender, message);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -134,11 +203,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void refreshChat(Chat chat) {
-        try {
-            clientRemote.refreshChat(chat);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.refreshChat(chat);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -150,11 +221,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void gameStarted(boolean newMatch) {
-        try {
-            clientRemote.gameStarted(newMatch);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.gameStarted(newMatch);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -164,11 +237,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void updateTurn(String player) {
-        try {
-            clientRemote.nextTurn(player);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.nextTurn(player);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -183,11 +258,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void refreshCommonGoal(int id, List<Integer> points) {
-       try {
-           clientRemote.refreshCommonGoal(id, points);
-       } catch (RemoteException e) {
-           exceptionHandler.handleNetworkException(this, e);
-       }
+        submitRunnable(()->{
+            try {
+                clientRemote.refreshCommonGoal(id, points);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -198,11 +275,13 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void setPlayerGoal(int id) {
-        try {
-            clientRemote.setPlayerGoal(id);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.setPlayerGoal(id);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -211,11 +290,13 @@ public class ClientRMI implements Client, Serializable {
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        try {
-            clientRemote.endGame(leaderBoard);
-        } catch (RemoteException e) {
-            exceptionHandler.handleNetworkException(this, e);
-        }
+        submitRunnable(()->{
+            try {
+                clientRemote.endGame(leaderBoard);
+            } catch (RemoteException e) {
+                exceptionHandler.handleNetworkException(this, e);
+            }
+        });
     }
 
     /**
@@ -223,12 +304,16 @@ public class ClientRMI implements Client, Serializable {
      */
     @Override
     public void disconnect() {
+        if(this.queueConsumer!=null)
+            this.queueConsumer.interrupt();
         return; // Nothing to do, RMI does everything
     }
 
     /**
      * This function is used to ensure the client is still connected.
      * Expected return value is "pong".
+     * Note: this method does NOT run in a separate thread and
+     * blocks the caller waiting for the remote invocation.
      */
     @Override
     public String ping() {
@@ -238,18 +323,5 @@ public class ClientRMI implements Client, Serializable {
             exceptionHandler.handleNetworkException(this, e);
         }
         return "notPong";
-    }
-
-    @Override
-    public boolean equals(Object o) {  // Checking using LOWERCASE name
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClientRMI clientRMI = (ClientRMI) o;
-        return Objects.equals(playerName.toLowerCase(), clientRMI.playerName.toLowerCase());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(playerName.toLowerCase());
     }
 }

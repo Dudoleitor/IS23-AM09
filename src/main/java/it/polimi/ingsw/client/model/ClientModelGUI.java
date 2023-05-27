@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
@@ -35,9 +36,9 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     private final Map<String, Shelf> playersShelves;
     private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
-    private final List<String> players;
     private boolean gameStarted;
     private boolean gameEnded;
+    private Map<String, Integer> leaderBoard;
     private final Thread pingListener;
     private final Object pingLock;
     private final ClientControllerGUI controller;
@@ -51,10 +52,10 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         this.playersShelves = new HashMap<>();
         this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
-        this.players = new ArrayList<>();
         this.gameStarted = false;
         this.itsMyTurn = false;
         this.gameEnded = false;
+        this.leaderBoard = new HashMap<>();
 
         this.pingLock = new Object();
         this.pingListener = ClientController.getThread(pingLock);
@@ -97,7 +98,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     }
 
     public Map<String, Shelf> getPlayersShelves() {
-        return playersShelves;
+        return new HashMap<>(playersShelves);
     }
 
     public PlayerGoal getPlayerGoal() {
@@ -105,11 +106,11 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     }
 
     public List<CommonGoal> getCommonGoalList() {
-        return commonGoalList;
+        return new ArrayList<>(commonGoalList);
     }
 
     public List<String> getPlayers() {
-        return players;
+        return new ArrayList<>(playersShelves.keySet());
     }
 
     public boolean isGameStarted() {
@@ -119,6 +120,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     @Override
     public boolean gameEnded() throws RemoteException {
         return gameEnded;
+    }
+
+    /**
+     * @return Map: player's name - points
+     */
+    public Map<String, Integer> getLeaderBoard() {
+        return new HashMap<>(leaderBoard);
     }
 
     /**
@@ -178,8 +186,16 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * @param tile   Tile to insert
      */
     public void putIntoShelf(String player, int column, Tile tile) {
+        final Shelf shelf = playersShelves.get(player);
+
+        final Position position;
+        try {
+            position = shelf.getFreePosition(column);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
+
         try{
-            final Shelf shelf = playersShelves.get(player);
             shelf.insertTile(tile, column);
             playersShelves.replace(player, shelf);
         } catch (BadPositionException e) {
@@ -189,16 +205,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         if(player.equalsIgnoreCase(playerName)) {
             final HomeScreenController sceneController =
                     (HomeScreenController) controller.getSceneController(SceneEnum.home);
-            if(sceneController!=null)
+            if(sceneController!=null) {
                 Platform.runLater(() -> {
-                    sceneController.putIntoShelf(column, tile);
+                    sceneController.putIntoShelf(position, tile);
                 });
+            }
         } else {
             final PlayerShelvesController sceneController =
                     (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
             if(sceneController!=null)
                 Platform.runLater(() -> {
-                    sceneController.putIntoShelf(player, column, tile);
+                    sceneController.putIntoShelf(player, position, tile);
                 });
         }
     }
@@ -366,6 +383,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         commonGoalList.remove(commonGoal);
         commonGoalList.add(commonGoal);
         commonGoalList.sort((x,y) -> x.getID() > y.getID() ? 1 : -1);
+
+        final HomeScreenController sceneController =
+                (HomeScreenController) controller.getSceneController(SceneEnum.home);
+        if(sceneController!=null)
+            Platform.runLater(() -> {
+                sceneController.updateCommonGoals(commonGoalList.get(0), commonGoalList.get(1));
+            });
     }
 
     /**
@@ -390,8 +414,11 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        // TODO update gui
         this.gameEnded = true;
+        this.leaderBoard = leaderBoard;
+        Platform.runLater(() -> {
+            controller.loadScene(SceneEnum.winnerScreen);
+        });
     }
 
 

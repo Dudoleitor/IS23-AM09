@@ -1,5 +1,7 @@
 package it.polimi.ingsw.shared;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
@@ -19,7 +21,7 @@ public class MessageTcp {
      * Creates an object that parse a String corresponding to a JsonObject and expose get methods to see the command and the content of message
      * @param message is the message to parse
      */
-    public MessageTcp(String message){
+    public MessageTcp(String message) throws ParseException {
         JSONObject jsonMessage = Jsonable.parseString(message);
         MessageCommand command = MessageCommand.valueOfLabel(jsonMessage.get("command").toString());
         JSONObject content = (JSONObject) jsonMessage.get("content");

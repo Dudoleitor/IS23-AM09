@@ -47,6 +47,10 @@ public class LobbiesController extends SceneController implements Initializable 
         controller.loadScene(SceneEnum.lobbyWaiting);
     }
 
+    /**
+     * creates the lobby from scratch by calling the method from the server
+     * @throws IOException
+     */
     @FXML
     protected void createLobby() throws IOException {
         try {
@@ -60,6 +64,10 @@ public class LobbiesController extends SceneController implements Initializable 
         nextScene();
     }
 
+    /**
+     * user joins random lobby
+     * @throws IOException
+     */
     public void randomLobby() throws IOException {
         try {
             server.joinRandomLobby(client);
@@ -72,6 +80,11 @@ public class LobbiesController extends SceneController implements Initializable 
         nextScene();
     }
 
+    /**
+     * user joins the selected lobby. In this method we do checks on the available lobby
+     * and the input
+     * @throws IOException
+     */
     public void joinLobby() throws IOException {
         if(availableLobbies==null) {
             throw new RuntimeException("Lobbies not initialized!");
@@ -109,6 +122,9 @@ public class LobbiesController extends SceneController implements Initializable 
         updateLobbies();
     }
 
+    /**
+     * button method to refresh the available lobbies
+     */
     @FXML
     protected void updateLobbies() {
         try {
@@ -124,6 +140,11 @@ public class LobbiesController extends SceneController implements Initializable 
         }
     }
 
+    /**
+     * equals to the joinLobby. The user can join the selected lobby by pushing enter
+     * @param keyEvent
+     * @throws IOException
+     */
     @FXML
     protected void enterUpdate(KeyEvent keyEvent) throws IOException {
         if(keyEvent.getCode().equals(KeyCode.ENTER)) {

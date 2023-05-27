@@ -1,11 +1,14 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+import it.polimi.ingsw.client.controller.gui.GridHandler;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
+import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -13,21 +16,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
 
 public class PlayerShelvesController extends SceneController implements Initializable {
     private final ClientModelGUI model;
-    private final double iWidthShelf1 = 122.0;
-    private final double iHeightShelf1 = 45.0;
-    private final double iWidthShelf2 = 326.0;
-    private final double iHeightShelf2 = 45.0;
-    private final double iWidthShelf3 = 120.0;
-    private final double iHeightShelf3 = 235.0;
-    private final Map<String, shelfPosition> shelvesPositions = new HashMap<>();
+    private Map<String,GridHandler> shelvesHandlers = new HashMap<>();
+    private Map<String,ImageView> shelfImages = new HashMap<>();
 
     @FXML
     Text username1;
@@ -76,24 +73,9 @@ public class PlayerShelvesController extends SceneController implements Initiali
         }
     }
 
-    //dimensione = 19x19
-    //TODO portare a fattor comune
-    private void setShelf(Shelf shelf, double width, double height) throws BadPositionException {
-        for(int i = 0; i < shelf.getRows(); i++) {
-            for(int j = 0; j < shelf.getColumns(); j++) {
-                ImageView imageView = new ImageView();
-                if(!shelf.getTile(i, j).toString().equals("I") && //TODO use enum instance
-                        !shelf.getTile(i, j).toString().equals("E")) {
-                    imageView.setImage(loadImage("item_tiles/" + shelf.getTile(i, j).toString() + "1.png"));
-                    imageView.setFitHeight(19.0);
-                    imageView.setFitWidth(19.0);
-                    imageView.setLayoutX(width + j*24.0);
-                    imageView.setLayoutY(height + i*22.0);
-                    anchor.getChildren().add(imageView);
-                }
-
-            }
-        }
+    private void setShelf(Shelf shelf, String playerName) {
+        shelvesHandlers.get(playerName).resetGrid(shelf);
+        shelvesHandlers.get(playerName).displayGrid();
     }
 
     /**
@@ -102,34 +84,16 @@ public class PlayerShelvesController extends SceneController implements Initiali
      *                   has to be refreshed
      */
     public void refreshShelf(String playerName, Shelf shelf) {
-        if(!shelvesPositions.containsKey(playerName)) {
-            System.err.println("Player " + playerName + " not found in refreshShelf");
-            return;
-        }
-
-        final double iWidth = shelvesPositions.get(playerName).getiWidthShelf();
-        final double iHeight = shelvesPositions.get(playerName).getiHeightShelf();
-        try {
-            setShelf(shelf, iWidth, iHeight);
-        } catch (BadPositionException e) {
-            throw new RuntimeException("Bad position in shelf of " + playerName + ": " + e.getMessage());
-        }
+        shelvesHandlers.get(playerName).resetGrid(shelf);
+        shelvesHandlers.get(playerName).displayGrid();
     }
 
-    public void putIntoShelf(String playerName, int column, Tile tile) {
-        if(!shelvesPositions.containsKey(playerName)) {
-            System.err.println("Player " + playerName + " not found in putIntoShelf");
-            return;
-        }
-        final double iWidth = shelvesPositions.get(playerName).getiWidthShelf();
-        final double iHeight = shelvesPositions.get(playerName).getiHeightShelf();
-
-        // TODO: implement
-        try {
-            setShelf(model.getPlayersShelves().get(playerName), iWidth, iHeight);  // TEMPORARY
-        } catch (BadPositionException e) {
-            throw new RuntimeException("Bad position in shelf of " + playerName + ": " + e.getMessage());
-        }
+    public void putIntoShelf(String playerName, Position position, Tile tile) {
+        shelvesHandlers.get(playerName).putTileBehind(shelfImages.get(playerName),position,tile);
+    }
+    private void displayAll(){
+        shelvesHandlers.values().forEach(GridHandler::displayGrid);
+        Arrays.stream(new ImageView[]{shelf1,shelf2,shelf3}).forEach(Node::toFront);
     }
 
     @FXML
@@ -142,96 +106,38 @@ public class PlayerShelvesController extends SceneController implements Initiali
         controller.loadScene(SceneEnum.chat);
     }
 
-    //TODO refactor
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        if(model.getPlayersShelves().size() == 2) {
-            shelf2.setStyle("-fx-opacity:0.0");
-            shelf3.setStyle("-fx-opacity:0.0");
-            for(String player : model.getPlayersShelves().keySet()) {
-                if(!player.equals(model.getPlayerName())) {
-                    username1.setText(player);
-                    shelvesPositions.put(
-                            player,
-                            new shelfPosition(iWidthShelf1, iHeightShelf1));
-                    refreshShelf(player, model.getPlayersShelves().get(player));
-                }
-            }
-            username2.setOpacity(0.0);
-            username3.setOpacity(0.0);
+        Text[] userNames = new Text[]{username1,username2,username3};
+        ImageView[] shelves = new ImageView[]{shelf1,shelf2,shelf3};
+        Canvas[] shelvesCanvas = new Canvas[]{canvasShelf1,canvasShelf2,canvasShelf3};
 
-            return;
-        }
+        Arrays.stream(userNames).forEach(text -> text.setText(""));
+        int i = 0;
+        //for all the players but the user
+        for(String playerName : model.getPlayers()){
+            if(!playerName.equals(model.getPlayerName())){
+                userNames[i].setText(playerName); //set a username
 
-        if(model.getPlayersShelves().size() == 3) {
-            shelf3.setStyle("-fx-opacity:0.0");
-            for(String player : model.getPlayersShelves().keySet()) {
-                if(!player.equals(model.getPlayerName())) {
-                    if(username1.getText().equals("Username 1")) {
-                        username1.setText(player);
-                        shelvesPositions.put(
-                                player,
-                                new shelfPosition(iWidthShelf1, iHeightShelf1));
-                        refreshShelf(player, model.getPlayersShelves().get(player));
-                    } else {
-                        username2.setText(player);
-                        shelvesPositions.put(
-                                player,
-                                new shelfPosition(iWidthShelf2, iHeightShelf2));
-                        refreshShelf(player, model.getPlayersShelves().get(player));
-                    }
-                }
-            }
-            username3.setOpacity(0.0);
+                //map the shelf png to the username
+                shelfImages.put(playerName,
+                        shelves[i]);
 
-
-            return;
-
-        }
-
-        for(String player : model.getPlayersShelves().keySet()) {
-            if(!player.equals(model.getPlayerName())) {
-                if(username1.getText().equals("Username 1")) {
-                    username1.setText(player);
-                    shelvesPositions.put(
-                            player,
-                            new shelfPosition(iWidthShelf1, iHeightShelf1));
-                    refreshShelf(player, model.getPlayersShelves().get(player));
-                } else if(username2.getText().equals("Username 2")) {
-                    username2.setText(player);
-                    shelvesPositions.put(
-                            player,
-                            new shelfPosition(iWidthShelf2, iHeightShelf2));
-                    refreshShelf(player, model.getPlayersShelves().get(player));
-                } else {
-                    username3.setText(player);
-                    shelvesPositions.put(
-                            player,
-                            new shelfPosition(iWidthShelf3, iHeightShelf3));
-                    refreshShelf(player, model.getPlayersShelves().get(player));
-                }
+                //map the grid handler to the username
+                shelvesHandlers.put(playerName,
+                        new GridHandler(
+                                anchor,
+                                shelvesCanvas[i],
+                                model.getPlayersShelves().get(playerName)));
+                i++;
             }
         }
-
-
-    }
-}
-
-class shelfPosition {
-    private final double iWidthShelf;
-    private final double iHeightShelf;
-
-    shelfPosition(double iWidthShelf, double iHeightShelf) {
-        this.iWidthShelf = iWidthShelf;
-        this.iHeightShelf = iHeightShelf;
-    }
-
-    public double getiWidthShelf() {
-        return iWidthShelf;
-    }
-
-    public double getiHeightShelf() {
-        return iHeightShelf;
+        //hide all the shelves and text fields with no username
+        for(;i < shelves.length && i<userNames.length;i++){
+            userNames[i].setOpacity(0.0);
+            shelves[i].setOpacity(0.0);
+        }
+        displayAll();
     }
 }

@@ -17,9 +17,6 @@ import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, NetworkExceptionHandler {
@@ -163,7 +160,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      */
     @Override
     public synchronized boolean startGame(String player, boolean erasePreviousMatches) {
-        pingSender.run();  // Making sure no client disconnected
+        pingSender.ping();  // Making sure no client disconnected
 
         try {
             if (!isReady() || !getLobbyAdmin().equals(player))
@@ -354,6 +351,13 @@ class LobbyPingSender extends Thread {
         this.lobby = lobby;
     }
 
+    public void ping() {
+        synchronized (lobby) {
+            for (Client c : lobby.getClients())
+                c.ping();
+        }
+    }
+
     /**
      * This Runnable is used to ping clients, if a client is not available
      * an exception is thrown and the exception handles kicks in.
@@ -361,10 +365,7 @@ class LobbyPingSender extends Thread {
     @Override
     public void run() {
         while(true) {
-            synchronized (lobby) {
-                for (Client c : lobby.getClients())
-                    c.ping();
-            }
+            ping();
             try {
                 Thread.sleep(NetworkSettings.serverPingIntervalSeconds * 1000);
             } catch (InterruptedException ignored) {

@@ -5,3 +5,11 @@
 #vbox {
     -fx-alignment: center;
 }
+
+.validTile{
+    -fx-opacity: 1;
+}
+
+.inValidTile {
+    -fx-opacity: 0.6;
+}
