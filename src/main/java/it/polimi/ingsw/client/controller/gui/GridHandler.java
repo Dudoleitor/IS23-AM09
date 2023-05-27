@@ -68,7 +68,7 @@ public class GridHandler {
         anchor.getChildren().removeAll(toRemove);
     }
 
-    private Image getImage(Tile tile){
+    private static Image getImage(Tile tile){
         synchronized (GridHandler.class){
             if(images == null){
                 images = new HashMap<>();
