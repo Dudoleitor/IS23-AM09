@@ -336,7 +336,7 @@ public class ClientSocket implements Client {
         try {
             clientSocket.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            networkExceptionHandler.handleNetworkException(this, e);
         }
         if (serverThreadListener!=null)
             serverThreadListener.terminate();
