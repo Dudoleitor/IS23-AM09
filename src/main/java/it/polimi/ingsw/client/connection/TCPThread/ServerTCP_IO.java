@@ -35,7 +35,7 @@ public class ServerTCP_IO{
     }
     private void initializeThreads(ClientModel clientModel){
         serverListener = new ServerTCPListener(serverIn, responses, updates);
-        serverViewUpdater = new ServerTCPViewUpdater(clientModel, updates, serverOut, this);
+        serverViewUpdater = new ServerTCPViewUpdater(clientModel, updates, serverOut);
         serverListener.start();
         serverViewUpdater.start();
     }

@@ -333,9 +333,11 @@ public class ClientSocket implements Client {
      */
     @Override
     public void disconnect() {
-        MessageTcp update = new MessageTcp();
-        update.setCommand(MessageTcp.MessageCommand.Disconnect);
-        out(update.toString());
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (serverThreadListener!=null)
             serverThreadListener.terminate();
     }
