@@ -58,6 +58,7 @@ public class MessageTcp {
         SetPlayerGoal("setGoal", TypeMessage.Update),
         Disconnect("disconnect", TypeMessage.Update),
         Ping("ping", TypeMessage.Update),
+        EndGame("endgame", TypeMessage.Update),
 
 
 
