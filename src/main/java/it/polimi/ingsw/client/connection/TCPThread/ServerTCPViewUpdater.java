@@ -20,10 +20,12 @@ public class ServerTCPViewUpdater extends Thread{
     private ClientModel clientModel;
     private final ArrayList<MessageTcp> update;
     private final PrintWriter serverOut;
-    ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update, PrintWriter serverOut){
+    private final ServerTCP_IO serverConnector;
+    ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update, PrintWriter serverOut, ServerTCP_IO server){
         this.clientModel = clientModel;
         this.update = update;
         this.serverOut = serverOut;
+        this.serverConnector = server;
     }
     @Override
     public void run() {
@@ -182,9 +184,8 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    private void disconnect(){
-        //TODO
-        //terminate()
+    public void disconnect(){
+        serverConnector.terminate();
     }
 
     public void terminate() {
