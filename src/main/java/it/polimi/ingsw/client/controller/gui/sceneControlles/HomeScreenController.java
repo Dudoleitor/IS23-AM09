@@ -238,13 +238,40 @@ public class HomeScreenController extends SceneController implements Initializab
      * @throws IOException
      */
     @FXML
-    protected void gameStatus() throws IOException {
+    protected void gameStatus(){
         controller.loadScene(SceneEnum.playerShelves);
+    }
+
+    @FXML
+    protected void switchTiles02(){
+        switchTiles(0,2);
+    }
+    @FXML
+    protected void switchTiles01(){
+        switchTiles(0,1);
+    }
+    @FXML
+    protected void switchTiles12(){
+        switchTiles(1,2);
     }
 
     public void updateShelf(Shelf shelf) {
         shelfHandler.resetGrid(shelf);
         shelfHandler.displayGridBehind(shelfImage);
+    }
+
+    private void switchTiles(int a, int b){
+        try{
+            moveBuilder.switchPlace(a,b);
+        }
+        catch (InvalidMoveException e){
+            showError("You cannot switch place with an empty tile");
+            return;
+        }
+        Image img1 = tileImages[a].getImage();
+        Image img2 = tileImages[b].getImage();
+        tileImages[a].setImage(img2);
+        tileImages[b].setImage(img1);
     }
 
     /**
@@ -351,5 +378,32 @@ class MoveBuilder{
         pm = new PartialMove();
         move = null;
         column = -1;
+    }
+    public void switchPlace(int a, int b) throws InvalidMoveException{
+        List<Position> positions = pm.getBoardPositions();
+        if(a < 0 || b < 0 || a>= positions.size() || b >= positions.size()){
+            System.out.println("Non valid positions to switch");
+            throw new InvalidMoveException("Non valid positions selected");
+        }
+        else {
+            Position pos1 = positions.get(a);
+            Position pos2 = positions.get(b);
+            positions.set(a,pos2);
+            positions.set(b,pos1);
+
+            pm = new PartialMove();
+            try{
+                positions.forEach(pos -> {
+                    try {
+                        pm.addPosition(pos);
+                    } catch (InvalidMoveException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+            catch (RuntimeException e){
+                throw new InvalidMoveException("Error in move");
+            }
+        }
     }
 }
