@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -20,6 +21,7 @@ import javafx.scene.text.Text;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,7 +32,6 @@ public class HomeScreenController extends SceneController implements Initializab
     boolean clicked = false;
     private GridHandler shelfHandler;
     private GridHandler boardHandler;
-    private List<Position> move = new ArrayList<>();
     private MoveBuilder moveBuilder;
     private final ClientModelGUI model;
 
@@ -38,7 +39,6 @@ public class HomeScreenController extends SceneController implements Initializab
         super(controller);
         this.model = controller.getModel();
     }
-
 
     @FXML
     VBox vbox;
@@ -84,6 +84,14 @@ public class HomeScreenController extends SceneController implements Initializab
 
     @FXML
     ImageView shelfImage;
+    @FXML
+    ImageView Tile1;
+    @FXML
+    ImageView Tile2;
+    @FXML
+    ImageView Tile3;
+
+    private ImageView[] tileImages;
 
     //metto un label/text il cui testo sarà:
     //è una nuova partita o no
@@ -169,7 +177,10 @@ public class HomeScreenController extends SceneController implements Initializab
         //check if position fits in partial move
         try {
             moveBuilder.addPosition(pos);
-            boardHandler.removeTile(pos);
+            Image image = boardHandler.removeTile(pos);
+            Tile tile = model.getBoard().getTile(pos);
+            int n = moveBuilder.getPartialMove().getBoardPositions().size();
+            tileImages[n-1].setImage(image);
         } catch (Exception e) {
             showError(e.getMessage());
         }
@@ -197,6 +208,7 @@ public class HomeScreenController extends SceneController implements Initializab
         moveBuilder.resetMove();
         boardHandler.resetGrid(model.getBoard());
         boardHandler.displayGrid();
+        Arrays.stream(tileImages).forEach(img -> img.setImage(null));
     }
 
     /**
@@ -216,6 +228,7 @@ public class HomeScreenController extends SceneController implements Initializab
         }
         finally {
             moveBuilder.resetMove();
+            Arrays.stream(tileImages).forEach(img -> img.setImage(null));
         }
 
     }
@@ -287,6 +300,8 @@ public class HomeScreenController extends SceneController implements Initializab
             newMatchText.setText("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
+
+        tileImages = new ImageView[]{Tile1,Tile2,Tile3};
     }
 }
 

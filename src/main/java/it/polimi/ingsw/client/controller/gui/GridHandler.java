@@ -136,9 +136,14 @@ public class GridHandler {
         canvas.toFront();
     }
 
-    public void removeTile(Position pos){
+    public Image removeTile(Position pos){
+        Image image = null;
+        if(matrix[pos.getRow()][pos.getColumn()] != null){
+            image = matrix[pos.getRow()][pos.getColumn()].getImage();
+        }
         anchor.getChildren().remove(matrix[pos.getRow()][pos.getColumn()]);
         matrix[pos.getRow()][pos.getColumn()] = null;
+        return image;
     }
 
 
