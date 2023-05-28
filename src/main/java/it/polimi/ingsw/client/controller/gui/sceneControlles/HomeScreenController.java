@@ -90,8 +90,14 @@ public class HomeScreenController extends SceneController implements Initializab
     ImageView Tile2;
     @FXML
     ImageView Tile3;
-
+    @FXML
+    Button Arrows1;
+    @FXML
+    Button Arrows2;
+    @FXML
+    Button Arrows3;
     private ImageView[] tileImages;
+    private Button[] buttons;
 
     //metto un label/text il cui testo sarà:
     //è una nuova partita o no
@@ -178,9 +184,15 @@ public class HomeScreenController extends SceneController implements Initializab
         try {
             moveBuilder.addPosition(pos);
             Image image = boardHandler.removeTile(pos);
-            Tile tile = model.getBoard().getTile(pos);
             int n = moveBuilder.getPartialMove().getBoardPositions().size();
             tileImages[n-1].setImage(image);
+            if(n == 2){
+                buttons[1].setOpacity(1.0);
+            }
+            if(n >2){
+                buttons[0].setOpacity(1.0);
+                buttons[2].setOpacity(1.0);
+            }
         } catch (Exception e) {
             showError(e.getMessage());
         }
@@ -209,6 +221,7 @@ public class HomeScreenController extends SceneController implements Initializab
         boardHandler.resetGrid(model.getBoard());
         boardHandler.displayGrid();
         Arrays.stream(tileImages).forEach(img -> img.setImage(null));
+        Arrays.stream(buttons).forEach(but -> but.setOpacity(0.0));
     }
 
     /**
@@ -229,6 +242,9 @@ public class HomeScreenController extends SceneController implements Initializab
         finally {
             moveBuilder.resetMove();
             Arrays.stream(tileImages).forEach(img -> img.setImage(null));
+            for (int i = 0; i < buttons.length; i++) {
+                buttons[i].setOpacity(0.0);
+            }
         }
 
     }
@@ -265,7 +281,6 @@ public class HomeScreenController extends SceneController implements Initializab
             moveBuilder.switchPlace(a,b);
         }
         catch (InvalidMoveException e){
-            showError("You cannot switch place with an empty tile");
             return;
         }
         Image img1 = tileImages[a].getImage();
@@ -329,6 +344,8 @@ public class HomeScreenController extends SceneController implements Initializab
         moveBuilder = new MoveBuilder();
 
         tileImages = new ImageView[]{Tile1,Tile2,Tile3};
+        buttons = new Button[]{Arrows1,Arrows2,Arrows3};
+        Arrays.stream(buttons).forEach(button -> button.setOpacity(0.0));
     }
 }
 
