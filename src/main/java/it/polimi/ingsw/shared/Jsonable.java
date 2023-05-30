@@ -89,6 +89,22 @@ public interface Jsonable {
         }
         return map;
     }
+    /**
+     * transform a jsonString to a map<Integer><Integer>
+     * @param jsonMap is the string of JsonObject
+     * @return a boolean corresponding to the Object
+     */
+    static Map<String,Integer> json2mapStringInt (JSONObject jsonMap){
+        if (jsonMap == null)
+            return null;
+        Map<String,Integer> map = new HashMap<>();
+        for(Object k : jsonMap.keySet()){
+            map.put(k.toString(),
+                    Integer.parseInt(jsonMap.get(k).toString()));
+
+        }
+        return map;
+    }
 
 
     /**

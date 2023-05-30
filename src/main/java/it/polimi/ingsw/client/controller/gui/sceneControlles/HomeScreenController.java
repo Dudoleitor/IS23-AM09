@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -20,6 +21,7 @@ import javafx.scene.text.Text;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,7 +32,6 @@ public class HomeScreenController extends SceneController implements Initializab
     boolean clicked = false;
     private GridHandler shelfHandler;
     private GridHandler boardHandler;
-    private List<Position> move = new ArrayList<>();
     private MoveBuilder moveBuilder;
     private final ClientModelGUI model;
 
@@ -38,7 +39,6 @@ public class HomeScreenController extends SceneController implements Initializab
         super(controller);
         this.model = controller.getModel();
     }
-
 
     @FXML
     VBox vbox;
@@ -82,6 +82,23 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     Text newMatchText;
 
+    @FXML
+    ImageView shelfImage;
+    @FXML
+    ImageView Tile1;
+    @FXML
+    ImageView Tile2;
+    @FXML
+    ImageView Tile3;
+    @FXML
+    Button Arrows1;
+    @FXML
+    Button Arrows2;
+    @FXML
+    Button Arrows3;
+    private ImageView[] tileImages;
+    private Button[] buttons;
+
     //metto un label/text il cui testo sarà:
     //è una nuova partita o no
 
@@ -90,11 +107,7 @@ public class HomeScreenController extends SceneController implements Initializab
         imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
     }
 
-    private void getCommonGoals () {
-
-        CommonGoal cg1 = model.getCommonGoalList().get(0);
-        CommonGoal cg2 = model.getCommonGoalList().get(1);
-
+    public void updateCommonGoals(CommonGoal cg1, CommonGoal cg2) {
         commonGoal1.setImage(loadImage( "common_goal_cards/" + cg1.getID() + ".jpg"));
         commonGoal2.setImage(loadImage("common_goal_cards/" + cg2.getID() + ".jpg"));
 
@@ -145,9 +158,6 @@ public class HomeScreenController extends SceneController implements Initializab
         boardHandler.displayGrid();
     }
 
-    //BOARD: 25 (column getX) x 25 (getY)
-    //SHELF: 24 (getY) x 24 (getX)
-
     /**
      * creates a position based on mouseEvent and adds it to move builder
      * in order to create the partialMove
@@ -173,12 +183,19 @@ public class HomeScreenController extends SceneController implements Initializab
         //check if position fits in partial move
         try {
             moveBuilder.addPosition(pos);
-            boardHandler.removeTile(pos);
+            Image image = boardHandler.removeTile(pos);
+            int n = moveBuilder.getPartialMove().getBoardPositions().size();
+            tileImages[n-1].setImage(image);
+            if(n == 2){
+                buttons[1].setOpacity(1.0);
+            }
+            if(n >2){
+                buttons[0].setOpacity(1.0);
+                buttons[2].setOpacity(1.0);
+            }
         } catch (Exception e) {
             showError(e.getMessage());
         }
-
-        canvasBoard.toFront();
     }
 
     /**
@@ -203,6 +220,8 @@ public class HomeScreenController extends SceneController implements Initializab
         moveBuilder.resetMove();
         boardHandler.resetGrid(model.getBoard());
         boardHandler.displayGrid();
+        Arrays.stream(tileImages).forEach(img -> img.setImage(null));
+        Arrays.stream(buttons).forEach(but -> but.setOpacity(0.0));
     }
 
     /**
@@ -214,17 +233,18 @@ public class HomeScreenController extends SceneController implements Initializab
     @FXML
     protected void confirmMove() throws LobbyException{
         System.out.println("Confirm Move");
-
         try {
             controller.getServer().postMove(model.getPlayerName(), moveBuilder.getMove());
-            updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
         } catch (Exception e) {
             deleteMove();
             showError(e.getMessage());
         }
         finally {
             moveBuilder.resetMove();
-            canvasShelf.toFront();
+            Arrays.stream(tileImages).forEach(img -> img.setImage(null));
+            for (int i = 0; i < buttons.length; i++) {
+                buttons[i].setOpacity(0.0);
+            }
         }
 
     }
@@ -234,25 +254,49 @@ public class HomeScreenController extends SceneController implements Initializab
      * @throws IOException
      */
     @FXML
-    protected void gameStatus() throws IOException {
+    protected void gameStatus(){
         controller.loadScene(SceneEnum.playerShelves);
+    }
+
+    @FXML
+    protected void switchTiles02(){
+        switchTiles(0,2);
+    }
+    @FXML
+    protected void switchTiles01(){
+        switchTiles(0,1);
+    }
+    @FXML
+    protected void switchTiles12(){
+        switchTiles(1,2);
     }
 
     public void updateShelf(Shelf shelf) {
         shelfHandler.resetGrid(shelf);
-        shelfHandler.displayGrid();
-        canvasShelf.toFront();
+        shelfHandler.displayGridBehind(shelfImage);
+    }
+
+    private void switchTiles(int a, int b){
+        try{
+            moveBuilder.switchPlace(a,b);
+        }
+        catch (InvalidMoveException e){
+            return;
+        }
+        Image img1 = tileImages[a].getImage();
+        Image img2 = tileImages[b].getImage();
+        tileImages[a].setImage(img2);
+        tileImages[b].setImage(img1);
     }
 
     /**
      * This function is invoked from the server when the current
      * player puts a tile into his shelf.
-     * @param column destination column of the shelf
+     * @param pos destination in the shelf
      * @param tile   Tile to insert
      */
-    public void putIntoShelf(int column, Tile tile) {
-        //TODO with delta
-        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));  // TEMPORARY
+    public void putIntoShelf(Position pos, Tile tile) {
+        shelfHandler.putTileBehind(shelfImage,pos,tile);
     }
 
     /**
@@ -277,12 +321,12 @@ public class HomeScreenController extends SceneController implements Initializab
             turnFlag.setStyle("-fx-fill: grey;");
         }
         boardHandler = new GridHandler(anchor,canvasBoard,model.getBoard());
-        setBoard(model.getBoard());
+        boardHandler.displayGrid();
         shelfHandler = new GridHandler(anchor,canvasShelf,model.getPlayersShelves().get(model.getPlayerName()));
-        updateShelf(model.getPlayersShelves().get(model.getPlayerName()));
+        shelfHandler.displayGridBehind(shelfImage);
 
         getPersonalGoal();
-        getCommonGoals();
+        updateCommonGoals(model.getCommonGoalList().get(0), model.getCommonGoalList().get(1));
         if(model.isItMyTurn()) {
             ImageView Image = new ImageView();
             Image.setImage(loadImage("misc/firstplayertoken.png"));
@@ -298,9 +342,11 @@ public class HomeScreenController extends SceneController implements Initializab
             newMatchText.setText("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
-        canvasShelf.toFront();
-    }
 
+        tileImages = new ImageView[]{Tile1,Tile2,Tile3};
+        buttons = new Button[]{Arrows1,Arrows2,Arrows3};
+        Arrays.stream(buttons).forEach(button -> button.setOpacity(0.0));
+    }
 }
 
 class MoveBuilder{
@@ -349,5 +395,32 @@ class MoveBuilder{
         pm = new PartialMove();
         move = null;
         column = -1;
+    }
+    public void switchPlace(int a, int b) throws InvalidMoveException{
+        List<Position> positions = pm.getBoardPositions();
+        if(a < 0 || b < 0 || a>= positions.size() || b >= positions.size()){
+            System.out.println("Non valid positions to switch");
+            throw new InvalidMoveException("Non valid positions selected");
+        }
+        else {
+            Position pos1 = positions.get(a);
+            Position pos2 = positions.get(b);
+            positions.set(a,pos2);
+            positions.set(b,pos1);
+
+            pm = new PartialMove();
+            try{
+                positions.forEach(pos -> {
+                    try {
+                        pm.addPosition(pos);
+                    } catch (InvalidMoveException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+            catch (RuntimeException e){
+                throw new InvalidMoveException("Error in move");
+            }
+        }
     }
 }

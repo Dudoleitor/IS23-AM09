@@ -80,6 +80,11 @@ public class ServerTCP_IO{
         synchronized (serverViewUpdater){
             serverViewUpdater.terminate();
         }
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

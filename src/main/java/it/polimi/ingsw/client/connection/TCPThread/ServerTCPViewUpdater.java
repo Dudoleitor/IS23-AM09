@@ -13,12 +13,14 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ServerTCPViewUpdater extends Thread{
     private boolean exit = false;
     private ClientModel clientModel;
     private final ArrayList<MessageTcp> update;
     private final PrintWriter serverOut;
+
     ServerTCPViewUpdater(ClientModel clientModel, ArrayList<MessageTcp> update, PrintWriter serverOut){
         this.clientModel = clientModel;
         this.update = update;
@@ -79,19 +81,18 @@ public class ServerTCPViewUpdater extends Thread{
             case SetPlayerGoal:
                 setPlayerGoal(content);
                 break;
-            case Disconnect:
-                disconnect();
-                break;
             case Ping:
                 ping();
                 break;
+            case EndGame:
+                endgame(content);
         }
     }
 
     public void changeView(ClientModel clientModel){
         this.clientModel = clientModel;
     }
-    public void pickedFromBoard(JSONObject content) {
+    private void pickedFromBoard(JSONObject content) {
         try {
             clientModel.pickedFromBoard((JSONObject) content.get("position"));
         } catch (RemoteException e) {
@@ -99,7 +100,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void refreshBoard(JSONObject content) {
+    private void refreshBoard(JSONObject content) {
         try {
             clientModel.refreshBoard((JSONObject) content.get("board"));
         } catch (RemoteException e) {
@@ -107,7 +108,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void putIntoShelf(JSONObject content) {
+    private void putIntoShelf(JSONObject content) {
         try {
             String player = content.get("player").toString();
             int column = Integer.parseInt(content.get("column").toString());
@@ -119,7 +120,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void refreshShelf(JSONObject content) {
+    private void refreshShelf(JSONObject content) {
         try {
             clientModel.refreshShelf(content.get("player").toString(),(JSONObject) content.get("shelf"));
         } catch (RemoteException e) {
@@ -127,7 +128,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void postChatMessage(JSONObject content) {
+    private void postChatMessage(JSONObject content) {
         try {
             clientModel.postChatMessage(content.get("sender").toString(), content.get("message").toString());
         } catch (RemoteException e) {
@@ -135,7 +136,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void refreshChat(JSONObject content) {
+    private void refreshChat(JSONObject content) {
         try {
             clientModel.refreshChat(new Chat((JSONObject) content.get("chat")));
         } catch (RemoteException e) {
@@ -143,7 +144,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void gameStarted(JSONObject content) {
+    private void gameStarted(JSONObject content) {
         final boolean newMatch = Boolean.parseBoolean(content.get("newMatch").toString());
         try {
             clientModel.gameStarted(newMatch);
@@ -152,7 +153,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
 
     }
-    public void updateTurn(JSONObject content) {
+    private void updateTurn(JSONObject content) {
         try {
             clientModel.nextTurn(content.get("player").toString());
         } catch (RemoteException e) {
@@ -160,7 +161,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void refreshCommonGoal(JSONObject content) {
+    private void refreshCommonGoal(JSONObject content) {
         int id = Integer.parseInt(content.get("id").toString());
         List list = Jsonable.json2listInt((JSONArray) content.get("points"));
         try {
@@ -170,7 +171,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void setPlayerGoal(JSONObject content) {
+    private void setPlayerGoal(JSONObject content) {
         int id = Integer.parseInt(content.get("id").toString());
         try {
             clientModel.setPlayerGoal(id);
@@ -179,16 +180,12 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
 
-    public void disconnect(){
-        //TODO
-        //terminate()
-    }
 
     public void terminate() {
         this.exit = true;
     }
 
-    public void ping() {
+    private void ping() {
         try {
             clientModel.ping();
         } catch (RemoteException e) {
@@ -199,6 +196,14 @@ public class ServerTCPViewUpdater extends Thread{
         pongMessage.setCommand(MessageTcp.MessageCommand.Ping); //set command
         synchronized (serverOut) {
             serverOut.println(pongMessage);
+        }
+    }
+    private void endgame (JSONObject content){
+        final Map<String,Integer> leaderboard = Jsonable.json2mapStringInt((JSONObject) content.get("leaderboard"));
+        try {
+            clientModel.endGame(leaderboard);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 }

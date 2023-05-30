@@ -186,8 +186,16 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      * @param tile   Tile to insert
      */
     public void putIntoShelf(String player, int column, Tile tile) {
+        final Shelf shelf = playersShelves.get(player);
+
+        final Position position;
+        try {
+            position = shelf.getFreePosition(column);
+        } catch (BadPositionException e) {
+            throw new RuntimeException("Received invalid position from server: " + e.getMessage());
+        }
+
         try{
-            final Shelf shelf = playersShelves.get(player);
             shelf.insertTile(tile, column);
             playersShelves.replace(player, shelf);
         } catch (BadPositionException e) {
@@ -197,16 +205,17 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         if(player.equalsIgnoreCase(playerName)) {
             final HomeScreenController sceneController =
                     (HomeScreenController) controller.getSceneController(SceneEnum.home);
-            if(sceneController!=null)
+            if(sceneController!=null) {
                 Platform.runLater(() -> {
-                    sceneController.putIntoShelf(column, tile);
+                    sceneController.putIntoShelf(position, tile);
                 });
+            }
         } else {
             final PlayerShelvesController sceneController =
                     (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
             if(sceneController!=null)
                 Platform.runLater(() -> {
-                    sceneController.putIntoShelf(player, column, tile);
+                    sceneController.putIntoShelf(player, position, tile);
                 });
         }
     }
@@ -374,6 +383,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
         commonGoalList.remove(commonGoal);
         commonGoalList.add(commonGoal);
         commonGoalList.sort((x,y) -> x.getID() > y.getID() ? 1 : -1);
+
+        final HomeScreenController sceneController =
+                (HomeScreenController) controller.getSceneController(SceneEnum.home);
+        if(sceneController!=null)
+            Platform.runLater(() -> {
+                sceneController.updateCommonGoals(commonGoalList.get(0), commonGoalList.get(1));
+            });
     }
 
     /**

@@ -1,7 +1,24 @@
 .root {
-    -fx-background-image: url("gameGraphics/misc/sfondo_parquet.jpg");
+    -fx-background-image: url("gameGraphics/misc/sfondo_parquet.jpg") no-repeat center center fixed;
+    -fx-background-size: cover;
 }
 
 #vbox {
     -fx-alignment: center;
+}
+
+.validTile{
+    -fx-opacity: 1;
+}
+
+.inValidTile {
+    -fx-opacity: 0.6;
+}
+
+.arrowsButton{
+    -fx-background-color: rgb(0,0,0,0);
+    -fx-background-image: url("gameGraphics/misc/arrows.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:left;
 }

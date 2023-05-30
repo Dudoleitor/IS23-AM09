@@ -24,6 +24,7 @@ import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImag
 public class PlayerShelvesController extends SceneController implements Initializable {
     private final ClientModelGUI model;
     private Map<String,GridHandler> shelvesHandlers = new HashMap<>();
+    private Map<String,ImageView> shelfImages = new HashMap<>();
 
     @FXML
     Text username1;
@@ -87,8 +88,8 @@ public class PlayerShelvesController extends SceneController implements Initiali
         shelvesHandlers.get(playerName).displayGrid();
     }
 
-    public void putIntoShelf(String playerName, int column, Tile tile) {
-        //TODO
+    public void putIntoShelf(String playerName, Position position, Tile tile) {
+        shelvesHandlers.get(playerName).putTileBehind(shelfImages.get(playerName),position,tile);
     }
     private void displayAll(){
         shelvesHandlers.values().forEach(GridHandler::displayGrid);
@@ -118,6 +119,12 @@ public class PlayerShelvesController extends SceneController implements Initiali
         for(String playerName : model.getPlayers()){
             if(!playerName.equals(model.getPlayerName())){
                 userNames[i].setText(playerName); //set a username
+
+                //map the shelf png to the username
+                shelfImages.put(playerName,
+                        shelves[i]);
+
+                //map the grid handler to the username
                 shelvesHandlers.put(playerName,
                         new GridHandler(
                                 anchor,

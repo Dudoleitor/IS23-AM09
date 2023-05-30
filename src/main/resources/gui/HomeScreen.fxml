@@ -9,7 +9,7 @@
 
 <VBox fx:id="vbox" alignment="CENTER" spacing="20.0" stylesheets="@HomeScreen.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
 
-    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="710.0">
         <children>
 
             <ImageView fx:id="board" fitHeight="258.0" fitWidth="268.0" layoutX="32.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true">
@@ -27,7 +27,7 @@
                     <Image url="@gameGraphics/misc/Sacchetto_Aperto.png" />
                 </image>
             </ImageView>
-            <ImageView fitHeight="219.0" fitWidth="221.0" layoutX="365.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="shelfImage" fitHeight="219.0" fitWidth="221.0" layoutX="365.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/boards/bookshelf.png" />
                 </image>
@@ -79,6 +79,14 @@
          </Button>
          <Circle fx:id="notificationCircle" fill="red" layoutX="43.0" layoutY="341.0" opacity="0.0" radius="9.0" stroke="red" strokeType="INSIDE" />
          <Text fx:id="newMatchText" layoutX="223.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+         <AnchorPane fx:id="anchorBoard" layoutX="40.0" layoutY="84.0" prefHeight="236.0" prefWidth="236.0" />
+         <AnchorPane fx:id="anchorShelf" layoutX="391.0" layoutY="130.0" prefHeight="172.0" prefWidth="164.0" />
+         <ImageView fx:id="Tile1" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="261.0" pickOnBounds="true" preserveRatio="true" />
+         <ImageView fx:id="Tile2" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="215.0" pickOnBounds="true" preserveRatio="true" />
+         <ImageView fx:id="Tile3" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true" />
+         <Button fx:id="Arrows2" layoutX="634.0" layoutY="245.0" mnemonicParsing="false" onAction="#switchTiles01" styleClass="arrowsButton" />
+         <Button fx:id="Arrows1" layoutX="634.0" layoutY="200.0" mnemonicParsing="false" onAction="#switchTiles12" styleClass="arrowsButton" />
+         <Button fx:id="Arrows3" layoutX="634.0" layoutY="290.0" mnemonicParsing="false" onAction="#switchTiles02" styleClass="arrowsButton" />
 
         </children>
     </AnchorPane>

@@ -317,7 +317,12 @@ public class ClientSocket implements Client {
      * @param leaderBoard Map: player's name - points
      */
     public void endGame(Map<String, Integer> leaderBoard){
-        // TODO
+        JSONObject content= new JSONObject();
+        content.put("leaderboard", Jsonable.map2json(leaderBoard));
+        MessageTcp update = new MessageTcp();
+        update.setCommand(MessageTcp.MessageCommand.EndGame);
+        update.setContent(content);
+        out(update.toString());
 
         if(serverThreadListener != null)
             serverThreadListener.terminate();
@@ -328,9 +333,11 @@ public class ClientSocket implements Client {
      */
     @Override
     public void disconnect() {
-        MessageTcp update = new MessageTcp();
-        update.setCommand(MessageTcp.MessageCommand.Disconnect);
-        out(update.toString());
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            networkExceptionHandler.handleNetworkException(this, e);
+        }
         if (serverThreadListener!=null)
             serverThreadListener.terminate();
     }
