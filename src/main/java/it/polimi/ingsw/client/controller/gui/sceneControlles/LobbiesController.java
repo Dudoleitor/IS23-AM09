@@ -119,6 +119,7 @@ public class LobbiesController extends SceneController implements Initializable 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        lobbies.setEditable(false);
         updateLobbies();
     }
 
