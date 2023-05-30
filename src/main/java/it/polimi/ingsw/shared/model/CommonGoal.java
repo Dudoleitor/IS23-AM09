@@ -179,7 +179,9 @@ public class CommonGoal implements Jsonable{
      */
     public int givePoints(){
         if(points.size() > 0){
-            return points.pop();
+            final int pointsPopped = points.pop();
+            virtualCommonGoal.refresh(strategy.getId(), showPointsStack());
+            return pointsPopped;
         }
         else{
             return 0;
