@@ -78,6 +78,10 @@ public class PlayerShelvesController extends SceneController implements Initiali
         shelvesHandlers.get(playerName).displayGrid();
     }
 
+    public void showTurnPopup() {
+        ClientControllerGUI.showInfo("It's your turn.");
+    }
+
     /**
      * Refreshes the shelf of the player with the given name
      * @param playerName the name of the player whose shelf
