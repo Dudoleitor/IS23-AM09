@@ -160,7 +160,9 @@ public class Controller implements Jsonable {
             JSONArray commonGoalsJson = (JSONArray) gameStatus.get("commonGoals");
 
             this.board = new Board((JSONObject) gameStatus.get("board"), new ArrayList<>(commonGoalsJson));
+
             virtualViews.add(board.getVirtualBoard());
+            virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));
 
             this.turn = Math.toIntExact((Long) gameStatus.get("turn"));
 
