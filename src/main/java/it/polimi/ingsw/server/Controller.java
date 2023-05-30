@@ -399,7 +399,9 @@ public class Controller implements Jsonable {
         final List<Position> positions = move.getBoardPositions();
         for (Position p : positions) { //for all the positions we insert the tile in the playerShelf
             player.insertTile(board.pickTile(p), move.getColumn());
+
         }
+        player.checkCommonGoals(board.getCommonGoals());
     }
 
     /**
