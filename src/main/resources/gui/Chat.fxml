@@ -11,28 +11,28 @@
 
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@Chat.css" fx:id="vbox">
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" >
-    <children>
+    <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" >
+        <children>
 
-        <ImageView fitHeight="27.0" fitWidth="69.0" layoutX="14.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@gameGraphics/Publisher_material/Title_2000x618px.png" />
-            </image>
-        </ImageView>
-        <Text layoutX="115.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the chat!">
-            <font>
-                <Font name="SF Mono Bold" size="30.0" />
-            </font>
-        </Text>
-        <TextField onKeyReleased="#enterSendMessage" fx:id="message" layoutX="220.0"  layoutY="321.0" promptText="Write a message" />
-        <Button layoutX="388.0" layoutY="321.0" mnemonicParsing="false" onAction="#SendMsg" prefHeight="21.0" prefWidth="26.0" textFill="WHITE" />
-        <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="389.0" layoutY="321.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#SendMsg">
-            <image>
-                <Image url="@gameGraphics/misc/Sacchetto Chiuso.png" />
-            </image>
-        </ImageView>
-        <TextArea fx:id="textArea" layoutX="116.0" layoutY="80.0" prefHeight="200.0" prefWidth="371.0" />
-        <Button layoutX="524.0" layoutY="362.0" mnemonicParsing="false" onAction="#backHome" prefHeight="15.0" prefWidth="52.0" style="-fx-background-color: #49be25;" text="Home" />
-    </children>
-</AnchorPane>
+            <ImageView fitHeight="27.0" fitWidth="69.0" layoutX="14.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@gameGraphics/Publisher_material/Title_2000x618px.png" />
+                </image>
+            </ImageView>
+            <Text layoutX="115.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the chat!">
+                <font>
+                    <Font name="SF Mono Bold" size="30.0" />
+                </font>
+            </Text>
+            <TextField onKeyReleased="#enterSendMessage" fx:id="message" layoutX="220.0"  layoutY="321.0" promptText="Write a message" />
+            <Button layoutX="388.0" layoutY="321.0" mnemonicParsing="false" onAction="#SendMsg" prefHeight="21.0" prefWidth="26.0" textFill="WHITE" />
+            <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="389.0" layoutY="321.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#SendMsg">
+                <image>
+                    <Image url="@gameGraphics/misc/Sacchetto Chiuso.png" />
+                </image>
+            </ImageView>
+            <TextArea fx:id="textArea" layoutX="116.0" layoutY="80.0" prefHeight="200.0" prefWidth="371.0" />
+            <Button layoutX="524.0" layoutY="362.0" mnemonicParsing="false" onAction="#backHome" prefHeight="15.0" prefWidth="52.0" style="-fx-background-color: #49be25;" text="Home" />
+        </children>
+    </AnchorPane>
 </VBox>

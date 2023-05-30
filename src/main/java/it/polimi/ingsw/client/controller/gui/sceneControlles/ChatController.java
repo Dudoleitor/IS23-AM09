@@ -46,6 +46,10 @@ public class ChatController extends SceneController implements Initializable {
         textArea.appendText(sender + ": " + message + "\n");
     }
 
+    public void showTurnPopup() {
+        ClientControllerGUI.showInfo("It's your turn.");
+    }
+
     /**
      * This method is used to refresh the chat, it is called by the server
      * @param chat Chat object containing all the messages

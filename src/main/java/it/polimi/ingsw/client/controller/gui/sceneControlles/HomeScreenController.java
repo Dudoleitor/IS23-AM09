@@ -25,8 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
-import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.showError;
+import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.*;
 
 public class HomeScreenController extends SceneController implements Initializable {
     boolean clicked = false;
@@ -78,9 +77,6 @@ public class HomeScreenController extends SceneController implements Initializab
 
     @FXML
     Circle notificationCircle;
-
-    @FXML
-    Text newMatchText;
 
     @FXML
     ImageView shelfImage;
@@ -337,9 +333,9 @@ public class HomeScreenController extends SceneController implements Initializab
         }
 
         if(controller.isNewMatch()) {
-            newMatchText.setText("You are playing a new match!");
+            showInfo("You are playing a new match!");
         } else {
-            newMatchText.setText("You are playing a loaded match!");
+            showInfo("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
 

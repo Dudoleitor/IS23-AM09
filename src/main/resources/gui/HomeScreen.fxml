@@ -78,7 +78,6 @@
             </font>
          </Button>
          <Circle fx:id="notificationCircle" fill="red" layoutX="43.0" layoutY="341.0" opacity="0.0" radius="9.0" stroke="red" strokeType="INSIDE" />
-         <Text fx:id="newMatchText" layoutX="223.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
          <AnchorPane fx:id="anchorBoard" layoutX="40.0" layoutY="84.0" prefHeight="236.0" prefWidth="236.0" />
          <AnchorPane fx:id="anchorShelf" layoutX="391.0" layoutY="130.0" prefHeight="172.0" prefWidth="164.0" />
          <ImageView fx:id="Tile1" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="261.0" pickOnBounds="true" preserveRatio="true" />

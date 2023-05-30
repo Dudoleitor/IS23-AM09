@@ -170,6 +170,13 @@ public class ClientControllerGUI extends Application implements ClientController
         stage.show();
     }
 
+    public static void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
     public static void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
