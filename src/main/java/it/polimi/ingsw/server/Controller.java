@@ -356,7 +356,19 @@ public class Controller implements Jsonable {
     private void handleGameEnd() {
         Map<String, Integer> leaderBoard = new HashMap<>();
         for(Player p : players){
-            leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
+            int points = 0;
+
+            System.out.println(p.getName());
+            System.out.println("From commonGoals: "+p.getCommonGoalPoints());
+            System.out.println("From adjacent tyles: "+p.getCommonGoalPoints());
+            System.out.println("From personal goal: "+p.getPersonalGoalPoints());
+            points += p.getPersonalGoalPoints() + p.getAdjacentPoints() + p.getCommonGoalPoints();
+            if(p.getName().equals(getCurrentPlayerName())){
+                points += GameSettings.bonusPointsForLastMove;
+                System.out.println("From bonus: "+ GameSettings.bonusPointsForLastMove);
+            }
+            System.out.println("Total: "+points);
+            leaderBoard.put(p.getName(),points);
         }
 
         for (Client client : clients)

@@ -29,9 +29,9 @@ public class PlayerTest {
         assertFalse(testpl.hasFinished());
         assertEquals(0, testpl.getAdjacentPoints());
         assertEquals(0, testpl.getCommonGoalPoints());
-        assertEquals(0, testpl.checkPersonalGoal());
+        assertEquals(0, testpl.getPersonalGoalPoints());
         assertTrue(testpl.getCheckedCommonGoals().isEmpty());
-        testpl.checkPersonalGoal();
+        testpl.getPersonalGoalPoints();
 
         JSONObject nullJson = new JSONObject();
         assertThrows(JsonBadParsingException.class,()-> new Player(nullJson));
@@ -85,7 +85,7 @@ public class PlayerTest {
         testpl.insertTile(Tile.Cat, 0);
         Shelf testShelf = testpl.getShelf();
         assertEquals(Tile.Cat, testShelf.getTile(2,0));
-        assertEquals(1, testpl.checkPersonalGoal());
+        assertEquals(1, testpl.getPersonalGoalPoints());
     }
 
     @Test
