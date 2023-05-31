@@ -155,7 +155,7 @@ public class ClientControllerGUI extends Application implements ClientController
     public void start(Stage stage) throws IOException {
         this.stage = stage;
         stage.setTitle("My Shelfie");
-        stage.getIcons().add(loadImage("/Publisher_material/Icon_50x50px.png"));
+        stage.getIcons().add(loadImage("Publisher_material/Icon_50x50px.png"));
         stage.setOnCloseRequest((e) -> {
             if(server != null) {
                 try {
