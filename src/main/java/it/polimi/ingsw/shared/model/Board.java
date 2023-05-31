@@ -159,6 +159,10 @@ public class Board implements Jsonable, Grid {
                 .filter(x -> !x.equals(Tile.Invalid) && !x.equals(Tile.Empty)) //preserve any valid tile
                 .forEach(tilesToDraw::add);
 
+        if(tilesToDraw.size() == 0){
+            throw new OutOfTilesException("No more tiles left in the deck");
+        }
+
         Collections.shuffle(tilesToDraw); //mix deck
 
         for(int i = 0; i<numRows; i++){ //draw tiles from tilesToDraw deck and use them to fill the board in valid cells
@@ -167,7 +171,7 @@ public class Board implements Jsonable, Grid {
                     if(tilesToDraw.size() > 0) { //check if there are tiles left in the deck
                         boardTiles[i][j] = tilesToDraw.remove(0);
                     }else{
-                        throw new OutOfTilesException("The END is near : No more tiles left in the deck");
+                        break;
                     }
                 }
             }

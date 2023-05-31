@@ -474,7 +474,7 @@ public class Controller implements Jsonable {
             try {
                 board.fill();
             } catch (OutOfTilesException e) {
-                //do nothing
+                handleGameEnd();
             }
         }
     }
