@@ -96,12 +96,12 @@ public class ClientControllerGUI extends Application implements ClientController
 
         if(scene.equals(SceneEnum.chat)) {
             final HomeScreenController homeScreenController =
-                    (HomeScreenController) scenes.get(SceneEnum.home).getController();
+                    (HomeScreenController) getSceneController(SceneEnum.home);
             if (homeScreenController!=null)
                 homeScreenController.setNewMessage(false);
 
             final PlayerShelvesController playerShelvesController =
-                    (PlayerShelvesController) scenes.get(SceneEnum.playerShelves).getController();
+                    (PlayerShelvesController) getSceneController(SceneEnum.playerShelves);
             if (playerShelvesController!=null)
                 playerShelvesController.setNewMessage(false);
         }
