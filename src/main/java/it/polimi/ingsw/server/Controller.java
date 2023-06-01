@@ -383,7 +383,7 @@ public class Controller implements Jsonable {
             System.out.println("From adjacent tyles: "+p.getCommonGoalPoints());
             System.out.println("From personal goal: "+p.getPersonalGoalPoints());
             points += p.getPersonalGoalPoints() + p.getAdjacentPoints() + p.getCommonGoalPoints();
-            if(p.getName().equals(getCurrentPlayerName()) && players.size()>=GameSettings.minSupportedPlayers) {
+            if(p.getName().equals(getCurrentPlayerName()) && clients.size()>=GameSettings.minSupportedPlayers) {
                 points += GameSettings.bonusPointsForLastMove;
                 System.out.println("From bonus: "+ GameSettings.bonusPointsForLastMove);
             }
