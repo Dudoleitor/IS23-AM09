@@ -94,7 +94,7 @@ public class ConnectionStub extends Server {
 
     @Override
     public boolean matchHasStarted() throws LobbyException {
-        return true; //TODO
+        return true;
     }
 
     @Override

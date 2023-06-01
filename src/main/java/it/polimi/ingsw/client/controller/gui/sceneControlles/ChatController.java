@@ -46,7 +46,6 @@ public class ChatController extends SceneController implements Initializable {
         textArea.appendText(sender + ": " + message + "\n");
     }
 
-    //TODO: EDO
     public void showTurnPopup() {
         ClientControllerGUI.showInfo("It's your turn.");
     }

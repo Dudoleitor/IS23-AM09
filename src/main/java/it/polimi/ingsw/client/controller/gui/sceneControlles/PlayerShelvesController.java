@@ -64,7 +64,6 @@ public class PlayerShelvesController extends SceneController implements Initiali
 
     /**
      * @param newMessage, if true there is a new message and the chat button gets blue
-     *                    TODO: EDO
      */
     public void setNewMessage(boolean newMessage) {
         if(newMessage) {
@@ -79,7 +78,6 @@ public class PlayerShelvesController extends SceneController implements Initiali
         shelvesHandlers.get(playerName).displayGrid();
     }
 
-    //TODO:EDO
     public void showTurnPopup() {
         ClientControllerGUI.showInfo("It's your turn.");
     }

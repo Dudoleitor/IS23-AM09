@@ -3,6 +3,7 @@ import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.PlayerShelvesController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.SceneController;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
@@ -96,9 +97,13 @@ public class ClientControllerGUI extends Application implements ClientController
         if(scene.equals(SceneEnum.chat)) {
             final HomeScreenController homeScreenController =
                     (HomeScreenController) scenes.get(SceneEnum.home).getController();
-            if (homeScreenController!=null){
+            if (homeScreenController!=null)
                 homeScreenController.setNewMessage(false);
-            }
+
+            final PlayerShelvesController playerShelvesController =
+                    (PlayerShelvesController) scenes.get(SceneEnum.playerShelves).getController();
+            if (playerShelvesController!=null)
+                playerShelvesController.setNewMessage(false);
         }
     }
 
