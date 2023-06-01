@@ -47,9 +47,9 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     }
 
     /**
-     * This method is used to notfy the clients that something happened
+     * This method is used to notify the clients that something happened
      * and send the list of connected client.
-     * @param Message message to send before the list, ignored if null
+     * @param message message to send before the list, ignored if null
      */
     private void informAboutConnectedClients(String message) {
         final List<Client> clientList = getClients();
@@ -339,7 +339,28 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     }
 
     /**
+     * This function is used to start a timer when there are not enough players in the lobby.
+     * The timer is used to automatically declare victory to the players that are still connected
+     * if nobody reconnects in a certain amount of time.
+     */
+    public void startAutomaticVictoryTimer() {
+        final Object lock = this;
+        new Thread(() -> {
+            try {
+                Thread.sleep(GameSettings.automaticVictoryTimeoutSec * 1000);
+            } catch (InterruptedException e) {
+                return;
+            }
+            synchronized (lock) {
+                if (controller!=null && !clients.isEmpty())
+                    controller.endGameNotEnoughConnected();
+            }
+        }).start();
+    }
+
+    /**
      * The function disconnects the client and sets the player as inactive in the controller.
+     * A timer is started to automatically declare victory if needed.
      *
      * @param client Client object
      */
@@ -350,7 +371,10 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             return;
         }
 
-        informAboutConnectedClients(client.getPlayerName() + " disconnected from the lobby");
+        String message = client.getPlayerName() + " disconnected from the lobby";
+        if(started)
+            message = message + "\nNot enough players online, if nobody reconnects in " + GameSettings.automaticVictoryTimeoutSec + " seconds the game will end";
+        informAboutConnectedClients(message);
 
         if (controller != null && started) {
             /* If game is started and controller is null it's still being initialized,
@@ -359,6 +383,11 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             disconnectedClients.add(client.getPlayerName().toLowerCase());
             controller.clientDisconnected(client);  // It's ok if a network exception is thrown here
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
+
+
+            if (clients.size()<GameSettings.minSupportedPlayers)
+                startAutomaticVictoryTimer();
+
             return;
         }
 
