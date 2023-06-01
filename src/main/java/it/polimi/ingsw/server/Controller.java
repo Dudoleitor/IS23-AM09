@@ -548,13 +548,11 @@ public class Controller implements Jsonable {
         }
         setActivity(client.getPlayerName(), false);
         for (Client c: clients) {
-            c.postChatMessage("Server", "User " + client.getPlayerName() + " left the game.");
             if (clients.size()<GameSettings.minSupportedPlayers) {
                 c.postChatMessage("Server", "Not enough players online, waiting for somebody to reconnect");
                 //TODO start timer to eventually declare the victory
             }
         }
-
     }
 
     /**

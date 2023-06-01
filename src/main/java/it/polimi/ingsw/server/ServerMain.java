@@ -134,7 +134,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             clientsWithoutLobby.add(client);
             client.setExceptionHandler(this);
             System.out.println(client.getPlayerName() + " has just logged in");
-            client.postChatMessage("Server", "You joined");
+            client.postChatMessage("Server", "You joined the server");
             return true;
         }
     }
