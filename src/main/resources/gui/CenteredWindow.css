@@ -5,4 +5,10 @@
 
 #vbox {
     -fx-alignment: center;
+    -fx-fill-height: 100%;
+    -fx-fill-width: 100%;
+    -fx-max-height: -Infinity;
+    -fx-max-width: -Infinity;
+    -fx-min-height: -Infinity;
+    -fx-min-width: -Infinity;
 }

@@ -7,9 +7,9 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox fx:id="vbox" alignment="CENTER" spacing="20.0" stylesheets="@HomeScreen.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="vbox" stylesheets="@CenteredWindow.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
 
-    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="710.0">
+    <AnchorPane fx:id="anchor" minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" stylesheets="@CenteredWindow.css">
         <children>
 
             <ImageView fx:id="board" fitHeight="258.0" fitWidth="268.0" layoutX="32.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true">

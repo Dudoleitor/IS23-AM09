@@ -123,7 +123,7 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
-        Scene javafxScene = new Scene(parent, 800, 800); //TODO decorate and remove magic numbers
+        Scene javafxScene = new Scene(parent);
         scenes.put(scene,
                 new FXMLSceneWithController(javafxScene, sceneController));
         return javafxScene;
@@ -172,6 +172,7 @@ public class ClientControllerGUI extends Application implements ClientController
             stage.close();
         });
         loadScene(SceneEnum.login);
+        stage.setMaximized(true);
         stage.show();
     }
 

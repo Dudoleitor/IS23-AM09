@@ -1,8 +1,0 @@
-.root {
-    -fx-background-image: url("gameGraphics/misc/sfondo_parquet.jpg") no-repeat center center fixed;
-    -fx-background-size: cover;
-}
-
-#vbox {
-    -fx-alignment: center;
-}
