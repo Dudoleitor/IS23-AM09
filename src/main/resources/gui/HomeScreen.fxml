@@ -7,9 +7,9 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox fx:id="vbox" stylesheets="@CenteredWindow.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="vbox" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
 
-    <AnchorPane fx:id="anchor" minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity">
+    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
         <children>
 
             <ImageView fx:id="board" fitHeight="258.0" fitWidth="268.0" layoutX="32.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true">
@@ -85,7 +85,7 @@
          <ImageView fx:id="Tile3" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true" />
          <Button fx:id="Arrows2" layoutX="634.0" layoutY="245.0" mnemonicParsing="false" onMouseClicked="#switchTiles01" styleClass="arrowsButton" />
          <Button fx:id="Arrows1" layoutX="634.0" layoutY="200.0" mnemonicParsing="false" onMouseClicked="#switchTiles12" styleClass="arrowsButton" />
-         <Button fx:id="Arrows3" layoutX="634.0" layoutY="290.0" mnemonicParsing="false" onMouseClicked="#switchTiles02" styleClass="arrowsButton" />
+         <Button fx:id="Arrows3" layoutX="634.0" layoutY="290.0" mnemonicParsing="false" onMouseClicked="#switchTiles02" styleClass="arrowsButton"/>
 
         </children>
     </AnchorPane>
