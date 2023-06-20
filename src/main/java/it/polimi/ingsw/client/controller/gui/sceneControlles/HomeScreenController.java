@@ -95,9 +95,6 @@ public class HomeScreenController extends SceneController implements Initializab
     private ImageView[] tileImages;
     private Button[] buttons;
 
-    //metto un label/text il cui testo sarà:
-    //è una nuova partita o no
-
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
         imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
@@ -106,6 +103,12 @@ public class HomeScreenController extends SceneController implements Initializab
     public void updateCommonGoals(CommonGoal cg1, CommonGoal cg2) {
         commonGoal1.setImage(loadImage( "common_goal_cards/" + cg1.getID() + ".jpg"));
         commonGoal2.setImage(loadImage("common_goal_cards/" + cg2.getID() + ".jpg"));
+
+        String cg1_string;
+
+
+        String cg2_string;
+
 
         imageScoring1.setImage(loadImage("scoring_tokens/scoring_" + cg1.peekTopOfPointsStack() + ".jpg"));
         imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + cg2.peekTopOfPointsStack() + ".jpg"));
