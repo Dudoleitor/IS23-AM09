@@ -18,10 +18,12 @@ public class Chat implements Serializable {
     public Chat(Chat toClone){
         chatMessages =  Collections.synchronizedList(new ArrayList<>());
         chatMessages.addAll(toClone.getAllMessages());
+        MapColorPlayer = new HashMap<>();
     }
     public Chat(JSONObject jsonChat){
         chatMessages = new ArrayList<>();
         JSONArray jsonArray = (JSONArray) jsonChat.get("messageList");
+        MapColorPlayer = new HashMap<>();
         for(Object c : jsonArray){
             if(!((JSONObject) c).containsKey("receiver"))
                 chatMessages.add(new ChatMessage((JSONObject) c));

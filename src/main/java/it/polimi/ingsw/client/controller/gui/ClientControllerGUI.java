@@ -91,8 +91,12 @@ public class ClientControllerGUI extends Application implements ClientController
         } else {
             javafxScene = generateNewScene(scene);
         }
+        //stage.hide();
         currentScene = scene;
+        stage.hide();
         stage.setScene(javafxScene);
+        stage.show();
+        stage.setMaximized(true);
 
         if(scene.equals(SceneEnum.chat)) {
             final HomeScreenController homeScreenController =
@@ -172,8 +176,6 @@ public class ClientControllerGUI extends Application implements ClientController
             stage.close();
         });
         loadScene(SceneEnum.login);
-        stage.setMaximized(true);
-        stage.show();
     }
 
     public static void showInfo(String message) {

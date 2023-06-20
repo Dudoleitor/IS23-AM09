@@ -9,7 +9,7 @@
 
 <VBox fx:id="vbox" stylesheets="@CenteredWindow.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
 
-    <AnchorPane fx:id="anchor" minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" stylesheets="@CenteredWindow.css">
+    <AnchorPane fx:id="anchor" minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity">
         <children>
 
             <ImageView fx:id="board" fitHeight="258.0" fitWidth="268.0" layoutX="32.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true">

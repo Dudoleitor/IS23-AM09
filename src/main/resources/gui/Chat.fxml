@@ -11,7 +11,7 @@
 
 <?import javafx.scene.layout.VBox?>
 <VBox fx:id="vbox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@CenteredWindow.css">
-    <AnchorPane minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity">
+    <AnchorPane fx:id="anchor" minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity">
         <children>
 
             <ImageView fitHeight="27.0" fitWidth="69.0" layoutX="14.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
