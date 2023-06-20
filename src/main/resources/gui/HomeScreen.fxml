@@ -32,7 +32,7 @@
                     <Image url="@gameGraphics/boards/bookshelf.png" />
                 </image>
             </ImageView>
-            <ImageView fx:id="imgPersGoal" fitHeight="108.0" fitWidth="76.0" layoutX="320.0" layoutY="252.0" pickOnBounds="true" preserveRatio="true" rotate="-15.0" />
+            <ImageView fx:id="imgPersGoal" fitHeight="108.0" fitWidth="76.0" layoutX="294.0" layoutY="191.0" pickOnBounds="true" preserveRatio="true" />
 
             <ImageView fx:id="commonGoal1" fitHeight="76.0" fitWidth="121.0" layoutX="328.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
             <ImageView fx:id="commonGoal2" fitHeight="76.0" fitWidth="121.0" layoutX="465.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
@@ -85,7 +85,7 @@
          <ImageView fx:id="Tile3" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true" />
          <Button fx:id="Arrows2" layoutX="634.0" layoutY="245.0" mnemonicParsing="false" onMouseClicked="#switchTiles01" styleClass="arrowsButton" />
          <Button fx:id="Arrows1" layoutX="634.0" layoutY="200.0" mnemonicParsing="false" onMouseClicked="#switchTiles12" styleClass="arrowsButton" />
-         <Button fx:id="Arrows3" layoutX="634.0" layoutY="290.0" mnemonicParsing="false" onMouseClicked="#switchTiles02" styleClass="arrowsButton"/>
+         <Button fx:id="Arrows3" layoutX="634.0" layoutY="290.0" mnemonicParsing="false" onMouseClicked="#switchTiles02" styleClass="arrowsButton" />
 
         </children>
     </AnchorPane>
