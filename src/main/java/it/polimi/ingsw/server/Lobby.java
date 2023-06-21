@@ -397,6 +397,17 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
         }
     }
+
+    /**
+     * This method is used to check if the
+     * game termination has been handled in the controller.
+     * In that case, the lobby can be deleted.
+     * @return boolean, True if the game is terminated
+     */
+    public boolean isTerminated() {
+        if (controller == null) return false;
+        return controller.gameTerminated();
+    }
 }
 
 class LobbyPingSender extends Thread {
