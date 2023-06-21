@@ -354,6 +354,7 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
     public void nextTurn(String player) {
         itsMyTurn = player.equals(this.playerName);
 
+        //set flag in home screen
         final HomeScreenController sceneController =
                 (HomeScreenController) controller.getSceneController(SceneEnum.home);
         if(sceneController!=null)
@@ -361,15 +362,19 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
                 sceneController.setMyTurn(itsMyTurn);
             });
 
-        if(itsMyTurn) {
-            final ChatController chatController = (ChatController) controller.getSceneController(SceneEnum.chat);
-            if(chatController!=null)
-                Platform.runLater(chatController::showTurnPopup);
-
-            final PlayerShelvesController playerShelvesController =
-                    (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
-            if(playerShelvesController!=null)
-                Platform.runLater(playerShelvesController::showTurnPopup);
+        //send alert if player is in chat or game status
+        if(itsMyTurn){
+            if(SceneEnum.chat.equals(controller.getCurrentScene())) {
+                final ChatController chatController = (ChatController) controller.getSceneController(SceneEnum.chat);
+                if (chatController != null)
+                    Platform.runLater(chatController::showTurnPopup);
+            }
+            if(SceneEnum.playerShelves.equals(controller.getCurrentScene())){
+                final PlayerShelvesController playerShelvesController =
+                        (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
+                if(playerShelvesController!=null)
+                    Platform.runLater(playerShelvesController::showTurnPopup);
+            }
         }
     }
 
