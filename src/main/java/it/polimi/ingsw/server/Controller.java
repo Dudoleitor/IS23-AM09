@@ -350,13 +350,45 @@ public class Controller implements Jsonable {
     }
 
     /**
+     * This method checks if the amount of connected players is lower
+     * that the minSupportedPlayers and if so ends the game
+     */
+    public void endGameNotEnoughConnected() {
+        if(clients.size()>=GameSettings.minSupportedPlayers)
+            return;
+        handleGameEnd();
+    }
+
+    /**
      * This function is used to notify each
      * client the game has ended.
      */
     private void handleGameEnd() {
         Map<String, Integer> leaderBoard = new HashMap<>();
-        for(Player p : players){
-            leaderBoard.put(p.getName(),p.getAdjacentPoints()+p.getCommonGoalPoints());
+
+        final List<Player> playersToConsider;
+
+        if(clients.size()<GameSettings.minSupportedPlayers)
+            playersToConsider = players.stream()
+                    .filter(x -> !nameAbsentInClients(x.getName(), clients))
+                    .collect(Collectors.toList());
+        else
+            playersToConsider = players;
+
+        for(Player p : playersToConsider){
+            int points = 0;
+
+            System.out.println(p.getName());
+            System.out.println("From commonGoals: "+p.getCommonGoalPoints());
+            System.out.println("From adjacent tyles: "+p.getCommonGoalPoints());
+            System.out.println("From personal goal: "+p.getPersonalGoalPoints());
+            points += p.getPersonalGoalPoints() + p.getAdjacentPoints() + p.getCommonGoalPoints();
+            if(p.getName().equals(getCurrentPlayerName()) && clients.size()>=GameSettings.minSupportedPlayers) {
+                points += GameSettings.bonusPointsForLastMove;
+                System.out.println("From bonus: "+ GameSettings.bonusPointsForLastMove);
+            }
+            System.out.println("Total: "+points);
+            leaderBoard.put(p.getName(),points);
         }
 
         for (Client client : clients)
@@ -457,12 +489,12 @@ public class Controller implements Jsonable {
      * It should be manually called before the first and it is called after every
      * player's move.
      */
-    public void prepareForNextPlayer(){
+    protected void prepareForNextPlayer(){
         if(board.toFill()){
             try {
                 board.fill();
             } catch (OutOfTilesException e) {
-                //do nothing
+                handleGameEnd();
             }
         }
     }
@@ -535,14 +567,6 @@ public class Controller implements Jsonable {
             throw new ControllerGenericException("Provided client did not exist");
         }
         setActivity(client.getPlayerName(), false);
-        for (Client c: clients) {
-            c.postChatMessage("Server", "User " + client.getPlayerName() + " left the game.");
-            if (clients.size()<GameSettings.minSupportedPlayers) {
-                c.postChatMessage("Server", "Not enough players online, waiting for somebody to reconnect");
-                //TODO start timer to eventually declare the victory
-            }
-        }
-
     }
 
     /**
@@ -563,8 +587,6 @@ public class Controller implements Jsonable {
             throw new RuntimeException("No player with the given name found while reconnecting client");
 
         setActivity(client.getPlayerName(), true);
-        for(Client c : clients)
-            c.postChatMessage("Server", "User " + client.getPlayerName() + " joined the game.");
 
         clients.add(client);
         refreshClient(client);

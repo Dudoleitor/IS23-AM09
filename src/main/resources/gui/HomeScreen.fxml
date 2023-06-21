@@ -7,9 +7,9 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox fx:id="vbox" alignment="CENTER" spacing="20.0" stylesheets="@HomeScreen.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="vbox" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
 
-    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="710.0">
+    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
         <children>
 
             <ImageView fx:id="board" fitHeight="258.0" fitWidth="268.0" layoutX="32.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true">
@@ -32,7 +32,7 @@
                     <Image url="@gameGraphics/boards/bookshelf.png" />
                 </image>
             </ImageView>
-            <ImageView fx:id="imgPersGoal" fitHeight="108.0" fitWidth="76.0" layoutX="320.0" layoutY="252.0" pickOnBounds="true" preserveRatio="true" rotate="-15.0" />
+            <ImageView fx:id="imgPersGoal" fitHeight="108.0" fitWidth="76.0" layoutX="294.0" layoutY="191.0" pickOnBounds="true" preserveRatio="true" />
 
             <ImageView fx:id="commonGoal1" fitHeight="76.0" fitWidth="121.0" layoutX="328.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
             <ImageView fx:id="commonGoal2" fitHeight="76.0" fitWidth="121.0" layoutX="465.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
@@ -78,7 +78,6 @@
             </font>
          </Button>
          <Circle fx:id="notificationCircle" fill="red" layoutX="43.0" layoutY="341.0" opacity="0.0" radius="9.0" stroke="red" strokeType="INSIDE" />
-         <Text fx:id="newMatchText" layoutX="223.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
          <AnchorPane fx:id="anchorBoard" layoutX="40.0" layoutY="84.0" prefHeight="236.0" prefWidth="236.0" />
          <AnchorPane fx:id="anchorShelf" layoutX="391.0" layoutY="130.0" prefHeight="172.0" prefWidth="164.0" />
          <ImageView fx:id="Tile1" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="261.0" pickOnBounds="true" preserveRatio="true" />

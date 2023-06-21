@@ -169,7 +169,12 @@ public class CommonGoal implements Jsonable{
     }
 
     public int peekTopOfPointsStack(){
-        return points.peek();
+        if(points.isEmpty()){
+            return 0;
+        }
+        else {
+            return points.peek();
+        }
     }
 
     //MODIFIERS

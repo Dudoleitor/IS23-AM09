@@ -25,8 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
-import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.showError;
+import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.*;
 
 public class HomeScreenController extends SceneController implements Initializable {
     boolean clicked = false;
@@ -80,9 +79,6 @@ public class HomeScreenController extends SceneController implements Initializab
     Circle notificationCircle;
 
     @FXML
-    Text newMatchText;
-
-    @FXML
     ImageView shelfImage;
     @FXML
     ImageView Tile1;
@@ -99,9 +95,6 @@ public class HomeScreenController extends SceneController implements Initializab
     private ImageView[] tileImages;
     private Button[] buttons;
 
-    //metto un label/text il cui testo sarà:
-    //è una nuova partita o no
-
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
         imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
@@ -110,6 +103,12 @@ public class HomeScreenController extends SceneController implements Initializab
     public void updateCommonGoals(CommonGoal cg1, CommonGoal cg2) {
         commonGoal1.setImage(loadImage( "common_goal_cards/" + cg1.getID() + ".jpg"));
         commonGoal2.setImage(loadImage("common_goal_cards/" + cg2.getID() + ".jpg"));
+
+        String cg1_string;
+
+
+        String cg2_string;
+
 
         imageScoring1.setImage(loadImage("scoring_tokens/scoring_" + cg1.peekTopOfPointsStack() + ".jpg"));
         imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + cg2.peekTopOfPointsStack() + ".jpg"));
@@ -337,9 +336,9 @@ public class HomeScreenController extends SceneController implements Initializab
         }
 
         if(controller.isNewMatch()) {
-            newMatchText.setText("You are playing a new match!");
+            showInfo("You are playing a new match!");
         } else {
-            newMatchText.setText("You are playing a loaded match!");
+            showInfo("You are playing a loaded match!");
         }
         moveBuilder = new MoveBuilder();
 

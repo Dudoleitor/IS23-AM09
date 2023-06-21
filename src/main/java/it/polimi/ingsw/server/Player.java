@@ -95,8 +95,15 @@ public class Player implements Jsonable {
      * Note: this method is pure and runs the check when called.
      * @return integer.
      */
-    public int checkPersonalGoal() throws JsonBadParsingException {
-        return goal.check(shelf);
+    public int getPersonalGoalPoints(){
+        int points = 0;
+        try{
+            points =  goal.check(shelf);
+        }
+        catch (JsonBadParsingException e) {
+            points = 0; //TODO could be better
+        }
+        return points;
     }
 
     /**

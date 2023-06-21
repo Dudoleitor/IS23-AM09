@@ -134,9 +134,19 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             clientsWithoutLobby.add(client);
             client.setExceptionHandler(this);
             System.out.println(client.getPlayerName() + " has just logged in");
-            client.postChatMessage("Server", "You joined");
+            client.postChatMessage("Server", "You joined the server");
             return true;
         }
+    }
+
+    /**
+     * This method is used to close empty lobbies
+     */
+    private synchronized void closeEmptyLobbies() {
+        List<Lobby> emptyLobbies = lobbies.stream()
+                .filter(x -> x.getPlayerNames().isEmpty())
+                .collect(Collectors.toList());
+        lobbies.removeAll(emptyLobbies);
     }
 
     /**
@@ -158,6 +168,8 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @return id of assigned lobby
      */
     public synchronized ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException {
+        closeEmptyLobbies();
+
         if (!clientsWithoutLobby.contains(client))
             throw new RemoteException("Client is not in the list of clients without lobby");
 
@@ -237,15 +249,13 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     }
 
     public synchronized Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
+        closeEmptyLobbies();
+
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.stream()
                 .filter(x -> !x.isFull() && !x.matchHasStarted())
                 .forEach(x -> lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in
         return lobbyMap;
-    }
-
-    public synchronized void removeLobby(){
-        //TODO
     }
 
     /**
@@ -273,6 +283,8 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     @Override
     public synchronized int disconnectedFromLobby(String playerName) {
+        closeEmptyLobbies();
+
         Optional<Lobby> lobbyOpt = lobbies.stream().filter(x-> x.getDisconnectedClients().contains(playerName.toLowerCase())).findFirst();
         return lobbyOpt.map(Lobby::getID).orElse(-1);
     }

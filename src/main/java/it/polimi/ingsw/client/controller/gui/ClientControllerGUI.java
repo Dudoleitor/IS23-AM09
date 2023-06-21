@@ -3,6 +3,7 @@ import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.PlayerShelvesController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.SceneController;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
@@ -90,15 +91,23 @@ public class ClientControllerGUI extends Application implements ClientController
         } else {
             javafxScene = generateNewScene(scene);
         }
+        //stage.hide();
         currentScene = scene;
+        stage.hide();
         stage.setScene(javafxScene);
+        stage.show();
+        stage.setMaximized(true);
 
         if(scene.equals(SceneEnum.chat)) {
             final HomeScreenController homeScreenController =
-                    (HomeScreenController) scenes.get(SceneEnum.home).getController();
-            if (homeScreenController!=null){
+                    (HomeScreenController) getSceneController(SceneEnum.home);
+            if (homeScreenController!=null)
                 homeScreenController.setNewMessage(false);
-            }
+
+            final PlayerShelvesController playerShelvesController =
+                    (PlayerShelvesController) getSceneController(SceneEnum.playerShelves);
+            if (playerShelvesController!=null)
+                playerShelvesController.setNewMessage(false);
         }
     }
 
@@ -118,7 +127,7 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
-        Scene javafxScene = new Scene(parent, 800, 800); //TODO decorate and remove magic numbers
+        Scene javafxScene = new Scene(parent);
         scenes.put(scene,
                 new FXMLSceneWithController(javafxScene, sceneController));
         return javafxScene;
@@ -155,7 +164,7 @@ public class ClientControllerGUI extends Application implements ClientController
     public void start(Stage stage) throws IOException {
         this.stage = stage;
         stage.setTitle("My Shelfie");
-        stage.getIcons().add(loadImage("/Publisher_material/Icon_50x50px.png"));
+        stage.getIcons().add(loadImage("Publisher_material/Icon_50x50px.png"));
         stage.setOnCloseRequest((e) -> {
             if(server != null) {
                 try {
@@ -167,7 +176,13 @@ public class ClientControllerGUI extends Application implements ClientController
             stage.close();
         });
         loadScene(SceneEnum.login);
-        stage.show();
+    }
+
+    public static void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(message);
+        alert.show();
     }
 
     public static void showError(String message) {

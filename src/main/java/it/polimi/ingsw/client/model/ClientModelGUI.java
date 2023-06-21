@@ -283,6 +283,13 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
                 Platform.runLater(() -> {
                     homeScreenController.setNewMessage(true);
                 });
+
+            final PlayerShelvesController playerShelvesController =
+                    (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
+            if(playerShelvesController!=null)
+                Platform.runLater(() -> {
+                    playerShelvesController.setNewMessage(true);
+                });
         }
     }
 
@@ -345,18 +352,30 @@ public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public void nextTurn(String player) {
-        if (player.equals(this.playerName)) {
-            itsMyTurn=true;
-        } else {
-            itsMyTurn=false;
-        }
+        itsMyTurn = player.equals(this.playerName);
 
+        //set flag in home screen
         final HomeScreenController sceneController =
                 (HomeScreenController) controller.getSceneController(SceneEnum.home);
         if(sceneController!=null)
             Platform.runLater(() -> {
                 sceneController.setMyTurn(itsMyTurn);
             });
+
+        //send alert if player is in chat or game status
+        if(itsMyTurn){
+            if(SceneEnum.chat.equals(controller.getCurrentScene())) {
+                final ChatController chatController = (ChatController) controller.getSceneController(SceneEnum.chat);
+                if (chatController != null)
+                    Platform.runLater(chatController::showTurnPopup);
+            }
+            if(SceneEnum.playerShelves.equals(controller.getCurrentScene())){
+                final PlayerShelvesController playerShelvesController =
+                        (PlayerShelvesController) controller.getSceneController(SceneEnum.playerShelves);
+                if(playerShelvesController!=null)
+                    Platform.runLater(playerShelvesController::showTurnPopup);
+            }
+        }
     }
 
     /**

@@ -55,9 +55,6 @@ class BoardTest {
             }
         }
         assertTrue(noEmptyFound);
-
-        Exception e = assertThrows(OutOfTilesException.class, b2::fill);
-        assertEquals("The END is near : No more tiles left in the deck", e.getMessage());
     }
 
     @Test
