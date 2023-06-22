@@ -156,7 +156,7 @@ public class ServerTCP extends Server {
     }
     @Override
     public void postToLiveChat(String playerName, String message) throws LobbyException {
-        ChatMessage chatMessage = new ChatMessage(playerName, message, Color.Black); //TODO maybe create a constructor that doesn't need color
+        ChatMessage chatMessage = new ChatMessage(playerName, message, Color.Black);
         JSONObject content = new JSONObject();
         MessageTcp postMessage = new MessageTcp();
         content.put("chat", chatMessage.toJson());
@@ -170,7 +170,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -179,7 +179,7 @@ public class ServerTCP extends Server {
 
     @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
-        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black); //TODO maybe create a constructor that doesn't need color
+        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black);
         JSONObject content = new JSONObject();
         content.put("chat", chatMessage.toJson());
         MessageTcp postMessage = new MessageTcp();
@@ -193,7 +193,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -202,11 +202,8 @@ public class ServerTCP extends Server {
 
     @Override
     public void quitGame(String player) throws LobbyException{
-        JSONObject content = new JSONObject();
-        content.put("player", player);
         MessageTcp quitMessage = new MessageTcp();
         quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
-        quitMessage.setContent(content);
         quitMessage.generateRequestID();
         out(quitMessage.toString());
         try {
@@ -215,7 +212,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -244,7 +241,6 @@ public class ServerTCP extends Server {
     @Override
     public void postMove(String player, Move move) throws LobbyException {
         JSONObject content = new JSONObject();
-        content.put("player",player);
         content.put("move",move.toJson());
         MessageTcp postMoveMessage = new MessageTcp();
         postMoveMessage.setCommand(MessageTcp.MessageCommand.PostMove); //set command
@@ -257,7 +253,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -268,7 +264,6 @@ public class ServerTCP extends Server {
     @Override
     public boolean startGame(String player, boolean erasePreviousMatches)throws LobbyException {
         JSONObject content = new JSONObject();
-        content.put("player", player);
         content.put("erasePreviousMatches", erasePreviousMatches);
         MessageTcp startGame = new MessageTcp();
         startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command
