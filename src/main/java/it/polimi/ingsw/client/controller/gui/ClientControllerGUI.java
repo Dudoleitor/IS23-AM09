@@ -9,10 +9,12 @@ import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -93,7 +95,6 @@ public class ClientControllerGUI extends Application implements ClientController
         }
         //stage.hide();
         currentScene = scene;
-        stage.hide();
         stage.setScene(javafxScene);
         stage.show();
         stage.setMaximized(true);
@@ -118,6 +119,8 @@ public class ClientControllerGUI extends Application implements ClientController
      * @return Scene object
      */
     private Scene generateNewScene(SceneEnum scene) {
+        Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
+
         final FXMLLoader loader = new FXMLLoader(scene.getResource());
         final SceneController sceneController = scene.getNewController(this);
         loader.setController(sceneController);
@@ -127,7 +130,7 @@ public class ClientControllerGUI extends Application implements ClientController
         } catch (IOException e) {
             throw new RuntimeException("Error while loading scene " + scene);
         }
-        Scene javafxScene = new Scene(parent);
+        Scene javafxScene = new Scene(parent,screenSize.getWidth(), screenSize.getHeight());
         scenes.put(scene,
                 new FXMLSceneWithController(javafxScene, sceneController));
         return javafxScene;
