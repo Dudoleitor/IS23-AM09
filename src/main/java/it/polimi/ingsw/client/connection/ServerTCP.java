@@ -156,7 +156,7 @@ public class ServerTCP extends Server {
     }
     @Override
     public void postToLiveChat(String playerName, String message) throws LobbyException {
-        ChatMessage chatMessage = new ChatMessage(playerName, message, Color.Black); //TODO maybe create a constructor that doesn't need color
+        ChatMessage chatMessage = new ChatMessage(playerName, message, Color.Black);
         JSONObject content = new JSONObject();
         MessageTcp postMessage = new MessageTcp();
         content.put("chat", chatMessage.toJson());
@@ -170,7 +170,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -193,7 +193,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -215,7 +215,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
@@ -257,7 +257,7 @@ public class ServerTCP extends Server {
                 response = in();
             boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
             if (errorFound) {
-                //TODO to implement
+                throw new LobbyException("Error in Lobby");
             }
         }catch (RemoteException e){
             throw new LobbyException(e.getMessage());
