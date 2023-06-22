@@ -63,17 +63,20 @@ public class ClientControllerCLI implements ClientController {
         // Checking if we were previously disconnected from a lobby
         final int previousLobbyId = server.disconnectedFromLobby(playerName);
         if(previousLobbyId >= 0) {
-            server.joinSelectedLobby(client, previousLobbyId);  // Automatically joining the lobby
             try {
+                server.joinSelectedLobby(client, previousLobbyId);  // Automatically joining the lobby
                 final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
 
-                cliIO.message("You joined automatically #"+ previousLobbyId +" lobby!\nYou were previously connected to it");
+                cliIO.message("You joined automatically #" + previousLobbyId + " lobby!\nYou were previously connected to it");
                 cliIO.setLobbyAdmin(isLobbyAdmin);
 
                 return;
             } catch (LobbyException e) {
-                cliIO.errorMessage("Error while connecting automatically to lobby");
+                throw new RuntimeException("Error while connecting automatically to lobby");
+            } catch (ServerException e) {
+                cliIO.message("Error while connecting automatically to lobby");
             }
+
         }
 
         //show the client the lobbies they can join

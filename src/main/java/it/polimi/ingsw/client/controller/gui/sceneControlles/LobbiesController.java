@@ -72,7 +72,7 @@ public class LobbiesController extends SceneController implements Initializable 
         try {
             server.joinRandomLobby(client);
         } catch (ServerException e) {
-            ClientControllerGUI.showError("Server error while creating lobby");
+            ClientControllerGUI.showError("Error while joining or creating lobby");
             return;
         }
 

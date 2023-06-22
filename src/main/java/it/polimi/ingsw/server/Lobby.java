@@ -72,10 +72,12 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      *
      * @param client is the player object to add to the lobby
      */
-    public synchronized void addPlayer(Client client) {
+    public synchronized void addPlayer(Client client) throws RemoteException {
         synchronized (client) {
             if (clients.contains(client)) //if player logged in previously
                 return;
+            if (isTerminated())
+                throw new RemoteException("Game terminated");
 
             if (disconnectedClients.contains(client.getPlayerName().toLowerCase())) {
                 disconnectedClients.remove(client.getPlayerName().toLowerCase());

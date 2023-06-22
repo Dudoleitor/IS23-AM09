@@ -140,7 +140,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     private synchronized void cleanupLobbies() {
         lobbies.removeIf(x -> x.getPlayerNames().isEmpty());
-        lobbies.removeIf(Lobby::isTerminated);
+        //lobbies.removeIf(Lobby::isTerminated);
     }
 
     /**

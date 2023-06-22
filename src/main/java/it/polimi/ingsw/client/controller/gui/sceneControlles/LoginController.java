@@ -61,9 +61,8 @@ public class LoginController extends SceneController {
                     controller.loadScene(SceneEnum.lobbyWaiting);
                 }
                 return;
-            } catch (ServerException e) {
-                ClientControllerGUI.showError("Server error while joining lobby");
-                return;
+            } catch (ServerException ignored) {
+                // If auto join fails, the user will be asked to join a lobby
             }
         }
 
