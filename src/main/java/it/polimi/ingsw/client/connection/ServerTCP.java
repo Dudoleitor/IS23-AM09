@@ -150,6 +150,8 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int) Lobbyid;
+            else
+                throw new ServerException("Lobby join error");
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
