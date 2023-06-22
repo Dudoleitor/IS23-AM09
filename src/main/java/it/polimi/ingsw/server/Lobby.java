@@ -41,7 +41,6 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         firstPlayer.setExceptionHandler(this);
         this.id = id;
         this.chat = new Chat();
-        chat.addPlayer(firstPlayer);
         this.pingSender = new LobbyPingSender(this);
         pingSender.start();
     }
@@ -98,7 +97,6 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             if (clients.size() < GameSettings.maxSupportedPlayers) { //checks lobby isn't already full
                 clients.add(client);
                 client.setExceptionHandler(this);
-                chat.addPlayer(client);
                 client.refreshChat(chat);
                 informAboutConnectedClients(client.getPlayerName() + " joined the lobby");
             } else

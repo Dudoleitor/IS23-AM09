@@ -36,6 +36,9 @@ public class Chat implements Serializable {
         chatMessages.add(newMessage);
     }
     public void addMessage(String sender,String text){
+        if(!MapColorPlayer.containsKey(sender)){
+            addPlayer(sender);
+        }
         ChatMessage message = new ChatMessage(
                 sender,
                 text,
@@ -51,6 +54,9 @@ public class Chat implements Serializable {
         chatMessages.add(newSecret);
     }
     public void addSecret(String sender,String receiver,String text){
+        if(!MapColorPlayer.containsKey(sender)){
+            addPlayer(sender);
+        }
         PrivateChatMessage message = new PrivateChatMessage(
                 sender,
                 receiver,
@@ -58,25 +64,12 @@ public class Chat implements Serializable {
                 MapColorPlayer.get(sender));
         chatMessages.add(message);
     }
-    public void addPlayer(Client client){
-        //only if is a new login
-        if(!MapColorPlayer.containsKey(client.getPlayerName())){
-            //add a unique color for player in Map (if possible)
-            Color playerColor = Color.getRandomColor();
-
-            List<Color> alreadyPresent = getAllColors();
-
-            int numberOfPlayers = MapColorPlayer.size();
-            int numberOfColors = (int) Arrays.stream(Color.values()).count();
-
-            if(numberOfPlayers <= numberOfColors){
-                while(alreadyPresent.contains(playerColor)){
-                    playerColor = Color.getRandomColor();
-
-                }
-            }
-            MapColorPlayer.put(client.getPlayerName(), playerColor);
+    private void addPlayer(String sender){
+        Color playerColor = Color.Purple;
+        while(getAllColors().contains(playerColor)){
+            playerColor = Color.getRandomColor();
         }
+        MapColorPlayer.put(sender, playerColor);
     }
 
     private List<Color> getAllColors(){
@@ -100,8 +93,7 @@ public class Chat implements Serializable {
         }
     }
     public List<ChatMessage> getAllMessages(){
-        List<ChatMessage> allmessages = new ArrayList<>();
-        allmessages.addAll(chatMessages);
+        List<ChatMessage> allmessages = new ArrayList<>(chatMessages);
         return allmessages;
     }
 

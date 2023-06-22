@@ -24,7 +24,8 @@ public class ChatMessage implements Serializable, Jsonable{
         if(color!=null)
             this.color = color;
         else
-            this.color = Color.getRandomColor();
+            throw new RuntimeException("NULL COLOR"); //TODO remove
+            //this.color = Color.getRandomColor();
     }
     public ChatMessage(JSONObject jsonChat){
         playerName = jsonChat.get("sender").toString();
@@ -37,12 +38,12 @@ public class ChatMessage implements Serializable, Jsonable{
                     ": " + message;
         }
 
-        public String getSender(){
-            return playerName;
-        }
-        public String getMessage(){
-            return message;
-        }
+    public String getSender(){
+        return playerName;
+    }
+    public String getMessage(){
+        return message;
+    }
 
 
     @Override

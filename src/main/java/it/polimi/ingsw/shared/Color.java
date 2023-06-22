@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public enum Color {
         Reset("\u001B[0m", "reset"),
@@ -34,12 +35,13 @@ public enum Color {
                         str +
                         Reset.getColorAnsiCode(); //reset to default
         }
-        private static int numOfColors(){
-                return List.of(Color.values()).size();
-        }
         public static Color getRandomColor(){
-                return List.of(Color.values())
-                        .get(new Random().nextInt(numOfColors()));
+                List<Color> validColors = List.of(Color.values())
+                        .stream()
+                        .filter(color -> color != Reset && color != White && color != Black)
+                        .collect(Collectors.toList());
+                Random rand = new Random();
+                return validColors.get(rand.nextInt(validColors.size()));
         }
         @Override
         public String toString(){
