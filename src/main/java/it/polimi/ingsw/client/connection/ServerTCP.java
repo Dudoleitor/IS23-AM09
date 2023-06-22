@@ -268,7 +268,6 @@ public class ServerTCP extends Server {
     @Override
     public boolean startGame(String player, boolean erasePreviousMatches)throws LobbyException {
         JSONObject content = new JSONObject();
-        content.put("player", player);
         content.put("erasePreviousMatches", erasePreviousMatches);
         MessageTcp startGame = new MessageTcp();
         startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command
