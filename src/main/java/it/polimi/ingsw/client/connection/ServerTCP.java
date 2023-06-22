@@ -111,8 +111,6 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int)Lobbyid;
-            else throw new ServerException("Could not find a lobby");
-
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -130,7 +128,6 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int) Lobbyid;
-            else throw new ServerException("Could not create lobby");
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -153,7 +150,6 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int) Lobbyid;
-            else throw new ServerException("Could not join lobby");
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
