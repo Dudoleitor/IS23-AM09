@@ -91,7 +91,7 @@ public class ServerTcpThread extends Thread{
                 postSecretToLiveChat(content,ID);
                 break;
             case Quit:
-                quit(content,ID);
+                quit(ID);
                 break;
             case MatchHasStarted:
                 matchHasStarted(ID);
@@ -172,12 +172,12 @@ public class ServerTcpThread extends Thread{
 
     private void joinRandomLobby(String ID){
         int lobbyID;
-        ServerLobbyInterface lobbyInterface = null;
+        ServerLobbyInterface lobbyInterface;
         synchronized (server){
             try {
                 lobbyInterface = server.joinRandomLobby(client);
             } catch (NullPointerException | RemoteException  e) {
-                 //TODO to send back error message to set username first
+                lobbyInterface = null;
             }
         }
         lobbyID = LobbyIni(lobbyInterface);
@@ -192,12 +192,12 @@ public class ServerTcpThread extends Thread{
 
     private void createLobby(String ID){
         int lobbyID;
-        ServerLobbyInterface lobbyInterface = null;
+        ServerLobbyInterface lobbyInterface;
         synchronized (server){
             try {
                 lobbyInterface = server.createLobby(client);
             } catch (NullPointerException | RemoteException e) {
-                //TODO to send back error message to set username first
+                lobbyInterface = null;
             }
         }
         lobbyID = LobbyIni(lobbyInterface);
@@ -211,12 +211,12 @@ public class ServerTcpThread extends Thread{
     }
     private void joinSelectedLobby(JSONObject message, String ID){
         long lobbyID = Long.parseLong(message.get("lobbyID").toString());
-        ServerLobbyInterface lobbyInterface = null;
+        ServerLobbyInterface lobbyInterface;
         synchronized (server){
             try {
                 lobbyInterface = server.joinSelectedLobby(client,(int) lobbyID);
             } catch (NullPointerException | RemoteException e) {
-                //TODO to send back error message to set username first
+                lobbyInterface = null;
             }
         }
         lobbyID = LobbyIni(lobbyInterface);
@@ -305,12 +305,11 @@ public class ServerTcpThread extends Thread{
         }
 
     }
-    private void quit(JSONObject message, String ID){
+    private void quit(String ID){
         boolean foundErrors = false;
-        String playername = message.get("player").toString();
         synchronized (lobby) {
             try {
-                lobby.quitGame(playername);
+                lobby.quitGame(client.getPlayerName());
             } catch (RuntimeException e) {
                 foundErrors = true;
             }
@@ -341,11 +340,10 @@ public class ServerTcpThread extends Thread{
     }
     private void postMove(JSONObject message, String ID){
         boolean foundErrors = false;
-        String player = message.get("player").toString(); //TODO for myself, to find a more clean way
         JSONObject move = (JSONObject) message.get("move");
         synchronized (lobby) {
             try {
-                lobby.postMove(player,move);
+                lobby.postMove(client.getPlayerName(),move);
             } catch (ControllerGenericException e) {
                 foundErrors = true;
             }

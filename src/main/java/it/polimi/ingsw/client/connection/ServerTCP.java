@@ -111,6 +111,8 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int)Lobbyid;
+            else throw new ServerException("Could not find a lobby");
+
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -128,6 +130,7 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int) Lobbyid;
+            else throw new ServerException("Could not create lobby");
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -150,6 +153,7 @@ public class ServerTCP extends Server {
             long Lobbyid = Long.parseLong(response.getContent().get("lobbyID").toString());
             if (Lobbyid > 0)
                 this.id = (int) Lobbyid;
+            else throw new ServerException("Could not join lobby");
         }catch (RemoteException e){
             throw new ServerException(e.getMessage());
         }
@@ -179,7 +183,7 @@ public class ServerTCP extends Server {
 
     @Override
     public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
-        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black); //TODO maybe create a constructor that doesn't need color
+        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black);
         JSONObject content = new JSONObject();
         content.put("chat", chatMessage.toJson());
         MessageTcp postMessage = new MessageTcp();
@@ -202,11 +206,8 @@ public class ServerTCP extends Server {
 
     @Override
     public void quitGame(String player) throws LobbyException{
-        JSONObject content = new JSONObject();
-        content.put("player", player);
         MessageTcp quitMessage = new MessageTcp();
         quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
-        quitMessage.setContent(content);
         quitMessage.generateRequestID();
         out(quitMessage.toString());
         try {
@@ -244,7 +245,6 @@ public class ServerTCP extends Server {
     @Override
     public void postMove(String player, Move move) throws LobbyException {
         JSONObject content = new JSONObject();
-        content.put("player",player);
         content.put("move",move.toJson());
         MessageTcp postMoveMessage = new MessageTcp();
         postMoveMessage.setCommand(MessageTcp.MessageCommand.PostMove); //set command
