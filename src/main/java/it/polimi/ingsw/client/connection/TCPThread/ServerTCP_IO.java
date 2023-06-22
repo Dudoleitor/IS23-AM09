@@ -52,11 +52,11 @@ public class ServerTCP_IO{
                 long elapsedTime = 0;
                 while (responses.isEmpty()) {
                     synchronized (responses) {
-                        responses.wait(NetworkSettings.WaitingTime - elapsedTime); //set to wait for remaining time
+                        responses.wait(NetworkSettings.WaitingTimeMillis - elapsedTime); //set to wait for remaining time
                     }
                     endTime = System.currentTimeMillis();
                     elapsedTime = endTime - startTime;
-                    if (responses.isEmpty() && elapsedTime > NetworkSettings.WaitingTime)//check that wake up wasn't accidental
+                    if (responses.isEmpty() && elapsedTime > NetworkSettings.WaitingTimeMillis)//check that wake up wasn't accidental
                         throw new RemoteException("Waited too much");
 
                 }

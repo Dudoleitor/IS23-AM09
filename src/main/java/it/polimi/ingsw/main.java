@@ -49,13 +49,25 @@ public class main {
      * Set RMI options
      */
     private static void setSystemProps(){
-        final String timeout = String.valueOf(NetworkSettings.WaitingTime);
+        final String timeout = String.valueOf(NetworkSettings.WaitingTimeMillis);
         final Properties properties = System.getProperties();
         properties.setProperty("sun.rmi.transport.connectionTimeout", timeout);
         properties.setProperty("sun.rmi.transport.tcp.handshakeTimeout", timeout);
         properties.setProperty("sun.rmi.transport.tcp.responseTimeout", timeout);
         properties.setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
         properties.setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
+
+        final String rmiLocalIpString = System.getenv("RMI_LOCAL_IP");
+        if (rmiLocalIpString != null) {
+            final IpAddressV4 rmiLocalIp;
+            try {
+                rmiLocalIp = new IpAddressV4(rmiLocalIpString);
+                properties.setProperty("java.rmi.server.hostname", rmiLocalIp.toString());
+                System.out.println("RMI local IP set to " + System.getProperties().get("java.rmi.server.hostname"));
+            } catch (ParseException ignored) {
+            }
+        }
+
         try {
             RMISocketFactory.setSocketFactory(new SocketFactory());
         } catch (IOException e) {
@@ -225,6 +237,7 @@ public class main {
         }
         Ip.set();
         NetworkSettings.serverIp = ip;
+        System.getProperties().setProperty("java.rmi.server.hostname", ip.toString());
     }
 
     /**
@@ -322,7 +335,7 @@ public class main {
 }
 
 class SocketFactory extends RMISocketFactory {
-    private final int timeout = NetworkSettings.WaitingTime;
+    private final int timeout = NetworkSettings.WaitingTimeMillis;
 
     @Override
     public Socket createSocket(String host, int port) throws IOException {

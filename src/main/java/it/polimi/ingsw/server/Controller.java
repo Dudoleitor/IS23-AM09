@@ -26,6 +26,7 @@ public class Controller implements Jsonable {
     private final List<Client> clients;
     private final List<VirtualView> virtualViews;
     private int turn;
+    private boolean handledGameTermination;
 
     /**
      * This method is used to randomly generate a list
@@ -94,6 +95,7 @@ public class Controller implements Jsonable {
      * @param clients is a List of Client objects
      */
     public Controller(List<Client> clients){
+        handledGameTermination = false;
         if(clients == null){
             throw new ControllerGenericException("Error while creating the Controller: clients list was null");
         }
@@ -126,6 +128,16 @@ public class Controller implements Jsonable {
     }
 
     /**
+     * This method is used to check if the
+     * game termination has been handled.
+     * In that case, the lobby can be deleted.
+     * @return boolean, True if the game is terminated
+     */
+    public boolean gameTerminated() {
+        return handledGameTermination;
+    }
+
+    /**
      * This method is used to load a list of players
      * from a JSONArray.
      * @param playersJson JSONArray with the players
@@ -154,6 +166,7 @@ public class Controller implements Jsonable {
      * @throws JsonBadParsingException when a parsing error happens
      */
     public Controller(JSONObject gameStatus, List<Client> clients) throws JsonBadParsingException {
+        handledGameTermination = false;
         virtualViews = new ArrayList<>();
         try {
             this.clients = clients;
@@ -394,6 +407,7 @@ public class Controller implements Jsonable {
         for (Client client : clients)
             client.endGame(leaderBoard);
         deleteSavedGame();
+        handledGameTermination = true;
     }
 
     /**

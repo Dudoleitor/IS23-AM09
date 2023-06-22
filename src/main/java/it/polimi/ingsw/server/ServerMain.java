@@ -1,7 +1,5 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.connection.Server;
-import it.polimi.ingsw.client.controller.InputSanitizer;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.NetworkSettings;
@@ -17,9 +15,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ServerMain implements ServerInterface, NetworkExceptionHandler {
@@ -140,13 +135,12 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     }
 
     /**
-     * This method is used to close empty lobbies
+     * This method is used to close empty lobbies and lobbies where
+     * the match is terminated.
      */
-    private synchronized void closeEmptyLobbies() {
-        List<Lobby> emptyLobbies = lobbies.stream()
-                .filter(x -> x.getPlayerNames().isEmpty())
-                .collect(Collectors.toList());
-        lobbies.removeAll(emptyLobbies);
+    private synchronized void cleanupLobbies() {
+        lobbies.removeIf(x -> x.getPlayerNames().isEmpty());
+        lobbies.removeIf(Lobby::isTerminated);
     }
 
     /**
@@ -168,7 +162,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      * @return id of assigned lobby
      */
     public synchronized ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException {
-        closeEmptyLobbies();
+        cleanupLobbies();
 
         if (!clientsWithoutLobby.contains(client))
             throw new RemoteException("Client is not in the list of clients without lobby");
@@ -249,7 +243,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     }
 
     public synchronized Map<Integer, Integer> showAvailableLobbies() throws RemoteException {
-        closeEmptyLobbies();
+        cleanupLobbies();
 
         Map<Integer, Integer> lobbyMap = new HashMap<>();
         lobbies.stream()
@@ -283,7 +277,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
      */
     @Override
     public synchronized int disconnectedFromLobby(String playerName) {
-        closeEmptyLobbies();
+        cleanupLobbies();
 
         Optional<Lobby> lobbyOpt = lobbies.stream().filter(x-> x.getDisconnectedClients().contains(playerName.toLowerCase())).findFirst();
         return lobbyOpt.map(Lobby::getID).orElse(-1);
