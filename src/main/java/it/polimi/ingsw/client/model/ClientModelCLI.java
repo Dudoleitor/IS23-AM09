@@ -22,6 +22,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     private Chat chat;
     private Board board;
     private final Map<String, Shelf> playersShelves;
+    private String firstPlayer;
     private PlayerGoal playerGoal;
     private final List<CommonGoal> commonGoalList;
     private final CLI_IO cliIO;
@@ -38,6 +39,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
         this.chat = new Chat();
         this.board = null;
         this.playersShelves = new HashMap<>();
+        this.firstPlayer = "";
         this.playerGoal = null;
         this.commonGoalList = new ArrayList<>();
         this.cliIO = cliIO;
@@ -159,6 +161,9 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public void refreshShelf(String player, JSONObject shelf) {
+        if (firstPlayer.equals(""))  // The first player of whom we receive the shelf is the first player
+            firstPlayer = player;
+
         playersShelves.remove(player);
         try {
             this.playersShelves.put(player, new Shelf(shelf));
@@ -260,6 +265,15 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     @Override
     public boolean isItMyTurn(){
         return itsMyTurn;
+    }
+
+    /**
+     * This method is used to find out if the client is the first player
+     * @return true if the client is the first player
+     */
+    @Override
+    public boolean amIFirstPlayer() {
+        return firstPlayer.equals(playerName);
     }
 
     /**

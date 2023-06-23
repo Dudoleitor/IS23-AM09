@@ -21,7 +21,7 @@ public interface ClientModel extends ClientRemote{
      * @return True if the player need to play in the current turn
      */
     public boolean isItMyTurn() throws RemoteException;
-
+    public boolean amIFirstPlayer() throws RemoteException;
     public Board getBoard() throws RemoteException;
     public Map<String, Shelf> getPlayersShelves() throws RemoteException;
     public Chat getChat() throws RemoteException;
