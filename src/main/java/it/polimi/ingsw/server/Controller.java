@@ -613,10 +613,15 @@ public class Controller implements Jsonable {
 
     /**
      * WARNING: this method should be used only for testing purposes.
-     * This method is used to manually set the turn.
-     * @param turn int representing the turn
+     * This method is used to set the player currently playing.
+     * @param playerName name of the player to set as current player
      */
-    protected void setTurn_testing_only(int turn){
-        this.turn = turn;
+    protected void setTurn_testing_only(String playerName){
+        for(int i=0; i<players.size(); i++){
+            if(players.get(i).getName().equals(playerName)){
+                turn = i;
+                return;
+            }
+        }
     }
 }

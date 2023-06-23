@@ -20,9 +20,9 @@ public class ControllerTest {
         clients.add(new ClientStub("fridgeoggi"));
         clients.add(new ClientStub("fridgedomani"));
         Controller testCont1 = new Controller(clients);
-        testCont1.setTurn_testing_only(0);
+        testCont1.setTurn_testing_only("fridgeieri");
         Controller testCont2 = new Controller(testCont1.toJson(), clients);
-        testCont2.setTurn_testing_only(0);
+        testCont2.setTurn_testing_only("fridgeieri");
 
         assertEquals(testCont1.toJson().toJSONString(), testCont2.toJson().toJSONString());
         //null list
@@ -49,7 +49,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
         List<Player> playerList = new ArrayList<>();
         try{
             playerList = (List<Player>) players.stream().map(p -> {
@@ -63,9 +63,9 @@ public class ControllerTest {
         catch (Exception e){
             fail();
         }
-        assertEquals(0,c.getTurn());
+        assertEquals("fridgeieri",c.getCurrentPlayerName());
         assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
-        assertEquals(c.getPlayers(), playerList);
+        assertTrue(c.getPlayers().containsAll(playerList) && c.getPlayers().size()==playerList.size());
         // ASSERTION REMOVED! Controller must fill the board
         //assertTrue(c.getBoard().sameBoard(new Board(3)));
         assertEquals(players.get(0),c.getCurrentPlayerName());
@@ -85,7 +85,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
         List<Player> playerList = null;
         try {
             playerList = (List<Player>) players.stream().map(p -> {
@@ -115,7 +115,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
 
 
         for (int i = 0; i < 100; i++) {
@@ -133,7 +133,7 @@ public class ControllerTest {
         playernames.add("fridgedomani");
         List<Client> clients = playernames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
 
         List<Player> players = c.getPlayers();
         assertEquals("fridgeieri", c.getCurrentPlayerName());
@@ -157,7 +157,7 @@ public class ControllerTest {
         playerNames.add("fridgedopodomani");
         List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
 
         List<Player> players = c.getPlayers();
         c.setActivity(players.get(1).getName(),false);
@@ -180,7 +180,7 @@ public class ControllerTest {
         playerNames.add("fridgedopodomani");
         List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
 
         List<Player> players = c.getPlayers();
         //modify a copy of the list
@@ -198,7 +198,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
 
         List<Player> playerList = null;
         try {
@@ -212,9 +212,9 @@ public class ControllerTest {
         } catch (Exception e) {
             fail();
         }
-        for(int i = 0; i < 10; i++){
+        for(int i = c.getTurn(); i < 10; i++){
             assertEquals(i,c.getTurn());
-            assertEquals(c.getCurrentPlayerName(),players.get(i%3));
+            assertEquals(c.getCurrentPlayerName(),c.getPlayers().get(i%3).getName());
             c.nextTurn();
         }
     }
@@ -227,7 +227,7 @@ public class ControllerTest {
         players.add("fridgedomani");
         List<Client> clients = players.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(new ArrayList<>(clients));
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
 
         c.clientDisconnected(clients.get(2));
         clients.remove(clients.get(2));

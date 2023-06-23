@@ -23,7 +23,7 @@ public class RiemannTest { //an integration test
         playerNames.add("friededopodomani");
         List<Client> clients = playerNames.stream().map(ClientStub::new).collect(Collectors.toList());
         Controller c = new Controller(clients);
-        c.setTurn_testing_only(0);
+        c.setTurn_testing_only("fridgeieri");
         List<Player> playerList = null;
         try{
             playerList = (List<Player>) playerNames.stream().map(p -> {
@@ -40,11 +40,11 @@ public class RiemannTest { //an integration test
 
         //TURN 0
         //contains the correct players
-        assertEquals(c.getPlayers(), playerList);
+        assertTrue(c.getPlayers().containsAll(playerList) && c.getPlayers().size()==playerList.size());
         //valid commongoals (hardcoded valid values 1-12)
         assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
-        //start from turn 0
-        assertEquals(0,c.getTurn());
+        //start turn from fridgeieri
+        assertEquals("fridgeieri",c.getCurrentPlayerName());
         //the Board is a correct empty board for 4 players -- ASSERTION REMOVED! Controller must fill the board
         //assertTrue(c.getBoard().sameBoard(new Board(4)));
         //the first player is actually the first
@@ -81,7 +81,7 @@ public class RiemannTest { //an integration test
             assertEquals(Tile.Empty,c.getBoard().getTile(0,3));
             assertEquals(Tile.Empty,c.getBoard().getTile(0,4));
             //Next turn has been called
-            assertEquals(c.getPlayers().get(1).getName(),c.getCurrentPlayerName());
+            assertEquals(playerNames.get(1),c.getCurrentPlayerName());
             assertTrue(c.getShelves().get(playerNames.get(0)).allTilesInColumn(0).containsAll(picked));
             assertEquals(picked.get(0),c.getShelves().get(playerNames.get(0)).getTile(5,0));
             assertEquals(picked.get(1),c.getShelves().get(playerNames.get(0)).getTile(4,0));
@@ -116,7 +116,7 @@ public class RiemannTest { //an integration test
             assertEquals(Tile.Empty,c.getBoard().getTile(1,4));
             assertEquals(Tile.Empty,c.getBoard().getTile(1,5));
             //Next turn has been called
-            assertEquals(c.getPlayers().get(2).getName(),c.getCurrentPlayerName());
+            assertEquals(playerNames.get(2),c.getCurrentPlayerName());
             assertTrue(c.getShelves().get(playerNames.get(1)).allTilesInColumn(0).containsAll(picked));
             assertEquals(picked.get(0),c.getShelves().get(playerNames.get(1)).getTile(5,0));
             assertEquals(picked.get(1),c.getShelves().get(playerNames.get(1)).getTile(4,0));
