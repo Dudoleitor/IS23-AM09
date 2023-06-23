@@ -101,7 +101,7 @@ public class Player implements Jsonable {
             points =  goal.check(shelf);
         }
         catch (JsonBadParsingException e) {
-            points = 0; //TODO could be better
+            throw new RuntimeException("Error while checking personal goal: " + e.getMessage());
         }
         return points;
     }

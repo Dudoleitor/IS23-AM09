@@ -122,7 +122,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
      * @return list of players in this lobby
      */
     public synchronized ArrayList<Client> getClients() {
-        return new ArrayList<>(clients); //TODO this is by reference
+        return new ArrayList<>(clients);
     }
 
     public synchronized List<String> getPlayerNames() {

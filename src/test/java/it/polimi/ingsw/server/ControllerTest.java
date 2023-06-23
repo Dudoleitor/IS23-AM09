@@ -28,7 +28,6 @@ public class ControllerTest {
         //null list
         assertThrows(ControllerGenericException.class, () -> new Controller((List<Client>) null));
         //no players
-        //TODO could be better
         assertThrows(Exception.class, () ->  new Controller(new ArrayList<Client>()));
     }
 
@@ -37,7 +36,6 @@ public class ControllerTest {
         //null list
         assertThrows(ControllerGenericException.class, () -> new Controller((List<Client>) null));
         //no players
-        //TODO could be better
         assertThrows(Exception.class, () ->  new Controller(new ArrayList<Client>()));
     }
 
