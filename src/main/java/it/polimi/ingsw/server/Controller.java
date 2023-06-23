@@ -71,6 +71,9 @@ public class Controller implements Jsonable {
             players.add(player);
             virtualViews.add(player.getVirtualShelf());
         }
+
+        final int shift = ThreadLocalRandom.current().nextInt(0, clients.size()-1);
+        Collections.rotate(players, shift);
         return players;
     }
 
@@ -102,7 +105,7 @@ public class Controller implements Jsonable {
 
         this.virtualViews = new ArrayList<>();
         this.clients = clients;
-        this.turn = ThreadLocalRandom.current().nextInt(0, clients.size());
+        this.turn = 0;
 
         try {
             this.board = initBoard();
@@ -377,6 +380,8 @@ public class Controller implements Jsonable {
      * client the game has ended.
      */
     private void handleGameEnd() {
+        if (handledGameTermination)
+            return;
         Map<String, Integer> leaderBoard = new HashMap<>();
 
         final List<Player> playersToConsider;
