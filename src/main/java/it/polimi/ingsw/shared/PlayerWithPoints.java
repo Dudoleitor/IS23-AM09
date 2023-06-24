@@ -10,6 +10,10 @@ public class PlayerWithPoints implements Jsonable{
         this.playerName = playerName;
         this.points = points;
     }
+    public PlayerWithPoints(JSONObject jsonCouple){
+        playerName = jsonCouple.get("user").toString();
+        points = Integer.parseInt(jsonCouple.get("points").toString());
+    }
 
     public String getPlayerName() {
         return playerName;
@@ -21,6 +25,10 @@ public class PlayerWithPoints implements Jsonable{
 
     @Override
     public JSONObject toJson() {
-        return null;
+        JSONObject leaderboard = new JSONObject();
+        leaderboard.put("user", playerName);
+        leaderboard.put("points", points);
+
+        return leaderboard;
     }
 }
