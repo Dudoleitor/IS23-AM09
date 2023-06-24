@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -77,23 +78,5 @@ public class winnerSceneController extends SceneController implements Initializa
 
         if(!players.get(0).getPlayerName().equals(playerName))
             winnerText.setText("You lost");
-    }
-}
-
-class PlayerWithPoints {
-    private final String playerName;
-    private final int points;
-
-    public PlayerWithPoints(String playerName, int points) {
-        this.playerName = playerName;
-        this.points = points;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public int getPoints() {
-        return points;
     }
 }
