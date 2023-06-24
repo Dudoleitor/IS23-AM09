@@ -315,7 +315,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      * send the leaderboard to the client.
      * @param leaderBoard Map: player's name - points
      */
-    public void endGame(Map<String, Integer> leaderBoard){
+    public void endGame(List<PlayerWithPoints> leaderBoard){
         cliIO.endGame(leaderBoard, playerName,playersShelves,board);
         this.gameEnded = true;
     }

@@ -512,32 +512,24 @@ public class CLI_IO {
         }
     }
 
-    public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
+    public void endGame(List<PlayerWithPoints> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
         synchronized (cli_lock) {
-            //sort the points
-            List<Integer> points = leaderBoard.values().
-                    stream().
-                    sorted(Comparator.reverseOrder()).
-                    collect(Collectors.toList());
-            //sort the names based on points
-            List<String> names = leaderBoard.keySet().
-                    stream().
-                    sorted(Comparator.comparingInt(leaderBoard::get).reversed()). //TODO handle same scores properly
-                            collect(Collectors.toList());
-            String leaderboard = "LeaderBoard:\n";
+            String msg = "LeaderBoard:\n";
 
-            for (String player : names) {
-                leaderboard = leaderboard.concat("      -" + player + ": " + leaderBoard.get(player) + "\n");
+            for (PlayerWithPoints player : leaderBoard) {
+                msg = msg.concat("      -" + player.getPlayerName() + ": " + player.getPoints() + "\n");
             }
-                if (names.get(0).equals(playername)) {
-                    System.out.println(victoryBanner);
-                } else {
-                    System.out.println(defeatBanner);
-                }
-                printMessage(leaderboard);
-                showBoard(board);
-                showShelves(playerShelves);
+
+
+            if (leaderBoard.get(0).getPlayerName().equals(playername)) {
+                System.out.println(victoryBanner);
+            } else {
+                System.out.println(defeatBanner);
+            }
+            printMessage(msg);
+            showBoard(board);
+            showShelves(playerShelves);
         }
     }
 

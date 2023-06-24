@@ -1,6 +1,7 @@
 package it.polimi.ingsw.shared.RemoteInterfaces;
 
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
@@ -81,7 +82,7 @@ public interface ClientRemote extends Remote, Serializable {
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client
      */
-    public void endGame(Map<String, Integer> leaderBoard) throws RemoteException;
+    public void endGame(List<PlayerWithPoints> leaderBoard) throws RemoteException;
 
     /**
      * @see it.polimi.ingsw.server.clientonserver.Client

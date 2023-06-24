@@ -57,14 +57,8 @@ public class winnerSceneController extends SceneController implements Initializa
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        final Map<String, Integer> leaderboard = model.getLeaderBoard();
-        final List<PlayerWithPoints> players = new ArrayList<>();
+        final List<PlayerWithPoints> players = model.getLeaderBoard();
         Text[] userNames = new Text[]{username1,username2,username3, username4};
-
-        for (Map.Entry<String, Integer> entry : leaderboard.entrySet()) {
-            players.add(new PlayerWithPoints(entry.getKey(), entry.getValue()));
-        }
-        players.sort((o1, o2) -> o2.getPoints() - o1.getPoints());
 
         int i = 0;
         for(PlayerWithPoints player : players) {
