@@ -49,6 +49,9 @@ public class HomeScreenController extends SceneController implements Initializab
     ImageView board;
 
     @FXML
+    ImageView chair;
+
+    @FXML
     ImageView imgPersGoal;
 
     @FXML
@@ -333,6 +336,10 @@ public class HomeScreenController extends SceneController implements Initializab
             Image.setLayoutX(176.0);
             Image.setFitHeight(76.0);
             Image.setFitWidth(45.0);
+        }
+
+        if(!model.amIFirstPlayer()){
+            chair.setOpacity(0);
         }
 
         if(controller.isNewMatch()) {
