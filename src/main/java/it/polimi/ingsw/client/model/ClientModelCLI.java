@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.model;
 
+import it.polimi.ingsw.client.connection.LobbyException;
+import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.controller.cli.CLI_IO;
 import it.polimi.ingsw.shared.*;
@@ -32,6 +34,7 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     private boolean gameEnded;
     private Thread pingListener;
     private final Object pingLock;
+    private Server server;  // Needed to terminate the connection
 
     public ClientModelCLI(String playerName, CLI_IO cliIO) throws RemoteException {
         super();
@@ -50,6 +53,14 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
 
         this.pingLock = new Object();
         this.pingListener = ClientController.getThread(pingLock);
+    }
+
+    /**
+     * This method is used to set the pointer to the server interface.
+     * @param server Server object
+     */
+    public void setServer(Server server) {
+        this.server = server;
     }
 
     /**
@@ -318,6 +329,13 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
     public void endGame(List<PlayerWithPoints> leaderBoard){
         cliIO.endGame(leaderBoard, playerName,playersShelves,board);
         this.gameEnded = true;
+
+        if(this.server!=null)
+            try {
+                server.quitGame(playerName);
+            } catch (LobbyException ignored) {
+            }
+        System.exit(0);
     }
 
     @Override
