@@ -500,6 +500,18 @@ public class CLI_IO {
         }
     }
 
+    public void setFirstPlayer(boolean firstPlayer){
+        if(firstPlayer){
+            synchronized (cli_lock){
+                printMessage("You are the first player!");
+            }
+            setPlaceHolder(Client_Settings.fistPlayerPlaceHolder);
+        }
+        else{
+            setPlaceHolder(Client_Settings.stdPlaceHolder);
+        }
+    }
+
     public void endGame(Map<String, Integer> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
         synchronized (cli_lock) {
