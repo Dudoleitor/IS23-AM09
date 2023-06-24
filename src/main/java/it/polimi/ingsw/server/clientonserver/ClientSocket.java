@@ -5,6 +5,7 @@ import it.polimi.ingsw.server.ServerTcpThread;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -316,9 +317,9 @@ public class ClientSocket implements Client {
      * send the leaderboard to the client.
      * @param leaderBoard Map: player's name - points
      */
-    public void endGame(Map<String, Integer> leaderBoard){
+    public void endGame(List<PlayerWithPoints> leaderBoard){
         JSONObject content= new JSONObject();
-        content.put("leaderboard", Jsonable.map2json(leaderBoard));
+        //content.put("leaderboard", Jsonable.map2json(leaderBoard)); TODO implement
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.EndGame);
         update.setContent(content);

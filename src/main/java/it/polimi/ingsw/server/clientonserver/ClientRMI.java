@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.clientonserver;
 
 import it.polimi.ingsw.server.NetworkExceptionHandler;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
@@ -289,7 +290,7 @@ public class ClientRMI implements Client, Serializable {
      * send the leaderboard to the client.
      * @param leaderBoard Map: player's name - points
      */
-    public void endGame(Map<String, Integer> leaderBoard){
+    public void endGame(List<PlayerWithPoints> leaderBoard){
         submitRunnable(()->{
             try {
                 clientRemote.endGame(leaderBoard);

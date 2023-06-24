@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.model.ClientModel;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.model.Tile;
 import it.polimi.ingsw.shared.model.TileGenericException;
 import org.json.simple.JSONArray;
@@ -199,7 +200,7 @@ public class ServerTCPViewUpdater extends Thread{
         }
     }
     private void endgame (JSONObject content){
-        final Map<String,Integer> leaderboard = Jsonable.json2mapStringInt((JSONObject) content.get("leaderboard"));
+        final List<PlayerWithPoints> leaderboard = Jsonable.json2Leaderboard((JSONArray) content.get("leaderboard"));
         try {
             clientModel.endGame(leaderboard);
         } catch (RemoteException e) {

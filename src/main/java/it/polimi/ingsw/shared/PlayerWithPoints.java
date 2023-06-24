@@ -2,7 +2,9 @@ package it.polimi.ingsw.shared;
 
 import org.json.simple.JSONObject;
 
-public class PlayerWithPoints implements Jsonable{
+import java.io.Serializable;
+
+public class PlayerWithPoints implements Jsonable, Serializable {
     private final String playerName;
     private final int points;
 

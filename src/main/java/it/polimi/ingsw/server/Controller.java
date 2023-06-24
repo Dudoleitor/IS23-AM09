@@ -382,7 +382,7 @@ public class Controller implements Jsonable {
     private void handleGameEnd() {
         if (handledGameTermination)
             return;
-        Map<String, Integer> leaderBoard = new HashMap<>();
+        List<PlayerWithPoints> leaderBoard = new ArrayList<>();
 
         final List<Player> playersToConsider;
 
@@ -406,7 +406,7 @@ public class Controller implements Jsonable {
                 System.out.println("From bonus: "+ GameSettings.bonusPointsForLastMove);
             }
             System.out.println("Total: "+points);
-            leaderBoard.put(p.getName(),points);
+            leaderBoard.add(new PlayerWithPoints(p.getName(),points));
         }
 
         for (Client client : clients)
