@@ -161,9 +161,10 @@ public class ClientModelCLI extends UnicastRemoteObject implements ClientModel, 
      */
     @Override
     public void refreshShelf(String player, JSONObject shelf) {
-        if (firstPlayer.equals(""))  // The first player of whom we receive the shelf is the first player
+        if (firstPlayer.equals("")) {  // The first player of whom we receive the shelf is the first player
             firstPlayer = player;
-
+            cliIO.setFirstPlayer(firstPlayer.equals(playerName));
+        }
         playersShelves.remove(player);
         try {
             this.playersShelves.put(player, new Shelf(shelf));

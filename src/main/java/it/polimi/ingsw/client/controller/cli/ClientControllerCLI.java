@@ -223,11 +223,9 @@ public class ClientControllerCLI implements ClientController {
     private void playMatch() throws LobbyException {
         //Receive and execute commands until "exit" lobbyCommand is launched
         while(!exit){
-
             try {
                 if (model !=null && model.gameEnded()) return;
-            } catch (RemoteException ignored) {
-            }
+            } catch (RemoteException ignored) {} //TODO handle somehow
 
             LobbyCommand lobbyCommand = cliIO.askCommand();
             executeUserCommand(lobbyCommand);

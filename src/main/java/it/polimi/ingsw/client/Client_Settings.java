@@ -25,7 +25,8 @@ public class Client_Settings {
     public static final Color GAMEColor = Color.Purple;
     public static final Color errorColor = Color.Red;
     public static final String stdPlaceHolder = "$:";
-    public static final String adminPlaceHolder = "\uD83D\uDC51:";
+    public static final String adminPlaceHolder = "admin:";
+    public static final String fistPlayerPlaceHolder = "1st:";
     public static final String gameLogo = Color.coloredString(
                     "\n\n"+
                             "███╗   ███╗ ██╗   ██╗    ███████╗ ██╗  ██╗ ███████╗ ██╗      ███████╗ ██╗ ███████╗\n" +
