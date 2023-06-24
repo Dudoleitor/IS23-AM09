@@ -275,12 +275,6 @@ public class ClientControllerCLI implements ClientController {
                 play = false;
             }
         }
-
-        try {
-            sleep(1000);
-        } catch (InterruptedException ignored) {
-            play = false;
-        }
     }
     public void errorMessage(String msg) {
         cliIO.errorMessage(msg);
