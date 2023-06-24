@@ -132,4 +132,19 @@ public interface Jsonable {
         }
         return list;
     }
+
+    /**
+     * transform a jsonString to a List<PlayerWithPoints>
+     * @param jsonList is the string of JsonObject
+     * @return a boolean corresponding to the Object
+     */
+    static List<PlayerWithPoints> json2Leaderboard (JSONArray jsonList){
+        if (jsonList == null)
+            return null;
+        List<PlayerWithPoints> list = new ArrayList<>();
+        for(Object l : jsonList){
+            list.add(new PlayerWithPoints((JSONObject) l));
+        }
+        return list;
+    }
 }
