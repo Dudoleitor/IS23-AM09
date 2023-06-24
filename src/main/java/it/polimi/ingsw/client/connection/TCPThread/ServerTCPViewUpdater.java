@@ -87,6 +87,7 @@ public class ServerTCPViewUpdater extends Thread{
                 break;
             case EndGame:
                 endgame(content);
+                break;
         }
     }
 
