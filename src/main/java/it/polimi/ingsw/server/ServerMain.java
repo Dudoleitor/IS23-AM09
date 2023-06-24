@@ -58,7 +58,6 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         while (true) {
             Thread.onSpinWait(); //is used to suspend the process and make it wait
         } //to keep it online
-        //TODO on exit we have to kill the socket and unbind the remote interface
     }
 
     /**
@@ -75,15 +74,11 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         }
         try {
             registry = LocateRegistry.createRegistry(RMIport); //create a registry that accepts request on a defined port
-        } catch (RemoteException e) {
-            e.printStackTrace(); //TODO to handle correctly
-        }
-        try {
             registry.bind("interface", stub); //Binds a remote reference to the specified name in this registry
-        } catch (RemoteException e) { //TODO to handle correctly
+        } catch (RemoteException e) {
             throw new RuntimeException(e);
         } catch (AlreadyBoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Interface already bound." + e.getMessage());
         }
 
     }

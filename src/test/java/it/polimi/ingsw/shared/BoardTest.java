@@ -113,7 +113,7 @@ class BoardTest {
             p.add(new Position(5,j));
         }
 
-        assertEquals(p, b.getValidPositions(new PartialMove())); //TODO to complete after finished method
+        assertEquals(p, b.getValidPositions(new PartialMove()));
     }
 
 
