@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.Chat;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
@@ -113,12 +114,16 @@ public class ClientStub implements Client {
 
     }
 
+    /**
+     * This method is used at the end of the game to
+     * send the leaderboard to the client.
+     *
+     * @param leaderBoard Map: player's name - points
+     */
     @Override
-    public void endGame(Map<String, Integer> leaderBoard) {
+    public void endGame(List<PlayerWithPoints> leaderBoard) {
 
     }
-
-    
 
     /**
      * This function is used to ensure the client is still connected.

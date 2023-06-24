@@ -3,10 +3,12 @@ package it.polimi.ingsw.client;
 import it.polimi.ingsw.client.controller.cli.CLI_IO;
 import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
 import static org.junit.Assert.fail;
@@ -71,15 +73,15 @@ public class CLIIOTest {
     @Test
     void endGame() throws JsonBadParsingException {
         if(verbose){
-            Map<String,Integer> leaderboard = new HashMap<>();
-            leaderboard.put("frigieri",200);
-            leaderboard.put("firgioggi",30);
-            leaderboard.put("frigdopodonmani",55);
-            leaderboard.put("friegdomani",25);
+            List<PlayerWithPoints> leaderboard = new LinkedList<>();
+            leaderboard.add(new PlayerWithPoints( "frigieri",200));
+            leaderboard.add(new PlayerWithPoints("frigoggi",30));
+            leaderboard.add(new PlayerWithPoints("frigdopodonmani",55));
+            leaderboard.add(new PlayerWithPoints("frigdomani",25));
             CLI_IO cliIO = new CLI_IO();
             Board board = new Board(4);
             Map<String,Shelf> shelves = new HashMap<>();
-            for(String p: leaderboard.keySet()){
+            for(String p: leaderboard.stream().map(PlayerWithPoints::getPlayerName).collect(Collectors.toList())){
                 shelves.put(p,new Shelf(6,5));
             }
             cliIO.endGame(leaderboard,"frigieri",shelves,board);
