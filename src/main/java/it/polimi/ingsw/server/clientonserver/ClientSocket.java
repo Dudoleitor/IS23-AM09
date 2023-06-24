@@ -319,7 +319,7 @@ public class ClientSocket implements Client {
      */
     public void endGame(List<PlayerWithPoints> leaderBoard){
         JSONObject content= new JSONObject();
-        //content.put("leaderboard", Jsonable.map2json(leaderBoard)); TODO implement
+        content.put("leaderboard", Jsonable.list2json(leaderBoard));
         MessageTcp update = new MessageTcp();
         update.setCommand(MessageTcp.MessageCommand.EndGame);
         update.setContent(content);
