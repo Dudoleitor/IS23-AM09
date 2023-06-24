@@ -12,6 +12,12 @@
     <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
         <children>
 
+            <ImageView fx:id="chair" fitHeight="50" fitWidth="50" layoutX="329.0" layoutY="281.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@gameGraphics/misc/firstplayertoken.png" />
+                </image>
+            </ImageView>
+
             <ImageView fx:id="board" fitHeight="258.0" fitWidth="268.0" layoutX="32.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/boards/livingroom.png" />
@@ -27,21 +33,21 @@
                     <Image url="@gameGraphics/misc/Sacchetto_Aperto.png" />
                 </image>
             </ImageView>
-            <ImageView fx:id="shelfImage" fitHeight="219.0" fitWidth="221.0" layoutX="365.0" layoutY="114.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="shelfImage" fitHeight="219.0" fitWidth="221.0" layoutX="405.0" layoutY="116.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/boards/bookshelf.png" />
                 </image>
             </ImageView>
-            <ImageView fx:id="imgPersGoal" fitHeight="108.0" fitWidth="76.0" layoutX="294.0" layoutY="191.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imgPersGoal" fitHeight="108.0" fitWidth="76.0" layoutX="314.0" layoutY="148.0" pickOnBounds="true" preserveRatio="true" />
 
-            <ImageView fx:id="commonGoal1" fitHeight="76.0" fitWidth="121.0" layoutX="328.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="commonGoal2" fitHeight="76.0" fitWidth="121.0" layoutX="465.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="imageScoring1" fitHeight="39.0" fitWidth="39.0" layoutX="395.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
+            <ImageView fx:id="commonGoal1" fitHeight="76.0" fitWidth="121.0" layoutX="371.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="commonGoal2" fitHeight="76.0" fitWidth="121.0" layoutX="515.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imageScoring1" fitHeight="39.0" fitWidth="39.0" layoutX="434.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
                 <image>
                     <Image url="@gameGraphics/scoring_tokens/scoring_2.jpg" />
                 </image>
             </ImageView>
-            <ImageView fx:id="imageScoring2" fitHeight="39.0" fitWidth="39.0" layoutX="531.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
+            <ImageView fx:id="imageScoring2" fitHeight="39.0" fitWidth="39.0" layoutX="578.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true" rotate="-9.2">
                 <image>
                     <Image url="@gameGraphics/scoring_tokens/scoring_6.jpg" />
                 </image>
@@ -58,7 +64,7 @@
                 </font>
             </Button>
 
-            <Button layoutX="475.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#gameStatus" style="-fx-background-color: #49be25;" text="Game Status">
+            <Button layoutX="536.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#gameStatus" style="-fx-background-color: #49be25;" text="Game Status">
                 <font>
                     <Font name="SF Mono Bold" size="13.0" />
                 </font>
@@ -66,7 +72,7 @@
 
             <Canvas fx:id="canvasBoard" height="236.0" layoutX="42.0" layoutY="81.0" onMousePressed="#clickedMouseBoard" width="236.0" />
             <Canvas fx:id="canvasShelf" height="172.0" layoutX="391.0" layoutY="129.0" onMousePressed="#clickedMouseShelf" width="164.0" />
-            <Polygon fx:id="turnFlag" fill="#f4ff1f" layoutX="330.0" layoutY="182.0" points="-12.4967041015625, -29.838958740234375, 10.201263427734375, -29.838958740234375, -2.939666748046875, -48.51679992675781" rotate="180.0" stroke="BLACK" strokeType="INSIDE" />
+            <Polygon fx:id="turnFlag" fill="#f4ff1f" layoutX="354.0" layoutY="169.0" points="-12.4967041015625, -29.838958740234375, 10.201263427734375, -29.838958740234375, -2.939666748046875, -48.51679992675781" rotate="180.0" stroke="BLACK" strokeType="INSIDE" />
          <Button layoutX="217.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#deleteMove" prefHeight="26.0" prefWidth="76.0" style="-fx-background-color: red;" text="Delete Move">
             <font>
                <Font size="10.0" />
@@ -79,7 +85,7 @@
          </Button>
          <Circle fx:id="notificationCircle" fill="red" layoutX="43.0" layoutY="341.0" opacity="0.0" radius="9.0" stroke="red" strokeType="INSIDE" />
          <AnchorPane fx:id="anchorBoard" layoutX="40.0" layoutY="84.0" prefHeight="236.0" prefWidth="236.0" />
-         <AnchorPane fx:id="anchorShelf" layoutX="391.0" layoutY="130.0" prefHeight="172.0" prefWidth="164.0" />
+         <AnchorPane fx:id="anchorShelf" layoutX="431.0" layoutY="129.0" prefHeight="172.0" prefWidth="164.0" />
          <ImageView fx:id="Tile1" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="261.0" pickOnBounds="true" preserveRatio="true" />
          <ImageView fx:id="Tile2" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="215.0" pickOnBounds="true" preserveRatio="true" />
          <ImageView fx:id="Tile3" fitHeight="45.0" fitWidth="45.0" layoutX="619.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true" />
