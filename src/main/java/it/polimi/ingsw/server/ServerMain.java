@@ -83,7 +83,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
 
     }
 
-    private static void SocketIni(ServerMain server){ //TODO WIP
+    private static void SocketIni(ServerMain server){
         try {
             ServerSocket serverSocket = new ServerSocket(TCPport);
             while(true) {

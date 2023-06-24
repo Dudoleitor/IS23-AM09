@@ -259,6 +259,7 @@ public class ClientControllerCLI implements ClientController {
             cliIO.errorMessage("It was impossible to connect to the server");
 
         if (successfulLogin) {
+            model.setServer(server);
             try {
                 //ask the client what lobby to join
                 joinLobby();

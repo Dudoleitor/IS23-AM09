@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
@@ -372,6 +373,11 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         client.disconnect();
         if (!clients.remove(client)) {
             System.out.println("Called disconnectClient but client " + client.getPlayerName() + " is not in lobby #" + id + ", ignoring");
+            return;
+        }
+
+        if(isTerminated()) {
+            System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
             return;
         }
 
