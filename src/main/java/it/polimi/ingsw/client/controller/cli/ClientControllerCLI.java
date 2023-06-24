@@ -232,10 +232,6 @@ public class ClientControllerCLI implements ClientController {
         }
     }
     /**
-     * True when the client wants to keep playing
-     */
-    boolean play = true;
-    /**
      * True when the match has entered or the client has quit
      */
     boolean exit = false;
@@ -262,7 +258,7 @@ public class ClientControllerCLI implements ClientController {
         if(!successfulLogin)
             cliIO.errorMessage("It was impossible to connect to the server");
 
-        if (successfulLogin && play) {
+        if (successfulLogin) {
             try {
                 //ask the client what lobby to join
                 joinLobby();
@@ -272,14 +268,7 @@ public class ClientControllerCLI implements ClientController {
 
             } catch (ServerException | LobbyException e) {
                 cliIO.errorMessage("Something went wrong connecting to server");
-                play = false;
             }
-        }
-
-        try {
-            sleep(1000);
-        } catch (InterruptedException ignored) {
-            play = false;
         }
     }
     public void errorMessage(String msg) {
