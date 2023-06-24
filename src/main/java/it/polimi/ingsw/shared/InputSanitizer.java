@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.controller;
+package it.polimi.ingsw.shared;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ public class InputSanitizer {
      */
     public static boolean isValidName(String name){
         return  name!= null &&
+                !name.equals("server") &&
                 name.chars().count() >= 1 &&
                 name.chars().
                         allMatch(c ->

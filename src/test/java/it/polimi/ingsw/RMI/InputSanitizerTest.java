@@ -1,6 +1,6 @@
 package it.polimi.ingsw.RMI;
 
-import it.polimi.ingsw.client.controller.InputSanitizer;
+import it.polimi.ingsw.shared.InputSanitizer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.controller.cli;
 
 import it.polimi.ingsw.client.Client_Settings;
-import it.polimi.ingsw.client.controller.InputSanitizer;
+import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.shared.model.*;
 import it.polimi.ingsw.shared.*;
 

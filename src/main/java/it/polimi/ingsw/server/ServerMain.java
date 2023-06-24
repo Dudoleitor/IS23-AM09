@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
+import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.shared.NetworkSettings;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
@@ -112,6 +113,9 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     public synchronized boolean login(Client client) throws RemoteException {
         synchronized (client) {
             final String playerName = client.getPlayerName().toLowerCase();
+
+            if (!InputSanitizer.isValidName(playerName))
+                return false;
 
             if (clientsWithoutLobby.stream()
                     .anyMatch(x ->
