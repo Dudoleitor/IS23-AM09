@@ -248,41 +248,38 @@ public class ClientControllerCLI implements ClientController {
         //Initiate the view
         cliIO = new CLI_IO();
 
-        while(play) {
+        //ask for username
+        playerName = cliIO.askUserName();
 
-            //ask for username
-            playerName = cliIO.askUserName();
+        try {
+            model = new ClientModelCLI(playerName, cliIO);
+        } catch (RemoteException ignored) {
+        }
 
+        //initiate the connection interface and attempt a login
+        boolean successfulLogin = ClientController.connect(this, model);
+
+        if(!successfulLogin)
+            cliIO.errorMessage("It was impossible to connect to the server");
+
+        if (successfulLogin && play) {
             try {
-                model = new ClientModelCLI(playerName, cliIO);
-            } catch (RemoteException ignored) {
-            }
+                //ask the client what lobby to join
+                joinLobby();
 
-            //initiate the connection interface and attempt a login
-            boolean successfulLogin = ClientController.connect(this, model);
+                //game starts
+                playMatch();
 
-            if(!successfulLogin)
-                cliIO.errorMessage("It was impossible to connect to the server");
-
-            if (successfulLogin && play) {
-                try {
-                    //ask the client what lobby to join
-                    joinLobby();
-
-                    //game starts
-                    playMatch();
-
-                } catch (ServerException | LobbyException e) {
-                    cliIO.errorMessage("Something went wrong connecting to server");
-                    play = false;
-                }
-            }
-            try {
-                sleep(1000);
-            } catch (InterruptedException ignored) {
+            } catch (ServerException | LobbyException e) {
+                cliIO.errorMessage("Something went wrong connecting to server");
                 play = false;
-                break;
             }
+        }
+
+        try {
+            sleep(1000);
+        } catch (InterruptedException ignored) {
+            play = false;
         }
     }
     public void errorMessage(String msg) {
