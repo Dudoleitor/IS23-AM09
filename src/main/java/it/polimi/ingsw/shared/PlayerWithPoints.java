@@ -2,7 +2,7 @@ package it.polimi.ingsw.shared;
 
 import org.json.simple.JSONObject;
 
-public class PlayerWithPoints extends Jsonable{
+public class PlayerWithPoints implements Jsonable{
     private final String playerName;
     private final int points;
 
