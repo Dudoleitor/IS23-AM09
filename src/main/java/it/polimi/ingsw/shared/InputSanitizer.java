@@ -12,6 +12,7 @@ public class InputSanitizer {
     public static boolean isValidName(String name){
         return  name!= null &&
                 !name.equals("server") &&
+                !name.equals("private") &&
                 name.chars().count() >= 1 &&
                 name.chars().
                         allMatch(c ->

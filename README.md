@@ -9,14 +9,16 @@ Clients can interact with the server both via CLI and GUI.
 ## Features status
 | Feature | Status | Notes |
 | --- | :---: | --- |
-| Base game | :green_circle: ||
 | Complete game | :green_circle: ||
+| RMI | :green_circle: ||
+| Socket | :green_circle: ||
+| TUI | :green_circle: ||
+| GUI | :green_circle: ||
 | Multiple matches | :green_circle: ||
 | Persistence | :green_circle: ||
 | Disconnection handling | :green_circle: ||
 | Chat | :yellow_circle: | Private chat non complete |
-| TUI | :green_circle: ||
-| GUI | :orange_circle: | WIP |
+
 
 ## Team members
 - __Adorni Michele__ _@Mik-Ado_ michele.adorni@mail.polimi.it
