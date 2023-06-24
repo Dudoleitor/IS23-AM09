@@ -284,6 +284,10 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             throw new RuntimeException("Wrong format of message");
         }
         chat.addSecret(sender, receiver, message);
+
+        Client client = clients.stream().filter(x -> x.getPlayerName().equals(receiver)).findFirst().orElse(null);
+        if (client == null) return;
+        client.postChatMessage("PRIVATE " + sender, message);
     }
 
     @Override
