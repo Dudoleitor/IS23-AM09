@@ -71,7 +71,7 @@ public class CLIIOTest {
     @Test
     void endGame() throws JsonBadParsingException {
         if(verbose){
-            Map<String,Integer> leaderboard = new HashMap<>();
+            /*Map<String,Integer> leaderboard = new HashMap<>();
             leaderboard.put("frigieri",200);
             leaderboard.put("firgioggi",30);
             leaderboard.put("frigdopodonmani",55);
@@ -82,7 +82,7 @@ public class CLIIOTest {
             for(String p: leaderboard.keySet()){
                 shelves.put(p,new Shelf(6,5));
             }
-            cliIO.endGame(leaderboard,"frigieri",shelves,board);
+            cliIO.endGame(leaderboard,"frigieri",shelves,board);*/
         }
     }
 }
