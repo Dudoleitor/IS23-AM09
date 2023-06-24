@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
-import it.polimi.ingsw.client.controller.InputSanitizer;
+import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.ChatMessage;
@@ -15,7 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.net.URL;

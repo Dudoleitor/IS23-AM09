@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.connection.LobbyException;
-import it.polimi.ingsw.client.controller.InputSanitizer;
+import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;

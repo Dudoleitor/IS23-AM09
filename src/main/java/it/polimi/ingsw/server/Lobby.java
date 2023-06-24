@@ -296,16 +296,16 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
 
     @Override
     public synchronized void postMove(String player, JSONObject moveJson) {
-        Client playerInput = null;
+        Client client = null;
         final Move move = new Move(moveJson);
         try {
-            playerInput = clients.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
-            if (playerInput != null) {
+            client = clients.stream().filter(x -> x.getPlayerName().equals(player)).findFirst().orElse(null);
+            if (client != null) {
                 controller.moveTiles(player, move);
             }
         } catch (ControllerGenericException e) {
-            if (playerInput != null) //TODO are we sure about that??
-                playerInput.postChatMessage("Server", e.getMessage());
+            if (client != null)
+                client.postChatMessage("Server", e.getMessage());
             throw e;
         }
     }
