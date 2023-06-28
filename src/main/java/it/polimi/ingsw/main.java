@@ -65,6 +65,7 @@ public class main {
                 properties.setProperty("java.rmi.server.hostname", rmiLocalIp.toString());
                 System.out.println("RMI local IP set to " + System.getProperties().get("java.rmi.server.hostname"));
             } catch (ParseException ignored) {
+                System.out.println("RMI local IP invalid, ignoring");
             }
         }
 

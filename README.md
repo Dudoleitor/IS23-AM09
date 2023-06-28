@@ -6,6 +6,28 @@ Implementation of [My Shelfie](https://www.craniocreations.it/prodotto/my-shelfi
 The project task is to create a distributed system composed by a single server and multiple clients (one per player) that simulates the board game My Shelfies.  
 Clients can interact with the server both via CLI and GUI.
 
+## How to run
+Download the jar archive AM09-MyShelfie from the [deliveries](https://github.com/Dudoleitor/IS23-AM09/tree/master/deliveries) folder, the application has to be started in a terminal with the following command, an interactive cli menu will guide you through the configuration process:
+```
+java -jar AM09-MySheflie.jar
+```
+If you prefer to specify (some or all) options as command line arguments, you can use the following syntax. 
+
+To start the server:
+```
+java -jar AM09-MySheflie.jar --server --ip <server_ip> --tcp <socket_port> --rmi <rmi_port>
+```
+To start the client:
+```
+java -jar AM09-MySheflie.jar --client --ip <server_ip>
+```
+then you can choose between CLI and GUI with ```--cli``` and ```--gui``` options, between RMI and Socket with ```--rmi <port>``` and ```--tcp <port>```.
+
+### Note about RMI interface selection
+RMI (on both clients and servers) should be able to choose the correct network interface automatically with its relative IP, but if you encounter problems you can set the environment variable RMI_LOCAL_IP to the correct IP address.
+Use ```export RMI_LOCAL_IP=<ip_address>``` on Linux and MacOS, ```set RMI_LOCAL_IP=<ip_address>``` in a Windows terminal, ```$env:RMI_LOCAL_IP = '<ip_address>'``` in PowerShell.
+
+
 ## Features status
 | Feature | Status | Notes |
 | --- | :---: | --- |
