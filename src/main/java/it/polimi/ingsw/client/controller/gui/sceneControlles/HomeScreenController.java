@@ -98,30 +98,33 @@ public class HomeScreenController extends SceneController implements Initializab
     private ImageView[] tileImages;
     private Button[] buttons;
 
+    /**
+     * Obtain personal goal from model and set image accordingly
+     */
     protected void getPersonalGoal() {
         int number = model.getPlayerGoal().getGoalId() + 1;
         imgPersGoal.setImage(loadImage("personal_goal_cards/Personal_Goals" + number + ".png"));
     }
 
+    /**
+     * Set common goal UI according to game status
+     * @param cg1 the first common goal
+     * @param cg2 the second common goal
+     */
     public void updateCommonGoals(CommonGoal cg1, CommonGoal cg2) {
         commonGoal1.setImage(loadImage( "common_goal_cards/" + cg1.getID() + ".jpg"));
         commonGoal2.setImage(loadImage("common_goal_cards/" + cg2.getID() + ".jpg"));
-
-        String cg1_string;
-
-
-        String cg2_string;
-
 
         imageScoring1.setImage(loadImage("scoring_tokens/scoring_" + cg1.peekTopOfPointsStack() + ".jpg"));
         imageScoring2.setImage(loadImage("scoring_tokens/scoring_" + cg2.peekTopOfPointsStack() + ".jpg"));
     }
 
     /**
-     * @param turn: if turn == true, then it is my turn
+     * Set indicator of turn
+     * @param isMyTurn: if turn == true, then it is my turn
      */
-    public void setMyTurn(boolean turn) {
-        if(turn) {
+    public void setMyTurn(boolean isMyTurn) {
+        if(isMyTurn) {
             turnFlag.setStyle("-fx-fill: yellow;");
         } else {
             turnFlag.setStyle("-fx-fill: grey;");
@@ -174,8 +177,14 @@ public class HomeScreenController extends SceneController implements Initializab
             return;
         }
 
-        Position pos = boardHandler.getPosition(mouseEvent);
+        pickTile(boardHandler.getPosition(mouseEvent));
+    }
 
+    /**
+     * Remove tile from board and put it in the
+     * @param pos
+     */
+    private void pickTile(Position pos){
         //check if move is valid
         if(!moveBuilder.validPositions(model.getBoard()).contains(pos)) {
             controller.errorMessage("Please enter a valid position");
@@ -185,18 +194,29 @@ public class HomeScreenController extends SceneController implements Initializab
         //check if position fits in partial move
         try {
             moveBuilder.addPosition(pos);
-            Image image = boardHandler.removeTile(pos);
-            int n = moveBuilder.getPartialMove().getBoardPositions().size();
-            tileImages[n-1].setImage(image);
-            if(n == 2){
-                buttons[1].setOpacity(1.0);
-            }
-            if(n >2){
-                buttons[0].setOpacity(1.0);
-                buttons[2].setOpacity(1.0);
-            }
         } catch (Exception e) {
             showError(e.getMessage());
+        }
+
+        int n = moveBuilder.getSize();
+
+        Image image = boardHandler.removeTile(pos);
+        tileImages[n-1].setImage(image);
+
+        setSwitchButtons(n);
+    }
+
+    /**
+     * Set buttons to change position of tiles in move
+     * @param n
+     */
+    private void setSwitchButtons(int n){
+        if(n == 2){
+            buttons[1].setOpacity(1.0);
+        }
+        if(n >2){
+            buttons[0].setOpacity(1.0);
+            buttons[2].setOpacity(1.0);
         }
     }
 
@@ -329,14 +349,6 @@ public class HomeScreenController extends SceneController implements Initializab
 
         getPersonalGoal();
         updateCommonGoals(model.getCommonGoalList().get(0), model.getCommonGoalList().get(1));
-        if(model.isItMyTurn()) {
-            ImageView Image = new ImageView();
-            Image.setImage(loadImage("misc/firstplayertoken.png"));
-            Image.setLayoutX(318.0);
-            Image.setLayoutX(176.0);
-            Image.setFitHeight(76.0);
-            Image.setFitWidth(45.0);
-        }
 
         if(!model.amIFirstPlayer()){
             chair.setOpacity(0);
@@ -428,5 +440,9 @@ class MoveBuilder{
                 throw new InvalidMoveException("Error in move");
             }
         }
+    }
+
+    public int getSize(){
+        return pm.getBoardPositions().size();
     }
 }

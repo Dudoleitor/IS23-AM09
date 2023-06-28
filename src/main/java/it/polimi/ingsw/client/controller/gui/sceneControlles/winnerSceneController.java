@@ -71,6 +71,6 @@ public class winnerSceneController extends SceneController implements Initializa
         }
 
         if(!players.get(0).getPlayerName().equals(playerName))
-            winnerText.setText("You lost");
+            winnerText.setText("YOU LOST");
     }
 }
