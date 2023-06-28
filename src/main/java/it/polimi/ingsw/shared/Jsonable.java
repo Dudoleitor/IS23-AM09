@@ -147,4 +147,18 @@ public interface Jsonable {
         }
         return list;
     }
+
+    /**
+     * transform a list to a jsonString
+     * @param list is the boolean
+     * @return JsonObject that corresponds to that boolean
+     */
+    static JSONArray leaderboard2json(List<PlayerWithPoints> list) {
+        JSONArray jsonArray = new JSONArray();
+        for(PlayerWithPoints p : list) {
+            jsonArray.add(p.toJson());
+        }
+
+        return jsonArray;
+    }
 }
