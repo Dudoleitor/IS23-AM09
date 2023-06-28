@@ -73,11 +73,6 @@ public class PlayerShelvesController extends SceneController implements Initiali
         }
     }
 
-    private void setShelf(Shelf shelf, String playerName) {
-        shelvesHandlers.get(playerName).resetGrid(shelf);
-        shelvesHandlers.get(playerName).displayGrid();
-    }
-
     public void showTurnPopup() {
         ClientControllerGUI.showInfo("It's your turn.");
     }
@@ -117,7 +112,6 @@ public class PlayerShelvesController extends SceneController implements Initiali
         ImageView[] shelves = new ImageView[]{shelf1,shelf2,shelf3};
         Canvas[] shelvesCanvas = new Canvas[]{canvasShelf1,canvasShelf2,canvasShelf3};
 
-        Arrays.stream(userNames).forEach(text -> text.setText(""));
         int i = 0;
         //for all the players but the user
         for(String playerName : model.getPlayers()){

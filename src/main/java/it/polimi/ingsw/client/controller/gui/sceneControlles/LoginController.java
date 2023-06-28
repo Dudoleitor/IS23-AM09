@@ -30,16 +30,19 @@ public class LoginController extends SceneController {
 
     @FXML
     protected void signInAction() throws IOException, ServerException {
+        //check if text field is not empty
         if (userName.getText().equals("")) {
             ClientControllerGUI.showError("Insert username");
             return;
         }
+
+        //check if the text value contains a valid username
         if(!InputSanitizer.isValidName(userName.getText())){
             ClientControllerGUI.showError("Illegal characters in username");
             return;
         }
         final String username = userName.getText();
-        final ClientModelGUI model = new ClientModelGUI(userName.getText(), controller);
+        final ClientModelGUI model = new ClientModelGUI(username, controller);
 
         if (!ClientController.connect(controller, model)) { // Login failed
             return;
@@ -64,7 +67,7 @@ public class LoginController extends SceneController {
             }
         }
 
-        welcome.setText(userName.getText() + " joined the game!");
+        welcome.setText(username + " joined the game!");
         controller.setModel(model);
         controller.loadScene(SceneEnum.lobbySelection);
     }
