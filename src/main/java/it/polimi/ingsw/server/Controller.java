@@ -72,7 +72,7 @@ public class Controller implements Jsonable {
             virtualViews.add(player.getVirtualShelf());
         }
 
-        final int shift = ThreadLocalRandom.current().nextInt(0, clients.size()-1);
+        final int shift = ThreadLocalRandom.current().nextInt(0, clients.size());
         Collections.rotate(players, shift);
         return players;
     }
