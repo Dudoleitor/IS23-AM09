@@ -208,19 +208,8 @@ public class ServerTCP extends Server {
         quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command
         quitMessage.generateRequestID();
         out(quitMessage.toString());
-        try {
-            MessageTcp response = in(); //wait for response by server and create an object responses
-            while (!response.getCommand().equals(MessageTcp.MessageCommand.Quit) && !response.getRequestID().equals(quitMessage.getRequestID())) //is there's more than one message in the buffer, then it read until he founds one suitable for the response
-                response = in();
-            boolean errorFound = Boolean.parseBoolean(response.getContent().get("errors").toString());
-            if (errorFound) {
-                throw new LobbyException("Error in Lobby");
-            }
-        }catch (RemoteException e){
-            throw new LobbyException(e.getMessage());
-        } finally {
-            serverIO.terminate();
-        }
+
+        serverIO.terminate();
 
     }
 
