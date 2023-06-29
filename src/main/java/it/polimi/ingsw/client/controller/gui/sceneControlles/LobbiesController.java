@@ -104,6 +104,7 @@ public class LobbiesController extends SceneController implements Initializable 
         final int lobbyToJoin = Integer.parseInt(userInput);
 
         System.out.println("Joined lobby " + lobbyToJoin + "!");
+        updateLobbies();
         if(!availableLobbies.containsKey(lobbyToJoin)) {
             ClientControllerGUI.showError("Insert an existing lobby number!");
             return;
