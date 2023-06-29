@@ -273,7 +273,6 @@ public class HomeScreenController extends SceneController implements Initializab
 
     /**
      * it redirects to the shelves page where the user can see opponents shelves
-     * @throws IOException
      */
     @FXML
     protected void gameStatus(){

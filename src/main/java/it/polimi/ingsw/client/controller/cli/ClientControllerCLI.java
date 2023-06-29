@@ -11,6 +11,7 @@ import it.polimi.ingsw.shared.PrivateChatMessage;
 
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
@@ -101,6 +102,11 @@ public class ClientControllerCLI implements ClientController {
                 server.joinRandomLobby(client);
                 break;
             case Number:
+                final Set<Integer> availableLobbies = server.getAvailableLobbies().keySet();
+                if (!availableLobbies.contains(command.getID())) {
+                    cliIO.errorMessage("Invalid lobby id");
+                    return false;
+                }
                 server.joinSelectedLobby(client,command.getID());
                 break;
             case Create:
@@ -109,6 +115,7 @@ public class ClientControllerCLI implements ClientController {
             case Refresh:
                 //show the client the lobbies they can join
                 cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
+
                 cliIO.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
                 break;
             default:

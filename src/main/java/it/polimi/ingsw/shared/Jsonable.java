@@ -74,7 +74,7 @@ public interface Jsonable {
         return jsonMap;
     }
     /**
-     * transform a jsonString to a map<Integer><Integer>
+     * transform a jsonString to a map Integer - Integer
      * @param jsonMap is the string of JsonObject
      * @return a boolean corresponding to the Object
      */
@@ -90,7 +90,7 @@ public interface Jsonable {
         return map;
     }
     /**
-     * transform a jsonString to a map<Integer><Integer>
+     * transform a jsonString to a map Integer - Integer>
      * @param jsonMap is the string of JsonObject
      * @return a boolean corresponding to the Object
      */
@@ -119,7 +119,7 @@ public interface Jsonable {
         return jsonArray;
     }
     /**
-     * transform a jsonString to a List<Integer>
+     * transform a jsonString to a List of Integers
      * @param jsonList is the string of JsonObject
      * @return a boolean corresponding to the Object
      */
@@ -134,7 +134,7 @@ public interface Jsonable {
     }
 
     /**
-     * transform a jsonString to a List<PlayerWithPoints>
+     * transform a jsonString to a List of PlayerWithPoints
      * @param jsonList is the string of JsonObject
      * @return a boolean corresponding to the Object
      */
