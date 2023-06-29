@@ -242,7 +242,7 @@ public class ClientControllerCLI implements ClientController {
         while(!exit){
             try {
                 if (model !=null && model.gameEnded()) return;
-            } catch (RemoteException ignored) {} //TODO handle somehow
+            } catch (RemoteException ignored) {}  // This should never happen, as the remote object is local
 
             LobbyCommand lobbyCommand = cliIO.askCommand();
             executeUserCommand(lobbyCommand);

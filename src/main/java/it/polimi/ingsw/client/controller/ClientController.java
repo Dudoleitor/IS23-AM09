@@ -47,7 +47,7 @@ public interface ClientController {
             case STUB:
                 controller.setServer(new ConnectionStub());
                 try {
-                    controller.setClient(new ClientRMI(model)); //TODO create stub when completed the real one
+                    controller.setClient(new ClientRMI(model));
                 } catch (RemoteException e) {
                     throw new ServerException("Impossible to create RMI client object");
                 }

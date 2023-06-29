@@ -226,12 +226,8 @@ public class HomeScreenController extends SceneController implements Initializab
      * @throws InvalidMoveException
      */
     public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
-        System.out.println("Shelf:");
-
         int column = shelfHandler.getPosition(mouseEvent).getColumn();
         moveBuilder.setColumn(column);
-
-        System.out.println("Column: " + column);
     }
 
     /**
@@ -254,7 +250,6 @@ public class HomeScreenController extends SceneController implements Initializab
      */
     @FXML
     protected void confirmMove() throws LobbyException{
-        System.out.println("Confirm Move");
         try {
             controller.getServer().postMove(model.getPlayerName(), moveBuilder.getMove());
         } catch (Exception e) {
