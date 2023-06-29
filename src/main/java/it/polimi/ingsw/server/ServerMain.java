@@ -10,6 +10,7 @@ import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.NonWritableChannelException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -261,10 +262,19 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     public synchronized void handleNetworkException(Client client, Exception e) {
         System.err.println("Exception thrown (in server main) while trying to reach client " + client.getPlayerName() + ": " + e.getMessage());
         client.disconnect();
-        if(clientsWithoutLobby.remove(client))
-            System.out.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
-        else
+        try {
+            disconnectClient(client);
+        } catch (RemoteException d){
             System.err.println("Called handleNetworkException on client " + client.getPlayerName() + " that is not in the list of clients without lobby");
+
+        }
+    }
+
+    @Override
+    public synchronized void disconnectClient(Client client) throws RemoteException {
+        client.disconnect();
+        clientsWithoutLobby.remove(client);
+        System.out.println("Disconnected client " + client.getPlayerName());
     }
 
     /**
