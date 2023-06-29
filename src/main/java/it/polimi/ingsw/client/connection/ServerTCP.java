@@ -8,6 +8,7 @@ import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -22,7 +23,8 @@ public class ServerTCP extends Server {
     public ServerTCP(IpAddressV4 ip, int port, ClientModel clientModel) throws ServerException {
         super(ip, port);
         try {
-            serverSocket = new Socket(ip.toString(), port);
+            serverSocket = new Socket();
+            serverSocket.connect(new InetSocketAddress(ip.toString(), port), NetworkSettings.WaitingTimeMillis);
             serverIO = new ServerTCP_IO(serverSocket, clientModel);
         } catch (IOException e) {
             throw new ServerException(e.getMessage());
