@@ -21,5 +21,4 @@ public interface ServerInterface extends Remote {
     Map<Integer,Integer> showAvailableLobbies() throws RemoteException;
     ServerLobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException;
     int disconnectedFromLobby(String playerName) throws RemoteException;
-    void disconnectClient(Client client) throws RemoteException;
 }

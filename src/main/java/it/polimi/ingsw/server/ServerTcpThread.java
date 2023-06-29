@@ -79,10 +79,6 @@ public class ServerTcpThread extends Thread{
                 break;
             case DisconnectedFromLobby:
                 disconnectedFromLobby(content, ID);
-                break;
-            case Quit:
-                quitServer(ID);
-                break;
             default:
                 break;
         }
@@ -97,7 +93,7 @@ public class ServerTcpThread extends Thread{
                 postSecretToLiveChat(content,ID);
                 break;
             case Quit:
-                quitLobby(ID);
+                quit(ID);
                 break;
             case MatchHasStarted:
                 matchHasStarted(ID);
@@ -252,26 +248,6 @@ public class ServerTcpThread extends Thread{
         feedback.setRequestID(ID);
         client.out(feedback.toString()); //send object to client
     }
-    private void quitServer(String ID){
-        boolean foundErrors = false;
-        synchronized (server) {
-            try {
-                server.disconnectClient(client);
-            } catch (RuntimeException | RemoteException e) {
-                foundErrors = true;
-            }
-            JSONObject result = new JSONObject();
-            result.put("errors", foundErrors);
-            MessageTcp feedback = new MessageTcp(); //message to send back
-            feedback.setCommand(MessageTcp.MessageCommand.Quit); //set message command
-            feedback.setContent(result); //set message content
-            feedback.setRequestID(ID);
-            client.out(feedback.toString()); //send object to client
-            System.out.println(feedback);
-            terminate();
-        }
-
-    }
 
 
 
@@ -340,7 +316,7 @@ public class ServerTcpThread extends Thread{
 
 
     }
-    private void quitLobby(String ID){
+    private void quit(String ID){
         boolean foundErrors = false;
         synchronized (lobby) {
             try {
