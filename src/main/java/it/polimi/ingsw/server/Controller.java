@@ -271,16 +271,18 @@ public class Controller implements Jsonable {
         if(playerName == null){
             throw new ControllerGenericException("No player found with that name");
         }
-        else{
-            Optional<Player> target =  players.stream().
-                    filter(p -> p.getName().equals(playerName)).
-                    findFirst();
-            if(!target.isPresent()){
-                throw new ControllerGenericException("No player found with that name");
-            }
-            else{
-                target.get().setActive(value);
-            }
+        Optional<Player> target =  players.stream().
+                filter(p -> p.getName().equals(playerName)).
+                findFirst();
+        if(target.isEmpty()){
+            throw new ControllerGenericException("No player found with that name");
+        }
+
+        target.get().setActive(value);
+        if (playerName.equals(getCurrentPlayerName())) {  // We need to increment the turn and notify clients
+            nextTurn();
+            for (Client client : clients)
+                client.updateTurn(getCurrentPlayerName());
         }
     }
 
