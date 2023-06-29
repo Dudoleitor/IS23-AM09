@@ -57,18 +57,6 @@ public class main {
         properties.setProperty("sun.rmi.transport.tcp.readTimeout", timeout);
         properties.setProperty("sun.rmi.transport.proxy.connectTimeout", timeout);
 
-        final String rmiLocalIpString = System.getenv("RMI_LOCAL_IP");
-        if (rmiLocalIpString != null) {
-            final IpAddressV4 rmiLocalIp;
-            try {
-                rmiLocalIp = new IpAddressV4(rmiLocalIpString);
-                properties.setProperty("java.rmi.server.hostname", rmiLocalIp.toString());
-                System.out.println("RMI local IP set to " + System.getProperties().get("java.rmi.server.hostname"));
-            } catch (ParseException ignored) {
-                System.out.println("RMI local IP invalid, ignoring");
-            }
-        }
-
         try {
             RMISocketFactory.setSocketFactory(new SocketFactory());
         } catch (IOException e) {
@@ -113,6 +101,25 @@ public class main {
     }
 
     /**
+     * This method is used to set the local IP on the client,
+     * it's needed because RMI sometimes doesn't get the right IP.
+     */
+    private static void setClientRMILocalIP() {
+        final String rmiLocalIpString = System.getenv("RMI_LOCAL_IP");
+        if (rmiLocalIpString != null) {
+            final IpAddressV4 rmiLocalIp;
+            try {
+                rmiLocalIp = new IpAddressV4(rmiLocalIpString);
+                final Properties properties = System.getProperties();
+                properties.setProperty("java.rmi.server.hostname", rmiLocalIp.toString());
+                System.out.println("RMI local IP set to " + properties.get("java.rmi.server.hostname"));
+            } catch (ParseException ignored) {
+                System.out.println("RMI local IP invalid, ignoring");
+            }
+        }
+    }
+
+    /**
      * Set the connection option for Client
      * @param cs
      */
@@ -127,6 +134,7 @@ public class main {
             setPort(Tcp);
 
         } else if (Rmi.isSet()) {
+            setClientRMILocalIP();
             System.out.println(messageFormat("Connecting Client via RMI"));
             cs.setConnection(RMI);
             setPort(Rmi);
@@ -140,6 +148,9 @@ public class main {
         setServerIp();
         setPort(Tcp);
         setPort(Rmi);
+
+        System.getProperties().setProperty("java.rmi.server.hostname", NetworkSettings.serverIp.toString());
+        System.out.println("RMI local IP set to " + System.getProperties().get("java.rmi.server.hostname"));
     }
 
     /**
@@ -238,7 +249,6 @@ public class main {
         }
         Ip.set();
         NetworkSettings.serverIp = ip;
-        System.getProperties().setProperty("java.rmi.server.hostname", ip.toString());
     }
 
     /**
