@@ -63,63 +63,73 @@ public class ClientControllerCLI implements ClientController {
         // Checking if we were previously disconnected from a lobby
         final int previousLobbyId = server.disconnectedFromLobby(playerName);
         if(previousLobbyId >= 0) {
-            try {
-                server.joinSelectedLobby(client, previousLobbyId);  // Automatically joining the lobby
+            joinPreviousLobby(previousLobbyId);
+        }
+        else{
+            //show the client the lobbies they can join
+            cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
+            cliIO.showLobbies(availableLobbies, "The lobbies that are available");
+
+            boolean successful = false;
+            while(!successful){
+                //ask the user
+                LobbySelectionCommand command = cliIO.askLobby();
+                successful = executeLobbySelectionCommand(command);
+            }
+        }
+    }
+
+    private void joinPreviousLobby(int previousLobbyId){
+        try {
+            server.joinSelectedLobby(client, previousLobbyId);  // Automatically joining the lobby
+            final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
+
+            cliIO.message("You joined automatically #" + previousLobbyId + " lobby!\nYou were previously connected to it");
+            cliIO.setLobbyAdmin(isLobbyAdmin);
+
+        } catch (LobbyException e) {
+            throw new RuntimeException("Error while connecting automatically to lobby");
+        } catch (ServerException e) {
+            cliIO.message("Error while connecting automatically to lobby");
+        }
+    }
+
+    private boolean executeLobbySelectionCommand(LobbySelectionCommand command) throws ServerException {
+        boolean successful = false;
+        switch (command){
+            case Random:
+                server.joinRandomLobby(client);
+                break;
+            case Number:
+                server.joinSelectedLobby(client,command.getID());
+                break;
+            case Create:
+                server.createLobby(client);
+                break;
+            case Refresh:
+                //show the client the lobbies they can join
+                cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
+                cliIO.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
+                break;
+            default:
+                cliIO.notifyInvalidCommand();
+                break;
+        }
+
+        if(command.isValid()){
+            try{
+                final int joinedLobbyId = server.getLobbyID();
                 final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
 
-                cliIO.message("You joined automatically #" + previousLobbyId + " lobby!\nYou were previously connected to it");
+                cliIO.message("You joined #"+ joinedLobbyId +" lobby!");
                 cliIO.setLobbyAdmin(isLobbyAdmin);
-
-                return;
-            } catch (LobbyException e) {
-                throw new RuntimeException("Error while connecting automatically to lobby");
-            } catch (ServerException e) {
-                cliIO.message("Error while connecting automatically to lobby");
+                successful = true;
             }
-
-        }
-
-        //show the client the lobbies they can join
-        cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
-        cliIO.showLobbies(availableLobbies, "The lobbies that are available");
-
-        boolean successful = false;
-        while(!successful){
-            //ask the user
-            LobbySelectionCommand command = cliIO.askLobby();
-            switch (command){
-                case Random:
-                    server.joinRandomLobby(client);
-                    break;
-                case Number:
-                    server.joinSelectedLobby(client,command.getID());
-                    break;
-                case Create:
-                    server.createLobby(client);
-                    break;
-                case Refresh:
-                    //show the client the lobbies they can join
-                    cliIO.showJoinedLobby(server.getJoinedLobby(playerName),"The lobby you already joined");
-                    cliIO.showLobbies(server.getAvailableLobbies(), "The lobbies that are available");
-                    break;
-                default:
-                    cliIO.notifyInvalidCommand();
-                    break;
-            }
-            if(command.isValid()){
-                try{
-                    final int joinedLobbyId = server.getLobbyID();
-                    final boolean isLobbyAdmin = server.isLobbyAdmin(playerName);
-
-                    cliIO.message("You joined #"+ joinedLobbyId +" lobby!");
-                    cliIO.setLobbyAdmin(isLobbyAdmin);
-                    successful = true;
-                }
-                catch (LobbyException e){
-                    cliIO.errorMessage("Lobby does not exist");
-                }
+            catch (LobbyException e){
+                cliIO.errorMessage("Lobby does not exist");
             }
         }
+        return successful;
     }
 
     /**
