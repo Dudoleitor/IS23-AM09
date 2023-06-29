@@ -266,7 +266,8 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     @Override
     public synchronized void postToLiveChat(String playerName, String message) {
         if (playerName == null || message == null) {
-            throw new RuntimeException("Wrong format of message");
+            System.err.println("Wrong format of chat message, lobby #" + id);
+            return;
         }
         chat.addMessage(playerName, message);
         for (Client client : clients) {
@@ -282,12 +283,14 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     @Override
     public synchronized void postSecretToLiveChat(String sender, String receiver, String message) {
         if (sender == null || receiver == null || message == null) {
-            throw new RuntimeException("Wrong format of message");
+            System.err.println("Wrong format of private chat message, lobby #" + id);
+            return;
         }
-        chat.addSecret(sender, receiver, message);
 
         Client client = clients.stream().filter(x -> x.getPlayerName().equals(receiver)).findFirst().orElse(null);
-        if (client == null) return;
+        if (client == null) return;  // Ignoring if receiver is not in lobby
+
+        chat.addSecret(sender, receiver, message);
         client.postChatMessage("PRIVATE " + sender, message);
     }
 

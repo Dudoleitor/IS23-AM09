@@ -261,7 +261,7 @@ public class Controller implements Jsonable {
                     try {
                         return new Player(p);
                     } catch (JsonBadParsingException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(e);  // Invalid player in the list
                     }
                 }).
                 collect(Collectors.toList());

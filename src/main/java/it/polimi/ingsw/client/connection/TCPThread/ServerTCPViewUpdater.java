@@ -97,7 +97,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void pickedFromBoard(JSONObject content) {
         try {
             clientModel.pickedFromBoard((JSONObject) content.get("position"));
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -105,7 +105,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void refreshBoard(JSONObject content) {
         try {
             clientModel.refreshBoard((JSONObject) content.get("board"));
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -117,7 +117,7 @@ public class ServerTCPViewUpdater extends Thread{
             Tile tile = Tile.valueOfLabel(content.get("tile").toString());
 
             clientModel.putIntoShelf(player,column,tile);
-        } catch (TileGenericException | RemoteException e) {
+        } catch (TileGenericException | RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -125,7 +125,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void refreshShelf(JSONObject content) {
         try {
             clientModel.refreshShelf(content.get("player").toString(),(JSONObject) content.get("shelf"));
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -133,7 +133,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void postChatMessage(JSONObject content) {
         try {
             clientModel.postChatMessage(content.get("sender").toString(), content.get("message").toString());
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -141,7 +141,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void refreshChat(JSONObject content) {
         try {
             clientModel.refreshChat(new Chat((JSONObject) content.get("chat")));
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -150,7 +150,7 @@ public class ServerTCPViewUpdater extends Thread{
         final boolean newMatch = Boolean.parseBoolean(content.get("newMatch").toString());
         try {
             clientModel.gameStarted(newMatch);
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
 
@@ -158,7 +158,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void updateTurn(JSONObject content) {
         try {
             clientModel.nextTurn(content.get("player").toString());
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -168,7 +168,7 @@ public class ServerTCPViewUpdater extends Thread{
         List list = Jsonable.json2listInt((JSONArray) content.get("points"));
         try {
             clientModel.refreshCommonGoal(id,list);
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -177,7 +177,7 @@ public class ServerTCPViewUpdater extends Thread{
         int id = Integer.parseInt(content.get("id").toString());
         try {
             clientModel.setPlayerGoal(id);
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }
@@ -190,7 +190,7 @@ public class ServerTCPViewUpdater extends Thread{
     private void ping() {
         try {
             clientModel.ping();
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
 
@@ -204,7 +204,7 @@ public class ServerTCPViewUpdater extends Thread{
         final List<PlayerWithPoints> leaderboard = Jsonable.json2Leaderboard((JSONArray) content.get("leaderboard"));
         try {
             clientModel.endGame(leaderboard);
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is local
             throw new RuntimeException(e);
         }
     }

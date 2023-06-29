@@ -22,7 +22,7 @@ public class ConnectionStub extends Server {
     private static IpAddressV4 localHost(){
         try{
             return new IpAddressV4(127,0,0,1);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             throw new RuntimeException();
         }
     }
