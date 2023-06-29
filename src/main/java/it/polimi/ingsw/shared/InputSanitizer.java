@@ -19,7 +19,9 @@ public class InputSanitizer {
     public static boolean isValidName(String name){
         return  name!= null &&
                 !invalidUsernames.contains(name.toLowerCase()) &&
-                name.chars().count() >= 1 &&
+                !name.isEmpty() &&
+                !name.isBlank() &&
+                name.length() <= GameSettings.maxNameLength &&
                 name.chars().
                         allMatch(c ->
                                 isValidSymbol((char) c) ||
@@ -33,8 +35,10 @@ public class InputSanitizer {
      * @return true if valid
      */
     public static boolean isInteger(String id){
-        return id != null &&
-                id.chars().count() >= 1 &&
+        return  id != null &&
+                !id.isBlank() &&
+                !id.isEmpty() &&
+                id.length() < 6 &&
                 id.chars().allMatch(c ->
                         isInteger((char) c)
                 );
@@ -46,6 +50,9 @@ public class InputSanitizer {
      */
     public static boolean isValidMessage(String mes){
         return  mes!= null &&
+                !mes.isEmpty() &&
+                !mes.isBlank() &&
+                mes.length() < GameSettings.maxMessageLength &&
                 mes.chars().
                         allMatch(c -> isValidSymbol((char) c) ||
                                 isInteger((char) c) ||
