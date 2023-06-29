@@ -25,7 +25,6 @@ public class winnerSceneController extends SceneController implements Initializa
 
     @FXML
     Text winnerText;
-
     @FXML
     Text username1;
     @FXML

@@ -121,14 +121,15 @@ public class ChatController extends SceneController implements Initializable {
 
     protected void setMenu(){
         List<String> players = model.getPlayers();
+        players.remove(model.getPlayerName());
         List<MenuItem> menuItems = receiverMenu.getItems();
 
-        for(int i = 0; i < GameSettings.maxSupportedPlayers-1; i++){
-            if(i < players.size() && !players.get(i).equals(model.getPlayerName())){
-                menuItems.get(i+1).setText(players.get(i));
+        for(int i = 1; i < menuItems.size(); i++){
+            if(i-1 < players.size()){
+                menuItems.get(i).setText(players.get(i-1));
             }
             else{
-                menuItems.get(i+1).setVisible(false);
+                menuItems.get(i).setVisible(false);
             }
         }
     }
