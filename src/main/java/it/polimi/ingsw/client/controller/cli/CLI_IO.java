@@ -452,7 +452,7 @@ public class CLI_IO {
                 }
             }
             printMessage("Hello "+name+"!");
-            return name;
+            return name.toLowerCase();
         }
     }
 
