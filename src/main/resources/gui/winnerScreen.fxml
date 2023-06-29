@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -9,7 +8,7 @@
    <children>
       <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
          <children>
-            <Text fx:id="winnerText" layoutX="203.0" layoutY="93.0" strokeType="OUTSIDE" strokeWidth="0.0" text="YOU WON">
+            <Text fx:id="winnerText" layoutX="172.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="YOU WON">
                <font>
                   <Font name="SF Mono Bold" size="45.0" />
                </font>
@@ -19,25 +18,10 @@
                   <Image url="@gameGraphics/misc/podium.png" />
                </image>
             </ImageView>
-            <Text layoutX="286.0" layoutY="273.0" strokeType="OUTSIDE" strokeWidth="0.0">
-               <font>
-                  <Font name="SF Mono Bold" size="46.0" />
-               </font>
-            </Text>
-            <Text layoutX="393.0" layoutY="302.0" strokeType="OUTSIDE" strokeWidth="0.0">
-               <font>
-                  <Font name="SF Mono Bold" size="33.0" />
-               </font>
-            </Text>
-            <Text layoutX="187.0" layoutY="320.0" strokeType="OUTSIDE" strokeWidth="0.0">
-               <font>
-                  <Font name="SF Mono Bold" size="27.0" />
-               </font>
-            </Text>
             <Text fx:id="username4" layoutX="14.0" layoutY="383.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text fx:id="username2" layoutX="164.0" layoutY="275.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text fx:id="username1" layoutX="269.0" layoutY="167.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text fx:id="username3" layoutX="374.0" layoutY="234.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+            <Text fx:id="username2" layoutX="153.0" layoutY="208.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+            <Text fx:id="username1" layoutX="270.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+            <Text fx:id="username3" layoutX="397.0" layoutY="235.0" strokeType="OUTSIDE" strokeWidth="0.0" />
          </children>
       </AnchorPane>
    </children>
