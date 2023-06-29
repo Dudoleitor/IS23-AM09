@@ -8,6 +8,7 @@ public class InputSanitizer {
 
     private static final List<Character> punctuation = Arrays.asList('.',',',';',')','(',' ','!','?');
     private static final List<Character> specialLetters = Arrays.asList('à','è','é','ì','ò','ù');
+    private static final List<String> invalidUsernames = Arrays.asList("server", "private", "everybody");
 
 
     /**
@@ -17,8 +18,7 @@ public class InputSanitizer {
      */
     public static boolean isValidName(String name){
         return  name!= null &&
-                !name.equals("server") &&
-                !name.equals("private") &&
+                !invalidUsernames.contains(name.toLowerCase()) &&
                 name.chars().count() >= 1 &&
                 name.chars().
                         allMatch(c ->
