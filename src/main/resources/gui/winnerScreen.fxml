@@ -18,10 +18,22 @@
                   <Image url="@gameGraphics/misc/podium.png" />
                </image>
             </ImageView>
-            <Text fx:id="username4" layoutX="14.0" layoutY="383.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
-            <Text fx:id="username2" layoutX="153.0" layoutY="208.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-            <Text fx:id="username1" layoutX="270.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-            <Text fx:id="username3" layoutX="397.0" layoutY="235.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+            <Text fx:id="username4" layoutX="204.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="164.00001525878906">
+               <font>
+                  <Font size="18.0" />
+               </font></Text>
+            <Text fx:id="username2" layoutX="86.0" layoutY="208.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="150.0">
+               <font>
+                  <Font size="16.0" />
+               </font></Text>
+            <Text fx:id="username1" layoutX="211.0" layoutY="157.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="150.0">
+               <font>
+                  <Font size="16.0" />
+               </font></Text>
+            <Text fx:id="username3" layoutX="330.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="150.0">
+               <font>
+                  <Font size="16.0" />
+               </font></Text>
          </children>
       </AnchorPane>
    </children>
