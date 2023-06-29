@@ -55,14 +55,13 @@ public class winnerSceneController extends SceneController implements Initializa
         final List<PlayerWithPoints> players = model.getLeaderBoard();
         Text[] userNames = new Text[]{username1,username2,username3, username4};
 
-        int i = 0;
-        for(PlayerWithPoints player : players) {
-           userNames[i].setText(player.getPlayerName() + ": " + player.getPoints());
-           i++;
-        }
-
-        for(;i < players.size() && i < userNames.length;i++){
-            userNames[i].setStyle("-fx-opacity:0.0");
+        for(int i = 0; i < userNames.length; i++) {
+            if(i < players.size()){
+                userNames[i].setText(players.get(i).getPlayerName() + ": " + players.get(i).getPoints());
+            }
+           else{
+                userNames[i].setStyle("-fx-opacity:0.0");
+           }
         }
 
         if(!players.get(0).getPlayerName().equals(playerName))

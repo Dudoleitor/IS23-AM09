@@ -18,7 +18,7 @@
                   <Image url="@gameGraphics/misc/podium.png" />
                </image>
             </ImageView>
-            <Text fx:id="username4" layoutX="204.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="164.00001525878906">
+            <Text fx:id="username4" layoutX="204.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="164.00001525878906">
                <font>
                   <Font size="18.0" />
                </font></Text>

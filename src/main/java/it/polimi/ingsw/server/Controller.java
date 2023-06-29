@@ -409,7 +409,7 @@ public class Controller implements Jsonable {
 
             leaderBoard.add(new PlayerWithPoints(p.getName(),points));
         }
-
+        leaderBoard.sort(Comparator.comparingInt(PlayerWithPoints::getPoints));
         for (Client client : clients)
             client.endGame(leaderBoard);
         deleteSavedGame();
