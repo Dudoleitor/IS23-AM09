@@ -236,7 +236,7 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
             System.out.println(client.getPlayerName() + " created a new lobby with id " + minFreeKey);
             return lobby;
 
-        } catch (RemoteException e) {
+        } catch (RemoteException e) {  // This should never happen, as the remote object is used locally
             throw new RuntimeException(e);
         }
     }

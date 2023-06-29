@@ -266,7 +266,8 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     @Override
     public synchronized void postToLiveChat(String playerName, String message) {
         if (playerName == null || message == null) {
-            throw new RuntimeException("Wrong format of message");
+            System.err.println("Wrong format of chat message, lobby #" + id);
+            return;
         }
         chat.addMessage(playerName, message);
         for (Client client : clients) {
@@ -282,13 +283,15 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     @Override
     public synchronized void postSecretToLiveChat(String sender, String receiver, String message) {
         if (sender == null || receiver == null || message == null) {
-            throw new RuntimeException("Wrong format of message");
+            System.err.println("Wrong format of private chat message, lobby #" + id);
+            return;
         }
-        chat.addSecret(sender, receiver, message);
 
         Client client = clients.stream().filter(x -> x.getPlayerName().equals(receiver)).findFirst().orElse(null);
-        if (client == null) return;
-        client.postChatMessage("PRIVATE " + sender, message);
+        if (client == null) return;  // Ignoring if receiver is not in lobby
+
+        chat.addSecret(sender, receiver, message);
+        client.postChatMessage("(private) " + sender, message);
     }
 
     @Override
@@ -382,9 +385,6 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         }
 
         String message = client.getPlayerName() + " disconnected from the lobby";
-        if(started)
-            message = message + "\nNot enough players online, if nobody reconnects in " + GameSettings.automaticVictoryTimeoutSec + " seconds the game will end";
-        informAboutConnectedClients(message);
 
         if (controller != null && started) {
             /* If game is started and controller is null it's still being initialized,
@@ -395,9 +395,12 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
 
 
-            if (clients.size()<GameSettings.minSupportedPlayers)
+            if (clients.size()<GameSettings.minSupportedPlayers) {
                 startAutomaticVictoryTimer();
+                message = message + "\nNot enough players online, if nobody reconnects in " + GameSettings.automaticVictoryTimeoutSec + " seconds the game will end";
+            }
 
+            informAboutConnectedClients(message);
             return;
         }
 
@@ -406,6 +409,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             disconnectedClients.add(client.getPlayerName().toLowerCase());
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
         }
+        informAboutConnectedClients(message);
     }
 
     /**

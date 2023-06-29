@@ -257,7 +257,7 @@ public class ServerTcpThread extends Thread{
         synchronized (server) {
             try {
                 server.disconnectClient(client);
-            } catch (RuntimeException ignored) {
+            } catch (RuntimeException ignored) {  // This should never happen, as the remote object is used locally{
             } finally {
                 terminate();
             }
