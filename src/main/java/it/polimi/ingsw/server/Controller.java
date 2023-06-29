@@ -279,7 +279,8 @@ public class Controller implements Jsonable {
         }
 
         target.get().setActive(value);
-        if (playerName.equals(getCurrentPlayerName())) {  // We need to increment the turn and notify clients
+        final boolean atLeastOneActive = players.stream().anyMatch(p -> p.isActive);
+        if (playerName.equals(getCurrentPlayerName()) && atLeastOneActive) {  // We need to increment the turn and notify clients
             nextTurn();
             for (Client client : clients)
                 client.updateTurn(getCurrentPlayerName());
