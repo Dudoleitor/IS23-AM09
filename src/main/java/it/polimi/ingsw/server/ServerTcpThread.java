@@ -79,6 +79,10 @@ public class ServerTcpThread extends Thread{
                 break;
             case DisconnectedFromLobby:
                 disconnectedFromLobby(content, ID);
+                break;
+            case Quit:
+                quitServer();
+                break;
             default:
                 break;
         }
@@ -93,7 +97,7 @@ public class ServerTcpThread extends Thread{
                 postSecretToLiveChat(content,ID);
                 break;
             case Quit:
-                quit(ID);
+                quitLobby();
                 break;
             case MatchHasStarted:
                 matchHasStarted(ID);
@@ -249,6 +253,18 @@ public class ServerTcpThread extends Thread{
         client.out(feedback.toString()); //send object to client
     }
 
+    private void quitServer(){
+        synchronized (server) {
+            try {
+                server.disconnectClient(client);
+            } catch (RuntimeException ignored) {
+            } finally {
+                terminate();
+            }
+        }
+
+    }
+
 
 
     private int LobbyIni(ServerLobbyInterface lobbyInterface){
@@ -316,22 +332,14 @@ public class ServerTcpThread extends Thread{
 
 
     }
-    private void quit(String ID){
-        boolean foundErrors = false;
+    private void quitLobby(){
         synchronized (lobby) {
             try {
                 lobby.quitGame(client.getPlayerName());
-            } catch (RuntimeException e) {
-                foundErrors = true;
+            } catch (RuntimeException ignored) {
+            } finally {
+                terminate();
             }
-            JSONObject result = new JSONObject();
-            result.put("errors", foundErrors);
-            MessageTcp feedback = new MessageTcp(); //message to send back
-            feedback.setCommand(MessageTcp.MessageCommand.Quit); //set message command
-            feedback.setContent(result); //set message content
-            feedback.setRequestID(ID);
-            client.out(feedback.toString()); //send object to client
-            terminate();
         }
 
     }

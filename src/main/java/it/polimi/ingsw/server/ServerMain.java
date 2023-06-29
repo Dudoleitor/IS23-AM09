@@ -260,11 +260,18 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
     @Override
     public synchronized void handleNetworkException(Client client, Exception e) {
         System.err.println("Exception thrown (in server main) while trying to reach client " + client.getPlayerName() + ": " + e.getMessage());
-        client.disconnect();
-        if(clientsWithoutLobby.remove(client))
-            System.out.println("Disconnected client " + client.getPlayerName() + ": " + e.getMessage());
-        else
+        if(!disconnectClient(client))
             System.err.println("Called handleNetworkException on client " + client.getPlayerName() + " that is not in the list of clients without lobby");
+
+    }
+    @Override
+    public synchronized boolean disconnectClient(Client client){
+        boolean result;
+        client.disconnect();
+        result = clientsWithoutLobby.remove(client);
+        if(result)
+            System.out.println("Disconnected client " + client.getPlayerName());
+        return result;
     }
 
     /**
