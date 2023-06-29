@@ -66,11 +66,12 @@ class InputSanitizerTest {
         assertTrue(inputSanitizer.isValidName("Pr-0v_a"));
         assertFalse(inputSanitizer.isValidName("Prova "));
         assertFalse(inputSanitizer.isValidName("Prova!"));
+        assertFalse(inputSanitizer.isValidName("provà"));
     }
     @Test
     void message(){
         assertTrue(inputSanitizer.isValidMessage("Prova! 123,;.?"));
         assertFalse(inputSanitizer.isValidMessage("ç"));
-        assertFalse(inputSanitizer.isValidMessage("ù"));
+        assertTrue(inputSanitizer.isValidMessage("ciao ù??"));
     }
 }
