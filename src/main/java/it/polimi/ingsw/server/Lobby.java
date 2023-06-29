@@ -269,6 +269,10 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             System.err.println("Wrong format of chat message, lobby #" + id);
             return;
         }
+        if(!InputSanitizer.isValidMessage(message)) {
+            System.err.println("Invalid message, lobby #" + id);
+            return;
+        }
         chat.addMessage(playerName, message);
         for (Client client : clients) {
             client.postChatMessage(playerName, message);
@@ -284,6 +288,11 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     public synchronized void postSecretToLiveChat(String sender, String receiver, String message) {
         if (sender == null || receiver == null || message == null) {
             System.err.println("Wrong format of private chat message, lobby #" + id);
+            return;
+        }
+
+        if(!InputSanitizer.isValidMessage(message)) {
+            System.err.println("Invalid private message, lobby #" + id);
             return;
         }
 
