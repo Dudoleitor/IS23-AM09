@@ -14,9 +14,8 @@ import java.util.stream.IntStream;
 import static it.polimi.ingsw.client.Client_Settings.*;
 
 public class CLI_IO {
-    private static Lock cli_lock;
-    private InputSanitizer inputSanitizer;
-    private Scanner scanner;
+    private final static Lock cli_lock = new ReentrantLock();
+    private final Scanner scanner = new Scanner(System.in);
     private String placeHolder = stdPlaceHolder;
     private static boolean placeHolderToRestore = false;
 
@@ -24,11 +23,6 @@ public class CLI_IO {
      * Constructor. The cli_lock is built as a Singleton
      */
     public CLI_IO(){
-        if(cli_lock == null){
-            cli_lock = new ReentrantLock();
-        }
-        inputSanitizer = new InputSanitizer();
-        scanner = new Scanner(System.in);
         System.out.println(gameLogo);
     }
 
@@ -36,7 +30,7 @@ public class CLI_IO {
             String input;
             input = scan();
             //Invalid command
-            if(!inputSanitizer.isValidMessage(input)){
+            if(!InputSanitizer.isValidMessage(input)){
                 synchronized (cli_lock){
                     printErrorMessage("Invalid format");
                 }
@@ -116,7 +110,7 @@ public class CLI_IO {
             posNumStr =  scan();
 
             //assure it's a number
-            if(!inputSanitizer.isInteger(posNumStr)){
+            if(!InputSanitizer.isInteger(posNumStr)){
                 printErrorMessage("Please insert an integer");
                 validInput = false;
                 continue;
@@ -204,7 +198,7 @@ public class CLI_IO {
                 while(!validInput){
                     validInput = true;
                     String numStr = scan();
-                    if(!inputSanitizer.isInteger(numStr)){
+                    if(!InputSanitizer.isInteger(numStr)){
                         validInput = false;
                         printErrorMessage("Please enter an integer");
                         continue;
@@ -268,7 +262,7 @@ public class CLI_IO {
             scannedColumn = scan(); //scan the input
 
             //assure it's an integer
-            if(!inputSanitizer.isInteger(scannedColumn)){
+            if(!InputSanitizer.isInteger(scannedColumn)){
                 validInput = false;
                 printErrorMessage("Please enter a number");
                 continue;
@@ -314,6 +308,13 @@ public class CLI_IO {
                 collect(Collectors.toList());
     }
 
+    /**
+     * Display on CLI the whole model
+     * @param b the board
+     * @param commongoals the list og common goals
+     * @param playerShelves the map of Player names and their shelves
+     * @param goal the personal goal
+     */
     public void showGameStatus(Board b,List<CommonGoal> commongoals ,Map<String, Shelf> playerShelves, PlayerGoal goal){
         synchronized (cli_lock){
             skipPlaceHolder();
@@ -324,10 +325,18 @@ public class CLI_IO {
         }
     }
 
+    /**
+     * show the board on CLI
+     * @param b the board
+     */
     public void showBoard(Board b) {
         printMessage(b.toString());
     }
 
+    /**
+     * Show a list of common goals
+     * @param commonGoalList
+     */
     protected void showCommonGoals(List<CommonGoal> commonGoalList) {
         String str = "Common Goals:";
         if(commonGoalList.size() == 0){
@@ -339,10 +348,14 @@ public class CLI_IO {
         printMessage(str);
     }
 
+    /**
+     * Show the shelves of players on CLI
+     * @param playerShelves the map of Player names and their shelves
+     */
     public void showShelves(Map<String, Shelf> playerShelves) {
         String output = "Shelves:\n";
         final String spaceBetween = "     ";
-        int rows = shelfStringRows(playerShelves);
+
         for (int k=0; k<shelfStringRows(playerShelves); k++) {  // Iterating over the rows
             for(String player : playerShelves.keySet()) {
                 output = output.concat(
@@ -355,12 +368,16 @@ public class CLI_IO {
             }
             output = output.concat("\n");
         }
-        final int shelfRowLenght = shelfStringCols(playerShelves);
+        final int shelfRowLength = shelfStringCols(playerShelves);
         for (String player : playerShelves.keySet()) {
-            output = player.length()<=shelfRowLenght ? output.concat(player) : output.concat(player).substring(0, shelfRowLenght);
-            int padding = shelfRowLenght - player.length();
-            for (int k=0; k<padding; k++) output = output.concat(" ");
-            //output = output.concat(spaceBetween);  // MISTERY
+            output = player.length()<=shelfRowLength ?
+                    output.concat(player) :
+                    output.concat(player).substring(0, shelfRowLength);
+
+            int padding = shelfRowLength - player.length();
+
+            for (int k=0; k<padding; k++)
+                output = output.concat(" ");
         }
         printMessage(output);
     }
@@ -376,10 +393,18 @@ public class CLI_IO {
         return (shelf.toString().split("\n")[0].length());
     }
 
+    /**
+     * Show the personal goal og the player
+     * @param goal personal goal
+     */
     protected void showPersonalGoal(PlayerGoal goal) {
         printMessage(goal.toString());
     }
 
+    /**
+     * Display a chat message on CLI
+     * @param message
+     */
     public void showChatMessage(ChatMessage message) {
         synchronized (cli_lock){
             skipPlaceHolder();
@@ -388,6 +413,9 @@ public class CLI_IO {
         }
     }
 
+    /**
+     * Show on CLI the list of all the commands that the client can use
+     */
     protected void showHelp() {
         synchronized (cli_lock){
             String help = "Here are all the commands:\n";
@@ -402,16 +430,24 @@ public class CLI_IO {
         }
     }
 
+    /**
+     * Notify the client that the command was not valid
+     */
     protected void notifyInvalidCommand(){
         printErrorMessage("Please input a valid command");
     }
+
+    /**
+     * Ask for username
+     * @return username
+     */
     protected String askUserName(){
         synchronized (cli_lock){
             String name = "";
-            while(!inputSanitizer.isValidName(name)){
+            while(!InputSanitizer.isValidName(name)){
                 printMessage("Enter your username");
                 name = scan();
-                if(!inputSanitizer.isValidName(name)){
+                if(!InputSanitizer.isValidName(name)){
                     printErrorMessage("Please enter a valid name");
                 }
             }
@@ -419,6 +455,12 @@ public class CLI_IO {
             return name;
         }
     }
+
+    /**
+     * Show the available lobbies
+     * @param availableLobbies a map of lobby ID and the numbers of players in it
+     * @param description a message that the CLI will display before the lobbies
+     */
     public void showLobbies(Map<Integer,Integer> availableLobbies, String description){
         synchronized (cli_lock){
             String lobbyMessage = description;
@@ -436,6 +478,12 @@ public class CLI_IO {
             printMessage(lobbyMessage);
         }
     }
+
+    /**
+     * Show the lobby where the client is in
+     * @param availableLobby the lobby where the client is in
+     * @param description a message that the CLI will display before the lobbies
+     */
     public void showJoinedLobby(int availableLobby, String description){
         synchronized (cli_lock){
             String lobbyMessage = description;
@@ -447,6 +495,11 @@ public class CLI_IO {
             printMessage(lobbyMessage);
         }
     }
+
+    /**
+     * Ask for lobby ID
+     * @return lobby ID
+     */
     protected LobbySelectionCommand askLobby(){
         int lobbyID;
         String id;
@@ -464,7 +517,7 @@ public class CLI_IO {
         else if (id.toLowerCase().equals("refresh")) {
             return LobbySelectionCommand.Refresh;
         }
-        else if(inputSanitizer.isInteger(id)){
+        else if(InputSanitizer.isInteger(id)){
             lobbyID = Integer.parseInt(id);
             command = LobbySelectionCommand.Number;
             command.setId(lobbyID);
@@ -474,20 +527,11 @@ public class CLI_IO {
         }
         return command;
     }
-    protected boolean playAgain(){
-        String answer;
-        synchronized (cli_lock){
-            printMessage("Do you want to play again?");
-            answer = scan();
-            if(answer.toLowerCase().equals("yes") || answer.toLowerCase().equals("y")){
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    }
 
+    /**
+     * Set the player as admin (change placeholder)
+     * @param isAdmin
+     */
     protected void setLobbyAdmin(boolean isAdmin){
         if(isAdmin){
             synchronized (cli_lock){
@@ -500,6 +544,10 @@ public class CLI_IO {
         }
     }
 
+    /**
+     * Set the player as first (change placeholder)
+     * @param firstPlayer
+     */
     public void setFirstPlayer(boolean firstPlayer){
         if(firstPlayer){
             synchronized (cli_lock){
@@ -512,6 +560,13 @@ public class CLI_IO {
         }
     }
 
+    /**
+     * Show the status at the end of the game
+     * @param leaderBoard the leaderboard
+     * @param playername the name of the player
+     * @param playerShelves the map of player names and their shelves
+     * @param board the board
+     */
     public void endGame(List<PlayerWithPoints> leaderBoard, String playername, Map<String, Shelf> playerShelves, Board board) {
 
         synchronized (cli_lock) {
@@ -560,6 +615,10 @@ public class CLI_IO {
         }
     }
 
+    /**
+     * Ask the user if he wants to reload an old game
+     * @return
+     */
     public boolean askToLoadOldMatch(){
         boolean resp = false;
         synchronized (cli_lock){

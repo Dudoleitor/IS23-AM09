@@ -19,9 +19,14 @@ public enum LobbyCommand {
             this.shortcut = shortcut;
             this.description = description;
         }
+
+        /**
+         * Return the command that matches the user input.
+         * If no match return invalid
+         * @param input string input
+         * @return the corresponding LobbyCommand
+         */
         public static LobbyCommand stringToCommand(String input){
-            //return the command that matches the user input.
-            //If no match return invalid
             return  Arrays.stream(LobbyCommand.values()).
                     filter(com ->
                             com.getCode().equals(input.toLowerCase()) ||
