@@ -291,7 +291,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
         if (client == null) return;  // Ignoring if receiver is not in lobby
 
         chat.addSecret(sender, receiver, message);
-        client.postChatMessage("PRIVATE " + sender, message);
+        client.postChatMessage("(private) " + sender, message);
     }
 
     @Override

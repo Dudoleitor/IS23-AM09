@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
 import it.polimi.ingsw.client.connection.LobbyException;
+import it.polimi.ingsw.shared.GameSettings;
 import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
@@ -8,6 +9,8 @@ import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.ChatMessage;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -16,6 +19,7 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ChatController extends SceneController implements Initializable {
@@ -25,15 +29,24 @@ public class ChatController extends SceneController implements Initializable {
     @FXML
     TextArea textArea;
 
+    @FXML
+    SplitMenuButton receiverMenu;
+
     Text username = new Text();
 
     private final ClientModelGUI model;
     private final String playerName;
 
+    private String receiver = "Everybody";
+
     public ChatController(ClientControllerGUI controller) {
         super(controller);
         this.model = controller.getModel();
         this.playerName = controller.getClient().getPlayerName();
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
     /**
@@ -74,9 +87,14 @@ public class ChatController extends SceneController implements Initializable {
             controller.errorMessage("Illegal characters in message");
             return;
         }
-        controller.getServer().postToLiveChat(playerName, message.getText());
+
+        if(receiver.equals("Everybody")){
+            controller.getServer().postToLiveChat(playerName, message.getText());
+        }
+        else{
+            controller.getServer().postSecretToLiveChat(playerName,receiver,message.getText());
+        }
         username.setText(model.getPlayerName());
-        username.setStyle("-fx-text-background-color: green");
         message.setText("");
     }
 
@@ -101,6 +119,48 @@ public class ChatController extends SceneController implements Initializable {
         }
     }
 
+    protected void setMenu(){
+        List<String> players = model.getPlayers();
+        List<MenuItem> menuItems = receiverMenu.getItems();
+
+        for(int i = 0; i < GameSettings.maxSupportedPlayers-1; i++){
+            if(i < players.size() && !players.get(i).equals(model.getPlayerName())){
+                menuItems.get(i+1).setText(players.get(i));
+            }
+            else{
+                menuItems.get(i+1).setVisible(false);
+            }
+        }
+    }
+
+    public String getReceiver(int i){
+        return receiverMenu.getItems().get(i).getText();
+    }
+
+    public void setMenuText(String text){
+        receiverMenu.setText(text);
+    }
+
+    public void setEveryOne(){
+        receiver = "Everybody";
+        setMenuText(receiver);
+    }
+
+    public void setP1(){
+        receiver = getReceiver(1);
+        setMenuText(receiver);
+    }
+
+    public void setP2(){
+        receiver = getReceiver(2);
+        setMenuText(receiver);
+    }
+
+    public void setP3(){
+        receiver = getReceiver(3);
+        setMenuText(receiver);
+    }
+
     /**
      * this method is useful to refresh the chat when the scene is opened
      * @param url
@@ -110,6 +170,7 @@ public class ChatController extends SceneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         refreshChat(model.getChat());
         textArea.setEditable(false);
+        setMenu();
     }
 
 }

@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.scene.layout.VBox?>
-<VBox fx:id="vbox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@Style.css">
-    <AnchorPane fx:id="anchor" minHeight="-Infinity" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity">
+<VBox fx:id="vbox" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
         <children>
 
             <ImageView fitHeight="27.0" fitWidth="69.0" layoutX="14.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
@@ -19,20 +14,28 @@
                     <Image url="@gameGraphics/Publisher_material/Title_2000x618px.png" />
                 </image>
             </ImageView>
-            <Text layoutX="115.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the chat!">
+            <Text layoutX="174.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the chat!">
                 <font>
                     <Font name="SF Mono Bold" size="30.0" />
                 </font>
             </Text>
-            <TextField onKeyReleased="#enterSendMessage" fx:id="message" layoutX="220.0"  layoutY="321.0" promptText="Write a message" />
-            <Button layoutX="388.0" layoutY="321.0" mnemonicParsing="false" onAction="#SendMsg" prefHeight="21.0" prefWidth="26.0" textFill="WHITE" />
-            <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="389.0" layoutY="321.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#SendMsg">
+            <TextField fx:id="message" layoutX="211.0" layoutY="321.0" onKeyReleased="#enterSendMessage" prefHeight="25.0" prefWidth="230.0" promptText="Write a message" />
+            <Button layoutX="458.0" layoutY="321.0" mnemonicParsing="false" onAction="#SendMsg" prefHeight="21.0" prefWidth="26.0" textFill="WHITE" />
+            <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="458.0" layoutY="321.0" onMouseClicked="#SendMsg" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@gameGraphics/misc/Sacchetto Chiuso.png" />
                 </image>
             </ImageView>
             <TextArea fx:id="textArea" layoutX="116.0" layoutY="80.0" prefHeight="200.0" prefWidth="371.0" />
             <Button layoutX="524.0" layoutY="362.0" mnemonicParsing="false" onAction="#backHome" prefHeight="15.0" prefWidth="52.0" style="-fx-background-color: #49be25;" text="Home" />
+         <SplitMenuButton fx:id="receiverMenu" layoutX="115.0" layoutY="321.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Everybody">
+           <items>
+               <MenuItem fx:id="item0" mnemonicParsing="false" text="Everybody" onAction="#setEveryOne"/>
+               <MenuItem fx:id="item1" mnemonicParsing="false" text="Player1" onAction="#setP1"/>
+               <MenuItem fx:id="item2" mnemonicParsing="false" text="Player2" onAction="#setP2"/>
+               <MenuItem fx:id="item3" mnemonicParsing="false" text="Player3" onAction="#setP3"/>
+           </items>
+         </SplitMenuButton>
         </children>
     </AnchorPane>
 </VBox>
