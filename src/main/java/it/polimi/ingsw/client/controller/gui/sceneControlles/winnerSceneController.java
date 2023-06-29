@@ -44,11 +44,6 @@ public class winnerSceneController extends SceneController implements Initializa
         this.playerName = controller.getClient().getPlayerName();
     }
 
-    @FXML
-    protected void playAgain() {
-        controller.loadScene(SceneEnum.lobbySelection);
-    }
-
     /**
      * creates a list of players with their points, sort it and put them (in the correct order)
      * in the podium
