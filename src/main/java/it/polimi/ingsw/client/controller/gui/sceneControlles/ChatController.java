@@ -84,7 +84,7 @@ public class ChatController extends SceneController implements Initializable {
             return;
         }
         if(!InputSanitizer.isValidMessage(message.getText())){
-            controller.errorMessage("Illegal characters in message");
+            controller.errorMessage("Invalid message format");
             return;
         }
 

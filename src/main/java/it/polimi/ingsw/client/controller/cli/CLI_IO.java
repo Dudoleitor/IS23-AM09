@@ -709,6 +709,11 @@ public class CLI_IO {
             printMessage(field+":");
             printPlaceHolder();
             value =  scanner.nextLine();
+            while(field.equals("message") && !InputSanitizer.isValidMessage(value)){
+                printErrorMessage("Invalid message format");
+                restorePlaceHolder();
+                value =  scanner.nextLine();
+            }
             placeHolderToRestore = false;
             result.put(field,value);
         }
