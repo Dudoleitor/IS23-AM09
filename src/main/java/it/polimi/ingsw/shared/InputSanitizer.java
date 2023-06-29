@@ -1,9 +1,15 @@
 package it.polimi.ingsw.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class InputSanitizer {
+
+    private static final List<Character> punctuation = Arrays.asList('.',',',';',')','(',' ','!','?');
+    private static final List<Character> specialLetters = Arrays.asList('à','è','é','ì','ò','ù');
+
+
     /**
      * Check if the sting is a valid player name
      * @param name the string to test
@@ -40,13 +46,13 @@ public class InputSanitizer {
      */
     public static boolean isValidMessage(String mes){
         return  mes!= null &&
-                mes.chars().count() >= 0 &&
                 mes.chars().
                         allMatch(c -> isValidSymbol((char) c) ||
                                 isInteger((char) c) ||
                                 isLowerCaseLetter((char) c) ||
                                 isUpperCaseLetter((char) c) ||
-                                isPunctuation((char) c));
+                                isPunctuation((char) c) ||
+                                isSpecialLetter((char) c));
     }
     /**
      * Check if the char is a lowercase letter
@@ -54,8 +60,18 @@ public class InputSanitizer {
      * @return true if lowercase letter
      */
     public static boolean isLowerCaseLetter(Character c){
-        return c.compareTo('a') >= 0 && c.compareTo('z') <= 0;
+        return (c.compareTo('a') >= 0 && c.compareTo('z') <= 0);
     }
+
+    /**
+     * Check if the char is a special letter
+     * @param c the char to test
+     * @return true if special letter
+     */
+    public static boolean isSpecialLetter(Character c){
+        return specialLetters.contains(c);
+    }
+
     /**
      * Check if the char is an uppercase letter
      * @param c the char to test
@@ -86,16 +102,7 @@ public class InputSanitizer {
      * @return true if punctuation mark
      */
     public static boolean isPunctuation(Character c){
-        List<Character> punctuation = new ArrayList<>();
-        punctuation.add('.');
-        punctuation.add(',');
-        punctuation.add(';');
-        punctuation.add(')');
-        punctuation.add('(');
-        punctuation.add(' ');
-        punctuation.add('!');
-        punctuation.add('?');
-        return punctuation.stream().anyMatch(p -> c.compareTo(p) == 0);
+        return punctuation.contains(c);
     }
 }
 
