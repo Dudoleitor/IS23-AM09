@@ -396,16 +396,14 @@ public class Controller implements Jsonable {
         for(Player p : playersToConsider){
             int points = 0;
 
-            System.out.println(p.getName());
-            System.out.println("From commonGoals: "+p.getCommonGoalPoints());
-            System.out.println("From adjacent tyles: "+p.getCommonGoalPoints());
-            System.out.println("From personal goal: "+p.getPersonalGoalPoints());
+            //sum all kinds of points
             points += p.getPersonalGoalPoints() + p.getAdjacentPoints() + p.getCommonGoalPoints();
+
+            //assign bonus to first player to end
             if(p.getName().equals(getCurrentPlayerName()) && clients.size()>=GameSettings.minSupportedPlayers) {
                 points += GameSettings.bonusPointsForLastMove;
-                System.out.println("From bonus: "+ GameSettings.bonusPointsForLastMove);
             }
-            System.out.println("Total: "+points);
+
             leaderBoard.add(new PlayerWithPoints(p.getName(),points));
         }
 
