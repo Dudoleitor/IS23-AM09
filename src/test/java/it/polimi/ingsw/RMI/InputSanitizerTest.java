@@ -6,72 +6,71 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InputSanitizerTest {
-    static InputSanitizer inputSanitizer = new InputSanitizer();
     @Test
     void punctuation(){
-        assertTrue(inputSanitizer.isPunctuation('.'));
-        assertTrue(inputSanitizer.isPunctuation(','));
-        assertTrue(inputSanitizer.isPunctuation(';'));
-        assertTrue(inputSanitizer.isPunctuation(')'));
-        assertTrue(inputSanitizer.isPunctuation('('));
-        assertTrue(inputSanitizer.isPunctuation(' '));
-        assertTrue(inputSanitizer.isPunctuation('!'));
-        assertTrue(inputSanitizer.isPunctuation('?'));
-        assertFalse(inputSanitizer.isPunctuation('a'));
-        assertFalse(inputSanitizer.isPunctuation('A'));
-        assertFalse(inputSanitizer.isPunctuation('-'));
+        assertTrue(InputSanitizer.isPunctuation('.'));
+        assertTrue(InputSanitizer.isPunctuation(','));
+        assertTrue(InputSanitizer.isPunctuation(';'));
+        assertTrue(InputSanitizer.isPunctuation(')'));
+        assertTrue(InputSanitizer.isPunctuation('('));
+        assertTrue(InputSanitizer.isPunctuation(' '));
+        assertTrue(InputSanitizer.isPunctuation('!'));
+        assertTrue(InputSanitizer.isPunctuation('?'));
+        assertFalse(InputSanitizer.isPunctuation('a'));
+        assertFalse(InputSanitizer.isPunctuation('A'));
+        assertFalse(InputSanitizer.isPunctuation('-'));
     }
     @Test
     void symbol(){
-        assertTrue(inputSanitizer.isValidSymbol('-'));
-        assertTrue(inputSanitizer.isValidSymbol('_'));
-        assertFalse(inputSanitizer.isValidSymbol('a'));
-        assertFalse(inputSanitizer.isValidSymbol('A'));
-        assertFalse(inputSanitizer.isValidSymbol(','));
+        assertTrue(InputSanitizer.isValidSymbol('-'));
+        assertTrue(InputSanitizer.isValidSymbol('_'));
+        assertFalse(InputSanitizer.isValidSymbol('a'));
+        assertFalse(InputSanitizer.isValidSymbol('A'));
+        assertFalse(InputSanitizer.isValidSymbol(','));
     }
     @Test
     void letterUC(){
-        assertTrue(inputSanitizer.isUpperCaseLetter('A'));
-        assertTrue(inputSanitizer.isUpperCaseLetter('G'));
-        assertTrue(inputSanitizer.isUpperCaseLetter('Z'));
-        assertFalse(inputSanitizer.isUpperCaseLetter('a'));
-        assertFalse(inputSanitizer.isUpperCaseLetter('z'));
-        assertFalse(inputSanitizer.isUpperCaseLetter('-'));
-        assertFalse(inputSanitizer.isUpperCaseLetter(' '));
+        assertTrue(InputSanitizer.isUpperCaseLetter('A'));
+        assertTrue(InputSanitizer.isUpperCaseLetter('G'));
+        assertTrue(InputSanitizer.isUpperCaseLetter('Z'));
+        assertFalse(InputSanitizer.isUpperCaseLetter('a'));
+        assertFalse(InputSanitizer.isUpperCaseLetter('z'));
+        assertFalse(InputSanitizer.isUpperCaseLetter('-'));
+        assertFalse(InputSanitizer.isUpperCaseLetter(' '));
     }
     @Test
     void letterLC(){
-        assertTrue(inputSanitizer.isLowerCaseLetter('a'));
-        assertTrue(inputSanitizer.isLowerCaseLetter('h'));
-        assertTrue(inputSanitizer.isLowerCaseLetter('z'));
-        assertFalse(inputSanitizer.isLowerCaseLetter('A'));
-        assertFalse(inputSanitizer.isLowerCaseLetter('Z'));
-        assertFalse(inputSanitizer.isLowerCaseLetter('-'));
-        assertFalse(inputSanitizer.isLowerCaseLetter(' '));
+        assertTrue(InputSanitizer.isLowerCaseLetter('a'));
+        assertTrue(InputSanitizer.isLowerCaseLetter('h'));
+        assertTrue(InputSanitizer.isLowerCaseLetter('z'));
+        assertFalse(InputSanitizer.isLowerCaseLetter('A'));
+        assertFalse(InputSanitizer.isLowerCaseLetter('Z'));
+        assertFalse(InputSanitizer.isLowerCaseLetter('-'));
+        assertFalse(InputSanitizer.isLowerCaseLetter(' '));
     }
     @Test
     void integer(){
-        assertTrue(inputSanitizer.isInteger('0'));
-        assertTrue(inputSanitizer.isInteger('9'));
-        assertTrue(inputSanitizer.isInteger("00"));
-        assertTrue(inputSanitizer.isInteger("0123"));
-        assertFalse(inputSanitizer.isInteger('a'));
-        assertFalse(inputSanitizer.isInteger('!'));
-        assertFalse(inputSanitizer.isInteger("123 456"));
+        assertTrue(InputSanitizer.isInteger('0'));
+        assertTrue(InputSanitizer.isInteger('9'));
+        assertTrue(InputSanitizer.isInteger("00"));
+        assertTrue(InputSanitizer.isInteger("0123"));
+        assertFalse(InputSanitizer.isInteger('a'));
+        assertFalse(InputSanitizer.isInteger('!'));
+        assertFalse(InputSanitizer.isInteger("123 456"));
     }
     @Test
     void name(){
-        assertTrue(inputSanitizer.isValidName("Prova"));
-        assertTrue(inputSanitizer.isValidName("Prova123"));
-        assertTrue(inputSanitizer.isValidName("Pr-0v_a"));
-        assertFalse(inputSanitizer.isValidName("Prova "));
-        assertFalse(inputSanitizer.isValidName("Prova!"));
-        assertFalse(inputSanitizer.isValidName("provà"));
+        assertTrue(InputSanitizer.isValidName("Prova"));
+        assertTrue(InputSanitizer.isValidName("Prova123"));
+        assertTrue(InputSanitizer.isValidName("Pr-0v_a"));
+        assertFalse(InputSanitizer.isValidName("Prova "));
+        assertFalse(InputSanitizer.isValidName("Prova!"));
+        assertFalse(InputSanitizer.isValidName("provà"));
     }
     @Test
     void message(){
-        assertTrue(inputSanitizer.isValidMessage("Prova! 123,;.?"));
-        assertFalse(inputSanitizer.isValidMessage("ç"));
-        assertTrue(inputSanitizer.isValidMessage("ciao ù??"));
+        assertTrue(InputSanitizer.isValidMessage("Prova! 123,;.?"));
+        assertFalse(InputSanitizer.isValidMessage("ç"));
+        assertTrue(InputSanitizer.isValidMessage("ciao ù??"));
     }
 }

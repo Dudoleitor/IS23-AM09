@@ -172,6 +172,7 @@ public class ClientControllerCLI implements ClientController {
                     break;
                 default: //post message to chat
                     cliIO.notifyInvalidCommand();
+                    cliIO.message("Type 'help' or -h to see all commands available");
                     break;
             }
     }
@@ -184,7 +185,7 @@ public class ClientControllerCLI implements ClientController {
     }
 
     /**
-     * Check if the reciever of private message is valid
+     * Check if the receiver of private message is valid
      * @param message the message
      * @param receiverName the receiver name
      * @return true if valid

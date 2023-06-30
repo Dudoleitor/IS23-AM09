@@ -41,14 +41,18 @@ public class RiemannTest { //an integration test
         //TURN 0
         //contains the correct players
         assertTrue(c.getPlayers().containsAll(playerList) && c.getPlayers().size()==playerList.size());
+
         //valid commongoals (hardcoded valid values 1-12)
         assertTrue(c.getCommonGoals().stream().allMatch(cg -> cg.getID() >= 1 && cg.getID() <= 12));
+
         //start turn from fridgeieri
         assertEquals("fridgeieri",c.getCurrentPlayerName());
+
         //the Board is a correct empty board for 4 players -- ASSERTION REMOVED! Controller must fill the board
         //assertTrue(c.getBoard().sameBoard(new Board(4)));
         //the first player is actually the first
         assertEquals(playerNames.get(0),c.getCurrentPlayerName());
+
         //all shelves are empty
         Shelf emptyShelf = new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns);
         for(Player p : c.getPlayers()) {
@@ -80,6 +84,7 @@ public class RiemannTest { //an integration test
             //The removed tiles are empty
             assertEquals(Tile.Empty,c.getBoard().getTile(0,3));
             assertEquals(Tile.Empty,c.getBoard().getTile(0,4));
+
             //Next turn has been called
             assertEquals(playerNames.get(1),c.getCurrentPlayerName());
             assertTrue(c.getShelves().get(playerNames.get(0)).allTilesInColumn(0).containsAll(picked));
@@ -115,6 +120,7 @@ public class RiemannTest { //an integration test
             assertEquals(Tile.Empty,c.getBoard().getTile(1,3));
             assertEquals(Tile.Empty,c.getBoard().getTile(1,4));
             assertEquals(Tile.Empty,c.getBoard().getTile(1,5));
+
             //Next turn has been called
             assertEquals(playerNames.get(2),c.getCurrentPlayerName());
             assertTrue(c.getShelves().get(playerNames.get(1)).allTilesInColumn(0).containsAll(picked));
