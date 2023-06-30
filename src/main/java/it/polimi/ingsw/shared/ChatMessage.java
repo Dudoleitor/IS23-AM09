@@ -1,14 +1,10 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.Color;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class ChatMessage implements Serializable, Jsonable{
     private String playerName;

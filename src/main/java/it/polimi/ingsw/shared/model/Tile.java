@@ -1,7 +1,6 @@
 package it.polimi.ingsw.shared.model;
 
 import it.polimi.ingsw.shared.Color;
-import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 

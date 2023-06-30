@@ -7,7 +7,6 @@ import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.MessageTcp;
 import it.polimi.ingsw.shared.PlayerWithPoints;
 import it.polimi.ingsw.shared.model.Tile;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -17,7 +16,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**

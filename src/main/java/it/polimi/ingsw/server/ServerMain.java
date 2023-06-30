@@ -4,8 +4,8 @@ import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientSocket;
 import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.shared.NetworkSettings;
-import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 
 import java.io.IOException;
 import java.net.ServerSocket;

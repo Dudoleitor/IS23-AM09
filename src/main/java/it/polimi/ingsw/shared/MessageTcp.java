@@ -1,12 +1,11 @@
 package it.polimi.ingsw.shared;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
-import javax.management.remote.JMXServerErrorException;
-import java.rmi.RemoteException;
 
 public class MessageTcp {
     private MessageCommand messageCommand;

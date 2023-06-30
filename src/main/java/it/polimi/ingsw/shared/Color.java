@@ -1,10 +1,5 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.model.Tile;
-import it.polimi.ingsw.shared.model.TileGenericException;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;

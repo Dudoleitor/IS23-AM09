@@ -1,6 +1,9 @@
 package it.polimi.ingsw.shared.model;
 
-import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.Color;
+import it.polimi.ingsw.shared.GameSettings;
+import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.virtualview.VirtualCommonGoal;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

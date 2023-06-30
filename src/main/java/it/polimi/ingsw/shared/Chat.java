@@ -1,6 +1,5 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.server.clientonserver.Client;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

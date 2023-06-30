@@ -1,4 +1,5 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
+
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.GridHandler;
@@ -15,8 +16,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
-
 
 import java.io.IOException;
 import java.net.URL;

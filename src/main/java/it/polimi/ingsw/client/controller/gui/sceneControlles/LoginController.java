@@ -1,11 +1,12 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
+
 import it.polimi.ingsw.client.connection.ServerException;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.shared.InputSanitizer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;

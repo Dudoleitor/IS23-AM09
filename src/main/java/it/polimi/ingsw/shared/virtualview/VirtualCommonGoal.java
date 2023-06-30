@@ -2,9 +2,7 @@ package it.polimi.ingsw.shared.virtualview;
 
 import it.polimi.ingsw.server.clientonserver.Client;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * This object is used on the server to send

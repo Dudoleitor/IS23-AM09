@@ -3,9 +3,9 @@ package it.polimi.ingsw.client.model;
 import it.polimi.ingsw.client.connection.LobbyException;
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.controller.ClientController;
-import it.polimi.ingsw.client.controller.gui.sceneControlles.ChatController;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
+import it.polimi.ingsw.client.controller.gui.sceneControlles.ChatController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.PlayerShelvesController;
 import it.polimi.ingsw.client.controller.gui.sceneControlles.WaitingLobbyController;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * For the general behaviour please refer to the javadoc of ClientController.

@@ -2,11 +2,11 @@ package it.polimi.ingsw.client.controller.gui.sceneControlles;
 
 import it.polimi.ingsw.client.connection.Server;
 import it.polimi.ingsw.client.connection.ServerException;
-import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.shared.InputSanitizer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -17,7 +17,8 @@ import javafx.scene.input.KeyEvent;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class LobbiesController extends SceneController implements Initializable {
     private final ClientModelGUI model;

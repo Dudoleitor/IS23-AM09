@@ -3,9 +3,11 @@ package it.polimi.ingsw.client.connection.TCPThread;
 import it.polimi.ingsw.shared.MessageTcp;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+;
 
 public class ServerTCPListener extends Thread{
 

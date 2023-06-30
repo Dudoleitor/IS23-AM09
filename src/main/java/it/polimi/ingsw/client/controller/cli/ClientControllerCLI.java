@@ -1,19 +1,19 @@
 package it.polimi.ingsw.client.controller.cli;
 
 
-import it.polimi.ingsw.client.connection.*;
+import it.polimi.ingsw.client.connection.LobbyException;
+import it.polimi.ingsw.client.connection.Server;
+import it.polimi.ingsw.client.connection.ServerException;
 import it.polimi.ingsw.client.controller.ClientController;
 import it.polimi.ingsw.client.model.ClientModelCLI;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.model.Move;
 import it.polimi.ingsw.shared.PrivateChatMessage;
+import it.polimi.ingsw.shared.model.Move;
 
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.Set;
-
-import static java.lang.Thread.sleep;
 
 /**
  * This class handles the sequence of events on the client side.

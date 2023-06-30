@@ -1,7 +1,5 @@
 package it.polimi.ingsw.shared;
 
-import it.polimi.ingsw.shared.ChatMessage;
-import it.polimi.ingsw.shared.Color;
 import org.json.simple.JSONObject;
 
 public class PrivateChatMessage extends ChatMessage {

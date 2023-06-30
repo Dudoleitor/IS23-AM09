@@ -3,10 +3,10 @@ package it.polimi.ingsw.client.connection;
 import it.polimi.ingsw.server.clientonserver.Client;
 import it.polimi.ingsw.server.clientonserver.ClientRMI;
 import it.polimi.ingsw.shared.IpAddressV4;
-import it.polimi.ingsw.shared.model.Move;
 import it.polimi.ingsw.shared.NetworkSettings;
-import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
+import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+import it.polimi.ingsw.shared.model.Move;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

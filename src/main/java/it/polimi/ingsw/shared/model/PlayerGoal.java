@@ -1,15 +1,19 @@
 package it.polimi.ingsw.shared.model;
 
-import it.polimi.ingsw.shared.*;
-
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import it.polimi.ingsw.shared.Color;
+import it.polimi.ingsw.shared.GameSettings;
+import it.polimi.ingsw.shared.JsonBadParsingException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class loads a player's goal from a json file and

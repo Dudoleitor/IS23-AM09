@@ -1,13 +1,14 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.JsonBadParsingException;
+import it.polimi.ingsw.shared.Jsonable;
 import it.polimi.ingsw.shared.model.*;
 import it.polimi.ingsw.shared.virtualview.VirtualShelf;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;

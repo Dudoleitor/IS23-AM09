@@ -1,8 +1,7 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.client.connection.Server;
-import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.server.clientonserver.Client;
+import it.polimi.ingsw.shared.*;
 import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
 import it.polimi.ingsw.shared.model.Move;
 import org.json.simple.JSONObject;
@@ -17,7 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, NetworkExceptionHandler {

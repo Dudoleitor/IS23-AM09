@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This object is used on the client to receive updates

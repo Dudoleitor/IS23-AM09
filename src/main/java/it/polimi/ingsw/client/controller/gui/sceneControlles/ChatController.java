@@ -1,12 +1,12 @@
 package it.polimi.ingsw.client.controller.gui.sceneControlles;
+
 import it.polimi.ingsw.client.connection.LobbyException;
-import it.polimi.ingsw.shared.GameSettings;
-import it.polimi.ingsw.shared.InputSanitizer;
 import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
 import it.polimi.ingsw.shared.Chat;
 import it.polimi.ingsw.shared.ChatMessage;
+import it.polimi.ingsw.shared.InputSanitizer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;

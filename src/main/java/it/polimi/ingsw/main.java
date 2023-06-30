@@ -21,9 +21,9 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.OptionsParameters.*;
-import static it.polimi.ingsw.client.Client_Settings.*;
 import static it.polimi.ingsw.client.Client_Settings.Connection.RMI;
 import static it.polimi.ingsw.client.Client_Settings.Connection.TCP;
+import static it.polimi.ingsw.client.Client_Settings.*;
 import static it.polimi.ingsw.client.Client_Settings.UI.CLI;
 import static it.polimi.ingsw.client.Client_Settings.UI.GUI;
 

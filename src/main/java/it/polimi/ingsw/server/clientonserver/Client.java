@@ -7,7 +7,6 @@ import it.polimi.ingsw.shared.model.Tile;
 import org.json.simple.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This object is used to send updates to

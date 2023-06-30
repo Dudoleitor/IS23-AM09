@@ -4,8 +4,9 @@ import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
 import it.polimi.ingsw.client.controller.gui.GridHandler;
 import it.polimi.ingsw.client.controller.gui.SceneEnum;
 import it.polimi.ingsw.client.model.ClientModelGUI;
-import it.polimi.ingsw.shared.GameSettings;
-import it.polimi.ingsw.shared.model.*;
+import it.polimi.ingsw.shared.model.Position;
+import it.polimi.ingsw.shared.model.Shelf;
+import it.polimi.ingsw.shared.model.Tile;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -16,10 +17,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class PlayerShelvesController extends SceneController implements Initializable {
     private final ClientModelGUI model;

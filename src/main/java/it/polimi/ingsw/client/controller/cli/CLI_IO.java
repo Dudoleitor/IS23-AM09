@@ -1,9 +1,8 @@
 package it.polimi.ingsw.client.controller.cli;
 
 import it.polimi.ingsw.client.Client_Settings;
-import it.polimi.ingsw.shared.InputSanitizer;
-import it.polimi.ingsw.shared.model.*;
 import it.polimi.ingsw.shared.*;
+import it.polimi.ingsw.shared.model.*;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
