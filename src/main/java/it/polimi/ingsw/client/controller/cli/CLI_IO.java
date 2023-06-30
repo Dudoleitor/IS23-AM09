@@ -576,7 +576,6 @@ public class CLI_IO {
                 msg = msg.concat("      -" + player.getPlayerName() + ": " + player.getPoints() + "\n");
             }
 
-
             if (leaderBoard.get(0).getPlayerName().equals(playername)) {
                 System.out.println(victoryBanner);
             } else {
