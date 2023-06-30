@@ -1,0 +1,15 @@
+it.polimi.ingsw
+it.polimi.ingsw.client
+it.polimi.ingsw.client.connection
+it.polimi.ingsw.client.connection.TCPThread
+it.polimi.ingsw.client.controller
+it.polimi.ingsw.client.controller.cli
+it.polimi.ingsw.client.controller.gui
+it.polimi.ingsw.client.controller.gui.sceneControlles
+it.polimi.ingsw.client.model
+it.polimi.ingsw.server
+it.polimi.ingsw.server.clientonserver
+it.polimi.ingsw.shared
+it.polimi.ingsw.shared.model
+it.polimi.ingsw.shared.RemoteInterfaces
+it.polimi.ingsw.shared.virtualview
