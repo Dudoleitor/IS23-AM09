@@ -98,6 +98,22 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
         }
     }
 
+    /**
+     * This method is used to ensure that the player did not connect previously with the
+     * same lowercase name but with different uppercase letters.
+     * @param playerName Name to check, case-sensitive
+     * @return True if the player has already logged in with the same name but different case
+     */
+    private boolean detectPreviousLoginMismatch(String playerName) {
+        final List<String> previousConnectedUsernames = lobbies.stream()
+                .flatMap(l -> l.getDisconnectedClients().stream())
+                .collect(Collectors.toList());
+        if (previousConnectedUsernames.stream().noneMatch(x -> x.equalsIgnoreCase(playerName))) {
+            return false;
+        }
+        return previousConnectedUsernames.stream()
+                .noneMatch(x -> x.equals(playerName));
+    }
 
     /**
      *
@@ -123,6 +139,10 @@ public class ServerMain implements ServerInterface, NetworkExceptionHandler {
                                 x.toLowerCase().equals(playerName))) {
                     return false;
                 }
+            }
+
+            if (detectPreviousLoginMismatch(client.getPlayerName())) {
+                return false;
             }
 
             clientsWithoutLobby.add(client);

@@ -162,7 +162,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
     /**
      * Return the list of clients that were previously disconnected.
      *
-     * @return List of String, playerNames in lowercase
+     * @return List of String, playerNames are case-sentitive
      */
     public List<String> getDisconnectedClients() {
         return new ArrayList<>(disconnectedClients);
@@ -399,7 +399,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
             /* If game is started and controller is null it's still being initialized,
                     we won't disconnect the player. An exception will be thrown later
                     and the player will be disconnected then. */
-            disconnectedClients.add(client.getPlayerName().toLowerCase());
+            disconnectedClients.add(client.getPlayerName());
             controller.clientDisconnected(client);  // It's ok if a network exception is thrown here
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
 
@@ -415,7 +415,7 @@ public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, 
 
         if (controller == null && !started) {
             // The admin did not start the match yet
-            disconnectedClients.add(client.getPlayerName().toLowerCase());
+            disconnectedClients.add(client.getPlayerName());
             System.out.println("Disconnected client " + client.getPlayerName() + " from lobby #" + id);
         }
         informAboutConnectedClients(message);
