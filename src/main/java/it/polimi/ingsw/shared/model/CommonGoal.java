@@ -45,7 +45,7 @@ public class CommonGoal implements Jsonable{
     /**
      * Creates a CommonGoal with a specified id for a specified number of players
      * @param strategy is the check static function
-     * @param number_of_players talks by itself //TODO to change one day or the other
+     * @param number_of_players number of players
      */
     public CommonGoal(CommonGoalStrategy strategy, int number_of_players) throws JsonBadParsingException {
         this(getJsonObject(number_of_players,strategy));
@@ -83,7 +83,8 @@ public class CommonGoal implements Jsonable{
     }
 
     /**
-     * @param number_of_players's been created to be intuitive //TODO to change one day or the other
+     * Get the proper JSON object for the number of players and for the common goals
+     * @param number_of_players number of player
      * @param strategy is the check static function
      * @return a jsonObject with the required characteristics
      * @throws JsonBadParsingException when Json file is bad formatted

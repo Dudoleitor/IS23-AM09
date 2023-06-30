@@ -411,8 +411,9 @@ public class Controller implements Jsonable {
         }
         leaderBoard.sort(Comparator
                 .comparingInt(PlayerWithPoints::getPoints)
+                .reversed()
                 .thenComparingInt(leaderBoard::indexOf)
-                .reversed());
+                );
         for (Client client : clients)
             client.endGame(leaderBoard);
         deleteSavedGame();
