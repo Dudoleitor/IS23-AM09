@@ -41,7 +41,7 @@ public class LoginController extends SceneController {
             ClientControllerGUI.showError("Illegal characters in username");
             return;
         }
-        final String username = userName.getText().toLowerCase();
+        final String username = userName.getText();
         final ClientModelGUI model = new ClientModelGUI(username, controller);
 
         if (!ClientController.connect(controller, model)) { // Login failed
