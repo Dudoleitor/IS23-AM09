@@ -185,20 +185,6 @@ public class ClientControllerCLI implements ClientController {
     }
 
     /**
-     * Check if the receiver of private message is valid
-     * @param message the message
-     * @param receiverName the receiver name
-     * @return true if valid
-     */
-    private boolean checkValidReceiver(ChatMessage message, String receiverName){
-        if (message.getClass().equals(PrivateChatMessage.class)){
-            if(!((PrivateChatMessage) message).getReciever().equals(receiverName))
-                return false;
-        }
-        return true;
-    }
-
-    /**
      * Get message from user and post to Server Chat
      */
     private void postToChat() throws LobbyException {
@@ -240,11 +226,16 @@ public class ClientControllerCLI implements ClientController {
      */
     private void playMatch() throws LobbyException {
         //Receive and execute commands until "exit" lobbyCommand is launched
+        boolean firstTurn = true;
         while(!exit){
             try {
                 if (model !=null && model.gameEnded()) return;
             } catch (RemoteException ignored) {}  // This should never happen, as the remote object is local
 
+            if(firstTurn){
+                cliIO.message("Type 'help' or -h to see all commands available");
+                firstTurn = false;
+            }
             LobbyCommand lobbyCommand = cliIO.askCommand();
             executeUserCommand(lobbyCommand);
         }
