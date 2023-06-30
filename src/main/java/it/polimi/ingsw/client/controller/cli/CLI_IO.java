@@ -420,7 +420,7 @@ public class CLI_IO {
             String help = "Here are all the commands:\n";
             List<String> commandList = Arrays.stream(LobbyCommand.values()).
                     filter(c -> c != LobbyCommand.Help && c != LobbyCommand.Invalid).
-                    map(c -> "    -> " + c.getCode().toUpperCase() + " ["+c.getShortcut()+"] :"+c.getDescription()+"\n").
+                    map(c -> "    -> " + c.getCode().toUpperCase() + " ["+c.getShortcut()+"]: "+c.getDescription()+"\n").
                     collect(Collectors.toList());
             for(String command : commandList){
                 help = help.concat(command);
@@ -510,10 +510,10 @@ public class CLI_IO {
         if(id.isEmpty()){
             return LobbySelectionCommand.Random;
         }
-        else if (id.toLowerCase().equals("new")) {
+        else if (id.equalsIgnoreCase("new")) {
             return LobbySelectionCommand.Create;
         }
-        else if (id.toLowerCase().equals("refresh")) {
+        else if (id.equalsIgnoreCase("refresh")) {
             return LobbySelectionCommand.Refresh;
         }
         else if(InputSanitizer.isInteger(id)){
