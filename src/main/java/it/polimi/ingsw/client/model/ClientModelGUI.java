@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 /**
  * For the general behaviour please refer to the javadoc of ClientController.
  * This object is used to wrap the GUI and call the proper methods of JavaFX.
- * Here a copy of the model is not needed.
  */
 public class ClientModelGUI extends UnicastRemoteObject implements ClientModel, ClientRemote {
     private final String playerName;
