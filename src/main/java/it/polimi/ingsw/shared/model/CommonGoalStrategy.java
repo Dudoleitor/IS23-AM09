@@ -131,7 +131,7 @@ public enum CommonGoalStrategy {
                     try {
                         currentTile = shelf.getTile(row, column);
                     } catch (BadPositionException e) {
-                        throw new CommonGoalRuntimeException("Error in test"); //TODO handle better
+                        throw new CommonGoalRuntimeException("Error in test");
                     }
                     if (shelf.isValidTile(row, column)) {
                         //increment counter
