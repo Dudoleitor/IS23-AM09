@@ -1,0 +1,444 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PlayerGoal</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.model</a>
+</div>
+
+<h1>Coverage Summary for Class: PlayerGoal (it.polimi.ingsw.shared.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PlayerGoal</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (14/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72.3%
+  </span>
+  <span class="absValue">
+    (94/130)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.model;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;import org.json.simple.parser.JSONParser;
+&nbsp;import org.json.simple.parser.ParseException;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class loads a player&#39;s goal from a json file and
+&nbsp; * implements the method to calculate the amount of
+&nbsp; * points achieved by the player.
+&nbsp; */
+&nbsp;public class PlayerGoal {
+&nbsp;    private final List&lt;GoalPosition&gt; positionList;
+&nbsp;    private final Map&lt;Integer, Integer&gt; pointsMap;
+&nbsp;    private final int goalId;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor is used when the goalId is known
+&nbsp;     * @param jsonPath Path to the json file
+&nbsp;     * @param goalId id of the goal to load
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+<b class="fc">&nbsp;    public PlayerGoal(String jsonPath, int goalId) throws JsonBadParsingException {</b>
+<b class="fc">&nbsp;        this.goalId = goalId;</b>
+<b class="fc">&nbsp;        JSONParser jsonParser = new JSONParser();</b>
+<b class="nc">&nbsp;        try (</b>
+<b class="fc">&nbsp;                InputStream stream = this.getClass().getClassLoader().getResourceAsStream(jsonPath);</b>
+&nbsp;        ){
+<b class="fc">&nbsp;            if (stream==null)</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;Error while loading json: file not found&quot;);</b>
+<b class="fc">&nbsp;            Reader reader = new InputStreamReader(stream);</b>
+<b class="fc">&nbsp;            JSONObject obj = (JSONObject) jsonParser.parse(reader);</b>
+<b class="fc">&nbsp;            if (obj == null) {</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;Error while parsing json&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            this.positionList = buildPositionList(obj, goalId);</b>
+<b class="fc">&nbsp;            this.pointsMap = buildPointsMap(obj);</b>
+&nbsp;
+<b class="fc">&nbsp;        } catch (ParseException | ClassCastException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json&quot;);</b>
+<b class="nc">&nbsp;        } catch (IOException e ) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while loading json: file not found&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor is used when the goalId needs to be chosen randomly
+&nbsp;     * @param jsonPath Path to the json file
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+<b class="fc">&nbsp;    public PlayerGoal(String jsonPath) throws JsonBadParsingException {</b>
+<b class="fc">&nbsp;        JSONParser jsonParser = new JSONParser();</b>
+<b class="fc">&nbsp;        Random rand = new Random();</b>
+<b class="fc">&nbsp;        try (</b>
+<b class="fc">&nbsp;                InputStream stream = PlayerGoal.class.getClassLoader().getResourceAsStream(jsonPath)</b>
+&nbsp;        ){
+<b class="fc">&nbsp;            if(stream==null)</b>
+<b class="fc">&nbsp;                throw new JsonBadParsingException(&quot;Error while loading json: file not found&quot;);</b>
+<b class="fc">&nbsp;            Reader reader = new InputStreamReader(stream);</b>
+<b class="fc">&nbsp;            JSONObject obj = (JSONObject) jsonParser.parse(reader);</b>
+&nbsp;
+<b class="fc">&nbsp;            JSONObject goals = (JSONObject) (obj).get(&quot;goals&quot;);</b>
+<b class="fc">&nbsp;            if (goals == null) {</b>
+<b class="fc">&nbsp;                throw new JsonBadParsingException(&quot;Error while parsing json: goals not found&quot;);}</b>
+&nbsp;
+<b class="fc">&nbsp;            goalId = rand.nextInt(goals.size());  // Choosing a random objective</b>
+&nbsp;
+<b class="fc">&nbsp;            this.positionList = buildPositionList(obj, goalId);</b>
+<b class="fc">&nbsp;            this.pointsMap = buildPointsMap(obj);</b>
+&nbsp;
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while loading json: file not found&quot;);</b>
+<b class="fc">&nbsp;        } catch (ParseException | ClassCastException e) {</b>
+<b class="fc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor is used when the goalId needs to be chosen randomly
+&nbsp;     * @param jsonObject object from which to extract the info, this
+&nbsp;     *                   object must have a goals field and a points field.
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+<b class="fc">&nbsp;    public PlayerGoal(JSONObject jsonObject, int goalId) throws JsonBadParsingException {</b>
+<b class="fc">&nbsp;        this.goalId = goalId;</b>
+<b class="fc">&nbsp;            if (jsonObject == null) {</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;Error while parsing json&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            this.positionList = buildPositionList(jsonObject, goalId);</b>
+<b class="fc">&nbsp;            this.pointsMap = buildPointsMap(jsonObject);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to get the amount of players goals available
+&nbsp;     * in the provided json file.
+&nbsp;     * @param jsonPath Path to the json file containing the goals
+&nbsp;     * @return integer with the amount
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+&nbsp;    public static int playerGoalsAmount(String jsonPath) throws JsonBadParsingException {
+<b class="fc">&nbsp;        JSONParser jsonParser = new JSONParser();</b>
+<b class="fc">&nbsp;        try (</b>
+<b class="fc">&nbsp;                InputStream stream = PlayerGoal.class.getClassLoader().getResourceAsStream(jsonPath)</b>
+&nbsp;                ){
+<b class="fc">&nbsp;            if(stream==null)</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;Error while loading json: file not found&quot;);</b>
+<b class="fc">&nbsp;            Reader reader = new InputStreamReader(stream);</b>
+<b class="fc">&nbsp;            JSONObject obj = (JSONObject) jsonParser.parse(reader);</b>
+&nbsp;
+<b class="fc">&nbsp;            return playerGoalsAmount(obj);</b>
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while loading json: file not found&quot;);</b>
+<b class="fc">&nbsp;        } catch (ParseException | ClassCastException e) {</b>
+<b class="fc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private static int playerGoalsAmount(JSONObject obj) throws JsonBadParsingException {
+&nbsp;        try {
+<b class="fc">&nbsp;            JSONObject goals = (JSONObject) (obj).get(&quot;goals&quot;);</b>
+<b class="fc">&nbsp;            if (goals == null) {</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;Error while parsing json: goals not found&quot;);}</b>
+&nbsp;
+<b class="fc">&nbsp;            return goals.size();  // Choosing a random objective</b>
+<b class="nc">&nbsp;        } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function builds an integer-integer map from a json object to
+&nbsp;     * map the amount of tiles in the correct position to the points
+&nbsp;     * achieved by the player.
+&nbsp;     * @param objFromFile json object, must have a &quot;points&quot; field
+&nbsp;     * @return Map&lt;Interger, Integer&gt; with the mapping
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+&nbsp;    private Map&lt;Integer, Integer&gt; buildPointsMap(JSONObject objFromFile) throws JsonBadParsingException {
+&nbsp;        try {
+<b class="fc">&nbsp;            JSONObject jsonMap = (JSONObject) objFromFile.get(&quot;points&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;            if (jsonMap==null) {</b>
+<b class="fc">&nbsp;                throw new JsonBadParsingException(&quot;Error while parsing json: points not found&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            Map&lt;String, Long&gt; stringLongMap = new HashMap&lt;&gt;(jsonMap);</b>
+&nbsp;
+<b class="fc">&nbsp;            Map&lt;Integer, Integer&gt; result = new HashMap();</b>
+&nbsp;
+&nbsp;            // Mapping from &lt;String, Long&gt; to &lt;Integer, Integer&gt;
+<b class="fc">&nbsp;            for (Map.Entry&lt;String, Long&gt; entry : stringLongMap.entrySet()) {</b>
+<b class="fc">&nbsp;                result.put(Integer.parseInt(entry.getKey()), Math.toIntExact(entry.getValue()));</b>
+<b class="fc">&nbsp;            }</b>
+&nbsp;
+<b class="fc">&nbsp;            return result;</b>
+<b class="nc">&nbsp;        } catch (NullPointerException | ClassCastException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json: points not found&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function builds the single goal of the player from the json file.
+&nbsp;     * @param objFromFile json object with all goals, must have a goals field
+&nbsp;     * @param goalId id chosen by the caller
+&nbsp;     * @return player&#39;s goal
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens.
+&nbsp;     */
+&nbsp;    private List&lt;GoalPosition&gt; buildPositionList(JSONObject objFromFile, int goalId) throws JsonBadParsingException {
+<b class="fc">&nbsp;        JSONObject goals = (JSONObject) objFromFile.get(&quot;goals&quot;);</b>
+<b class="fc">&nbsp;        if (goals == null) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json: goals not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        JSONArray goal = (JSONArray) goals.get(String.valueOf(goalId));</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            if (goal == null) {</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;Error while parsing json: goal by id not found&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return (List&lt;GoalPosition&gt;) goal</b>
+<b class="fc">&nbsp;                    .stream()</b>
+<b class="fc">&nbsp;                    .map(g -&gt; {</b>
+&nbsp;                        try {
+<b class="fc">&nbsp;                            return parsePosition((JSONObject) g);</b>
+<b class="fc">&nbsp;                        } catch (JsonBadParsingException e) {</b>
+<b class="fc">&nbsp;                            throw new RuntimeException(e);</b>
+&nbsp;                        }
+&nbsp;                    })
+<b class="fc">&nbsp;                    .collect(Collectors.toList());</b>
+<b class="fc">&nbsp;        } catch (RuntimeException e){</b>
+<b class="fc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json: wrong position attributes&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * This function parses a single json object and returns a GoalPosition
+&nbsp;     * @param jsonBlock json object to be parsed
+&nbsp;     * @return GoalPosition, parsing result
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+&nbsp;    private GoalPosition parsePosition(JSONObject jsonBlock) throws JsonBadParsingException {
+&nbsp;        try {
+<b class="fc">&nbsp;            String tileStr = jsonBlock.get(&quot;tileName&quot;).toString();</b>
+<b class="fc">&nbsp;            Tile tile = Tile.valueOf(tileStr);</b>
+&nbsp;
+<b class="fc">&nbsp;            int posRow = Math.toIntExact((Long) jsonBlock.get(&quot;posRow&quot;));</b>
+<b class="fc">&nbsp;            int posCol = Math.toIntExact((Long) jsonBlock.get(&quot;posCol&quot;));</b>
+<b class="fc">&nbsp;            return new GoalPosition(new Position(posRow, posCol), tile);</b>
+<b class="fc">&nbsp;        } catch (ClassCastException | IllegalArgumentException e) {</b>
+<b class="fc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json: wrong position attributes&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This predicate checks if a single tile is in the correct position
+&nbsp;     * @param shelf Player&#39;s shelf
+&nbsp;     * @param pos GoalPosition to be checked
+&nbsp;     * @return true/false
+&nbsp;     */
+&nbsp;    private boolean checkSinglePosition(Shelf shelf, GoalPosition pos) {
+&nbsp;        try {
+<b class="fc">&nbsp;            return pos.getTile()</b>
+<b class="fc">&nbsp;                    .equals(</b>
+<b class="fc">&nbsp;                            shelf.getTile(pos.getPos())</b>
+&nbsp;                    );
+<b class="nc">&nbsp;        } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function maps the number of correct positions to the point achieved
+&nbsp;     * @param c Correct position counted
+&nbsp;     * @return Points achieved
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+&nbsp;    private int countToPoints(int c) throws JsonBadParsingException {
+<b class="fc">&nbsp;        if (c==0) return 0;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            return Math.toIntExact(</b>
+<b class="fc">&nbsp;                    pointsMap.get(c)</b>
+&nbsp;            );
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while parsing json: wrong point map&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function uses the player&#39;s shelf and the properties of the
+&nbsp;     * goal to calculate the amount of points achieved.
+&nbsp;     * @param shelf player&#39;s shelf
+&nbsp;     * @return points achieved
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+&nbsp;    public int check(Shelf shelf) throws JsonBadParsingException {
+<b class="fc">&nbsp;            int count = positionList</b>
+<b class="fc">&nbsp;                    .stream()</b>
+<b class="fc">&nbsp;                    .mapToInt(p -&gt; checkSinglePosition(shelf, p) ? 1 : 0)</b>
+<b class="fc">&nbsp;                    .sum();</b>
+<b class="fc">&nbsp;            return countToPoints(count);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function returns the id of the goal.
+&nbsp;     * Ids start from 0.
+&nbsp;     * @return int goalId
+&nbsp;     */
+<b class="fc">&nbsp;    public int getGoalId() { return goalId; }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        Shelf shelf = new Shelf(GameSettings.shelfRows,GameSettings.shelfColumns);</b>
+<b class="nc">&nbsp;        for(GoalPosition goalPosition : positionList){</b>
+<b class="nc">&nbsp;            shelf.putTile(goalPosition.getTile(),goalPosition.getPos());</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        String strShelf = Color.coloredString(&quot;Personal Goal:\n&quot;,Color.Yellow) + shelf.toString();</b>
+<b class="nc">&nbsp;        String strNumbers = Color.coloredString(&quot;Completed:&quot;,Color.Yellow);</b>
+<b class="nc">&nbsp;        String strPoints = Color.coloredString( &quot;Points:   &quot;,Color.Yellow);</b>
+<b class="nc">&nbsp;        for(Map.Entry&lt;Integer,Integer&gt; entry : pointsMap.entrySet()){</b>
+<b class="nc">&nbsp;            int number = entry.getKey();</b>
+<b class="nc">&nbsp;            int points = entry.getValue();</b>
+<b class="nc">&nbsp;            strNumbers = strNumbers.concat(((number &gt;= 10)?String.valueOf(number):&quot; &quot;+String.valueOf(number)) + &quot; &quot;);</b>
+<b class="nc">&nbsp;            strPoints = strPoints.concat(((points &gt;= 10)?String.valueOf(points):&quot; &quot;+String.valueOf(points)) + &quot; &quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return strShelf.concat(strNumbers+&quot;\n&quot;).concat(strPoints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="fc">&nbsp;        if (this == o) return true;</b>
+<b class="fc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="fc">&nbsp;        PlayerGoal that = (PlayerGoal) o;</b>
+<b class="fc">&nbsp;        return goalId == that.goalId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="nc">&nbsp;        return Objects.hash(goalId);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class GoalPosition {
+&nbsp;    private final Position pos;
+&nbsp;    private final Tile tile;
+&nbsp;
+&nbsp;
+&nbsp;    public Position getPos() {
+&nbsp;        return pos;
+&nbsp;    }
+&nbsp;
+&nbsp;    public Tile getTile() {
+&nbsp;        return tile;
+&nbsp;    }
+&nbsp;
+&nbsp;    public GoalPosition(Position pos, Tile tile) {
+&nbsp;        this.pos = pos;
+&nbsp;        this.tile = tile;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+&nbsp;        if (this == o) return true;
+&nbsp;        if (o == null || getClass() != o.getClass()) return false;
+&nbsp;        GoalPosition that = (GoalPosition) o;
+&nbsp;        return Objects.equals(pos, that.getPos()) &amp;&amp; tile == that.getTile();
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+&nbsp;        return Objects.hash(pos, tile);
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

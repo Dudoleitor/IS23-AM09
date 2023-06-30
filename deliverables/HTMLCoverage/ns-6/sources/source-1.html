@@ -1,0 +1,824 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CLI_IO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.cli</a>
+</div>
+
+<h1>Coverage Summary for Class: CLI_IO (it.polimi.ingsw.client.controller.cli)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CLI_IO</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/46)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/338)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.cli;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.Client_Settings;
+&nbsp;import it.polimi.ingsw.shared.InputSanitizer;
+&nbsp;import it.polimi.ingsw.shared.model.*;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.locks.Lock;
+&nbsp;import java.util.concurrent.locks.ReentrantLock;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;import java.util.stream.IntStream;
+&nbsp;
+&nbsp;import static it.polimi.ingsw.client.Client_Settings.*;
+&nbsp;
+&nbsp;public class CLI_IO {
+<b class="nc">&nbsp;    private final static Lock cli_lock = new ReentrantLock();</b>
+<b class="nc">&nbsp;    private final Scanner scanner = new Scanner(System.in);</b>
+<b class="nc">&nbsp;    private String placeHolder = stdPlaceHolder;</b>
+<b class="nc">&nbsp;    private static boolean placeHolderToRestore = false;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor. The cli_lock is built as a Singleton
+&nbsp;     */
+<b class="nc">&nbsp;    public CLI_IO(){</b>
+<b class="nc">&nbsp;        System.out.println(gameLogo);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected LobbyCommand askCommand(){
+&nbsp;            String input;
+<b class="nc">&nbsp;            input = scan();</b>
+&nbsp;            //Invalid command
+<b class="nc">&nbsp;            if(!InputSanitizer.isValidMessage(input)){</b>
+<b class="nc">&nbsp;                synchronized (cli_lock){</b>
+<b class="nc">&nbsp;                    printErrorMessage(&quot;Invalid format&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                return LobbyCommand.Invalid;</b>
+&nbsp;            }
+&nbsp;            else{
+<b class="nc">&nbsp;                return LobbyCommand.stringToCommand(input);</b>
+&nbsp;            }
+&nbsp;    }
+&nbsp;
+&nbsp;    protected void notifyExit() {
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            printErrorMessage(&quot;You quit!&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Print all messages in local copy of chat. If none is present &quot;No message yet&quot; will be printed
+&nbsp;     */
+&nbsp;    protected void showAllMessages(Chat chat){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            skipPlaceHolder();</b>
+<b class="nc">&nbsp;            if(chat == null || chat.size() == 0){</b>
+<b class="nc">&nbsp;                printMessage(&quot;No messages yet&quot;);</b>
+<b class="nc">&nbsp;                return;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            chat.getAllMessages().stream().map(mes -&gt; mes.toString()).forEach(System.out::println);</b>
+<b class="nc">&nbsp;            restorePlaceHolder();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;    protected Map&lt;String,String&gt; getMessageFromUser(){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            List&lt;String&gt; fields = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            fields.add(&quot;message&quot;);</b>
+<b class="nc">&nbsp;            return fieldsScan(fields);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected Map&lt;String,String&gt; getPrivateMessageFromUser(){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            List&lt;String&gt; fields = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            fields.add(&quot;receiver&quot;);</b>
+<b class="nc">&nbsp;            fields.add(&quot;message&quot;);</b>
+<b class="nc">&nbsp;            return fieldsScan(fields);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected Move getMoveFromUser(Board board, Shelf shelf){
+<b class="nc">&nbsp;        PartialMove pm = new PartialMove();</b>
+<b class="nc">&nbsp;        int column = 0;</b>
+<b class="nc">&nbsp;        Move move = null;</b>
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            printMessage(&quot;Write your move&quot;);</b>
+<b class="nc">&nbsp;            int posNum = getNumberOfTilesFromUser(shelf);</b>
+<b class="nc">&nbsp;            pm = getPartialMoveFromUser(board,posNum);</b>
+<b class="nc">&nbsp;            column = getColumnFromUser(shelf,posNum);</b>
+<b class="nc">&nbsp;            move = new Move(pm,column);</b>
+<b class="nc">&nbsp;            printMessage(&quot;Your move:\n&quot; + move.toString());</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return move;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get from input a valid number of tiles to pick according to game status
+&nbsp;     * @param shelf the player&#39;s sheld
+&nbsp;     * @return the first valid number chosen by user
+&nbsp;     */
+&nbsp;    private int getNumberOfTilesFromUser(Shelf shelf){
+<b class="nc">&nbsp;        String posNumStr = &quot;&quot;;</b>
+<b class="nc">&nbsp;        int posNum = 0;</b>
+<b class="nc">&nbsp;        int maxShelfCapacity = shelf.getHighestColumn();</b>
+<b class="nc">&nbsp;        boolean validInput = false;</b>
+&nbsp;
+<b class="nc">&nbsp;        while(!validInput){</b>
+<b class="nc">&nbsp;            validInput = true;</b>
+<b class="nc">&nbsp;            printMessage(&quot;How many tiles do you want to pick?:&quot;);</b>
+<b class="nc">&nbsp;            posNumStr =  scan();</b>
+&nbsp;
+&nbsp;            //assure it&#39;s a number
+<b class="nc">&nbsp;            if(!InputSanitizer.isInteger(posNumStr)){</b>
+<b class="nc">&nbsp;                printErrorMessage(&quot;Please insert an integer&quot;);</b>
+<b class="nc">&nbsp;                validInput = false;</b>
+<b class="nc">&nbsp;                continue;</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            posNum = Integer.parseInt(posNumStr);</b>
+&nbsp;
+&nbsp;            //assure it&#39;s a number that is valid and can fit in at least one column
+<b class="nc">&nbsp;            if(!(posNum &gt; 0 &amp;&amp; posNum &lt;= 3 &amp;&amp; posNum &lt;= maxShelfCapacity)){</b>
+<b class="nc">&nbsp;                printErrorMessage(&quot;Invalid number&quot;);</b>
+<b class="nc">&nbsp;                validInput = false;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return posNum;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Build the partila move from the user input
+&nbsp;     * @param board the board
+&nbsp;     * @param posNum the chosen number of positions. The choice of tiles can reduce it
+&nbsp;     * @return the partial move
+&nbsp;     */
+&nbsp;    private PartialMove getPartialMoveFromUser(Board board, int posNum){
+<b class="nc">&nbsp;        PartialMove pm = new PartialMove();</b>
+<b class="nc">&nbsp;        boolean validInput = false;</b>
+<b class="nc">&nbsp;        while(!validInput){</b>
+<b class="nc">&nbsp;            validInput = true;</b>
+<b class="nc">&nbsp;            for(int i = 0; i &lt; posNum; i++){</b>
+&nbsp;                try{
+&nbsp;
+&nbsp;                    //assure that there are valid positions
+<b class="nc">&nbsp;                    if(board.getValidPositions(pm).isEmpty()){</b>
+<b class="nc">&nbsp;                        printErrorMessage(&quot;There are no more tiles to pick&quot;);</b>
+<b class="nc">&nbsp;                        posNum = i;</b>
+<b class="nc">&nbsp;                        break;</b>
+&nbsp;                    }
+&nbsp;
+&nbsp;                    //show valid moves
+<b class="nc">&nbsp;                    printMessage(&quot;Here is the list of all the valid moves:&quot;);</b>
+<b class="nc">&nbsp;                    for(Position p : board.getValidPositions(pm)){</b>
+<b class="nc">&nbsp;                        System.out.println(&quot;&gt; &quot;+p.toString());</b>
+<b class="nc">&nbsp;                    }</b>
+&nbsp;
+&nbsp;                    //get position
+<b class="nc">&nbsp;                    printMessage(&quot;Position #&quot;+String.valueOf(i+1)+&quot;:&quot;);</b>
+<b class="nc">&nbsp;                    String stringPos = scan();</b>
+<b class="nc">&nbsp;                    Position pos = Position.fromString(stringPos);</b>
+&nbsp;
+&nbsp;                    //if invalid
+<b class="nc">&nbsp;                    if(pos == null || !board.getValidPositions(pm).contains(pos)){</b>
+<b class="nc">&nbsp;                        printErrorMessage(&quot;Please enter a valid position&quot;);</b>
+<b class="nc">&nbsp;                        i--; //ask again the same position</b>
+&nbsp;                    }
+&nbsp;                    else {
+&nbsp;                        //add to move
+<b class="nc">&nbsp;                        pm.addPosition(pos);</b>
+&nbsp;                    }
+&nbsp;                }
+<b class="nc">&nbsp;                catch (Exception e){</b>
+<b class="nc">&nbsp;                    printErrorMessage(&quot;Invalid format&quot;);</b>
+<b class="nc">&nbsp;                    validInput = false;</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return decideOrder(pm,board);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private PartialMove decideOrder(PartialMove pm, Board board){
+<b class="nc">&nbsp;        boolean validInput = false;</b>
+<b class="nc">&nbsp;        if(pm.size() &gt; 1){</b>
+<b class="nc">&nbsp;            List&lt;Position&gt; positions = pm.getBoardPositions();</b>
+<b class="nc">&nbsp;            pm = new PartialMove();</b>
+<b class="nc">&nbsp;            printMessage(&quot;Select insertion order:&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            while(positions.size() &gt; 1 &amp;&amp; distinctTiles(positions,board)){</b>
+<b class="nc">&nbsp;                validInput = false;</b>
+<b class="nc">&nbsp;                printMessage(&quot;Pick a tile:&quot;);</b>
+<b class="nc">&nbsp;                for(int i = 0; i &lt; positions.size(); i++){</b>
+&nbsp;                    try {
+<b class="nc">&nbsp;                        System.out.println( i+ &quot;&gt; &quot; + board.getTile(positions.get(i)).toColorFulString() + &quot; &quot;+ positions.get(i));</b>
+<b class="nc">&nbsp;                    } catch (BadPositionException e) {</b>
+&nbsp;                        //this should not happend
+<b class="nc">&nbsp;                    }</b>
+&nbsp;                }
+<b class="nc">&nbsp;                while(!validInput){</b>
+<b class="nc">&nbsp;                    validInput = true;</b>
+<b class="nc">&nbsp;                    String numStr = scan();</b>
+<b class="nc">&nbsp;                    if(!InputSanitizer.isInteger(numStr)){</b>
+<b class="nc">&nbsp;                        validInput = false;</b>
+<b class="nc">&nbsp;                        printErrorMessage(&quot;Please enter an integer&quot;);</b>
+<b class="nc">&nbsp;                        continue;</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    int num = Integer.parseInt(numStr);</b>
+<b class="nc">&nbsp;                    if(num &lt; 0 || num &gt;= positions.size()){</b>
+<b class="nc">&nbsp;                        validInput = false;</b>
+<b class="nc">&nbsp;                        printErrorMessage(&quot;Input a valid integer&quot;);</b>
+&nbsp;                    }
+&nbsp;                    else{
+&nbsp;                        try {
+<b class="nc">&nbsp;                            pm.addPosition(positions.get(num));</b>
+<b class="nc">&nbsp;                            positions.remove(num);</b>
+<b class="nc">&nbsp;                        } catch (InvalidMoveException e) {</b>
+<b class="nc">&nbsp;                            printErrorMessage(&quot;Input a valid integer&quot;);</b>
+<b class="nc">&nbsp;                            validInput = false;</b>
+<b class="nc">&nbsp;                        }</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;            try {
+<b class="nc">&nbsp;                for(Position p : positions){</b>
+<b class="nc">&nbsp;                    pm.addPosition(p);</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            } catch (InvalidMoveException e) {</b>
+&nbsp;                //This should not happen
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return pm;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean distinctTiles(List&lt;Position&gt; positions, Board board){
+<b class="nc">&nbsp;        return positions.stream().</b>
+<b class="nc">&nbsp;                map(p -&gt; {</b>
+&nbsp;                    try {
+<b class="nc">&nbsp;                        return board.getTile((Position) p);</b>
+<b class="nc">&nbsp;                    } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;                        return Tile.Invalid; //this should not happend</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                }).distinct().count() &gt; 1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get from input a valid column from user
+&nbsp;     * @param shelf the player&#39;s sheld
+&nbsp;     * @param numPos the number of tiles to put in shelf
+&nbsp;     * @return the first valid number column by user
+&nbsp;     */
+&nbsp;    private int getColumnFromUser(Shelf shelf, int numPos){
+<b class="nc">&nbsp;        String scannedColumn = &quot;&quot;;</b>
+<b class="nc">&nbsp;        boolean validInput = false;</b>
+<b class="nc">&nbsp;        int column = 0;</b>
+<b class="nc">&nbsp;        while(!validInput){</b>
+&nbsp;
+<b class="nc">&nbsp;            validInput = true;</b>
+<b class="nc">&nbsp;            printMessage(&quot;Choose the column&quot;);</b>
+<b class="nc">&nbsp;            printMessage(&quot;Here is a list of the valid columns&quot;);</b>
+<b class="nc">&nbsp;            for(int choice : columnsToChose(shelf,numPos)){</b>
+<b class="nc">&nbsp;                System.out.println(&quot;&gt; &quot;+choice);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            scannedColumn = scan(); //scan the input</b>
+&nbsp;
+&nbsp;            //assure it&#39;s an integer
+<b class="nc">&nbsp;            if(!InputSanitizer.isInteger(scannedColumn)){</b>
+<b class="nc">&nbsp;                validInput = false;</b>
+<b class="nc">&nbsp;                printErrorMessage(&quot;Please enter a number&quot;);</b>
+<b class="nc">&nbsp;                continue;</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            column = Integer.valueOf(scannedColumn);</b>
+&nbsp;
+&nbsp;            //assure the number is inside the bounds og shelf
+<b class="nc">&nbsp;            if(!(column &gt;= 0 &amp;&amp; column &lt; shelf.getColumns())){</b>
+<b class="nc">&nbsp;                validInput = false;</b>
+<b class="nc">&nbsp;                printErrorMessage(&quot;Please enter a valid number&quot;);</b>
+<b class="nc">&nbsp;                continue;</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            //assure the tiles will fit int the column
+<b class="nc">&nbsp;            if(columnHeigth(shelf,column) + numPos &gt; shelf.getRows()){</b>
+<b class="nc">&nbsp;                printErrorMessage(&quot;You cannot insert &quot;+numPos+ &quot; tiles in column &quot;+ column);</b>
+<b class="nc">&nbsp;                validInput = false;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return column;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param shelf
+&nbsp;     * @param column
+&nbsp;     * @return the height of a column
+&nbsp;     */
+&nbsp;    private int columnHeigth(Shelf shelf, int column){
+<b class="nc">&nbsp;        return (int) shelf.allTilesInColumn(column).stream()</b>
+<b class="nc">&nbsp;                .filter(x -&gt; !x.equals(Tile.Empty)).count();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param shelf
+&nbsp;     * @param posNum
+&nbsp;     * @return a list of valid columns to choose from
+&nbsp;     */
+&nbsp;    private List&lt;Integer&gt; columnsToChose(Shelf shelf, int posNum){
+<b class="nc">&nbsp;        return  IntStream.range(0,shelf.getColumns()).</b>
+<b class="nc">&nbsp;                filter(col -&gt; columnHeigth(shelf,col) + posNum &lt;= shelf.getRows()).</b>
+<b class="nc">&nbsp;                boxed().</b>
+<b class="nc">&nbsp;                collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Display on CLI the whole model
+&nbsp;     * @param b the board
+&nbsp;     * @param commongoals the list og common goals
+&nbsp;     * @param playerShelves the map of Player names and their shelves
+&nbsp;     * @param goal the personal goal
+&nbsp;     */
+&nbsp;    public void showGameStatus(Board b,List&lt;CommonGoal&gt; commongoals ,Map&lt;String, Shelf&gt; playerShelves, PlayerGoal goal){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            skipPlaceHolder();</b>
+<b class="nc">&nbsp;            showBoard(b);</b>
+<b class="nc">&nbsp;            showCommonGoals(commongoals);</b>
+<b class="nc">&nbsp;            showShelves(playerShelves);</b>
+<b class="nc">&nbsp;            showPersonalGoal(goal);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * show the board on CLI
+&nbsp;     * @param b the board
+&nbsp;     */
+&nbsp;    public void showBoard(Board b) {
+<b class="nc">&nbsp;        printMessage(b.toString());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show a list of common goals
+&nbsp;     * @param commonGoalList
+&nbsp;     */
+&nbsp;    protected void showCommonGoals(List&lt;CommonGoal&gt; commonGoalList) {
+<b class="nc">&nbsp;        String str = &quot;Common Goals:&quot;;</b>
+<b class="nc">&nbsp;        if(commonGoalList.size() == 0){</b>
+<b class="nc">&nbsp;            str = str.concat(Color.coloredString(&quot;None&quot;,Color.Yellow));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        for(CommonGoal cg : commonGoalList){</b>
+<b class="nc">&nbsp;            str = str.concat(&quot;\n&quot;+cg.toString());</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        printMessage(str);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show the shelves of players on CLI
+&nbsp;     * @param playerShelves the map of Player names and their shelves
+&nbsp;     */
+&nbsp;    public void showShelves(Map&lt;String, Shelf&gt; playerShelves) {
+<b class="nc">&nbsp;        String output = &quot;Shelves:\n&quot;;</b>
+<b class="nc">&nbsp;        final String spaceBetween = &quot;     &quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        for (int k=0; k&lt;shelfStringRows(playerShelves); k++) {  // Iterating over the rows</b>
+<b class="nc">&nbsp;            for(String player : playerShelves.keySet()) {</b>
+<b class="nc">&nbsp;                output = output.concat(</b>
+&nbsp;                        playerShelves
+<b class="nc">&nbsp;                                .get(player)</b>
+<b class="nc">&nbsp;                                .toString()</b>
+<b class="nc">&nbsp;                                .split(&quot;\n&quot;)[k]</b>
+&nbsp;                );
+<b class="nc">&nbsp;                output = output.concat(spaceBetween);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            output = output.concat(&quot;\n&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        final int shelfRowLength = shelfStringCols(playerShelves);</b>
+<b class="nc">&nbsp;        for (String player : playerShelves.keySet()) {</b>
+<b class="nc">&nbsp;            output = player.length()&lt;=shelfRowLength ?</b>
+<b class="nc">&nbsp;                    output.concat(player) :</b>
+<b class="nc">&nbsp;                    output.concat(player).substring(0, shelfRowLength);</b>
+&nbsp;
+<b class="nc">&nbsp;            int padding = shelfRowLength - player.length();</b>
+&nbsp;
+<b class="nc">&nbsp;            for (int k=0; k&lt;padding; k++)</b>
+<b class="nc">&nbsp;                output = output.concat(&quot; &quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        printMessage(output);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static int shelfStringRows(Map&lt;String, Shelf&gt; playerShelves) {
+<b class="nc">&nbsp;        Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());</b>
+&nbsp;
+<b class="nc">&nbsp;        return (shelf.toString().split(&quot;\n&quot;)).length;</b>
+&nbsp;    }
+&nbsp;    private static int shelfStringCols(Map&lt;String, Shelf&gt; playerShelves) {
+<b class="nc">&nbsp;        Shelf shelf = playerShelves.get(playerShelves.keySet().stream().findFirst().get());</b>
+&nbsp;
+<b class="nc">&nbsp;        return (shelf.toString().split(&quot;\n&quot;)[0].length());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show the personal goal og the player
+&nbsp;     * @param goal personal goal
+&nbsp;     */
+&nbsp;    protected void showPersonalGoal(PlayerGoal goal) {
+<b class="nc">&nbsp;        printMessage(goal.toString());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Display a chat message on CLI
+&nbsp;     * @param message
+&nbsp;     */
+&nbsp;    public void showChatMessage(ChatMessage message) {
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            skipPlaceHolder();</b>
+<b class="nc">&nbsp;            System.out.println(message);</b>
+<b class="nc">&nbsp;            restorePlaceHolder();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show on CLI the list of all the commands that the client can use
+&nbsp;     */
+&nbsp;    protected void showHelp() {
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            String help = &quot;Here are all the commands:\n&quot;;</b>
+<b class="nc">&nbsp;            List&lt;String&gt; commandList = Arrays.stream(LobbyCommand.values()).</b>
+<b class="nc">&nbsp;                    filter(c -&gt; c != LobbyCommand.Help &amp;&amp; c != LobbyCommand.Invalid).</b>
+<b class="nc">&nbsp;                    map(c -&gt; &quot;    -&gt; &quot; + c.getCode().toUpperCase() + &quot; [&quot;+c.getShortcut()+&quot;] :&quot;+c.getDescription()+&quot;\n&quot;).</b>
+<b class="nc">&nbsp;                    collect(Collectors.toList());</b>
+<b class="nc">&nbsp;            for(String command : commandList){</b>
+<b class="nc">&nbsp;                help = help.concat(command);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            printMessage(help);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Notify the client that the command was not valid
+&nbsp;     */
+&nbsp;    protected void notifyInvalidCommand(){
+<b class="nc">&nbsp;        printErrorMessage(&quot;Please input a valid command&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask for username
+&nbsp;     * @return username
+&nbsp;     */
+&nbsp;    protected String askUserName(){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            String name = &quot;&quot;;</b>
+<b class="nc">&nbsp;            while(!InputSanitizer.isValidName(name)){</b>
+<b class="nc">&nbsp;                printMessage(&quot;Enter your username&quot;);</b>
+<b class="nc">&nbsp;                name = scan();</b>
+<b class="nc">&nbsp;                if(!InputSanitizer.isValidName(name)){</b>
+<b class="nc">&nbsp;                    printErrorMessage(&quot;Please enter a valid name&quot;);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            printMessage(&quot;Hello &quot;+name+&quot;!&quot;);</b>
+<b class="nc">&nbsp;            return name.toLowerCase();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show the available lobbies
+&nbsp;     * @param availableLobbies a map of lobby ID and the numbers of players in it
+&nbsp;     * @param description a message that the CLI will display before the lobbies
+&nbsp;     */
+&nbsp;    public void showLobbies(Map&lt;Integer,Integer&gt; availableLobbies, String description){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            String lobbyMessage = description;</b>
+<b class="nc">&nbsp;            if (!(availableLobbies == null) &amp;&amp; !availableLobbies.isEmpty()) {</b>
+<b class="nc">&nbsp;                List&lt;String&gt; lobbyList = (List&lt;String&gt;)</b>
+<b class="nc">&nbsp;                        availableLobbies.keySet().stream().</b>
+<b class="nc">&nbsp;                                map(x -&gt; &quot;\n    -&gt; Lobby &quot; + x + &quot;:  &quot; + availableLobbies.get(x) + &quot; players in&quot;).</b>
+<b class="nc">&nbsp;                                collect(Collectors.toList());</b>
+<b class="nc">&nbsp;                for(String mes : lobbyList){</b>
+<b class="nc">&nbsp;                    lobbyMessage = lobbyMessage.concat(mes);</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;                lobbyMessage = lobbyMessage + &quot;\n       None&quot;;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            printMessage(lobbyMessage);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show the lobby where the client is in
+&nbsp;     * @param availableLobby the lobby where the client is in
+&nbsp;     * @param description a message that the CLI will display before the lobbies
+&nbsp;     */
+&nbsp;    public void showJoinedLobby(int availableLobby, String description){
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            String lobbyMessage = description;</b>
+<b class="nc">&nbsp;            if (availableLobby &gt; 0) {</b>
+<b class="nc">&nbsp;                lobbyMessage = &quot; -&gt; Lobby :&quot; + availableLobby;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                lobbyMessage = lobbyMessage + &quot;\n       None&quot;;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            printMessage(lobbyMessage);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask for lobby ID
+&nbsp;     * @return lobby ID
+&nbsp;     */
+&nbsp;    protected LobbySelectionCommand askLobby(){
+&nbsp;        int lobbyID;
+&nbsp;        String id;
+&nbsp;        LobbySelectionCommand command;
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            printMessage(&quot;Choose a Lobby (ENTER for random, NEW to create a new one, REFRESH to update lobby list):&quot;);</b>
+<b class="nc">&nbsp;            id = scan();</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if(id.isEmpty()){</b>
+<b class="nc">&nbsp;            return LobbySelectionCommand.Random;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (id.toLowerCase().equals(&quot;new&quot;)) {</b>
+<b class="nc">&nbsp;            return LobbySelectionCommand.Create;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (id.toLowerCase().equals(&quot;refresh&quot;)) {</b>
+<b class="nc">&nbsp;            return LobbySelectionCommand.Refresh;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if(InputSanitizer.isInteger(id)){</b>
+<b class="nc">&nbsp;            lobbyID = Integer.parseInt(id);</b>
+<b class="nc">&nbsp;            command = LobbySelectionCommand.Number;</b>
+<b class="nc">&nbsp;            command.setId(lobbyID);</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            command = LobbySelectionCommand.Invalid;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return command;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set the player as admin (change placeholder)
+&nbsp;     * @param isAdmin
+&nbsp;     */
+&nbsp;    protected void setLobbyAdmin(boolean isAdmin){
+<b class="nc">&nbsp;        if(isAdmin){</b>
+<b class="nc">&nbsp;            synchronized (cli_lock){</b>
+<b class="nc">&nbsp;                printMessage(&quot;You are the lobby admin!&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            setPlaceHolder(Client_Settings.adminPlaceHolder);</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            setPlaceHolder(Client_Settings.stdPlaceHolder);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set the player as first (change placeholder)
+&nbsp;     * @param firstPlayer
+&nbsp;     */
+&nbsp;    public void setFirstPlayer(boolean firstPlayer){
+<b class="nc">&nbsp;        if(firstPlayer){</b>
+<b class="nc">&nbsp;            synchronized (cli_lock){</b>
+<b class="nc">&nbsp;                printMessage(&quot;You are the first player!&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            setPlaceHolder(Client_Settings.fistPlayerPlaceHolder);</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            setPlaceHolder(Client_Settings.stdPlaceHolder);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Show the status at the end of the game
+&nbsp;     * @param leaderBoard the leaderboard
+&nbsp;     * @param playername the name of the player
+&nbsp;     * @param playerShelves the map of player names and their shelves
+&nbsp;     * @param board the board
+&nbsp;     */
+&nbsp;    public void endGame(List&lt;PlayerWithPoints&gt; leaderBoard, String playername, Map&lt;String, Shelf&gt; playerShelves, Board board) {
+&nbsp;
+<b class="nc">&nbsp;        synchronized (cli_lock) {</b>
+<b class="nc">&nbsp;            String msg = &quot;LeaderBoard:\n&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;            for (PlayerWithPoints player : leaderBoard) {</b>
+<b class="nc">&nbsp;                msg = msg.concat(&quot;      -&quot; + player.getPlayerName() + &quot;: &quot; + player.getPoints() + &quot;\n&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            if (leaderBoard.get(0).getPlayerName().equals(playername)) {</b>
+<b class="nc">&nbsp;                System.out.println(victoryBanner);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                System.out.println(defeatBanner);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            printMessage(msg);</b>
+<b class="nc">&nbsp;            showBoard(board);</b>
+<b class="nc">&nbsp;            showShelves(playerShelves);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Prints the string (decorated as an error message) in a synchronous way
+&nbsp;     * =&gt; never to be called internally!!
+&nbsp;     * @param  message the error message string
+&nbsp;     */
+&nbsp;    protected void errorMessage(String message) {
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            skipPlaceHolder();</b>
+<b class="nc">&nbsp;            printErrorMessage(message);</b>
+<b class="nc">&nbsp;            restorePlaceHolder();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Prints the string (decorated as a message) in a synchronous way
+&nbsp;     * =&gt; never to be called internally!!
+&nbsp;     * @param message the message string
+&nbsp;     */
+&nbsp;    public void message(String message) {
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            skipPlaceHolder();</b>
+<b class="nc">&nbsp;            printMessage(message);</b>
+<b class="nc">&nbsp;            restorePlaceHolder();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask the user if he wants to reload an old game
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public boolean askToLoadOldMatch(){
+<b class="nc">&nbsp;        boolean resp = false;</b>
+<b class="nc">&nbsp;        synchronized (cli_lock){</b>
+<b class="nc">&nbsp;            skipPlaceHolder();</b>
+<b class="nc">&nbsp;            printMessage(&quot;Do you want to create a new game over writing all your previous matches with this lobby?&quot;);</b>
+<b class="nc">&nbsp;            String answer = scan();</b>
+<b class="nc">&nbsp;            if((&quot;yes&quot;).equals(answer.toLowerCase())){</b>
+<b class="nc">&nbsp;                resp = true;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            restorePlaceHolder();</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return resp;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //String decorators
+&nbsp;    private void printErrorMessage(String message){
+<b class="nc">&nbsp;        System.out.println(errorFormat(message));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void printMessage(String message){
+<b class="nc">&nbsp;        System.out.println(messageFormat(message));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void skipPlaceHolder(){
+<b class="nc">&nbsp;        if(placeHolderToRestore){</b>
+<b class="nc">&nbsp;            System.out.println(&quot;&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void restorePlaceHolder(){
+<b class="nc">&nbsp;        if(placeHolderToRestore){</b>
+<b class="nc">&nbsp;            printPlaceHolder();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A decorator that formats a message
+&nbsp;     * @param s the message
+&nbsp;     * @return the decorated message (&gt;GAME: mes with colors)
+&nbsp;     */
+&nbsp;    private String messageFormat(String s){
+<b class="nc">&nbsp;        return &quot;&gt;&quot;+ Color.coloredString(&quot;GAME&quot;,GAMEColor)+&quot;: &quot; + Color.coloredString(s,messageColor);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Prints the placeholder
+&nbsp;     */
+&nbsp;    private void printPlaceHolder(){
+<b class="nc">&nbsp;        placeHolderToRestore = true;</b>
+<b class="nc">&nbsp;        System.out.print(placeHolder);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected void setPlaceHolder(String placeHolder){
+<b class="nc">&nbsp;        this.placeHolder = placeHolder;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A decorator that formats an error message
+&nbsp;     * @param s the message
+&nbsp;     * @return the decorated message (&gt;GAME: mes with colors)
+&nbsp;     */
+&nbsp;    private String errorFormat(String s){
+<b class="nc">&nbsp;        return &quot;&gt;&quot;+ Color.coloredString(&quot;GAME&quot;,GAMEColor)+&quot;: &quot; + Color.coloredString(s,errorColor);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Scan methods
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Scans the input without locking IO
+&nbsp;     * @return the user input
+&nbsp;     */
+&nbsp;    private String scan(){
+<b class="nc">&nbsp;        printPlaceHolder();</b>
+<b class="nc">&nbsp;        String command = scanner.nextLine();</b>
+<b class="nc">&nbsp;        placeHolderToRestore = false;</b>
+<b class="nc">&nbsp;        return command;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Lock the IO and scans for all the fields
+&nbsp;     * @param fields
+&nbsp;     * @return a map that associates each field with the scanned String
+&nbsp;     */
+&nbsp;    private Map&lt;String,String&gt; fieldsScan(List&lt;String&gt; fields){
+<b class="nc">&nbsp;        Map&lt;String,String&gt; result = new HashMap();</b>
+&nbsp;        String value;
+<b class="nc">&nbsp;        for(String field : fields){</b>
+<b class="nc">&nbsp;            printMessage(field+&quot;:&quot;);</b>
+<b class="nc">&nbsp;            printPlaceHolder();</b>
+<b class="nc">&nbsp;            value =  scanner.nextLine();</b>
+<b class="nc">&nbsp;            while(field.equals(&quot;message&quot;) &amp;&amp; !InputSanitizer.isValidMessage(value)){</b>
+<b class="nc">&nbsp;                printErrorMessage(&quot;Invalid message format&quot;);</b>
+<b class="nc">&nbsp;                restorePlaceHolder();</b>
+<b class="nc">&nbsp;                value =  scanner.nextLine();</b>
+&nbsp;            }
+<b class="nc">&nbsp;            placeHolderToRestore = false;</b>
+<b class="nc">&nbsp;            result.put(field,value);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,160 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerTCPListener</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.connection.TCPThread</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerTCPListener (it.polimi.ingsw.client.connection.TCPThread)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerTCPListener</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.connection.TCPThread;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.MessageTcp;
+&nbsp;import org.json.simple.parser.ParseException;
+&nbsp;
+&nbsp;import java.io.BufferedReader;;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;
+&nbsp;public class ServerTCPListener extends Thread{
+&nbsp;
+&nbsp;    private final BufferedReader serverIn;
+&nbsp;    private final ArrayList&lt;MessageTcp&gt; responses;
+&nbsp;    private final ArrayList&lt;MessageTcp&gt; updates;
+&nbsp;
+<b class="nc">&nbsp;    private boolean exit = false;</b>
+&nbsp;
+<b class="nc">&nbsp;    public ServerTCPListener(BufferedReader serverIn, ArrayList responses, ArrayList updates) {</b>
+<b class="nc">&nbsp;        this.serverIn = serverIn;</b>
+<b class="nc">&nbsp;        this.responses = responses;</b>
+<b class="nc">&nbsp;        this.updates = updates;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void run() {
+<b class="nc">&nbsp;        while (!exit) {</b>
+<b class="nc">&nbsp;            MessageTcp incomingMessage = in();</b>
+<b class="nc">&nbsp;            if (incomingMessage.isReplyMessage()) {</b>
+<b class="nc">&nbsp;                synchronized (responses) {</b>
+<b class="nc">&nbsp;                    responses.add(incomingMessage);</b>
+<b class="nc">&nbsp;                    responses.notifyAll();</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            } else if (incomingMessage.isUpdateMessage()) {</b>
+<b class="nc">&nbsp;                synchronized (updates) {</b>
+<b class="nc">&nbsp;                    updates.add(incomingMessage);</b>
+<b class="nc">&nbsp;                    updates.notifyAll();</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public MessageTcp in() {
+<b class="nc">&nbsp;        boolean ready = false;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            while (!ready) {</b>
+<b class="nc">&nbsp;                if (serverIn.ready())</b>
+<b class="nc">&nbsp;                    ready = true;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return new MessageTcp(serverIn.readLine());</b>
+<b class="nc">&nbsp;        } catch (IOException | ParseException e) {</b>
+<b class="nc">&nbsp;            return new MessageTcp();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void terminate(){
+<b class="nc">&nbsp;        this.exit = true;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

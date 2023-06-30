@@ -1,0 +1,327 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FXMLSceneWithController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.gui</a>
+</div>
+
+<h1>Coverage Summary for Class: FXMLSceneWithController (it.polimi.ingsw.client.controller.gui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FXMLSceneWithController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.gui;
+&nbsp;import it.polimi.ingsw.client.connection.LobbyException;
+&nbsp;import it.polimi.ingsw.client.connection.Server;
+&nbsp;import it.polimi.ingsw.client.controller.ClientController;
+&nbsp;import it.polimi.ingsw.client.controller.gui.sceneControlles.HomeScreenController;
+&nbsp;import it.polimi.ingsw.client.controller.gui.sceneControlles.PlayerShelvesController;
+&nbsp;import it.polimi.ingsw.client.controller.gui.sceneControlles.SceneController;
+&nbsp;import it.polimi.ingsw.client.model.ClientModelGUI;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import javafx.application.Application;
+&nbsp;import javafx.fxml.FXMLLoader;
+&nbsp;import javafx.geometry.Rectangle2D;
+&nbsp;import javafx.scene.Parent;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.scene.control.*;
+&nbsp;import javafx.scene.image.Image;
+&nbsp;import javafx.stage.Screen;
+&nbsp;import javafx.stage.Stage;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;public class ClientControllerGUI extends Application implements ClientController {
+&nbsp;    private ClientModelGUI model;
+&nbsp;    private Server server;
+&nbsp;    private Client client;
+&nbsp;    private Stage stage;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * newMatch true if the game is new,
+&nbsp;     * false if it was loaded from a save or the player reconnected.
+&nbsp;     */
+&nbsp;    private boolean newMatch;
+&nbsp;
+&nbsp;    private final Map&lt;SceneEnum, FXMLSceneWithController&gt; scenes = new HashMap&lt;&gt;();
+&nbsp;    private SceneEnum currentScene = SceneEnum.login;
+&nbsp;
+&nbsp;    public ClientModelGUI getModel(){
+&nbsp;        return model;
+&nbsp;    }
+&nbsp;    public void setModel(ClientModelGUI model) {
+&nbsp;        this.model = model;
+&nbsp;    }
+&nbsp;    public Server getServer() {
+&nbsp;        return server;
+&nbsp;    }
+&nbsp;    public void setServer(Server server) {
+&nbsp;        this.server = server;
+&nbsp;    }
+&nbsp;    public Client getClient() {
+&nbsp;        return client;
+&nbsp;    }
+&nbsp;    public void setClient(Client client) {
+&nbsp;        this.client = client;
+&nbsp;    }
+&nbsp;    public boolean gameIsStarted() {
+&nbsp;        return model.gameIsStarted();
+&nbsp;    }
+&nbsp;    public void setChatUpdate() {
+&nbsp;
+&nbsp;    }
+&nbsp;    public SceneEnum getCurrentScene() {
+&nbsp;        return currentScene;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to set the newMatch flag.
+&nbsp;     */
+&nbsp;    public void setNewMatch(boolean newMatch) {
+&nbsp;        this.newMatch = newMatch;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to check if the game was loaded
+&nbsp;     * from a previous one or if it is a new game.
+&nbsp;     * @return true if the game is new, false otherwise.
+&nbsp;     */
+&nbsp;    public boolean isNewMatch() {
+&nbsp;        return newMatch;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to load a scene.
+&nbsp;     * @param scene the scene to be loaded.
+&nbsp;     */
+&nbsp;    public void loadScene(SceneEnum scene) {
+&nbsp;        final Scene javafxScene;
+&nbsp;        if (scenes.containsKey(scene)) { // Scene was previously loaded
+&nbsp;            javafxScene = scenes.get(scene).getScene();
+&nbsp;        } else {
+&nbsp;            javafxScene = generateNewScene(scene);
+&nbsp;        }
+&nbsp;        //stage.hide();
+&nbsp;        currentScene = scene;
+&nbsp;        stage.setScene(javafxScene);
+&nbsp;        stage.show();
+&nbsp;        stage.setMaximized(true);
+&nbsp;
+&nbsp;        if(scene.equals(SceneEnum.chat)) {
+&nbsp;            final HomeScreenController homeScreenController =
+&nbsp;                    (HomeScreenController) getSceneController(SceneEnum.home);
+&nbsp;            if (homeScreenController!=null)
+&nbsp;                homeScreenController.setNewMessage(false);
+&nbsp;
+&nbsp;            final PlayerShelvesController playerShelvesController =
+&nbsp;                    (PlayerShelvesController) getSceneController(SceneEnum.playerShelves);
+&nbsp;            if (playerShelvesController!=null)
+&nbsp;                playerShelvesController.setNewMessage(false);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to generate a new scene with its controller.
+&nbsp;     * The method also adds the scene to the scenes map.
+&nbsp;     * @param scene the scene to be generated
+&nbsp;     * @return Scene object
+&nbsp;     */
+&nbsp;    private Scene generateNewScene(SceneEnum scene) {
+&nbsp;        Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
+&nbsp;
+&nbsp;        final FXMLLoader loader = new FXMLLoader(scene.getResource());
+&nbsp;        final SceneController sceneController = scene.getNewController(this);
+&nbsp;        loader.setController(sceneController);
+&nbsp;        final Parent parent;
+&nbsp;        try {
+&nbsp;            parent = loader.load();
+&nbsp;        } catch (IOException e) {
+&nbsp;            throw new RuntimeException(&quot;Error while loading scene &quot; + scene);
+&nbsp;        }
+&nbsp;        Scene javafxScene = new Scene(parent,screenSize.getWidth(), screenSize.getHeight());
+&nbsp;        scenes.put(scene,
+&nbsp;                new FXMLSceneWithController(javafxScene, sceneController));
+&nbsp;        return javafxScene;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to get the controller of a scene.
+&nbsp;     * @param scene the scene of which we want the controller.
+&nbsp;     * @return null if the scene was never loaded,
+&nbsp;     *      FxmlController the controller of the scene otherwise
+&nbsp;     */
+&nbsp;    public SceneController getSceneController(SceneEnum scene) {
+&nbsp;        FXMLSceneWithController sceneWithController = scenes.get(scene);
+&nbsp;        if (sceneWithController == null)
+&nbsp;            return null;
+&nbsp;        return sceneWithController.getController();
+&nbsp;    }
+&nbsp;
+&nbsp;    public static Image loadImage(String fileName) {
+&nbsp;        try {
+&nbsp;            final URL url = ClientControllerGUI
+&nbsp;                    .class
+&nbsp;                    .getClassLoader()
+&nbsp;                    .getResource(&quot;gui/gameGraphics/&quot; + fileName);
+&nbsp;            if(url == null) {
+&nbsp;                throw new IOException(&quot;File not found&quot;);
+&nbsp;            }
+&nbsp;            return new Image(url.openStream());
+&nbsp;        } catch (IOException e) {
+&nbsp;            throw new RuntimeException(&quot;Error while loading image &quot; + fileName + &quot; :&quot; + e.getMessage());
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void start(Stage stage) throws IOException {
+&nbsp;        this.stage = stage;
+&nbsp;        stage.setTitle(&quot;My Shelfie&quot;);
+&nbsp;        stage.getIcons().add(loadImage(&quot;Publisher_material/Icon_50x50px.png&quot;));
+&nbsp;        stage.setOnCloseRequest((e) -&gt; {
+&nbsp;            if(server != null) {
+&nbsp;                try {
+&nbsp;                    System.out.println(&quot;Quit&quot;);
+&nbsp;                    server.quitGame(client.getPlayerName());
+&nbsp;                } catch (LobbyException ignored) {
+&nbsp;                }
+&nbsp;            }
+&nbsp;            stage.close();
+&nbsp;        });
+&nbsp;        loadScene(SceneEnum.login);
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void showInfo(String message) {
+&nbsp;        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+&nbsp;        alert.setTitle(&quot;Info&quot;);
+&nbsp;        alert.setHeaderText(message);
+&nbsp;        alert.show();
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void showError(String message) {
+&nbsp;        Alert alert = new Alert(Alert.AlertType.ERROR);
+&nbsp;        alert.setTitle(&quot;Error&quot;);
+&nbsp;        alert.setHeaderText(message);
+&nbsp;        alert.show();
+&nbsp;    }
+&nbsp;    public void errorMessage(String message) {
+&nbsp;        ClientControllerGUI.showError(message);
+&nbsp;    }
+&nbsp;
+&nbsp;    public void startClient() {launch();}
+&nbsp;
+&nbsp;}
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is used to bind together a javafx scene
+&nbsp; * with its controller
+&nbsp; */
+&nbsp;class FXMLSceneWithController{
+&nbsp;    private final Scene scene;
+&nbsp;    private final SceneController controller;
+<b class="nc">&nbsp;    FXMLSceneWithController(Scene scene, SceneController controller) {</b>
+<b class="nc">&nbsp;        this.scene = scene;</b>
+<b class="nc">&nbsp;        this.controller = controller;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Scene getScene() {
+<b class="nc">&nbsp;        return scene;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public SceneController getController() {
+<b class="nc">&nbsp;        return controller;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > VirtualCommonGoal</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.virtualview</a>
+</div>
+
+<h1>Coverage Summary for Class: VirtualCommonGoal (it.polimi.ingsw.shared.virtualview)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VirtualCommonGoal</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.virtualview;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Stack;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used on the server to send
+&nbsp; * updates to clients when something changes
+&nbsp; * in the model.
+&nbsp; */
+&nbsp;public class VirtualCommonGoal extends VirtualView {
+&nbsp;
+&nbsp;    public VirtualCommonGoal() {
+<b class="fc">&nbsp;        super();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when a player achieves
+&nbsp;     * the common goals and pops points from
+&nbsp;     * the stack.
+&nbsp;     * It is also used to init the common goal.
+&nbsp;     * @param id ID of the common goal
+&nbsp;     * @param points List with points that
+&nbsp;     *               can still be achieved
+&nbsp;     */
+&nbsp;    public void refresh(int id, List&lt;Integer&gt; points) {
+<b class="fc">&nbsp;        for(Client cl: getClientList()) {</b>
+<b class="nc">&nbsp;           cl.refreshCommonGoal(id, points);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

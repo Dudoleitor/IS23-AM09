@@ -1,0 +1,569 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LobbyPingSender</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server</a>
+</div>
+
+<h1>Coverage Summary for Class: LobbyPingSender (it.polimi.ingsw.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LobbyPingSender</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.connection.Server;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+&nbsp;import it.polimi.ingsw.shared.model.Move;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;import org.json.simple.parser.JSONParser;
+&nbsp;import org.json.simple.parser.ParseException;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.io.InputStreamReader;
+&nbsp;import java.io.Reader;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.server.UnicastRemoteObject;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;public class Lobby extends UnicastRemoteObject implements ServerLobbyInterface, NetworkExceptionHandler {
+&nbsp;    private final int id;
+&nbsp;    private final List&lt;Client&gt; clients = new ArrayList&lt;&gt;();
+&nbsp;    private final List&lt;String&gt; disconnectedClients;
+&nbsp;    private boolean started = false;
+&nbsp;    private final Chat chat;
+&nbsp;    private Controller controller;
+&nbsp;
+&nbsp;    /* Note: methods using the list clients need to be synchronized:
+&nbsp;    the pings sent by the thread can result in the handleNetworkException method
+&nbsp;    being called.
+&nbsp;    In addition to that, multiple clients can send requests to the lobby and
+&nbsp;    they must send commands to the model one at a time. */
+&nbsp;    private final LobbyPingSender pingSender;
+&nbsp;
+&nbsp;    public Lobby(Client firstPlayer, int id) throws RemoteException {
+&nbsp;        super();
+&nbsp;        this.disconnectedClients = new ArrayList&lt;&gt;();
+&nbsp;        this.clients.add(firstPlayer);
+&nbsp;        firstPlayer.setExceptionHandler(this);
+&nbsp;        this.id = id;
+&nbsp;        this.chat = new Chat();
+&nbsp;        this.pingSender = new LobbyPingSender(this);
+&nbsp;        pingSender.start();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to notify the clients that something happened
+&nbsp;     * and send the list of connected client.
+&nbsp;     * @param message message to send before the list, ignored if null
+&nbsp;     */
+&nbsp;    private void informAboutConnectedClients(String message) {
+&nbsp;        final List&lt;Client&gt; clientList = getClients();
+&nbsp;        // Sending chat message
+&nbsp;        final String playersConnectedMsg = &quot;Players in lobby: &quot; +
+&nbsp;                clientList.stream()
+&nbsp;                        .reduce(&quot;&quot;,
+&nbsp;                                (s, c1) -&gt; s + c1.getPlayerName() + &quot; &quot;, String::concat
+&nbsp;                        );
+&nbsp;        for (Client c : clientList) {
+&nbsp;            if(message!= null)
+&nbsp;                c.postChatMessage(&quot;Server&quot;, message + &quot;\n&quot; + playersConnectedMsg);
+&nbsp;            else
+&nbsp;                c.postChatMessage(&quot;Server&quot;, playersConnectedMsg);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * add a player to lobby
+&nbsp;     *
+&nbsp;     * @param client is the player object to add to the lobby
+&nbsp;     */
+&nbsp;    public synchronized void addPlayer(Client client) throws RemoteException {
+&nbsp;        synchronized (client) {
+&nbsp;            if (clients.contains(client)) //if player logged in previously
+&nbsp;                return;
+&nbsp;            if (isTerminated())
+&nbsp;                throw new RemoteException(&quot;Game terminated&quot;);
+&nbsp;
+&nbsp;            if (disconnectedClients.contains(client.getPlayerName().toLowerCase())) {
+&nbsp;                disconnectedClients.remove(client.getPlayerName().toLowerCase());
+&nbsp;                clients.add(client);
+&nbsp;                client.setExceptionHandler(this);
+&nbsp;                if (controller != null)
+&nbsp;                    controller.clientReconnected(client);
+&nbsp;                if (started)
+&nbsp;                    client.gameStarted(false);
+&nbsp;                client.refreshChat(chat);
+&nbsp;                informAboutConnectedClients(client.getPlayerName() + &quot; joined the lobby&quot;);
+&nbsp;                return;
+&nbsp;            }
+&nbsp;
+&nbsp;            if (started)
+&nbsp;                throw new RuntimeException(&quot;Cannot add a client after the game has stated&quot;);
+&nbsp;
+&nbsp;            if (clients.size() &lt; GameSettings.maxSupportedPlayers) { //checks lobby isn&#39;t already full
+&nbsp;                clients.add(client);
+&nbsp;                client.setExceptionHandler(this);
+&nbsp;                client.refreshChat(chat);
+&nbsp;                informAboutConnectedClients(client.getPlayerName() + &quot; joined the lobby&quot;);
+&nbsp;            } else
+&nbsp;                throw new RuntimeException(&quot;Lobby already full&quot;);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return true is the lobby is ready to start
+&nbsp;     */
+&nbsp;    public synchronized boolean isReady() {
+&nbsp;        return clients.size() &gt;= GameSettings.minSupportedPlayers &amp;&amp; !started;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return true is the lobby is full of players for it&#39;s capacity
+&nbsp;     */
+&nbsp;    public synchronized boolean isFull() {
+&nbsp;        return clients.size() &gt;= GameSettings.maxSupportedPlayers;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return list of players in this lobby
+&nbsp;     */
+&nbsp;    public synchronized ArrayList&lt;Client&gt; getClients() {
+&nbsp;        return new ArrayList&lt;&gt;(clients);
+&nbsp;    }
+&nbsp;
+&nbsp;    public synchronized List&lt;String&gt; getPlayerNames() {
+&nbsp;        return clients.stream().
+&nbsp;                map(Client::getPlayerName).
+&nbsp;                collect(Collectors.toList());
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return every message in that lobby
+&nbsp;     */
+&nbsp;    public synchronized Chat getChat() {
+&nbsp;        return new Chat(chat);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return true if no players are in lobby
+&nbsp;     */
+&nbsp;    public synchronized boolean isEmpty() {
+&nbsp;        return clients.size() == 0;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Tells who the lobby admin is
+&nbsp;     *
+&nbsp;     * @return the name of the lobby admin
+&nbsp;     */
+&nbsp;    public synchronized String getLobbyAdmin() {
+&nbsp;        if (clients.size() == 0) {
+&nbsp;            throw new RuntimeException(&quot;No Players while trying to get lobby admin&quot;);
+&nbsp;        } else {
+&nbsp;            return clients.get(0).getPlayerName();
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Return the list of clients that were previously disconnected.
+&nbsp;     *
+&nbsp;     * @return List of String, playerNames in lowercase
+&nbsp;     */
+&nbsp;    public List&lt;String&gt; getDisconnectedClients() {
+&nbsp;        return new ArrayList&lt;&gt;(disconnectedClients);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return true if match has started
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean matchHasStarted() {
+&nbsp;        return started;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * start the lobby if it is ready and the player who has asked is admin
+&nbsp;     *
+&nbsp;     * @param player               is the player who asked to start the game
+&nbsp;     * @param erasePreviousMatches if true, the previous match with the same players will be erased
+&nbsp;     *                             if false, the previous match with the same players will be loaded
+&nbsp;     * @return true if successful
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized boolean startGame(String player, boolean erasePreviousMatches) {
+&nbsp;        pingSender.ping();  // Making sure no client disconnected
+&nbsp;
+&nbsp;        try {
+&nbsp;            if (!isReady() || !getLobbyAdmin().equals(player))
+&nbsp;                return false;
+&nbsp;        } catch (RuntimeException e) {
+&nbsp;            return false;
+&nbsp;        }
+&nbsp;
+&nbsp;        started = true;
+&nbsp;        disconnectedClients.removeIf(x -&gt; true);  /* If a client disconnects before the controller is initialized,
+&nbsp;        it won&#39;t be added to the match later */
+&nbsp;
+&nbsp;        controller = null;
+&nbsp;
+&nbsp;        // Determining if there is a previous match with the same players
+&nbsp;        final String prevSaveFilename = Controller.getFileName(clients
+&nbsp;                .stream()
+&nbsp;                .map(Client::getPlayerName)
+&nbsp;                .collect(Collectors.toList()));
+&nbsp;        final Path prevSavePath = Path.of(&quot;./&quot; + prevSaveFilename);
+&nbsp;
+&nbsp;        boolean loadedFromSave = false;
+&nbsp;        if (Files.exists(prevSavePath) &amp;&amp; erasePreviousMatches) {
+&nbsp;            try {
+&nbsp;                Files.delete(prevSavePath);
+&nbsp;            } catch (IOException e) {
+&nbsp;                System.err.println(&quot;Error while deleting previous match: &quot; + e.getMessage());
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        if (Files.exists(prevSavePath) &amp;&amp; !erasePreviousMatches) {
+&nbsp;            try (InputStream stream = Files.newInputStream(prevSavePath)) {
+&nbsp;                final Reader reader = new InputStreamReader(stream);
+&nbsp;                final JSONObject gameStatus = (JSONObject) new JSONParser().parse(reader);
+&nbsp;                controller = new Controller(gameStatus, new ArrayList&lt;&gt;(clients));
+&nbsp;                loadedFromSave = true;
+&nbsp;            } catch (IOException | ParseException | JsonBadParsingException e) {
+&nbsp;                System.err.println(&quot;Error while loading previous match: &quot; + e.getMessage());
+&nbsp;                try {
+&nbsp;                    Files.deleteIfExists(prevSavePath);
+&nbsp;                } catch (IOException ex) {
+&nbsp;                    System.err.println(&quot;Error while deleting invalid match: &quot; + ex.getMessage());
+&nbsp;                }
+&nbsp;                controller = null;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        if (controller == null) {  // No valid previous match found
+&nbsp;            System.out.println(&quot;Loaded a new match, lobby #&quot; + id);
+&nbsp;            controller = new Controller(new ArrayList&lt;&gt;(clients));  // List is given by copy
+&nbsp;        } else {
+&nbsp;            System.out.println(&quot;Loaded previous match, lobby #&quot; + id);
+&nbsp;        }
+&nbsp;
+&nbsp;        for (Client c : clients)
+&nbsp;            c.gameStarted(!loadedFromSave);
+&nbsp;        return true;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param playerName
+&nbsp;     * @return true if playerName is the name of the lobby admin
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized boolean isLobbyAdmin(String playerName) {
+&nbsp;        if (isEmpty()) {
+&nbsp;            return false;
+&nbsp;        } else {
+&nbsp;            return clients.get(0).getPlayerName().equals(playerName);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param playerName is the player that is sending a message
+&nbsp;     * @param message    is the content
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void postToLiveChat(String playerName, String message) {
+&nbsp;        if (playerName == null || message == null) {
+&nbsp;            System.err.println(&quot;Wrong format of chat message, lobby #&quot; + id);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;        if(!InputSanitizer.isValidMessage(message)) {
+&nbsp;            System.err.println(&quot;Invalid message, lobby #&quot; + id);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;        chat.addMessage(playerName, message);
+&nbsp;        for (Client client : clients) {
+&nbsp;            client.postChatMessage(playerName, message);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param sender   is the player that is sending a message
+&nbsp;     * @param receiver is the player that is sending a message
+&nbsp;     * @param message  is the content
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void postSecretToLiveChat(String sender, String receiver, String message) {
+&nbsp;        if (sender == null || receiver == null || message == null) {
+&nbsp;            System.err.println(&quot;Wrong format of private chat message, lobby #&quot; + id);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        if(!InputSanitizer.isValidMessage(message)) {
+&nbsp;            System.err.println(&quot;Invalid private message, lobby #&quot; + id);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        Client client = clients.stream().filter(x -&gt; x.getPlayerName().equals(receiver)).findFirst().orElse(null);
+&nbsp;        if (client == null) return;  // Ignoring if receiver is not in lobby
+&nbsp;
+&nbsp;        chat.addSecret(sender, receiver, message);
+&nbsp;        client.postChatMessage(&quot;(private) &quot; + sender, message);
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public synchronized void quitGame(String player) {
+&nbsp;        Optional&lt;Client&gt; clientOptional = clients.stream().filter(x -&gt; x.getPlayerName().equalsIgnoreCase(player)).findFirst();
+&nbsp;        if (clientOptional.isEmpty()) return;
+&nbsp;        Client client = clientOptional.get();
+&nbsp;        disconnectClient(client);
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public synchronized void postMove(String player, JSONObject moveJson) {
+&nbsp;        Client client = null;
+&nbsp;        final Move move = new Move(moveJson);
+&nbsp;        try {
+&nbsp;            client = clients.stream().filter(x -&gt; x.getPlayerName().equals(player)).findFirst().orElse(null);
+&nbsp;            if (client != null) {
+&nbsp;                controller.moveTiles(player, move);
+&nbsp;            }
+&nbsp;        } catch (ControllerGenericException e) {
+&nbsp;            if (client != null)
+&nbsp;                client.postChatMessage(&quot;Server&quot;, e.getMessage());
+&nbsp;            throw e;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getID() {
+&nbsp;        return this.id;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to observe the player supposed
+&nbsp;     * to play in the current turn.
+&nbsp;     *
+&nbsp;     * @return String name of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized String getCurrentPlayer() {
+&nbsp;        return controller.getCurrentPlayerName();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to handle network exceptions thrown by RMI or the socket.
+&nbsp;     * The function disconnects the client and sets the player as inactive in the controller.
+&nbsp;     *
+&nbsp;     * @param client Client object
+&nbsp;     * @param e      Exception thrown
+&nbsp;     */
+&nbsp;    public void handleNetworkException(Client client, Exception e) {
+&nbsp;        System.err.println(&quot;Exception thrown (in lobby) while trying to reach client &quot; + client.getPlayerName() + &quot;: &quot; + e.getMessage());
+&nbsp;        disconnectClient(client);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to start a timer when there are not enough players in the lobby.
+&nbsp;     * The timer is used to automatically declare victory to the players that are still connected
+&nbsp;     * if nobody reconnects in a certain amount of time.
+&nbsp;     */
+&nbsp;    public void startAutomaticVictoryTimer() {
+&nbsp;        final Object lock = this;
+&nbsp;        new Thread(() -&gt; {
+&nbsp;            try {
+&nbsp;                Thread.sleep(GameSettings.automaticVictoryTimeoutSec * 1000);
+&nbsp;            } catch (InterruptedException e) {
+&nbsp;                return;
+&nbsp;            }
+&nbsp;            synchronized (lock) {
+&nbsp;                if (controller!=null &amp;&amp; !clients.isEmpty())
+&nbsp;                    controller.endGameNotEnoughConnected();
+&nbsp;            }
+&nbsp;        }).start();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The function disconnects the client and sets the player as inactive in the controller.
+&nbsp;     * A timer is started to automatically declare victory if needed.
+&nbsp;     *
+&nbsp;     * @param client Client object
+&nbsp;     */
+&nbsp;    public synchronized void disconnectClient(Client client) {
+&nbsp;        client.disconnect();
+&nbsp;        if (!clients.remove(client)) {
+&nbsp;            System.out.println(&quot;Called disconnectClient but client &quot; + client.getPlayerName() + &quot; is not in lobby #&quot; + id + &quot;, ignoring&quot;);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        if(isTerminated()) {
+&nbsp;            System.out.println(&quot;Disconnected client &quot; + client.getPlayerName() + &quot; from lobby #&quot; + id);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        String message = client.getPlayerName() + &quot; disconnected from the lobby&quot;;
+&nbsp;
+&nbsp;        if (controller != null &amp;&amp; started) {
+&nbsp;            /* If game is started and controller is null it&#39;s still being initialized,
+&nbsp;                    we won&#39;t disconnect the player. An exception will be thrown later
+&nbsp;                    and the player will be disconnected then. */
+&nbsp;            disconnectedClients.add(client.getPlayerName().toLowerCase());
+&nbsp;            controller.clientDisconnected(client);  // It&#39;s ok if a network exception is thrown here
+&nbsp;            System.out.println(&quot;Disconnected client &quot; + client.getPlayerName() + &quot; from lobby #&quot; + id);
+&nbsp;
+&nbsp;
+&nbsp;            if (clients.size()&lt;GameSettings.minSupportedPlayers) {
+&nbsp;                startAutomaticVictoryTimer();
+&nbsp;                message = message + &quot;\nNot enough players online, if nobody reconnects in &quot; + GameSettings.automaticVictoryTimeoutSec + &quot; seconds the game will end&quot;;
+&nbsp;            }
+&nbsp;
+&nbsp;            informAboutConnectedClients(message);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        if (controller == null &amp;&amp; !started) {
+&nbsp;            // The admin did not start the match yet
+&nbsp;            disconnectedClients.add(client.getPlayerName().toLowerCase());
+&nbsp;            System.out.println(&quot;Disconnected client &quot; + client.getPlayerName() + &quot; from lobby #&quot; + id);
+&nbsp;        }
+&nbsp;        informAboutConnectedClients(message);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to check if the
+&nbsp;     * game termination has been handled in the controller.
+&nbsp;     * In that case, the lobby can be deleted.
+&nbsp;     * @return boolean, True if the game is terminated
+&nbsp;     */
+&nbsp;    public boolean isTerminated() {
+&nbsp;        if (controller == null) return false;
+&nbsp;        return controller.gameTerminated();
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class LobbyPingSender extends Thread {
+&nbsp;
+&nbsp;    private final Lobby lobby;  // Needed for proper synchronization
+&nbsp;
+<b class="nc">&nbsp;    public LobbyPingSender(Lobby lobby) {</b>
+<b class="nc">&nbsp;        this.lobby = lobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void ping() {
+<b class="nc">&nbsp;        synchronized (lobby) {</b>
+<b class="nc">&nbsp;            for (Client c : lobby.getClients())</b>
+<b class="nc">&nbsp;                c.ping();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This Runnable is used to ping clients, if a client is not available
+&nbsp;     * an exception is thrown and the exception handles kicks in.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        while(true) {
+<b class="nc">&nbsp;            ping();</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                Thread.sleep(NetworkSettings.serverPingIntervalSeconds * 1000);</b>
+<b class="nc">&nbsp;            } catch (InterruptedException ignored) {</b>
+&nbsp;                return;
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

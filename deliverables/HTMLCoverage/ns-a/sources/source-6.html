@@ -1,0 +1,332 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Player</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server</a>
+</div>
+
+<h1>Coverage Summary for Class: Player (it.polimi.ingsw.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Player</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (18/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (60/64)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;import it.polimi.ingsw.shared.model.*;
+&nbsp;import it.polimi.ingsw.shared.virtualview.VirtualShelf;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class implements the player inside the model.
+&nbsp; */
+&nbsp;public class Player implements Jsonable {
+&nbsp;    private final String name;
+&nbsp;    private int commonGoalPoints;
+&nbsp;    private final List&lt;Integer&gt; checkedCommonGoals;
+&nbsp;    private final Shelf shelf;
+&nbsp;    private final PlayerGoal goal;
+&nbsp;    private final VirtualShelf virtualShelf;
+&nbsp;    boolean isActive;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor is used to initialize a new player, with no properties
+&nbsp;     * @param name player&#39;s name;
+&nbsp;     * @param shelf player&#39;s shelf;
+&nbsp;     * @param goal player&#39;s personal goal.
+&nbsp;     */
+&nbsp;    public Player(String name, Shelf shelf, PlayerGoal goal) {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.virtualShelf = new VirtualShelf(name);</b>
+&nbsp;
+<b class="fc">&nbsp;        this.shelf = shelf;</b>
+<b class="fc">&nbsp;        this.shelf.setVirtualShelf(this.virtualShelf);</b>
+&nbsp;
+<b class="fc">&nbsp;        this.goal = goal;</b>
+<b class="fc">&nbsp;        this.commonGoalPoints = 0;</b>
+<b class="fc">&nbsp;        this.checkedCommonGoals = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;        this.isActive = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor is used to initialize a player from a JSONObject
+&nbsp;     * @param playerJson JSONObject with the player&#39;s properties
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+<b class="fc">&nbsp;    public Player(JSONObject playerJson) throws JsonBadParsingException {</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            this.name = (String) playerJson.get(&quot;Name&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;            this.virtualShelf = new VirtualShelf(this.name);</b>
+&nbsp;            // Loading shelf
+<b class="fc">&nbsp;            this.shelf = new Shelf((JSONObject) playerJson.get(&quot;Shelf&quot;));</b>
+<b class="fc">&nbsp;            this.shelf.setVirtualShelf(this.virtualShelf);</b>
+&nbsp;
+&nbsp;            // Loading player goal
+<b class="fc">&nbsp;            this.goal = new PlayerGoal(PlayerGoals,</b>
+<b class="fc">&nbsp;                    Math.toIntExact((Long) playerJson.get(&quot;PersonalGoalId&quot;)));</b>
+&nbsp;
+&nbsp;            // Loading common goals points
+<b class="fc">&nbsp;            this.commonGoalPoints = Math.toIntExact((Long) playerJson.get(&quot;CommonGoalsPoints&quot;));</b>
+&nbsp;
+&nbsp;            // Loading common goals achieved ids
+<b class="fc">&nbsp;            JSONArray jsonPointsAchieved = (JSONArray) playerJson.get(&quot;CommonGoalsAchieved&quot;);</b>
+<b class="fc">&nbsp;            if (jsonPointsAchieved==null) {throw new JsonBadParsingException(&quot;Error while loading player from json: goals achieved not found&quot;);}</b>
+&nbsp;
+<b class="fc">&nbsp;            this.checkedCommonGoals = new ArrayList&lt;&gt;(jsonPointsAchieved);</b>
+<b class="fc">&nbsp;            isActive = true;</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            throw new JsonBadParsingException(&quot;Error while loading player from json: &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Player(Player toCopy) throws JsonBadParsingException {
+<b class="fc">&nbsp;        this(toCopy.toJson());</b>
+<b class="fc">&nbsp;        isActive = toCopy.isActive;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public String getName() { return name; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return copy of the shelf.
+&nbsp;     */
+<b class="fc">&nbsp;    public Shelf getShelf() { return new Shelf(shelf); }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * To check how many points the player currently has achieved with the personal goal.
+&nbsp;     * Note: this method is pure and runs the check when called.
+&nbsp;     * @return integer.
+&nbsp;     */
+&nbsp;    public int getPersonalGoalPoints(){
+<b class="fc">&nbsp;        int points = 0;</b>
+&nbsp;        try{
+<b class="fc">&nbsp;            points =  goal.check(shelf);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        catch (JsonBadParsingException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Error while checking personal goal: &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return id of the personal goal
+&nbsp;     */
+&nbsp;    public int getPersonalGoalId() {
+<b class="fc">&nbsp;        return goal.getGoalId();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * To check how many points the player currently has achieved by
+&nbsp;     * placing tiles of the same type in adjacent positions.
+&nbsp;     * @return integer.
+&nbsp;     */
+&nbsp;    public int getAdjacentPoints()  {
+<b class="fc">&nbsp;        return shelf.countAdjacentPoints();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * To check how many points the player currently has achieved with the common goals.
+&nbsp;     * @return integer, the value is stored in the player.
+&nbsp;     */
+<b class="fc">&nbsp;    public int getCommonGoalPoints() { return commonGoalPoints; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Should be called to save which goals the player already has achieved.
+&nbsp;     * @return list of Integers.
+&nbsp;     */
+&nbsp;    public List&lt;Integer&gt; getCheckedCommonGoals() {
+<b class="fc">&nbsp;        return new ArrayList&lt;&gt;(checkedCommonGoals);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Runs the checks with the provided personal goals:
+&nbsp;     * passes the shelf to the goal; if the goal is achieved and was not
+&nbsp;     * previously achieved, pops points from the goal and saves them.
+&nbsp;     * @param goals list of AbstractCommonGoals to be checked.
+&nbsp;     */
+&nbsp;    public void checkCommonGoals(List&lt;CommonGoal&gt; goals) {
+<b class="fc">&nbsp;        for (CommonGoal goal : goals) {</b>
+<b class="fc">&nbsp;            if (goal.check(shelf) &amp;&amp;</b>
+<b class="fc">&nbsp;                    !checkedCommonGoals.contains(goal.getID())) {</b>
+<b class="fc">&nbsp;                commonGoalPoints += goal.givePoints();</b>
+<b class="fc">&nbsp;                checkedCommonGoals.add(goal.getID());</b>
+&nbsp;            }
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * To edit the shelf.
+&nbsp;     * @param tile Tile enum,
+&nbsp;     * @param column int.
+&nbsp;     */
+&nbsp;    public void insertTile(Tile tile, int column) throws BadPositionException {
+<b class="fc">&nbsp;        shelf.insertTile(tile, column);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Uses getHighestColumn on the shelf to determine if
+&nbsp;     * the player has completed the shelf.
+&nbsp;     * @return true/false.
+&nbsp;     */
+&nbsp;    public boolean hasFinished() {
+<b class="fc">&nbsp;        return shelf.getHighestColumn() == 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to get the virtual shelf,
+&nbsp;     * it&#39;ll be used to send updates when the
+&nbsp;     * status changes.
+&nbsp;     * @return virtual shelf object
+&nbsp;     */
+&nbsp;    public VirtualShelf getVirtualShelf() {
+<b class="fc">&nbsp;        return virtualShelf;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to save the status of the player with a json object.
+&nbsp;     * @return JSONObject with status.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public JSONObject toJson() {
+<b class="fc">&nbsp;        JSONObject playerJson = new JSONObject();</b>
+<b class="fc">&nbsp;        playerJson.put(&quot;Name&quot;, name);</b>
+<b class="fc">&nbsp;        playerJson.put(&quot;Shelf&quot;, shelf.toJson());</b>
+<b class="fc">&nbsp;        playerJson.put(&quot;PersonalGoalId&quot;, Long.valueOf(goal.getGoalId()));</b>
+<b class="fc">&nbsp;        playerJson.put(&quot;CommonGoalsPoints&quot;, Long.valueOf(commonGoalPoints));</b>
+&nbsp;
+&nbsp;        // Saving common goals achieved ids
+<b class="fc">&nbsp;        JSONArray commonGoals = new JSONArray();</b>
+<b class="fc">&nbsp;        commonGoals.addAll(checkedCommonGoals);</b>
+<b class="fc">&nbsp;        playerJson.put(&quot;CommonGoalsAchieved&quot;, commonGoals);</b>
+&nbsp;
+<b class="fc">&nbsp;        return playerJson;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {  // Checking using LOWERCASE name
+<b class="fc">&nbsp;        if (this == o) return true;</b>
+<b class="fc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="fc">&nbsp;        Player player = (Player) o;</b>
+<b class="fc">&nbsp;        return Objects.equals(name.toLowerCase(), player.getName().toLowerCase());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return &quot;Player{&quot; +</b>
+&nbsp;                &quot;name=&#39;&quot; + name + &#39;\&#39;&#39; +
+&nbsp;                &#39;}&#39;;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="nc">&nbsp;        return Objects.hash(name.toLowerCase());</b>
+&nbsp;    }
+&nbsp;    public boolean isActive() {
+<b class="fc">&nbsp;        return isActive;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setActive(boolean active) {
+<b class="fc">&nbsp;        isActive = active;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

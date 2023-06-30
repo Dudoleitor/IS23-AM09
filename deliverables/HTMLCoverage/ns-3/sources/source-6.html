@@ -1,0 +1,452 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerTCP</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.connection</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerTCP (it.polimi.ingsw.client.connection)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerTCP</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/205)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.connection;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.connection.TCPThread.ServerTCP_IO;
+&nbsp;import it.polimi.ingsw.client.model.ClientModel;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;import it.polimi.ingsw.shared.model.Move;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.InetSocketAddress;
+&nbsp;import java.net.Socket;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;
+&nbsp;public class ServerTCP extends Server {
+&nbsp;    private int id;
+&nbsp;    private Socket serverSocket;
+&nbsp;
+&nbsp;    private final ServerTCP_IO serverIO;
+&nbsp;
+&nbsp;    public ServerTCP(IpAddressV4 ip, int port, ClientModel clientModel) throws ServerException {
+<b class="nc">&nbsp;        super(ip, port);</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            serverSocket = new Socket();</b>
+<b class="nc">&nbsp;            serverSocket.connect(new InetSocketAddress(ip.toString(), port), NetworkSettings.WaitingTimeMillis);</b>
+<b class="nc">&nbsp;            serverIO = new ServerTCP_IO(serverSocket, clientModel);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * socket input buffer
+&nbsp;     * @return the read line of the buffer
+&nbsp;     */
+&nbsp;    public MessageTcp in() throws RemoteException {
+<b class="nc">&nbsp;        return serverIO.in();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * send a message through socket connection
+&nbsp;     * @param message is the message to send
+&nbsp;     */
+&nbsp;    public void out(String message){
+<b class="nc">&nbsp;        serverIO.out(message);</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public boolean login(Client client) throws ServerException {
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;player&quot;, client.getPlayerName());</b>
+<b class="nc">&nbsp;        MessageTcp login = new MessageTcp();</b>
+<b class="nc">&nbsp;        login.setCommand(MessageTcp.MessageCommand.Login); //set command</b>
+<b class="nc">&nbsp;        login.setContent(content);</b>
+<b class="nc">&nbsp;        login.generateRequestID();</b>
+<b class="nc">&nbsp;        out(login.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.Login) &amp;&amp; !response.getRequestID().equals(login.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return Boolean.parseBoolean(response.getContent().get(&quot;result&quot;).toString());</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error while connecting to server, &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getJoinedLobby(String playerName) throws ServerException {
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;player&quot;, playerName);</b>
+<b class="nc">&nbsp;        MessageTcp requestLobbies = new MessageTcp();</b>
+<b class="nc">&nbsp;        requestLobbies.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set command</b>
+<b class="nc">&nbsp;        requestLobbies.setContent(content); //set playername as JsonObject</b>
+<b class="nc">&nbsp;        requestLobbies.generateRequestID();</b>
+<b class="nc">&nbsp;        out(requestLobbies.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetJoinedLobby) &amp;&amp; !response.getRequestID().equals(requestLobbies.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return (int) Long.parseLong(response.getContent().get(&quot;lobby&quot;).toString());</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public Map&lt;Integer, Integer&gt; getAvailableLobbies()throws ServerException {
+<b class="nc">&nbsp;        MessageTcp requestLobbies = new MessageTcp();</b>
+<b class="nc">&nbsp;        requestLobbies.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set command</b>
+<b class="nc">&nbsp;        requestLobbies.generateRequestID();</b>
+<b class="nc">&nbsp;        out(requestLobbies.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetAvailableLobbies) &amp;&amp; !response.getRequestID().equals(requestLobbies.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return Jsonable.json2mapInt((JSONObject) response.getContent().get(&quot;lobbies&quot;));</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void joinRandomLobby(Client client) throws ServerException {
+<b class="nc">&nbsp;        MessageTcp requestLobbies = new MessageTcp();</b>
+<b class="nc">&nbsp;        requestLobbies.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set command</b>
+<b class="nc">&nbsp;        requestLobbies.generateRequestID();</b>
+<b class="nc">&nbsp;        out(requestLobbies.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinRandomLobby) &amp;&amp; !response.getRequestID().equals(requestLobbies.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            long Lobbyid = Long.parseLong(response.getContent().get(&quot;lobbyID&quot;).toString());</b>
+<b class="nc">&nbsp;            if (Lobbyid &gt; 0)</b>
+<b class="nc">&nbsp;                this.id = (int)Lobbyid;</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void createLobby(Client client) throws ServerException {
+<b class="nc">&nbsp;        MessageTcp requestLobbies = new MessageTcp();</b>
+<b class="nc">&nbsp;        requestLobbies.setCommand(MessageTcp.MessageCommand.CreateLobby); //set command</b>
+<b class="nc">&nbsp;        requestLobbies.generateRequestID();</b>
+<b class="nc">&nbsp;        out(requestLobbies.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.CreateLobby) &amp;&amp; !response.getRequestID().equals(requestLobbies.getRequestID()))//is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            long Lobbyid = Long.parseLong(response.getContent().get(&quot;lobbyID&quot;).toString());</b>
+<b class="nc">&nbsp;            if (Lobbyid &gt; 0)</b>
+<b class="nc">&nbsp;                this.id = (int) Lobbyid;</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void joinSelectedLobby(Client client, int id)throws ServerException {
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;lobbyID&quot;, id);</b>
+<b class="nc">&nbsp;        MessageTcp requestLobbies = new MessageTcp();</b>
+<b class="nc">&nbsp;        requestLobbies.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set command</b>
+<b class="nc">&nbsp;        requestLobbies.setContent(content);</b>
+<b class="nc">&nbsp;        requestLobbies.generateRequestID();</b>
+<b class="nc">&nbsp;        out(requestLobbies.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.JoinSelectedLobby) &amp;&amp; !response.getRequestID().equals(requestLobbies.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            long Lobbyid = Long.parseLong(response.getContent().get(&quot;lobbyID&quot;).toString());</b>
+<b class="nc">&nbsp;            if (Lobbyid &gt; 0)</b>
+<b class="nc">&nbsp;                this.id = (int) Lobbyid;</b>
+&nbsp;            else
+<b class="nc">&nbsp;                throw new ServerException(&quot;Lobby join error&quot;);</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void postToLiveChat(String playerName, String message) throws LobbyException {
+<b class="nc">&nbsp;        ChatMessage chatMessage = new ChatMessage(playerName, message, Color.Black);</b>
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        MessageTcp postMessage = new MessageTcp();</b>
+<b class="nc">&nbsp;        content.put(&quot;chat&quot;, chatMessage.toJson());</b>
+<b class="nc">&nbsp;        postMessage.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set command</b>
+<b class="nc">&nbsp;        postMessage.setContent(content); //set playername as JsonObject</b>
+<b class="nc">&nbsp;        postMessage.generateRequestID();</b>
+<b class="nc">&nbsp;        out(postMessage.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object responses</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostToLiveChat) &amp;&amp; !response.getRequestID().equals(postMessage.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            boolean errorFound = Boolean.parseBoolean(response.getContent().get(&quot;errors&quot;).toString());</b>
+<b class="nc">&nbsp;            if (errorFound) {</b>
+<b class="nc">&nbsp;                throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
+<b class="nc">&nbsp;        PrivateChatMessage chatMessage = new PrivateChatMessage(sender,receiver,message,Color.Black);</b>
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;chat&quot;, chatMessage.toJson());</b>
+<b class="nc">&nbsp;        MessageTcp postMessage = new MessageTcp();</b>
+<b class="nc">&nbsp;        postMessage.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set command</b>
+<b class="nc">&nbsp;        postMessage.setContent(content); //set playername as JsonObject</b>
+<b class="nc">&nbsp;        postMessage.generateRequestID();</b>
+<b class="nc">&nbsp;        out(postMessage.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object responses</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostSecretToLiveChat) &amp;&amp; !response.getRequestID().equals(postMessage.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            boolean errorFound = Boolean.parseBoolean(response.getContent().get(&quot;errors&quot;).toString());</b>
+<b class="nc">&nbsp;            if (errorFound) {</b>
+<b class="nc">&nbsp;                throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void quitGame(String player) throws LobbyException{
+<b class="nc">&nbsp;        MessageTcp quitMessage = new MessageTcp();</b>
+<b class="nc">&nbsp;        quitMessage.setCommand(MessageTcp.MessageCommand.Quit); //set command</b>
+<b class="nc">&nbsp;        quitMessage.generateRequestID();</b>
+<b class="nc">&nbsp;        out(quitMessage.toString());</b>
+&nbsp;
+<b class="nc">&nbsp;        serverIO.terminate();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean matchHasStarted() throws LobbyException {
+<b class="nc">&nbsp;        MessageTcp hasStartedMessage = new MessageTcp();</b>
+<b class="nc">&nbsp;        hasStartedMessage.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set command</b>
+<b class="nc">&nbsp;        hasStartedMessage.generateRequestID();</b>
+<b class="nc">&nbsp;        out(hasStartedMessage.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object responses</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.MatchHasStarted) &amp;&amp; !response.getRequestID().equals(hasStartedMessage.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return Boolean.parseBoolean(response.getContent().get(&quot;started&quot;).toString());</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postMove(String player, Move move) throws LobbyException {
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;move&quot;,move.toJson());</b>
+<b class="nc">&nbsp;        MessageTcp postMoveMessage = new MessageTcp();</b>
+<b class="nc">&nbsp;        postMoveMessage.setCommand(MessageTcp.MessageCommand.PostMove); //set command</b>
+<b class="nc">&nbsp;        postMoveMessage.setContent(content);</b>
+<b class="nc">&nbsp;        postMoveMessage.generateRequestID();</b>
+<b class="nc">&nbsp;        out(postMoveMessage.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object responses</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.PostMove) &amp;&amp; !response.getRequestID().equals(postMoveMessage.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            boolean errorFound = Boolean.parseBoolean(response.getContent().get(&quot;errors&quot;).toString());</b>
+<b class="nc">&nbsp;            if (errorFound) {</b>
+<b class="nc">&nbsp;                throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean startGame(String player, boolean erasePreviousMatches)throws LobbyException {
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;erasePreviousMatches&quot;, erasePreviousMatches);</b>
+<b class="nc">&nbsp;        MessageTcp startGame = new MessageTcp();</b>
+<b class="nc">&nbsp;        startGame.setCommand(MessageTcp.MessageCommand.StartGame); //set command</b>
+<b class="nc">&nbsp;        startGame.setContent(content); //set playername as JsonObject</b>
+<b class="nc">&nbsp;        startGame.generateRequestID();</b>
+<b class="nc">&nbsp;        out(startGame.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.StartGame) &amp;&amp; !response.getRequestID().equals(startGame.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return Boolean.parseBoolean(response.getContent().get(&quot;start&quot;).toString());</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public boolean isLobbyAdmin(String player)throws LobbyException {
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;player&quot;, player);</b>
+<b class="nc">&nbsp;        MessageTcp isAdmin = new MessageTcp();</b>
+<b class="nc">&nbsp;        isAdmin.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set command</b>
+<b class="nc">&nbsp;        isAdmin.setContent(content); //set playername as JsonObject</b>
+<b class="nc">&nbsp;        isAdmin.generateRequestID();</b>
+<b class="nc">&nbsp;        out(isAdmin.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.IsLobbyAdmin) &amp;&amp; !response.getRequestID().equals(isAdmin.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return Boolean.parseBoolean(response.getContent().get(&quot;admin&quot;).toString());</b>
+<b class="nc">&nbsp;        }catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public int getLobbyID()throws LobbyException {
+<b class="nc">&nbsp;        if(id &gt;0)</b>
+<b class="nc">&nbsp;            return this.id;</b>
+&nbsp;        else
+<b class="nc">&nbsp;            throw new LobbyException(&quot;lobby doesn&#39;t exists&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to observe the player supposed
+&nbsp;     * to play in the current turn.
+&nbsp;     *
+&nbsp;     * @return String name of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getCurrentPlayer() throws LobbyException {
+<b class="nc">&nbsp;        MessageTcp getPlayer = new MessageTcp();</b>
+<b class="nc">&nbsp;        getPlayer.setCommand(MessageTcp.MessageCommand.GetCurrentPlayer); //set command</b>
+<b class="nc">&nbsp;        getPlayer.generateRequestID();</b>
+<b class="nc">&nbsp;        out(getPlayer.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.GetCurrentPlayer) &amp;&amp; !response.getRequestID().equals(getPlayer.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return response.getContent().get(&quot;player&quot;).toString();</b>
+<b class="nc">&nbsp;        }catch (RemoteException | NullPointerException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to check if the client was already connected to
+&nbsp;     * a lobby and was previously disconnected.
+&nbsp;     *
+&nbsp;     * @param playerName String name of the player
+&nbsp;     * @return Int id of the lobby if the player was previously connected,
+&nbsp;     * -1 if not.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public int disconnectedFromLobby(String playerName) throws ServerException {
+<b class="nc">&nbsp;        MessageTcp disconnectedLobby = new MessageTcp();</b>
+<b class="nc">&nbsp;        JSONObject content = new JSONObject();</b>
+<b class="nc">&nbsp;        content.put(&quot;player&quot;, playerName);</b>
+<b class="nc">&nbsp;        disconnectedLobby.setCommand(MessageTcp.MessageCommand.DisconnectedFromLobby); //set command</b>
+<b class="nc">&nbsp;        disconnectedLobby.generateRequestID();</b>
+<b class="nc">&nbsp;        disconnectedLobby.setContent(content);</b>
+<b class="nc">&nbsp;        out(disconnectedLobby.toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            MessageTcp response = in(); //wait for response by server and create an object response</b>
+<b class="nc">&nbsp;            while (!response.getCommand().equals(MessageTcp.MessageCommand.DisconnectedFromLobby) &amp;&amp; !response.getRequestID().equals(disconnectedLobby.getRequestID())) //is there&#39;s more than one message in the buffer, then it read until he founds one suitable for the response</b>
+<b class="nc">&nbsp;                response = in();</b>
+<b class="nc">&nbsp;            return Integer.parseInt(response.getContent().get(&quot;lobby&quot;).toString());</b>
+<b class="nc">&nbsp;        }catch (RemoteException | NullPointerException e){</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

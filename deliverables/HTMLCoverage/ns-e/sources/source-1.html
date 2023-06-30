@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > VirtualBoard</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.virtualview</a>
+</div>
+
+<h1>Coverage Summary for Class: VirtualBoard (it.polimi.ingsw.shared.virtualview)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VirtualBoard</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.virtualview;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.shared.model.Position;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used on the server to send
+&nbsp; * updates to clients when something changes
+&nbsp; * in the model.
+&nbsp; */
+&nbsp;public class VirtualBoard extends VirtualView{
+&nbsp;
+&nbsp;    public VirtualBoard() {
+<b class="fc">&nbsp;        super();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when a player picks a tile
+&nbsp;     * from the board. It updates every client copy of
+&nbsp;     * the board by removing the tile from the board.
+&nbsp;     * @param position position object
+&nbsp;     */
+&nbsp;    public void onPickTile(Position position) {
+<b class="fc">&nbsp;        for (Client cl : getClientList()) {</b>
+<b class="fc">&nbsp;            cl.pickedFromBoard(position.toJson());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when there is the need to
+&nbsp;     * send the whole board to clients. It overrides
+&nbsp;     * every client copy of the board.
+&nbsp;     * @param board JSObject
+&nbsp;     */
+&nbsp;    public void refresh(JSONObject board) {
+<b class="fc">&nbsp;        for (Client cl : getClientList()) {</b>
+<b class="fc">&nbsp;            cl.refreshBoard(board);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

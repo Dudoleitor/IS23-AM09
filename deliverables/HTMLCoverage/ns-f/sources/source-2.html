@@ -1,0 +1,158 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ClientRemote</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.RemoteInterfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientRemote (it.polimi.ingsw.shared.RemoteInterfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ClientRemote</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.RemoteInterfaces;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.Chat;
+&nbsp;import it.polimi.ingsw.shared.PlayerWithPoints;
+&nbsp;import it.polimi.ingsw.shared.model.Tile;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.io.Serializable;
+&nbsp;import java.rmi.Remote;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used on the client to receive updates
+&nbsp; * sent by the model. This object will be wrapped inside
+&nbsp; * a ClientRMI object.
+&nbsp; * The server, inside ClientRMI, will invoke methods on
+&nbsp; * this object and the remote execution will be
+&nbsp; * handled by RMI.
+&nbsp; * Please note that the interface is superfluous, but it&#39;s
+&nbsp; * needed by RMI to work properly.
+&nbsp; */
+&nbsp;public interface ClientRemote extends Remote, Serializable {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public String getPlayerName() throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void pickedFromBoard(JSONObject position) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void refreshBoard(JSONObject board) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void putIntoShelf(String player, int column, Tile tile) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void refreshShelf(String player, JSONObject shelf) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void postChatMessage(String sender, String message) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void refreshChat(Chat chat) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void gameStarted(boolean newMatch) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void nextTurn(String player) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void refreshCommonGoal(int id, List&lt;Integer&gt; points) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void setPlayerGoal(int id) throws RemoteException;
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public void endGame(List&lt;PlayerWithPoints&gt; leaderBoard) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @see it.polimi.ingsw.server.clientonserver.Client
+&nbsp;     */
+&nbsp;    public String ping() throws RemoteException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

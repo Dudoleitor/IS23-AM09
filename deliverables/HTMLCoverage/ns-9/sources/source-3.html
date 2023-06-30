@@ -1,0 +1,98 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ClientModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.model</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientModel (it.polimi.ingsw.client.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ClientModel</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.model;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.Chat;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ClientRemote;
+&nbsp;import it.polimi.ingsw.shared.model.Board;
+&nbsp;import it.polimi.ingsw.shared.model.Shelf;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used to receive updates coming from
+&nbsp; * the server, it resides on the client. When RMI is
+&nbsp; * used, the object is wrapped inside ClientRMI and
+&nbsp; * methods are called directly from the server.
+&nbsp; * With TCP, proper adapters parse messages coming
+&nbsp; * from the network and call the methods.
+&nbsp; */
+&nbsp;public interface ClientModel extends ClientRemote{
+&nbsp;    /**
+&nbsp;     * @return True if the player need to play in the current turn
+&nbsp;     */
+&nbsp;    public boolean isItMyTurn() throws RemoteException;
+&nbsp;    public boolean amIFirstPlayer() throws RemoteException;
+&nbsp;    public Board getBoard() throws RemoteException;
+&nbsp;    public Map&lt;String, Shelf&gt; getPlayersShelves() throws RemoteException;
+&nbsp;    public Chat getChat() throws RemoteException;
+&nbsp;
+&nbsp;    public boolean gameEnded() throws RemoteException;
+&nbsp;    public boolean gameIsStarted() throws RemoteException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,607 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerTcpThread</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerTcpThread (it.polimi.ingsw.server)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerTcpThread</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/279)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ServerTcpThread$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/280)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientSocket;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public class ServerTcpThread extends Thread{
+&nbsp;    private final ClientSocket client;
+&nbsp;    private final ServerMain server;
+&nbsp;    private Lobby lobby;
+&nbsp;    private boolean lobbyAssigned;
+&nbsp;    private boolean exit;
+&nbsp;    private final Object pingLock;
+&nbsp;    private final ClientAlive clientAlive;
+&nbsp;
+<b class="nc">&nbsp;    public ServerTcpThread(ServerMain server, ClientSocket client){</b>
+<b class="nc">&nbsp;        this.server = server;</b>
+<b class="nc">&nbsp;        this.client= client;</b>
+<b class="nc">&nbsp;        client.setThreadReference(this);</b>
+<b class="nc">&nbsp;        this.lobbyAssigned = false;</b>
+<b class="nc">&nbsp;        this.exit = false;</b>
+<b class="nc">&nbsp;        this.pingLock = new Object();</b>
+<b class="nc">&nbsp;        this.clientAlive = new ClientAlive(pingLock, client);</b>
+<b class="nc">&nbsp;        clientAlive.start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method wait for user input and send the message to the correct server method
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void run() {
+<b class="nc">&nbsp;        while(!exit) {</b>
+<b class="nc">&nbsp;            MessageTcp message = client.in();</b>
+<b class="nc">&nbsp;            MessageTcp.MessageCommand command = message.getCommand(); //header of message</b>
+<b class="nc">&nbsp;            if (command==null) {</b>
+<b class="nc">&nbsp;                System.err.println(&quot;Client &quot; + client.getPlayerName() + &quot; sent a null command&quot;);</b>
+<b class="nc">&nbsp;                continue;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            String ID = message.getRequestID();</b>
+<b class="nc">&nbsp;            JSONObject content = message.getContent(); //content in JSON</b>
+&nbsp;
+<b class="nc">&nbsp;            if (command == MessageTcp.MessageCommand.Ping) {</b>
+<b class="nc">&nbsp;                synchronized (pingLock) {</b>
+<b class="nc">&nbsp;                    pingLock.notifyAll();</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if(!lobbyAssigned)</b>
+<b class="nc">&nbsp;                exectuteServerCommand(command,content,ID); //execute if still searching for a lobby</b>
+&nbsp;            else
+<b class="nc">&nbsp;                executeLobbyCommnad(command,content,ID); //execute if lobby was assigned</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        clientAlive.interrupt();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content, String ID){
+<b class="nc">&nbsp;        switch (command){</b>
+&nbsp;            case Login:
+<b class="nc">&nbsp;                login(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case GetJoinedLobby:
+<b class="nc">&nbsp;                getJoinedLobbies(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case JoinRandomLobby:
+<b class="nc">&nbsp;                joinRandomLobby(ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case CreateLobby:
+<b class="nc">&nbsp;                createLobby(ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case GetAvailableLobbies:
+<b class="nc">&nbsp;                getAvailableLobbies(ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case JoinSelectedLobby:
+<b class="nc">&nbsp;                joinSelectedLobby(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case DisconnectedFromLobby:
+<b class="nc">&nbsp;                disconnectedFromLobby(content, ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case Quit:
+<b class="nc">&nbsp;                quitServer();</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            default:
+&nbsp;                break;
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;    private void executeLobbyCommnad(MessageTcp.MessageCommand command, JSONObject content,String ID){
+<b class="nc">&nbsp;        switch (command){</b>
+&nbsp;            case PostToLiveChat:
+<b class="nc">&nbsp;                postToLiveChat(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case PostSecretToLiveChat:
+<b class="nc">&nbsp;                postSecretToLiveChat(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case Quit:
+<b class="nc">&nbsp;                quitLobby();</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case MatchHasStarted:
+<b class="nc">&nbsp;                matchHasStarted(ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case PostMove:
+<b class="nc">&nbsp;                postMove(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case StartGame:
+<b class="nc">&nbsp;                startGame(content,ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case IsLobbyAdmin:
+<b class="nc">&nbsp;                isLobbyAdmin(ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case GetCurrentPlayer:
+<b class="nc">&nbsp;                getCurrentPlayer(ID);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            default:
+&nbsp;                break;
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    //SERVER METHODS
+&nbsp;
+&nbsp;    private void login(JSONObject message, String ID){
+<b class="nc">&nbsp;        client.setName(message.get(&quot;player&quot;).toString());</b>
+&nbsp;        boolean logged;
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                logged = server.login(client);</b>
+<b class="nc">&nbsp;            } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                logged = false;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;result&quot;, logged);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.Login); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;    private void getJoinedLobbies(JSONObject message, String ID){
+&nbsp;        int lobby;
+<b class="nc">&nbsp;        String username = message.get(&quot;player&quot;).toString();</b>
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobby = server.getJoinedLobby(username);</b>
+<b class="nc">&nbsp;            } catch (NullPointerException e) {</b>
+<b class="nc">&nbsp;                lobby = -1;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;lobby&quot;, lobby);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;    private void getAvailableLobbies(String ID){
+&nbsp;        Map&lt;Integer,Integer&gt; lobbies;
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobbies = server.showAvailableLobbies();</b>
+<b class="nc">&nbsp;            } catch (NullPointerException | RemoteException e) {</b>
+<b class="nc">&nbsp;                lobbies = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;lobbies&quot;, Jsonable.map2json(lobbies));</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void joinRandomLobby(String ID){
+&nbsp;        int lobbyID;
+&nbsp;        ServerLobbyInterface lobbyInterface;
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobbyInterface = server.joinRandomLobby(client);</b>
+<b class="nc">&nbsp;            } catch (NullPointerException | RemoteException  e) {</b>
+<b class="nc">&nbsp;                lobbyInterface = null;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        lobbyID = LobbyIni(lobbyInterface);</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;lobbyID&quot;, lobbyID);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void createLobby(String ID){
+&nbsp;        int lobbyID;
+&nbsp;        ServerLobbyInterface lobbyInterface;
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobbyInterface = server.createLobby(client);</b>
+<b class="nc">&nbsp;            } catch (NullPointerException | RemoteException e) {</b>
+<b class="nc">&nbsp;                lobbyInterface = null;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        lobbyID = LobbyIni(lobbyInterface);</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;lobbyID&quot;, lobbyID);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.CreateLobby); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;    private void joinSelectedLobby(JSONObject message, String ID){
+<b class="nc">&nbsp;        long lobbyID = Long.parseLong(message.get(&quot;lobbyID&quot;).toString());</b>
+&nbsp;        ServerLobbyInterface lobbyInterface;
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobbyInterface = server.joinSelectedLobby(client,(int) lobbyID);</b>
+<b class="nc">&nbsp;            } catch (NullPointerException | RemoteException e) {</b>
+<b class="nc">&nbsp;                lobbyInterface = null;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        lobbyID = LobbyIni(lobbyInterface);</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;lobbyID&quot;, lobbyID);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;    private void disconnectedFromLobby(JSONObject messaage, String ID){
+<b class="nc">&nbsp;        String user = messaage.get(&quot;player&quot;).toString();</b>
+&nbsp;        int lobby;
+<b class="nc">&nbsp;        synchronized (server){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobby = server.disconnectedFromLobby(user);</b>
+<b class="nc">&nbsp;            } catch (NullPointerException e) {</b>
+<b class="nc">&nbsp;                lobby = -1;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;lobby&quot;, lobby);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.DisconnectedFromLobby); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void quitServer(){
+<b class="nc">&nbsp;        synchronized (server) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                server.disconnectClient(client);</b>
+<b class="nc">&nbsp;            } catch (RuntimeException ignored) {  // This should never happen, as the remote object is used locally{</b>
+&nbsp;            } finally {
+<b class="nc">&nbsp;                terminate();</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    private int LobbyIni(ServerLobbyInterface lobbyInterface){
+<b class="nc">&nbsp;        if(lobbyInterface != null) {</b>
+<b class="nc">&nbsp;            this.lobbyAssigned = true;</b>
+<b class="nc">&nbsp;            this.lobby = (Lobby) lobbyInterface;</b>
+&nbsp;
+<b class="nc">&nbsp;            return lobby.getID();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return 0;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //LOBBY METHODS
+&nbsp;
+&nbsp;    private void postToLiveChat(JSONObject message, String ID) {
+<b class="nc">&nbsp;        boolean foundErrors = false;</b>
+<b class="nc">&nbsp;        ChatMessage chatMessage = new ChatMessage((JSONObject) message.get(&quot;chat&quot;));</b>
+<b class="nc">&nbsp;        String sender = chatMessage.getSender();</b>
+<b class="nc">&nbsp;        String content = chatMessage.getMessage();</b>
+<b class="nc">&nbsp;        if (client.getPlayerName().equals(sender)) {</b>
+<b class="nc">&nbsp;            synchronized (lobby) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    lobby.postToLiveChat(sender, content);</b>
+<b class="nc">&nbsp;                } catch (RuntimeException e) {</b>
+<b class="nc">&nbsp;                    foundErrors = true;</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            foundErrors = true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;errors&quot;, foundErrors);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    private void postSecretToLiveChat(JSONObject message, String ID) {
+<b class="nc">&nbsp;        boolean foundErrors = false;</b>
+<b class="nc">&nbsp;        PrivateChatMessage chatMessage = new PrivateChatMessage((JSONObject) message.get(&quot;chat&quot;));</b>
+<b class="nc">&nbsp;        String sender = chatMessage.getSender();</b>
+<b class="nc">&nbsp;        String content = chatMessage.getMessage();</b>
+<b class="nc">&nbsp;        String receiver = chatMessage.getReciever();</b>
+<b class="nc">&nbsp;        if (client.getPlayerName().equals(sender)) {</b>
+<b class="nc">&nbsp;            synchronized (lobby) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    lobby.postSecretToLiveChat(sender, receiver, content);</b>
+<b class="nc">&nbsp;                } catch (RuntimeException e) {</b>
+<b class="nc">&nbsp;                    foundErrors = true;</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            foundErrors = true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;errors&quot;, foundErrors);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;
+&nbsp;
+&nbsp;    }
+&nbsp;    private void quitLobby(){
+<b class="nc">&nbsp;        synchronized (lobby) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobby.quitGame(client.getPlayerName());</b>
+<b class="nc">&nbsp;            } catch (RuntimeException ignored) {</b>
+&nbsp;            } finally {
+<b class="nc">&nbsp;                terminate();</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    private void matchHasStarted(String ID){
+&nbsp;        boolean hasStarted;
+<b class="nc">&nbsp;        synchronized (lobby) {</b>
+<b class="nc">&nbsp;            hasStarted = lobby.matchHasStarted();</b>
+<b class="nc">&nbsp;            JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;            result.put(&quot;started&quot;, hasStarted);</b>
+<b class="nc">&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set message command</b>
+<b class="nc">&nbsp;            feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;            feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;            client.out(feedback.toString()); //send object to client</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    private void postMove(JSONObject message, String ID){
+<b class="nc">&nbsp;        boolean foundErrors = false;</b>
+<b class="nc">&nbsp;        JSONObject move = (JSONObject) message.get(&quot;move&quot;);</b>
+<b class="nc">&nbsp;        synchronized (lobby) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                lobby.postMove(client.getPlayerName(),move);</b>
+<b class="nc">&nbsp;            } catch (ControllerGenericException e) {</b>
+<b class="nc">&nbsp;                foundErrors = true;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;            result.put(&quot;errors&quot;, foundErrors);</b>
+<b class="nc">&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.PostMove); //set message command</b>
+<b class="nc">&nbsp;            feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;            feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;            client.out(feedback.toString()); //send object to client</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private void startGame(JSONObject content, String ID){
+&nbsp;        boolean hasStarted;
+<b class="nc">&nbsp;        final boolean erasePreviousMatches = content.get(&quot;erasePreviousMatches&quot;).toString().equals(&quot;true&quot;);</b>
+<b class="nc">&nbsp;        synchronized (lobby) {</b>
+<b class="nc">&nbsp;            hasStarted = lobby.startGame(client.getPlayerName(), erasePreviousMatches);</b>
+<b class="nc">&nbsp;            JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;            result.put(&quot;start&quot;, hasStarted);</b>
+<b class="nc">&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command</b>
+<b class="nc">&nbsp;            feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;            feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;            client.out(feedback.toString()); //send object to client</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private void isLobbyAdmin(String ID){
+&nbsp;        boolean isAdmin;
+<b class="nc">&nbsp;        synchronized (lobby) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                isAdmin = lobby.isLobbyAdmin(client.getPlayerName());</b>
+<b class="nc">&nbsp;            } catch (RuntimeException e) {</b>
+<b class="nc">&nbsp;                isAdmin = false;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;            result.put(&quot;admin&quot;, isAdmin);</b>
+<b class="nc">&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set message command</b>
+<b class="nc">&nbsp;            feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;            feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;            client.out(feedback.toString()); //send object to client</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public void terminate(){
+<b class="nc">&nbsp;        this.exit = true;</b>
+<b class="nc">&nbsp;        clientAlive.interrupt();</b>
+<b class="nc">&nbsp;        Thread.currentThread().interrupt();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void getCurrentPlayer(String ID){
+&nbsp;        String player;
+<b class="nc">&nbsp;        synchronized (lobby){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                player = lobby.getCurrentPlayer();</b>
+<b class="nc">&nbsp;            } catch (NullPointerException e) {</b>
+<b class="nc">&nbsp;                player = null;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        JSONObject result = new JSONObject();</b>
+<b class="nc">&nbsp;        result.put(&quot;player&quot;, player);</b>
+<b class="nc">&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back</b>
+<b class="nc">&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.GetCurrentPlayer); //set message command</b>
+<b class="nc">&nbsp;        feedback.setContent(result); //set message content</b>
+<b class="nc">&nbsp;        feedback.setRequestID(ID);</b>
+<b class="nc">&nbsp;        client.out(feedback.toString()); //send object to client</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+&nbsp;
+&nbsp;class ClientAlive extends Thread {
+&nbsp;    private final Object pingLock;
+&nbsp;    private final ClientSocket client;
+&nbsp;    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
+&nbsp;    protected ClientAlive(Object pingLock, ClientSocket client){
+&nbsp;        this.pingLock = pingLock;
+&nbsp;        this.client = client;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        long waitStart;
+&nbsp;        synchronized (pingLock) {
+&nbsp;            while (true) {
+&nbsp;                waitStart = System.currentTimeMillis();
+&nbsp;                try {
+&nbsp;                    pingLock.wait(waitTime);
+&nbsp;                } catch (InterruptedException e) {
+&nbsp;                    return;
+&nbsp;                }
+&nbsp;                if (System.currentTimeMillis() &gt;=
+&nbsp;                        waitStart + waitTime) {
+&nbsp;                    synchronized (client) {
+&nbsp;                        System.err.println(&quot;Client &quot; + client.getPlayerName() + &quot; has timed out.&quot;);
+&nbsp;                        NetworkExceptionHandler handler = client.getNetworkExceptionHandler();
+&nbsp;                        if (handler == null) {
+&nbsp;                            client.disconnect();
+&nbsp;                        } else {
+&nbsp;                            handler.handleNetworkException(
+&nbsp;                                    client,
+&nbsp;                                    new RemoteException(&quot;Client has timed out.&quot;));
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

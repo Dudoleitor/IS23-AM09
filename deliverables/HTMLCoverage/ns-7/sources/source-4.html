@@ -1,0 +1,150 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > SceneEnum</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.gui</a>
+</div>
+
+<h1>Coverage Summary for Class: SceneEnum (it.polimi.ingsw.client.controller.gui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SceneEnum</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.gui;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.controller.gui.sceneControlles.*;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;
+<b class="nc">&nbsp;public enum SceneEnum {</b>
+<b class="nc">&nbsp;    login(&quot;Login&quot;, LoginController.class),</b>
+<b class="nc">&nbsp;    lobbySelection(&quot;Lobbies&quot;, LobbiesController.class),</b>
+<b class="nc">&nbsp;    lobbyWaiting(&quot;WaitingLobby&quot;, WaitingLobbyController.class),</b>
+<b class="nc">&nbsp;    home(&quot;HomeScreen&quot;, HomeScreenController.class),</b>
+<b class="nc">&nbsp;    chat(&quot;Chat&quot;, ChatController.class),</b>
+<b class="nc">&nbsp;    playerShelves(&quot;PlayerShelves&quot;, PlayerShelvesController.class),</b>
+<b class="nc">&nbsp;    winnerScreen(&quot;winnerScreen&quot;, winnerSceneController.class)</b>
+&nbsp;    ;
+&nbsp;
+&nbsp;    private final String sceneFile;
+&nbsp;    private final Class&lt;?&gt; controllerClass;
+&nbsp;
+<b class="nc">&nbsp;    SceneEnum(String sceneFile, Class&lt;?&gt; controllerClass) {</b>
+<b class="nc">&nbsp;        this.sceneFile = sceneFile;</b>
+<b class="nc">&nbsp;        this.controllerClass = controllerClass;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    URL getResource() {
+<b class="nc">&nbsp;        return ClientControllerGUI</b>
+&nbsp;                .class
+<b class="nc">&nbsp;                .getClassLoader()</b>
+<b class="nc">&nbsp;                .getResource(</b>
+<b class="nc">&nbsp;                        String.format(&quot;gui/%s.fxml&quot;, sceneFile)</b>
+&nbsp;                );
+&nbsp;    }
+&nbsp;
+&nbsp;    SceneController getNewController(ClientControllerGUI clientControllerGUI) {
+&nbsp;        try {
+<b class="nc">&nbsp;            return (SceneController) this.controllerClass</b>
+<b class="nc">&nbsp;                    .getDeclaredConstructor(ClientControllerGUI.class)</b>
+<b class="nc">&nbsp;                    .newInstance(clientControllerGUI);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Invalid class in scene enum, &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    Class&lt;?&gt; getControllerClass() {
+<b class="nc">&nbsp;        return controllerClass;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

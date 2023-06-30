@@ -1,0 +1,167 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Color</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared</a>
+</div>
+
+<h1>Coverage Summary for Class: Color (it.polimi.ingsw.shared)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Color</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    37.5%
+  </span>
+  <span class="absValue">
+    (3/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    48.1%
+  </span>
+  <span class="absValue">
+    (13/27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.model.Tile;
+&nbsp;import it.polimi.ingsw.shared.model.TileGenericException;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Random;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+<b class="fc">&nbsp;public enum Color {</b>
+<b class="fc">&nbsp;        Reset(&quot;\u001B[0m&quot;, &quot;reset&quot;),</b>
+<b class="fc">&nbsp;        Black(&quot;\u001B[30m&quot;, &quot;black&quot;),</b>
+<b class="fc">&nbsp;        Red(&quot;\u001B[31m&quot;, &quot;red&quot;),</b>
+<b class="fc">&nbsp;        Green(&quot;\u001B[32m&quot;, &quot;green&quot;),</b>
+<b class="fc">&nbsp;        Yellow(&quot;\u001B[33m&quot;, &quot;yellow&quot;),</b>
+<b class="fc">&nbsp;        Blue(&quot;\u001B[34m&quot;, &quot;blue&quot;),</b>
+<b class="fc">&nbsp;        Purple(&quot;\u001B[35m&quot;, &quot;purple&quot;),</b>
+<b class="fc">&nbsp;        Cyan(&quot;\u001B[36m&quot;, &quot;cyan&quot;),</b>
+<b class="fc">&nbsp;        White(&quot;\u001B[37m&quot;, &quot;white&quot;),</b>
+&nbsp;        ;
+&nbsp;        public final String ANSICode;
+&nbsp;        public final String color;
+&nbsp;
+<b class="fc">&nbsp;        Color(String ANSICode, String color) {</b>
+<b class="fc">&nbsp;                this.ANSICode = ANSICode;</b>
+<b class="fc">&nbsp;                this.color = color;</b>
+&nbsp;        }
+&nbsp;        public String getColorAnsiCode(){
+<b class="nc">&nbsp;                return ANSICode;</b>
+&nbsp;        }
+&nbsp;        public static String coloredString(String str, Color color){
+<b class="nc">&nbsp;                return color.getColorAnsiCode() + //set desired color</b>
+&nbsp;                        str +
+<b class="nc">&nbsp;                        Reset.getColorAnsiCode(); //reset to default</b>
+&nbsp;        }
+&nbsp;        public static Color getRandomColor(){
+<b class="nc">&nbsp;                List&lt;Color&gt; validColors = List.of(Color.values())</b>
+<b class="nc">&nbsp;                        .stream()</b>
+<b class="nc">&nbsp;                        .filter(color -&gt; color != Reset &amp;&amp; color != White &amp;&amp; color != Black)</b>
+<b class="nc">&nbsp;                        .collect(Collectors.toList());</b>
+<b class="nc">&nbsp;                Random rand = new Random();</b>
+<b class="nc">&nbsp;                return validColors.get(rand.nextInt(validColors.size()));</b>
+&nbsp;        }
+&nbsp;        @Override
+&nbsp;        public String toString(){
+<b class="nc">&nbsp;                return this.color;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        /**
+&nbsp;         * @param label is the label to look for
+&nbsp;         * @return the Color corresponding to the label otherwise reset
+&nbsp;         */
+&nbsp;        public static Color valueOfString(String label) { //gets a label and returns a Tile
+<b class="nc">&nbsp;                for (Color e : values()) {</b>
+<b class="nc">&nbsp;                        if (e.toString().equals(label)) {</b>
+<b class="nc">&nbsp;                                return e;</b>
+&nbsp;                        }
+&nbsp;                }
+<b class="nc">&nbsp;                return Color.Reset;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChatController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.gui.sceneControlles</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatController (it.polimi.ingsw.client.controller.gui.sceneControlles)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/43)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.gui.sceneControlles;
+&nbsp;import it.polimi.ingsw.client.connection.LobbyException;
+&nbsp;import it.polimi.ingsw.shared.GameSettings;
+&nbsp;import it.polimi.ingsw.shared.InputSanitizer;
+&nbsp;import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+&nbsp;import it.polimi.ingsw.client.controller.gui.SceneEnum;
+&nbsp;import it.polimi.ingsw.client.model.ClientModelGUI;
+&nbsp;import it.polimi.ingsw.shared.Chat;
+&nbsp;import it.polimi.ingsw.shared.ChatMessage;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.MenuItem;
+&nbsp;import javafx.scene.control.SplitMenuButton;
+&nbsp;import javafx.scene.control.TextArea;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.scene.input.KeyCode;
+&nbsp;import javafx.scene.input.KeyEvent;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;public class ChatController extends SceneController implements Initializable {
+&nbsp;    @FXML
+&nbsp;    TextField message;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    TextArea textArea;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    SplitMenuButton receiverMenu;
+&nbsp;
+<b class="nc">&nbsp;    Text username = new Text();</b>
+&nbsp;
+&nbsp;    private final ClientModelGUI model;
+&nbsp;    private final String playerName;
+&nbsp;
+<b class="nc">&nbsp;    private String receiver = &quot;Everybody&quot;;</b>
+&nbsp;
+&nbsp;    public ChatController(ClientControllerGUI controller) {
+<b class="nc">&nbsp;        super(controller);</b>
+<b class="nc">&nbsp;        this.model = controller.getModel();</b>
+<b class="nc">&nbsp;        this.playerName = controller.getClient().getPlayerName();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setReceiver(String receiver) {
+<b class="nc">&nbsp;        this.receiver = receiver;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to post a message in the chat,
+&nbsp;     * it is called by the server when a new message is received
+&nbsp;     * @param sender the sender of the message
+&nbsp;     * @param message the message
+&nbsp;     */
+&nbsp;    public void postChatMessage(String sender, String message){
+<b class="nc">&nbsp;        textArea.appendText(sender + &quot;: &quot; + message + &quot;\n&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void showTurnPopup() {
+<b class="nc">&nbsp;        ClientControllerGUI.showInfo(&quot;It&#39;s your turn.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to refresh the chat, it is called by the server
+&nbsp;     * @param chat Chat object containing all the messages
+&nbsp;     */
+&nbsp;    public void refreshChat(Chat chat) {
+<b class="nc">&nbsp;        textArea.clear();</b>
+<b class="nc">&nbsp;        for (ChatMessage cm : chat.getAllMessages())</b>
+<b class="nc">&nbsp;            postChatMessage(cm.getSender(), cm.getMessage());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method is used to send messages and post them to the server.
+&nbsp;     * @throws LobbyException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void SendMsg() throws LobbyException {
+<b class="nc">&nbsp;        if(message.getText().equals(&quot;&quot;)){</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;Insert a message&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        if(!InputSanitizer.isValidMessage(message.getText())){</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;Invalid message format&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if(receiver.equals(&quot;Everybody&quot;)){</b>
+<b class="nc">&nbsp;            controller.getServer().postToLiveChat(playerName, message.getText());</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            controller.getServer().postSecretToLiveChat(playerName,receiver,message.getText());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        username.setText(model.getPlayerName());</b>
+<b class="nc">&nbsp;        message.setText(&quot;&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * button method that redirects to the home page
+&nbsp;     * @throws IOException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void backHome() throws IOException {
+<b class="nc">&nbsp;        controller.loadScene(SceneEnum.home);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * equal to sendMsg() but user can use it by pushing enter
+&nbsp;     * @param keyEvent
+&nbsp;     * @throws LobbyException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void enterSendMessage(KeyEvent keyEvent) throws LobbyException {
+<b class="nc">&nbsp;        if(keyEvent.getCode().equals(KeyCode.ENTER)) {</b>
+<b class="nc">&nbsp;            SendMsg();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    protected void setMenu(){
+<b class="nc">&nbsp;        List&lt;String&gt; players = model.getPlayers();</b>
+<b class="nc">&nbsp;        players.remove(model.getPlayerName());</b>
+<b class="nc">&nbsp;        List&lt;MenuItem&gt; menuItems = receiverMenu.getItems();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(int i = 1; i &lt; menuItems.size(); i++){</b>
+<b class="nc">&nbsp;            if(i-1 &lt; players.size()){</b>
+<b class="nc">&nbsp;                menuItems.get(i).setText(players.get(i-1));</b>
+&nbsp;            }
+&nbsp;            else{
+<b class="nc">&nbsp;                menuItems.get(i).setVisible(false);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getReceiver(int i){
+<b class="nc">&nbsp;        return receiverMenu.getItems().get(i).getText();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMenuText(String text){
+<b class="nc">&nbsp;        receiverMenu.setText(text);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setEveryOne(){
+<b class="nc">&nbsp;        receiver = &quot;Everybody&quot;;</b>
+<b class="nc">&nbsp;        setMenuText(receiver);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setP1(){
+<b class="nc">&nbsp;        receiver = getReceiver(1);</b>
+<b class="nc">&nbsp;        setMenuText(receiver);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setP2(){
+<b class="nc">&nbsp;        receiver = getReceiver(2);</b>
+<b class="nc">&nbsp;        setMenuText(receiver);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setP3(){
+<b class="nc">&nbsp;        receiver = getReceiver(3);</b>
+<b class="nc">&nbsp;        setMenuText(receiver);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method is useful to refresh the chat when the scene is opened
+&nbsp;     * @param url
+&nbsp;     * @param resourceBundle
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void initialize(URL url, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;        refreshChat(model.getChat());</b>
+<b class="nc">&nbsp;        textArea.setEditable(false);</b>
+<b class="nc">&nbsp;        setMenu();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

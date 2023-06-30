@@ -1,0 +1,596 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Shelf</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.model</a>
+</div>
+
+<h1>Coverage Summary for Class: Shelf (it.polimi.ingsw.shared.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Shelf</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (24/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.7%
+  </span>
+  <span class="absValue">
+    (161/202)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.model;
+&nbsp;import it.polimi.ingsw.shared.Color;
+&nbsp;import it.polimi.ingsw.shared.JsonBadParsingException;
+&nbsp;import it.polimi.ingsw.shared.Jsonable;
+&nbsp;import it.polimi.ingsw.shared.virtualview.VirtualShelf;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.stream.LongStream;
+&nbsp;
+&nbsp;
+&nbsp;public class Shelf implements Jsonable, Grid {
+&nbsp;    private final Tile[][] tiles; //matrix coordinate (0,0) is the top-left corner of the shelf
+&nbsp;    private final int rows;
+&nbsp;    private final int columns;
+&nbsp;
+&nbsp;    private VirtualShelf virtualShelf;
+&nbsp;
+&nbsp;    //Constructors
+&nbsp;    /**
+&nbsp;     * generate Shelf by input parameters
+&nbsp;     * @param rows is num of rows
+&nbsp;     * @param columns is num of columns
+&nbsp;     */
+<b class="fc">&nbsp;    public Shelf(int rows, int columns) { //initialize a shelf with Empty tiles</b>
+<b class="fc">&nbsp;        if(rows &lt;= 0 || columns &lt;= 0){</b>
+<b class="fc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while generating shelf : dimensions are no valid numbers&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.rows = rows;</b>
+<b class="fc">&nbsp;        this.columns = columns;</b>
+<b class="fc">&nbsp;        tiles = new Tile[rows][columns];</b>
+<b class="fc">&nbsp;        for (int i = 0; i&lt;rows; i++){ //initialize tiles as a Tile.Empty matrix</b>
+<b class="fc">&nbsp;            for (int j = 0; j&lt;columns; j++){</b>
+<b class="fc">&nbsp;                tiles[i][j] = Tile.Empty;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * generate Shelf by copy of another Shelf
+&nbsp;     * @param s is Shelf to copy from
+&nbsp;     */
+<b class="fc">&nbsp;    public Shelf(Shelf s) {</b>
+&nbsp;        try{
+<b class="fc">&nbsp;            if(s.isNotValid()){</b>
+<b class="nc">&nbsp;                throw new ShelfRuntimeException(&quot;Error while creating Shelf : input Shelf has not a valid configuration&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            rows = s.getRows();</b>
+<b class="fc">&nbsp;            columns = s.getColumns();</b>
+<b class="fc">&nbsp;            tiles = new Tile[rows][columns];</b>
+<b class="fc">&nbsp;            for(int i = 0; i&lt;rows; i++){ //copy all Tiles from Shelf s to tiles</b>
+<b class="fc">&nbsp;                for(int j = 0; j&lt;columns; j++){</b>
+<b class="fc">&nbsp;                    tiles[i][j] = s.getTile(i,j);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;        } catch(NullPointerException e) {</b>
+<b class="fc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while creating Shelf : input Shelf is null pointer&quot;);</b>
+<b class="nc">&nbsp;        } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while creating Shelf : input shelf size is illegal&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Loads a Shelf from Json Object
+&nbsp;     * @param jsonShelf is the JSONObject containing the parameters necessary to build the Shelf object
+&nbsp;     * @throws JsonBadParsingException when a problem in the creation of shelf occurs
+&nbsp;     */
+<b class="fc">&nbsp;    public Shelf(JSONObject jsonShelf) throws JsonBadParsingException {</b>
+<b class="fc">&nbsp;        rows = Math.toIntExact((long) (jsonShelf.get(&quot;numRows&quot;)));</b>
+<b class="fc">&nbsp;        columns = Math.toIntExact((long) (jsonShelf.get(&quot;numColumns&quot;)));</b>
+<b class="fc">&nbsp;        tiles = new Tile[rows][columns];</b>
+&nbsp;
+<b class="fc">&nbsp;        JSONArray array_shelf = (JSONArray) jsonShelf.get(&quot;matrix&quot;); //matrix is the copy of the shelf</b>
+&nbsp;        JSONArray shelfLine;
+&nbsp;
+&nbsp;        Tile t;
+&nbsp;        try {
+<b class="fc">&nbsp;            for (int i = 0; i &lt; rows; i++) { //copy entire matrix to shelf</b>
+<b class="fc">&nbsp;                shelfLine = (JSONArray) array_shelf.get(i); //acquire line of matrix</b>
+<b class="fc">&nbsp;                for (int j = 0; j &lt; columns; j++) {</b>
+<b class="fc">&nbsp;                    t = Tile.valueOfLabel((String) shelfLine.get(j));</b>
+<b class="fc">&nbsp;                    if (t.equals(Tile.Invalid)) { //check whether Tile is Invalid</b>
+<b class="fc">&nbsp;                        throw new JsonBadParsingException(&quot;Error while generating Shelf from JSON : Tile is Invalid type&quot;);</b>
+&nbsp;                    }
+<b class="fc">&nbsp;                    tiles[i][j] = t;</b>
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;            if (isNotValid()) {</b>
+<b class="fc">&nbsp;                throw new JsonBadParsingException(&quot;Error while creating Shelf : input Shelf has not a valid configuration&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (TileGenericException e) {</b>
+<b class="fc">&nbsp;            throw new JsonBadParsingException(&quot;Error while creating Shelf : Tile type not found&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Observers
+&nbsp;    /**
+&nbsp;     * @return rows attribute
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public int getRows() {
+<b class="fc">&nbsp;        return rows;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * @return columns attribute
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public int getColumns() {
+<b class="fc">&nbsp;        return columns;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get tile in position pos
+&nbsp;     * @param pos is the position object
+&nbsp;     * @return Tile in position pos
+&nbsp;     * @throws BadPositionException when getting position is out of bound
+&nbsp;     */
+&nbsp;    public Tile getTile(Position pos) throws BadPositionException{
+&nbsp;        try {
+<b class="fc">&nbsp;            return getTile(pos.getRow(), pos.getColumn());</b>
+<b class="fc">&nbsp;        } catch (NullPointerException e) {</b>
+<b class="fc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while getting Tile in Shelf : Position object is null pointer&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Get tile in position (row,column)
+&nbsp;     * @param row is row index
+&nbsp;     * @param column is column index
+&nbsp;     * @return Tile in position (row,column)
+&nbsp;     * @throws BadPositionException when getting coordinates are out of bound
+&nbsp;     */
+&nbsp;    public Tile getTile(int row, int column) throws BadPositionException {
+&nbsp;        try {
+<b class="fc">&nbsp;            return tiles[row][column];</b>
+<b class="fc">&nbsp;        } catch (IndexOutOfBoundsException e){</b>
+<b class="fc">&nbsp;            throw new BadPositionException(&quot;Error while getting Tile in Shelf : Coordinates are beyond boundaries&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the max number of Empty tiles in a single column
+&nbsp;     */
+&nbsp;    public int getHighestColumn(){
+<b class="fc">&nbsp;        LongStream allColumns = LongStream.range(0, columns);</b>
+<b class="fc">&nbsp;        Function&lt;Long, Long&gt; countEmptyTiles =</b>
+<b class="fc">&nbsp;                x -&gt; allTilesInColumn(Math.toIntExact(x))</b>
+<b class="fc">&nbsp;                        .stream()</b>
+<b class="fc">&nbsp;                        .filter(tile -&gt; tile.equals(Tile.Empty))</b>
+<b class="fc">&nbsp;                        .count();</b>
+&nbsp;
+<b class="fc">&nbsp;        long result = allColumns</b>
+<b class="fc">&nbsp;                .map(countEmptyTiles::apply)</b>
+<b class="fc">&nbsp;                .max()</b>
+<b class="fc">&nbsp;                .orElse(0);</b>
+<b class="fc">&nbsp;        return Math.toIntExact(result);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return true if the shelf is full
+&nbsp;     */
+&nbsp;    public boolean isFull(){
+<b class="fc">&nbsp;        return getHighestColumn() == 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks if the Shelf is valid according to the game rulels
+&nbsp;     * @return true if valid
+&nbsp;     */
+&nbsp;    private boolean isNotValid(){
+<b class="fc">&nbsp;        boolean valid = true;</b>
+&nbsp;        boolean notEmptyFound;
+&nbsp;
+<b class="fc">&nbsp;        for(int j = 0; valid &amp;&amp; j &lt; columns; j++){</b>
+<b class="fc">&nbsp;            notEmptyFound = false;</b>
+<b class="fc">&nbsp;            for( int i = 0; valid &amp;&amp; i &lt; rows; i++){ //check if there are empty tiles between valid tiles ineach column</b>
+<b class="fc">&nbsp;                if(tiles[i][j].equals(Tile.Empty)){</b>
+<b class="fc">&nbsp;                    if(notEmptyFound)</b>
+<b class="fc">&nbsp;                        valid = false;</b>
+<b class="fc">&nbsp;                } else if (tiles[i][j].equals(Tile.Invalid)) {</b>
+<b class="nc">&nbsp;                    valid = false;</b>
+&nbsp;                } else {
+<b class="fc">&nbsp;                    notEmptyFound = true;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return !valid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return points count from group of adjacent Tiles in the board
+&nbsp;     */
+&nbsp;    public int countAdjacentPoints(){
+&nbsp;        int count;
+<b class="fc">&nbsp;        int points = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        boolean[][] visited = new boolean[rows][columns]; //matrix to check already visited positions while exploring recursively</b>
+<b class="fc">&nbsp;        for(int i = 0; i &lt; rows; i++){</b>
+<b class="fc">&nbsp;            for(int j = 0; j &lt; columns; j++){</b>
+<b class="fc">&nbsp;                if (!visited[i][j]) {//if a cell hasn&#39;t been explored yet, then it starts looking for greatest size group containing this cell</b>
+<b class="fc">&nbsp;                    count = exploreAdjacents(visited, new Position(i,j));</b>
+<b class="fc">&nbsp;                    if(count &gt;= 6)</b>
+<b class="fc">&nbsp;                        points = points+8;</b>
+<b class="fc">&nbsp;                    else if (count == 5)</b>
+<b class="fc">&nbsp;                        points = points+5;</b>
+<b class="fc">&nbsp;                    else if (count == 4)</b>
+<b class="fc">&nbsp;                        points = points+3;</b>
+<b class="fc">&nbsp;                    else if (count == 3)</b>
+<b class="fc">&nbsp;                        points = points+2;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * recursive method to explore adjacent Tiles of same type
+&nbsp;     * @param visited is matrix of already visited positions
+&nbsp;     * @param pos is the position
+&nbsp;     * @return the number of adjacent tiles of same type
+&nbsp;     */
+&nbsp;    public int exploreAdjacents(boolean[][] visited, Position pos) {
+<b class="fc">&nbsp;        int count = 0;</b>
+<b class="fc">&nbsp;        if (!isValidTile(pos) || visited[pos.getRow()][pos.getColumn()]) // check if current tile is valid for point count</b>
+<b class="fc">&nbsp;            return 0;</b>
+<b class="fc">&nbsp;        visited[pos.getRow()][pos.getColumn()] = true;</b>
+<b class="fc">&nbsp;        count = count + pos.neighbours().stream()</b>
+<b class="fc">&nbsp;                .filter(x -&gt; {</b>
+&nbsp;                    try {
+<b class="fc">&nbsp;                        return !isOutOfBounds(x.getRow(), x.getColumn()) &amp;&amp; getTile(x).equals(getTile(pos)); //check neighbour x is a valid position</b>
+<b class="nc">&nbsp;                    } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;                        throw new ShelfRuntimeException(&quot;Error in the exploringAdjacents algorithm&quot;);</b>
+&nbsp;                    }
+&nbsp;                })
+<b class="fc">&nbsp;                .mapToInt(x -&gt; exploreAdjacents(visited, x))</b>
+<b class="fc">&nbsp;                .sum();</b>
+&nbsp;
+<b class="fc">&nbsp;        return count + 1;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Tells if the coordinates are compatible with the shelf
+&nbsp;     * @param row integer
+&nbsp;     * @param column integer
+&nbsp;     * @return True if the coordinates are valid
+&nbsp;     */
+&nbsp;    public boolean isOutOfBounds(int row, int column){
+<b class="fc">&nbsp;        return row &lt; 0 || row &gt;= getRows() || column &lt; 0 || column &gt;= getColumns();</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Tells if the position is Empty or Invalid
+&nbsp;     * @param row integer
+&nbsp;     * @param column integer
+&nbsp;     * @return TRUE if the Tile is Empty or Invalid
+&nbsp;     */
+&nbsp;    public boolean isValidTile(int row, int column) {
+<b class="fc">&nbsp;        Tile tile = null;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            tile = getTile(row, column);</b>
+<b class="nc">&nbsp;        } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;            return false;</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return !tile.equals(Tile.Empty) &amp;&amp; !tile.equals(Tile.Invalid);</b>
+&nbsp;    }
+&nbsp;    public boolean isValidTile(Position position){
+<b class="fc">&nbsp;        return isValidTile(position.getRow(),position.getColumn());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get all the Tiles in a specific column of the shelf
+&nbsp;     * @param column a column of the shelf
+&nbsp;     * @return an ArrayList containing all the Tiles in the selected column of the shelf
+&nbsp;     */
+&nbsp;    public ArrayList&lt;Tile&gt; allTilesInColumn(int column) {
+&nbsp;        try {
+<b class="fc">&nbsp;            ArrayList&lt;Tile&gt; tiles = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;            for (int row = 0; row &lt; getRows(); row++) {</b>
+<b class="fc">&nbsp;                tiles.add(getTile(row, column));</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return tiles;</b>
+<b class="fc">&nbsp;        } catch (BadPositionException e) {</b>
+<b class="fc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while getting in allTilesInColumn for Shelf&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Get all the Tiles in a specific row of the shelf
+&nbsp;     * @param row a row of the shelf
+&nbsp;     * @return an ArrayList containing all the Tiles in the selected row of the shelf
+&nbsp;     */
+&nbsp;    public  ArrayList&lt;Tile&gt; allTilesInRow(int row) {
+&nbsp;        try {
+<b class="fc">&nbsp;            ArrayList&lt;Tile&gt; tiles = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;            for (int column = 0; column &lt; getColumns(); column++) {</b>
+<b class="fc">&nbsp;                tiles.add(getTile(row, column));</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return tiles;</b>
+<b class="fc">&nbsp;        } catch (BadPositionException e){</b>
+<b class="fc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while getting in allTilesInRow for Shelf&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Get all the Tiles in a specific row of the shelf
+&nbsp;     * @return all the Tiles in a specific row of the shelf
+&nbsp;     */
+&nbsp;    public ArrayList&lt;Tile&gt; getCorners(){
+<b class="fc">&nbsp;        ArrayList&lt;Tile&gt; corners = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        int rows = getRows();</b>
+<b class="fc">&nbsp;        int columns = getColumns();</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            corners.add(getTile(0, 0));</b>
+<b class="fc">&nbsp;            corners.add(getTile(0, columns - 1));</b>
+<b class="fc">&nbsp;            corners.add(getTile(rows - 1, 0));</b>
+<b class="fc">&nbsp;            corners.add(getTile(rows - 1, columns - 1));</b>
+<b class="fc">&nbsp;            return corners;</b>
+<b class="nc">&nbsp;        } catch (BadPositionException e){</b>
+<b class="nc">&nbsp;            throw new ShelfRuntimeException(&quot;Error while getting in getCorners in Shelf&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //Modifiers
+&nbsp;    /**
+&nbsp;     * Insert tile to selected column
+&nbsp;     * @param tile is the tile object to insert
+&nbsp;     * @param column is the selected column
+&nbsp;     * @throws BadPositionException whether tile is Invalid or column is already full or selected column is invalid
+&nbsp;     */
+&nbsp;    public void insertTile(Tile tile, int column) throws BadPositionException{
+<b class="fc">&nbsp;        boolean isEmpty = false;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            if (!Tile.existsValue(tile))</b>
+<b class="fc">&nbsp;                throw new ShelfRuntimeException(&quot;Error while inserting tile : Tile type doesn&#39;t exists&quot;);</b>
+<b class="fc">&nbsp;            if (tile.equals(Tile.Empty)) { //if Tile is Empty then do nothing</b>
+&nbsp;                return;
+<b class="fc">&nbsp;            } else if (tile.equals(Tile.Invalid)) { //if Tile is Invalid then throw exception</b>
+<b class="fc">&nbsp;                throw new BadPositionException(&quot;Error while inserting in Shelf : Tile is Invalid type&quot;);</b>
+<b class="fc">&nbsp;            } else if (!tiles[0][column].equals(Tile.Empty)) { //if selected column has an element in first position aka (also known as) the column is full</b>
+<b class="fc">&nbsp;                throw new BadPositionException(&quot;Error while inserting in Shelf : selected column is already full&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            for (int i = tiles.length - 1; !isEmpty &amp;&amp; i &gt;= 0; i--) {// back-iterate the column to find first Empty cell to insert Tile</b>
+<b class="fc">&nbsp;                if (tiles[i][column] == Tile.Empty) {</b>
+<b class="fc">&nbsp;                    tiles[i][column] = tile;</b>
+<b class="fc">&nbsp;                    isEmpty = true;</b>
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (IndexOutOfBoundsException e){</b>
+<b class="fc">&nbsp;            throw new BadPositionException(&quot;Error while inserting in Shelf : selected column is not valid&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        if (virtualShelf!=null)</b>
+<b class="fc">&nbsp;            virtualShelf.onTileInsert(column, tile);  // Updating clients</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This puts a Tile in a specific position. This should never be called in game
+&nbsp;     * @param tile
+&nbsp;     * @param pos
+&nbsp;     */
+&nbsp;    public void putTile(Tile tile, Position pos) {
+<b class="nc">&nbsp;        if(!isOutOfBounds(pos.getRow(),pos.getColumn())){</b>
+<b class="nc">&nbsp;            tiles[pos.getRow()][pos.getColumn()] = tile;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //Others
+&nbsp;    /**
+&nbsp;     * compare two Shelf objects
+&nbsp;     * @param o is the object to compare with
+&nbsp;     * @return true if they have the same attributes, false otherwise
+&nbsp;     */
+&nbsp;    public boolean equals(Object o) {
+<b class="fc">&nbsp;        boolean sameShelf = true;</b>
+<b class="fc">&nbsp;        if(o == null || this.getClass() != o.getClass()){ //check if they are not same class</b>
+<b class="fc">&nbsp;            return false;</b>
+<b class="fc">&nbsp;        } else if (this == o) { //check if it&#39;s the same object</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if(rows != ((Shelf) o).getRows() || columns != ((Shelf) o).getColumns()) //check if they have different dimensions</b>
+<b class="fc">&nbsp;            return false;</b>
+<b class="fc">&nbsp;        for (int i = 0; sameShelf &amp;&amp; i &lt; rows; i++) { //check they have same tiles in shelf</b>
+<b class="fc">&nbsp;            for (int j = 0; sameShelf &amp;&amp; j &lt; columns; j++) {</b>
+&nbsp;                try {
+<b class="fc">&nbsp;                    if (!tiles[i][j].equals(((Shelf) o).getTile(i, j))) {</b>
+<b class="fc">&nbsp;                        sameShelf = false;</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;                    return false;</b>
+<b class="fc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return sameShelf;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Convert the matrix to a printable String
+&nbsp;     * @return the string visual conversion of the matrix
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String toString(){
+<b class="nc">&nbsp;        String str = &quot;&quot;;</b>
+<b class="nc">&nbsp;        String shelfTiles = &quot;&quot;;</b>
+<b class="nc">&nbsp;        String upperBorder = &quot;??&quot;;</b>
+<b class="nc">&nbsp;        String lowerBorder = &quot;??&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        for(int row = 0; row &lt; rows; row++){</b>
+<b class="nc">&nbsp;            for(int col = 0; col &lt; columns; col++){</b>
+<b class="nc">&nbsp;                if(row == 0){</b>
+<b class="nc">&nbsp;                    lowerBorder = lowerBorder.concat(&quot;???&quot;);</b>
+<b class="nc">&nbsp;                    upperBorder = upperBorder.concat(&quot;???&quot;);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                if(col == 0 ){</b>
+<b class="nc">&nbsp;                    shelfTiles = shelfTiles.concat(Color.coloredString(&quot;? &quot;,Color.Yellow));</b>
+&nbsp;                }
+&nbsp;                try {
+<b class="nc">&nbsp;                    shelfTiles = shelfTiles.concat(getTile(row,col).toColorFulString()+&quot; &quot;);</b>
+<b class="nc">&nbsp;                } catch (BadPositionException e) {</b>
+&nbsp;                    //Will never be executed
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+<b class="nc">&nbsp;            shelfTiles = shelfTiles.concat(Color.coloredString(&quot;?\n&quot;,Color.Yellow));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        lowerBorder = lowerBorder.concat(&quot;?\n&quot;);</b>
+<b class="nc">&nbsp;        upperBorder = upperBorder.concat(&quot;?\n&quot;);</b>
+<b class="nc">&nbsp;        str = str.concat(</b>
+<b class="nc">&nbsp;                Color.coloredString(upperBorder,Color.Yellow)+</b>
+&nbsp;                        shelfTiles+
+<b class="nc">&nbsp;                        Color.coloredString(lowerBorder,Color.Yellow));</b>
+<b class="nc">&nbsp;        return str;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * generate hashcode from tiles matrix of shelf class
+&nbsp;     * @return calculated hashcode
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public int hashCode(){
+<b class="nc">&nbsp;        return Arrays.deepHashCode(tiles); //deepHashCode is similar to HashCode but also applied to any sub-array of elements</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * This method is used to save the status of the shelf with a json object.
+&nbsp;     * @return JSONObject with status.
+&nbsp;     */
+&nbsp;    public JSONObject toJson() {
+<b class="fc">&nbsp;        JSONObject shelfJson = new JSONObject();  // Object to return</b>
+&nbsp;
+&nbsp;        // Saving final parameters
+<b class="fc">&nbsp;        shelfJson.put(&quot;numRows&quot;, Long.valueOf(rows));</b>
+<b class="fc">&nbsp;        shelfJson.put(&quot;numColumns&quot;, Long.valueOf(columns));</b>
+&nbsp;
+&nbsp;        // Looping to save the matrix
+<b class="fc">&nbsp;        JSONArray shelfMatrix = new JSONArray();</b>
+&nbsp;        JSONArray shelfRowJson;  // Single row
+&nbsp;        List&lt;String&gt; shelfRow;
+<b class="fc">&nbsp;        for (int row = 0; row &lt; rows; row++) {  // Iterating over the rows</b>
+<b class="fc">&nbsp;            shelfRowJson = new JSONArray();  // Will be added into the JSON matrix</b>
+<b class="fc">&nbsp;            shelfRow = new ArrayList&lt;&gt;();  // To convert from [] -&gt; collection</b>
+&nbsp;
+<b class="fc">&nbsp;            for (int col = 0; col &lt; columns; col++) {  // Iterating over the columns</b>
+<b class="fc">&nbsp;                shelfRow.add(tiles[row][col].toString());</b>
+&nbsp;            }
+<b class="fc">&nbsp;            shelfRowJson.addAll(shelfRow);  // Converting from List to JSONArray</b>
+<b class="fc">&nbsp;            shelfMatrix.add(shelfRowJson);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        shelfJson.put(&quot;matrix&quot;, shelfMatrix);</b>
+&nbsp;
+<b class="fc">&nbsp;        return shelfJson;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to set the virtual shelf,
+&nbsp;     * it&#39;ll be used to send updates when the
+&nbsp;     * status changes.
+&nbsp;     * @param virtualShelf virtual shelf object
+&nbsp;     */
+&nbsp;    public void setVirtualShelf(VirtualShelf virtualShelf) {
+<b class="fc">&nbsp;        this.virtualShelf = virtualShelf;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to return the highest free position in a column
+&nbsp;     * @param column int, index of the column
+&nbsp;     * @return Position, the first free position in the column
+&nbsp;     */
+&nbsp;    public Position getFreePosition(int column) throws BadPositionException{
+<b class="nc">&nbsp;        for (int i = rows - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;            if (tiles[i][column] == Tile.Empty) {</b>
+<b class="nc">&nbsp;                return new Position(i, column);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        throw new BadPositionException(&quot;Error while getting free position in Shelf : selected column is already full&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

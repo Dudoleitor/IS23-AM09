@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Client</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server.clientonserver</a>
+</div>
+
+<h1>Coverage Summary for Class: Client (it.polimi.ingsw.server.clientonserver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">Client</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server.clientonserver;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.NetworkExceptionHandler;
+&nbsp;import it.polimi.ingsw.shared.Chat;
+&nbsp;import it.polimi.ingsw.shared.PlayerWithPoints;
+&nbsp;import it.polimi.ingsw.shared.model.Tile;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used to send updates to
+&nbsp; * a specific client, it resides on the server.
+&nbsp; * ClientRMI and ClientTCP implement methods properly.
+&nbsp; */
+&nbsp;public interface Client {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to return the name of
+&nbsp;     * the players using this client.
+&nbsp;     * @return String, player&#39;s name.
+&nbsp;     */
+&nbsp;    public String getPlayerName();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to set the ExceptionHandler the client
+&nbsp;     * will notify when a network exception happens.
+&nbsp;     * @param e Exception handler
+&nbsp;     */
+&nbsp;    public void setExceptionHandler(NetworkExceptionHandler e);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when a player picks a tile
+&nbsp;     * from the board. It sends the message
+&nbsp;     * to the remote view to remove the tile
+&nbsp;     * from the board.
+&nbsp;     *
+&nbsp;     * @param position position
+&nbsp;     */
+&nbsp;    public void pickedFromBoard(JSONObject position);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to transfer the whole board
+&nbsp;     * to the remote view,
+&nbsp;     * it uses a json string.
+&nbsp;     *
+&nbsp;     * @param board JSONObject
+&nbsp;     */
+&nbsp;    public void refreshBoard(JSONObject board);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when a player inserts a single
+&nbsp;     * tile into his shelf.
+&nbsp;     * It is used to send the message to the remote view
+&nbsp;     * of the client in order to insert the tile
+&nbsp;     * into the shelf.
+&nbsp;     *
+&nbsp;     * @param player String name of the player that moved the tile
+&nbsp;     * @param column destination column of the shelf
+&nbsp;     * @param tile Tile to insert
+&nbsp;     */
+&nbsp;    public void putIntoShelf(String player, int column, Tile tile);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to transfer the whole shelf
+&nbsp;     * of a player to the remote view of the client,
+&nbsp;     * it uses a json string.
+&nbsp;     *
+&nbsp;     * @param player name of the player
+&nbsp;     * @param shelf JSONObject
+&nbsp;     */
+&nbsp;    public void refreshShelf(String player, JSONObject shelf);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to send a chat message to clients.
+&nbsp;     * @param sender Player&#39;s name
+&nbsp;     * @param message String message
+&nbsp;     */
+&nbsp;    public void postChatMessage(String sender, String message);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to send the whole chat to the client,
+&nbsp;     * it is used when a refresh is needed.
+&nbsp;     * @param chat Chat object
+&nbsp;     */
+&nbsp;    public void refreshChat(Chat chat);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when the lobby is ready and the
+&nbsp;     * admin started the game.
+&nbsp;     * @param newMatch true if the game is new,
+&nbsp;     *        false if it was loaded from a save or the player
+&nbsp;     *        reconnected.
+&nbsp;     */
+&nbsp;    public void gameStarted(boolean newMatch);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used when the turn of a player ends.
+&nbsp;     * @param player Name of the player that will play next.
+&nbsp;     */
+&nbsp;    public void updateTurn(String player);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when a player achieves
+&nbsp;     * a common goal and pops points from
+&nbsp;     * its stack.
+&nbsp;     * It is also used to init the common goal.
+&nbsp;     * @param id ID of the common goal
+&nbsp;     * @param points Copy of the stack with points that
+&nbsp;     *               can still be achieved
+&nbsp;     */
+&nbsp;    public void refreshCommonGoal(int id, List&lt;Integer&gt; points);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used at the beginning of the game to let
+&nbsp;     * the client know its personal goal
+&nbsp;     * @param id Int ID of the goal
+&nbsp;     */
+&nbsp;    public void setPlayerGoal(int id);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used at the end of the game to
+&nbsp;     * send the leaderboard to the client.
+&nbsp;     * @param leaderBoard Map: player&#39;s name - points
+&nbsp;     */
+&nbsp;    public void endGame(List&lt;PlayerWithPoints&gt; leaderBoard);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to close the connection with the client
+&nbsp;     */
+&nbsp;    public void disconnect();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to ensure the client is still connected.
+&nbsp;     * Expected return value is &quot;pong&quot;.
+&nbsp;     */
+&nbsp;    public String ping();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

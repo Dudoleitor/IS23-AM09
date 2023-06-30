@@ -1,0 +1,233 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > WaitingLobbyController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.gui.sceneControlles</a>
+</div>
+
+<h1>Coverage Summary for Class: WaitingLobbyController (it.polimi.ingsw.client.controller.gui.sceneControlles)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WaitingLobbyController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.gui.sceneControlles;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.connection.LobbyException;
+&nbsp;import it.polimi.ingsw.client.connection.Server;
+&nbsp;import it.polimi.ingsw.shared.InputSanitizer;
+&nbsp;import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+&nbsp;import it.polimi.ingsw.shared.Chat;
+&nbsp;import it.polimi.ingsw.shared.ChatMessage;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.CheckBox;
+&nbsp;import javafx.scene.control.TextArea;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.scene.input.KeyCode;
+&nbsp;import javafx.scene.input.KeyEvent;
+&nbsp;import javafx.scene.layout.VBox;
+&nbsp;import javafx.stage.Stage;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;public class WaitingLobbyController extends SceneController implements Initializable {
+&nbsp;    private final Server server;
+&nbsp;    private final String playerName;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    VBox vbox;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    TextArea lobbyChat;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Button startButton;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    TextField message;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    CheckBox checkBox;
+&nbsp;
+&nbsp;    public WaitingLobbyController(ClientControllerGUI controller) {
+<b class="nc">&nbsp;        super(controller);</b>
+<b class="nc">&nbsp;        this.server = controller.getServer();</b>
+<b class="nc">&nbsp;        this.playerName = controller.getClient().getPlayerName();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to post a message in the chat,
+&nbsp;     * it is called by the server when a new message is received
+&nbsp;     * @param sender the sender of the message
+&nbsp;     * @param message the message
+&nbsp;     */
+&nbsp;    public void postChatMessage(String sender, String message){
+<b class="nc">&nbsp;        lobbyChat.appendText(sender + &quot;: &quot; + message + &quot;\n&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to refresh the chat, it is called by the server
+&nbsp;     * @param chat Chat object containing all the messages
+&nbsp;     */
+&nbsp;    public void refreshChat(Chat chat) {
+<b class="nc">&nbsp;        lobbyChat.clear();</b>
+<b class="nc">&nbsp;        for (ChatMessage cm : chat.getAllMessages())</b>
+<b class="nc">&nbsp;            postChatMessage(cm.getSender(), cm.getMessage());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * the admin can click the start button and start the match
+&nbsp;     * @throws LobbyException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void startMatch() throws LobbyException {
+<b class="nc">&nbsp;        Stage stage = (Stage) vbox.getScene().getWindow();</b>
+<b class="nc">&nbsp;        if(server.isLobbyAdmin(playerName)) {</b>
+<b class="nc">&nbsp;            server.startGame(playerName, checkBox.isSelected());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * button method that can be used to send messages and post them to the chat
+&nbsp;     * @throws LobbyException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void sendMessage() throws LobbyException {
+<b class="nc">&nbsp;        if(message.getText().equals(&quot;&quot;)){</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;Insert a message&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        if(!InputSanitizer.isValidMessage(message.getText())){</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;Illegal characters in message&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        controller.getServer().postToLiveChat(playerName, message.getText());</b>
+<b class="nc">&nbsp;        message.setText(&quot;&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * equals to the sendMessage() but instead of a button the user can push enter
+&nbsp;     * @param keyEvent
+&nbsp;     * @throws LobbyException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void enterSendMessage(KeyEvent keyEvent) throws LobbyException {
+<b class="nc">&nbsp;        if(keyEvent.getCode().equals(KeyCode.ENTER)) {</b>
+<b class="nc">&nbsp;            sendMessage();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * if the client is not the admin, he can&#39;t see startButton and checkBox
+&nbsp;     * @param url
+&nbsp;     * @param resourceBundle
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void initialize(URL url, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;        lobbyChat.setEditable(false);</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            if(!server.isLobbyAdmin(playerName)) {</b>
+<b class="nc">&nbsp;                startButton.setOpacity(0.0);</b>
+<b class="nc">&nbsp;                checkBox.setOpacity(0.0);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if(controller.getModel().getChat().getAllMessages().size() == 0)</b>
+&nbsp;                return;
+<b class="nc">&nbsp;            refreshChat(controller.getModel().getChat());</b>
+<b class="nc">&nbsp;        } catch (LobbyException e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

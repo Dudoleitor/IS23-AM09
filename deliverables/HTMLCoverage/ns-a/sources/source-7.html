@@ -1,0 +1,422 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerMain</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerMain (it.polimi.ingsw.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerMain</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/125)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientSocket;
+&nbsp;import it.polimi.ingsw.shared.InputSanitizer;
+&nbsp;import it.polimi.ingsw.shared.NetworkSettings;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.ServerSocket;
+&nbsp;import java.net.Socket;
+&nbsp;import java.rmi.AlreadyBoundException;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.registry.LocateRegistry;
+&nbsp;import java.rmi.registry.Registry;
+&nbsp;import java.rmi.server.UnicastRemoteObject;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;public class ServerMain implements ServerInterface, NetworkExceptionHandler {
+<b class="nc">&nbsp;    private static final int RMIport = NetworkSettings.RMIport;</b>
+<b class="nc">&nbsp;    private static final int TCPport = NetworkSettings.TCPport;</b>
+<b class="nc">&nbsp;    private static Registry registry = null;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This list contains the clients connected to the
+&nbsp;     * server that did not join a lobby yet.
+&nbsp;     */
+&nbsp;    private final List&lt;Client&gt; clientsWithoutLobby;
+&nbsp;    private final List&lt;Lobby&gt; lobbies;
+&nbsp;
+&nbsp;
+&nbsp;    /* Note: methods using the list clientsWithoutLobby need to be synchronized:
+&nbsp;    the pings sent by the thread can result in the handleNetworkException method
+&nbsp;    being called.
+&nbsp;    In addition to that, multiple clients can send requests to the server and
+&nbsp;    they must send commands one at a time. */
+&nbsp;    private final ServerPingSender pingSender;
+&nbsp;
+<b class="nc">&nbsp;    private ServerMain() {</b>
+<b class="nc">&nbsp;        clientsWithoutLobby = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        lobbies = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.pingSender = new ServerPingSender(this);</b>
+<b class="nc">&nbsp;        pingSender.start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public synchronized List&lt;Client&gt; getClientsWithoutLobby() {
+<b class="nc">&nbsp;        return new ArrayList&lt;&gt;(clientsWithoutLobby);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void startServer(){ //in the main it initializes the serverTCP and the Remote stub
+<b class="nc">&nbsp;        ServerMain server = new ServerMain();</b>
+&nbsp;
+<b class="nc">&nbsp;        RMIIni(server); //creates server stub and the registry to get it</b>
+<b class="nc">&nbsp;        System.out.println(&quot;Server is on&quot;);</b>
+<b class="nc">&nbsp;        SocketIni(server);</b>
+&nbsp;        while (true) {
+<b class="nc">&nbsp;            Thread.onSpinWait(); //is used to suspend the process and make it wait</b>
+&nbsp;        } //to keep it online
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to create the Server stub
+&nbsp;     * @param server is the object used to create the stub
+&nbsp;     */
+&nbsp;
+&nbsp;    private static void RMIIni(ServerMain server){
+&nbsp;        ServerInterface stub;
+&nbsp;        try {
+<b class="nc">&nbsp;            stub = (ServerInterface) UnicastRemoteObject.exportObject(server, RMIport); //create an interface to export</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            registry = LocateRegistry.createRegistry(RMIport); //create a registry that accepts request on a defined port</b>
+<b class="nc">&nbsp;            registry.bind(&quot;interface&quot;, stub); //Binds a remote reference to the specified name in this registry</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        } catch (AlreadyBoundException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Interface already bound.&quot; + e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private static void SocketIni(ServerMain server){
+&nbsp;        try {
+<b class="nc">&nbsp;            ServerSocket serverSocket = new ServerSocket(TCPport);</b>
+&nbsp;            while(true) {
+<b class="nc">&nbsp;                Socket client = serverSocket.accept();</b>
+<b class="nc">&nbsp;                ClientSocket clientSocket = new ClientSocket();</b>
+<b class="nc">&nbsp;                clientSocket.setClientSocket(client);</b>
+<b class="nc">&nbsp;                new ServerTcpThread(server, clientSocket).start();</b>
+&nbsp;
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     *
+&nbsp;     * @param client is ths object used as interface
+&nbsp;     * @return true is login is successful
+&nbsp;     * @throws RemoteException is there are problems with connection
+&nbsp;     */
+&nbsp;    public synchronized boolean login(Client client) throws RemoteException {
+<b class="nc">&nbsp;        synchronized (client) {</b>
+<b class="nc">&nbsp;            final String playerName = client.getPlayerName().toLowerCase();</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!InputSanitizer.isValidName(playerName))</b>
+<b class="nc">&nbsp;                return false;</b>
+&nbsp;
+<b class="nc">&nbsp;            if (clientsWithoutLobby.stream()</b>
+<b class="nc">&nbsp;                    .anyMatch(x -&gt;</b>
+<b class="nc">&nbsp;                            x.getPlayerName().toLowerCase().equals(playerName))) {</b>
+<b class="nc">&nbsp;                return false;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            for (Lobby l : lobbies) {</b>
+<b class="nc">&nbsp;                if (l.getPlayerNames().stream()</b>
+<b class="nc">&nbsp;                        .anyMatch(x -&gt;</b>
+<b class="nc">&nbsp;                                x.toLowerCase().equals(playerName))) {</b>
+<b class="nc">&nbsp;                    return false;</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            clientsWithoutLobby.add(client);</b>
+<b class="nc">&nbsp;            client.setExceptionHandler(this);</b>
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName() + &quot; has just logged in&quot;);</b>
+<b class="nc">&nbsp;            client.postChatMessage(&quot;Server&quot;, &quot;You joined the server&quot;);</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to close empty lobbies and lobbies where
+&nbsp;     * the match is terminated.
+&nbsp;     */
+&nbsp;    private synchronized void cleanupLobbies() {
+<b class="nc">&nbsp;        lobbies.removeIf(x -&gt; x.getPlayerNames().isEmpty());</b>
+<b class="nc">&nbsp;        lobbies.removeIf(Lobby::isTerminated);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *
+&nbsp;     * @param nick is the player name
+&nbsp;     * @return list of lobby id of matches joined by the player
+&nbsp;     */
+&nbsp;    public synchronized int getJoinedLobby(String nick){
+&nbsp;        int lobby;//get lobby already joined by the client
+<b class="nc">&nbsp;                lobby = lobbies.stream()</b>
+<b class="nc">&nbsp;                        .filter(x -&gt; x.getPlayerNames().contains(nick))</b>
+<b class="nc">&nbsp;                        .map(Lobby::getID)</b>
+<b class="nc">&nbsp;                        .findFirst().orElse(-1);</b>
+<b class="nc">&nbsp;        return lobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param client requesting to join the lobby
+&nbsp;     * @return id of assigned lobby
+&nbsp;     */
+&nbsp;    public synchronized ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException {
+<b class="nc">&nbsp;        cleanupLobbies();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!clientsWithoutLobby.contains(client))</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Client is not in the list of clients without lobby&quot;);</b>
+&nbsp;
+&nbsp;        ServerLobbyInterface lobbyInterface;
+<b class="nc">&nbsp;        int alreadyJoined = getJoinedLobby(client.getPlayerName());</b>
+<b class="nc">&nbsp;        if(alreadyJoined &gt; 0){</b>
+<b class="nc">&nbsp;            lobbyInterface = joinSelectedLobby(client,alreadyJoined);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            Lobby lobby = lobbies.stream()</b>
+<b class="nc">&nbsp;                    .filter(l -&gt; !l.isFull() &amp;&amp; !l.matchHasStarted()) //keep only not full lobbies</b>
+<b class="nc">&nbsp;                    .findFirst() //find first lobby matched</b>
+<b class="nc">&nbsp;                    .orElse(null);</b>
+<b class="nc">&nbsp;            if (lobby != null) { //if a lobby exists then add player</b>
+<b class="nc">&nbsp;                lobby.addPlayer(client); //if exists then add player</b>
+<b class="nc">&nbsp;                clientsWithoutLobby.remove(client);</b>
+<b class="nc">&nbsp;                lobbyInterface = lobby;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                lobbyInterface = createLobby(client); //otherwise creates new lobby</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        try {
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName() + &quot; has just joined lobby &quot; + lobbyInterface.getID());</b>
+<b class="nc">&nbsp;        } catch (RemoteException ignored) {</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return lobbyInterface;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param client requesting to join the lobby
+&nbsp;     */
+&nbsp;    public synchronized ServerLobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException {
+<b class="nc">&nbsp;        if (!clientsWithoutLobby.contains(client))</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Client is not in the list of clients without lobby&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        Lobby lobby = lobbies.stream()</b>
+<b class="nc">&nbsp;                .filter(x -&gt; x.getID() == id)  //verify lobby exists and is not full</b>
+<b class="nc">&nbsp;                .findFirst().orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(lobby == null)</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Lobby does not exist&quot;);</b>
+&nbsp;
+&nbsp;        //if a lobby exists then add player
+<b class="nc">&nbsp;        lobby.addPlayer(client); //if exists then add player</b>
+<b class="nc">&nbsp;        clientsWithoutLobby.remove(client);</b>
+<b class="nc">&nbsp;        System.out.println(client.getPlayerName() + &quot; has just joined lobby &quot; + lobby.getID());</b>
+<b class="nc">&nbsp;        return lobby;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * @param client requesting to create the lobby
+&nbsp;     */
+&nbsp;    public synchronized ServerLobbyInterface createLobby(Client client) throws RemoteException {
+<b class="nc">&nbsp;        if (!clientsWithoutLobby.contains(client))</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Client is not in the list of clients without lobby&quot;);</b>
+&nbsp;
+&nbsp;        int minFreeKey;
+<b class="nc">&nbsp;        List&lt;Integer&gt; lobbyIDs= lobbies.stream()</b>
+<b class="nc">&nbsp;                .map(Lobby::getID)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList()); // returns list of active lobby ids</b>
+<b class="nc">&nbsp;        if(lobbyIDs.contains(1)) { //check if first lobby position is free</b>
+<b class="nc">&nbsp;            minFreeKey = lobbyIDs.stream()</b>
+<b class="nc">&nbsp;                    .map(x -&gt; x + 1) //look ahead of one position to each lobby</b>
+<b class="nc">&nbsp;                    .filter(x -&gt; !lobbyIDs.contains(x)) //remove all IDs already assigned to a lobby -&gt; to prevent subsequent IDs problems</b>
+<b class="nc">&nbsp;                    .min(Integer::compareTo).orElse(1);//find the lowest key number available</b>
+&nbsp;        } else
+<b class="nc">&nbsp;            minFreeKey = 1;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            Lobby lobby = new Lobby(client, minFreeKey); //creates new lobby</b>
+&nbsp;
+<b class="nc">&nbsp;            lobbies.add(lobby);</b>
+<b class="nc">&nbsp;            clientsWithoutLobby.remove(client);</b>
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName() + &quot; created a new lobby with id &quot; + minFreeKey);</b>
+<b class="nc">&nbsp;            return lobby;</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is used locally</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public synchronized Map&lt;Integer, Integer&gt; showAvailableLobbies() throws RemoteException {
+<b class="nc">&nbsp;        cleanupLobbies();</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;Integer, Integer&gt; lobbyMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        lobbies.stream()</b>
+<b class="nc">&nbsp;                .filter(x -&gt; !x.isFull() &amp;&amp; !x.matchHasStarted())</b>
+<b class="nc">&nbsp;                .forEach(x -&gt; lobbyMap.put(x.getID(), x.getClients().size())); //add id lobby + num of players currently in</b>
+<b class="nc">&nbsp;        return lobbyMap;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to handle network exceptions thrown by RMI or the socket.
+&nbsp;     *
+&nbsp;     * @param client Client object
+&nbsp;     * @param e      Exception thrown
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void handleNetworkException(Client client, Exception e) {
+<b class="nc">&nbsp;        System.err.println(&quot;Exception thrown (in server main) while trying to reach client &quot; + client.getPlayerName() + &quot;: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;        if(!disconnectClient(client))</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Called handleNetworkException on client &quot; + client.getPlayerName() + &quot; that is not in the list of clients without lobby&quot;);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public synchronized boolean disconnectClient(Client client){
+&nbsp;        boolean result;
+<b class="nc">&nbsp;        client.disconnect();</b>
+<b class="nc">&nbsp;        result = clientsWithoutLobby.remove(client);</b>
+<b class="nc">&nbsp;        if(result)</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Disconnected client &quot; + client.getPlayerName());</b>
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to check if the client was already connected to
+&nbsp;     * the specified lobby and was previously disconnected.
+&nbsp;     * @param playerName String name of the player
+&nbsp;     * @return Int id of the lobby if the player was previously connected,
+&nbsp;     * -1 if not.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized int disconnectedFromLobby(String playerName) {
+<b class="nc">&nbsp;        cleanupLobbies();</b>
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;Lobby&gt; lobbyOpt = lobbies.stream().filter(x-&gt; x.getDisconnectedClients().contains(playerName.toLowerCase())).findFirst();</b>
+<b class="nc">&nbsp;        return lobbyOpt.map(Lobby::getID).orElse(-1);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class ServerPingSender extends Thread {
+&nbsp;
+&nbsp;    private final ServerMain server;  // Needed for proper synchronization
+&nbsp;
+&nbsp;    public ServerPingSender(ServerMain server) {
+&nbsp;        this.server = server;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This Runnable is used to ping clients, if a client is not available
+&nbsp;     * an exception is thrown and the exception handles kicks in.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        while(true) {
+&nbsp;            synchronized (server) {
+&nbsp;                for (Client c : server.getClientsWithoutLobby())
+&nbsp;                    c.ping();
+&nbsp;            }
+&nbsp;            try {
+&nbsp;                Thread.sleep(NetworkSettings.serverPingIntervalSeconds * 1000);
+&nbsp;            } catch (InterruptedException ignored) {
+&nbsp;                return;
+&nbsp;            }
+&nbsp;        }
+&nbsp;    };
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

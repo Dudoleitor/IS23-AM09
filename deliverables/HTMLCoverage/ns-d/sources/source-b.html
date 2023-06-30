@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PartialMove</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.model</a>
+</div>
+
+<h1>Coverage Summary for Class: PartialMove (it.polimi.ingsw.shared.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PartialMove</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55.6%
+  </span>
+  <span class="absValue">
+    (5/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40.6%
+  </span>
+  <span class="absValue">
+    (13/32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.model;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.Jsonable;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class PartialMove implements Jsonable {
+&nbsp;    protected List&lt;Position&gt; positions;
+<b class="fc">&nbsp;    private final int maxNumMoves = 3;</b>
+&nbsp;    public List&lt;Position&gt; getBoardPositions(){
+<b class="fc">&nbsp;        return new ArrayList&lt;&gt;(positions);</b>
+&nbsp;    }
+&nbsp;    public void addPosition(Position pos) throws InvalidMoveException {
+<b class="fc">&nbsp;        if(pos == null){</b>
+<b class="fc">&nbsp;            throw new InvalidMoveException(&quot;Error while adding position : Pointer was Null&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        positions.add(pos);</b>
+&nbsp;    }
+<b class="fc">&nbsp;    public PartialMove(PartialMove to_clone) throws PartialMoveException { //cloning constructor</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            positions = new ArrayList&lt;&gt;(to_clone.getBoardPositions());</b>
+<b class="fc">&nbsp;        } catch (NullPointerException e){</b>
+<b class="fc">&nbsp;            throw new PartialMoveException(&quot;Error while cloning PartialMove  : to_clone is null pointer&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public PartialMove(){ //default constructor</b>
+<b class="fc">&nbsp;        positions = new ArrayList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public PartialMove(JSONObject jsonMove){</b>
+<b class="nc">&nbsp;        JSONArray posArray = (JSONArray) jsonMove.get(&quot;posArray&quot;);</b>
+<b class="nc">&nbsp;        positions = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Object p : posArray){</b>
+<b class="nc">&nbsp;            positions.add(new Position((JSONObject) p));</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;    public int getMaxNumMoves() {
+<b class="fc">&nbsp;        return maxNumMoves;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int size(){
+<b class="nc">&nbsp;        return positions.size();</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public String toString(){
+<b class="nc">&nbsp;        String s = &quot;Positions:\n&quot;;</b>
+<b class="nc">&nbsp;        for(Position p : positions){</b>
+<b class="nc">&nbsp;            s = s.concat(p+&quot;\n&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return s;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public JSONObject toJson() {
+<b class="nc">&nbsp;        JSONObject jsonMove = new JSONObject();  // Object to return</b>
+<b class="nc">&nbsp;        JSONArray jsonPositions = new JSONArray();</b>
+&nbsp;        // Saving parameters
+<b class="nc">&nbsp;        for(Position p : positions){</b>
+<b class="nc">&nbsp;            jsonPositions.add(p.toJson());</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        jsonMove.put(&quot;posArray&quot;,jsonPositions);</b>
+&nbsp;
+<b class="nc">&nbsp;        return jsonMove;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

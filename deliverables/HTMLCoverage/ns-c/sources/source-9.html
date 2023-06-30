@@ -1,0 +1,267 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Jsonable</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared</a>
+</div>
+
+<h1>Coverage Summary for Class: Jsonable (it.polimi.ingsw.shared)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Jsonable</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    27.3%
+  </span>
+  <span class="absValue">
+    (3/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20.3%
+  </span>
+  <span class="absValue">
+    (13/64)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared;
+&nbsp;
+&nbsp;import it.polimi.ingsw.shared.model.PlayerGoal;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;import org.json.simple.parser.JSONParser;
+&nbsp;import org.json.simple.parser.ParseException;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public interface Jsonable {
+&nbsp;    JSONObject toJson();
+&nbsp;    /**
+&nbsp;     * This static method returns the JSONObject from a json file,
+&nbsp;     * it uses the &quot;board&quot; attribute.
+&nbsp;     * @param jsonPath path to the json file
+&nbsp;     * @return JSONObject with the content
+&nbsp;     */
+&nbsp;    static JSONObject pathToJsonObject(String jsonPath, Class&lt;?&gt; cls) throws JsonBadParsingException{
+<b class="fc">&nbsp;        JSONParser jsonParser = new JSONParser(); //initialize parser</b>
+<b class="fc">&nbsp;        try(</b>
+<b class="fc">&nbsp;                InputStream stream = Jsonable.class.getClassLoader().getResourceAsStream(jsonPath)</b>
+&nbsp;                ) {
+<b class="fc">&nbsp;            if(stream==null)</b>
+<b class="fc">&nbsp;                throw new JsonBadParsingException(&quot;Error while generating &quot; + parseClassName1UC(cls) + &quot; from JSON : file was not found&quot;);</b>
+<b class="fc">&nbsp;            Reader reader = new InputStreamReader(stream);</b>
+<b class="fc">&nbsp;            Object obj = jsonParser.parse(reader); //acquire JSON object file</b>
+<b class="fc">&nbsp;            return (JSONObject) ((JSONObject) obj).get(parseClassName(cls)); //acquire board object</b>
+<b class="fc">&nbsp;        } catch (IOException | NullPointerException e){</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while generating &quot; + parseClassName1UC(cls) + &quot; from JSON : file was not found&quot;);</b>
+<b class="nc">&nbsp;        } catch (ParseException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while generating &quot; + parseClassName1UC(cls) + &quot; from JSON : bad json parsing&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    private static String parseClassName(Class&lt;?&gt; cls) {
+&nbsp;        try {
+<b class="fc">&nbsp;            String[] subStrings = cls.toString().split(&quot;\\.&quot;);</b>
+<b class="fc">&nbsp;            return subStrings[subStrings.length - 1].toLowerCase();</b>
+<b class="nc">&nbsp;        } catch (NullPointerException e){</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    private static String parseClassName1UC(Class&lt;?&gt; cls){
+<b class="fc">&nbsp;        String str  =parseClassName(cls);</b>
+<b class="fc">&nbsp;        return str.substring(0, 1).toUpperCase() + str.substring(1);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Transform a String representing a JsonObject to the object
+&nbsp;     * @param string is the input to parse
+&nbsp;     * @return JsonObject corresponding to the String format
+&nbsp;     */
+&nbsp;    static JSONObject parseString(String string) throws ParseException {
+<b class="nc">&nbsp;        if (string == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        JSONParser parser = new JSONParser();</b>
+&nbsp;        JSONObject jsonObj;
+<b class="nc">&nbsp;        jsonObj = (JSONObject) parser.parse(string);</b>
+<b class="nc">&nbsp;        return jsonObj;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * transform a map to a jsonString
+&nbsp;     * @param map is the boolean
+&nbsp;     * @return JsonObject that corresponds to that boolean
+&nbsp;     */
+&nbsp;    static JSONObject map2json(Map&lt;?,?&gt; map) {
+<b class="nc">&nbsp;        JSONObject jsonMap = new JSONObject();</b>
+<b class="nc">&nbsp;        jsonMap.putAll(map);</b>
+&nbsp;
+<b class="nc">&nbsp;        return jsonMap;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * transform a jsonString to a map Integer - Integer
+&nbsp;     * @param jsonMap is the string of JsonObject
+&nbsp;     * @return a boolean corresponding to the Object
+&nbsp;     */
+&nbsp;    static Map&lt;Integer,Integer&gt; json2mapInt (JSONObject jsonMap){
+<b class="nc">&nbsp;        if (jsonMap == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        Map&lt;Integer,Integer&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Object k : jsonMap.keySet()){</b>
+<b class="nc">&nbsp;            map.put(Integer.parseInt(k.toString()),</b>
+<b class="nc">&nbsp;                    Integer.parseInt(jsonMap.get(k).toString()));</b>
+&nbsp;
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return map;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * transform a jsonString to a map Integer - Integer&gt;
+&nbsp;     * @param jsonMap is the string of JsonObject
+&nbsp;     * @return a boolean corresponding to the Object
+&nbsp;     */
+&nbsp;    static Map&lt;String,Integer&gt; json2mapStringInt (JSONObject jsonMap){
+<b class="nc">&nbsp;        if (jsonMap == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        Map&lt;String,Integer&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Object k : jsonMap.keySet()){</b>
+<b class="nc">&nbsp;            map.put(k.toString(),</b>
+<b class="nc">&nbsp;                    Integer.parseInt(jsonMap.get(k).toString()));</b>
+&nbsp;
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return map;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * transform a list to a jsonString
+&nbsp;     * @param list is the boolean
+&nbsp;     * @return JsonObject that corresponds to that boolean
+&nbsp;     */
+&nbsp;    static JSONArray list2json(List&lt;?&gt; list) {
+<b class="nc">&nbsp;        JSONArray jsonArray = new JSONArray();</b>
+<b class="nc">&nbsp;        jsonArray.addAll(list);</b>
+&nbsp;
+<b class="nc">&nbsp;        return jsonArray;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * transform a jsonString to a List of Integers
+&nbsp;     * @param jsonList is the string of JsonObject
+&nbsp;     * @return a boolean corresponding to the Object
+&nbsp;     */
+&nbsp;    static List&lt;Integer&gt; json2listInt (JSONArray jsonList){
+<b class="nc">&nbsp;        if (jsonList == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Object l : jsonList){</b>
+<b class="nc">&nbsp;            list.add(Integer.parseInt(l.toString()));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return list;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * transform a jsonString to a List of PlayerWithPoints
+&nbsp;     * @param jsonList is the string of JsonObject
+&nbsp;     * @return a boolean corresponding to the Object
+&nbsp;     */
+&nbsp;    static List&lt;PlayerWithPoints&gt; json2Leaderboard (JSONArray jsonList){
+<b class="nc">&nbsp;        if (jsonList == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        List&lt;PlayerWithPoints&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Object l : jsonList){</b>
+<b class="nc">&nbsp;            list.add(new PlayerWithPoints((JSONObject) l));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return list;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * transform a list to a jsonString
+&nbsp;     * @param list is the boolean
+&nbsp;     * @return JsonObject that corresponds to that boolean
+&nbsp;     */
+&nbsp;    static JSONArray leaderboard2json(List&lt;PlayerWithPoints&gt; list) {
+<b class="nc">&nbsp;        JSONArray jsonArray = new JSONArray();</b>
+<b class="nc">&nbsp;        for(PlayerWithPoints p : list) {</b>
+<b class="nc">&nbsp;            jsonArray.add(p.toJson());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        return jsonArray;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

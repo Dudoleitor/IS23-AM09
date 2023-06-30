@@ -1,0 +1,92 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerInterface</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.RemoteInterfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerInterface (it.polimi.ingsw.shared.RemoteInterfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ServerInterface</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.RemoteInterfaces;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientRMI;
+&nbsp;
+&nbsp;import java.rmi.Remote;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used to expose methods related to pre-lobby-join
+&nbsp; * operations, it resides on the server.
+&nbsp; * Methods are invoked using RMI by RMI clients, proper
+&nbsp; * adapters invoke methods when using TCP.
+&nbsp; */
+&nbsp;public interface ServerInterface extends Remote {
+&nbsp;    boolean login(Client client) throws RemoteException;
+&nbsp;    ServerLobbyInterface joinRandomLobby(Client client) throws RemoteException;
+&nbsp;    int getJoinedLobby(String nick) throws RemoteException;
+&nbsp;    ServerLobbyInterface createLobby(Client client) throws RemoteException;
+&nbsp;    Map&lt;Integer,Integer&gt; showAvailableLobbies() throws RemoteException;
+&nbsp;    ServerLobbyInterface joinSelectedLobby(Client client, int id) throws RemoteException;
+&nbsp;    int disconnectedFromLobby(String playerName) throws RemoteException;
+&nbsp;    boolean disconnectClient(Client client) throws RemoteException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

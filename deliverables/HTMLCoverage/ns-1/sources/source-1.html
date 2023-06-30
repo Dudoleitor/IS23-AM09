@@ -1,0 +1,532 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > OptionsParameters</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw</a>
+</div>
+
+<h1>Coverage Summary for Class: OptionsParameters (it.polimi.ingsw)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OptionsParameters</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.Client_Settings;
+&nbsp;import it.polimi.ingsw.client.controller.ClientController;
+&nbsp;import it.polimi.ingsw.client.controller.ClientControllerDriver;
+&nbsp;import it.polimi.ingsw.client.controller.cli.ClientControllerCLI;
+&nbsp;import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+&nbsp;import it.polimi.ingsw.server.ServerMain;
+&nbsp;import it.polimi.ingsw.shared.Color;
+&nbsp;import it.polimi.ingsw.shared.IpAddressV4;
+&nbsp;import it.polimi.ingsw.shared.NetworkSettings;
+&nbsp;import org.apache.commons.cli.*;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.InetSocketAddress;
+&nbsp;import java.net.ServerSocket;
+&nbsp;import java.net.Socket;
+&nbsp;import java.rmi.server.RMISocketFactory;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Properties;
+&nbsp;import java.util.Scanner;
+&nbsp;
+&nbsp;import static it.polimi.ingsw.OptionsParameters.*;
+&nbsp;import static it.polimi.ingsw.client.Client_Settings.*;
+&nbsp;import static it.polimi.ingsw.client.Client_Settings.Connection.RMI;
+&nbsp;import static it.polimi.ingsw.client.Client_Settings.Connection.TCP;
+&nbsp;import static it.polimi.ingsw.client.Client_Settings.UI.CLI;
+&nbsp;import static it.polimi.ingsw.client.Client_Settings.UI.GUI;
+&nbsp;
+&nbsp;
+&nbsp;public class main {
+&nbsp;    static private Options options;
+&nbsp;    static private CommandLine commandLine;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set options to Apache CLI starting from the OptionsParameters enum entries
+&nbsp;     */
+&nbsp;    static private void initOptions(){
+&nbsp;        options = new Options();
+&nbsp;        Arrays.stream(OptionsParameters.values())
+&nbsp;                .forEach(opt -&gt; options.addOption(Option.builder()
+&nbsp;                        .longOpt(opt.getName())
+&nbsp;                        .hasArg(opt.hasParam())
+&nbsp;                        .desc(opt.getDescription())
+&nbsp;                        .build()));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set RMI options
+&nbsp;     */
+&nbsp;    private static void setSystemProps(){
+&nbsp;        final String timeout = String.valueOf(NetworkSettings.WaitingTimeMillis);
+&nbsp;        final Properties properties = System.getProperties();
+&nbsp;        properties.setProperty(&quot;sun.rmi.transport.connectionTimeout&quot;, timeout);
+&nbsp;        properties.setProperty(&quot;sun.rmi.transport.tcp.handshakeTimeout&quot;, timeout);
+&nbsp;        properties.setProperty(&quot;sun.rmi.transport.tcp.responseTimeout&quot;, timeout);
+&nbsp;        properties.setProperty(&quot;sun.rmi.transport.tcp.readTimeout&quot;, timeout);
+&nbsp;        properties.setProperty(&quot;sun.rmi.transport.proxy.connectTimeout&quot;, timeout);
+&nbsp;
+&nbsp;        try {
+&nbsp;            RMISocketFactory.setSocketFactory(new SocketFactory());
+&nbsp;        } catch (IOException e) {
+&nbsp;            throw new RuntimeException(e);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask the user between two mutually exclusive options
+&nbsp;     * @param a
+&nbsp;     * @param b
+&nbsp;     */
+&nbsp;    private static void chooseBetween(OptionsParameters a, OptionsParameters b){
+&nbsp;        System.out.println(messageFormat(&quot;Select &quot;+a.getName()+&quot; or &quot;+b.getName()));
+&nbsp;        String response = scan();
+&nbsp;        if(a.getName().equals(response.toLowerCase())){
+&nbsp;            a.set();
+&nbsp;        }
+&nbsp;        else if(b.getName().equals(response.toLowerCase())){
+&nbsp;            b.set();
+&nbsp;        }
+&nbsp;        else{
+&nbsp;            System.out.println(errorFormat(&quot;Please choose &quot;+a.getName()+&quot; or &quot;+b.getName()));
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set the View option for client
+&nbsp;     * @param cs
+&nbsp;     */
+&nbsp;    private static void setClientView(Client_Settings cs){
+&nbsp;        while(!(Cli.isSet() || Gui.isSet())){
+&nbsp;            chooseBetween(Cli,Gui);
+&nbsp;        }
+&nbsp;        if (Cli.isSet()) {
+&nbsp;            System.out.println(messageFormat(&quot;Starting client with CLI&quot;));
+&nbsp;            cs.setUI(CLI);
+&nbsp;        } else if (Gui.isSet()){
+&nbsp;            System.out.println(messageFormat(&quot;Starting client with GUI&quot;));
+&nbsp;            cs.setUI(GUI);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to set the local IP on the client,
+&nbsp;     * it&#39;s needed because RMI sometimes doesn&#39;t get the right IP.
+&nbsp;     */
+&nbsp;    private static void setClientRMILocalIP() {
+&nbsp;        final String rmiLocalIpString = System.getenv(&quot;RMI_LOCAL_IP&quot;);
+&nbsp;        if (rmiLocalIpString != null) {
+&nbsp;            final IpAddressV4 rmiLocalIp;
+&nbsp;            try {
+&nbsp;                rmiLocalIp = new IpAddressV4(rmiLocalIpString);
+&nbsp;                final Properties properties = System.getProperties();
+&nbsp;                properties.setProperty(&quot;java.rmi.server.hostname&quot;, rmiLocalIp.toString());
+&nbsp;                System.out.println(&quot;RMI local IP set to &quot; + properties.get(&quot;java.rmi.server.hostname&quot;));
+&nbsp;            } catch (ParseException ignored) {
+&nbsp;                System.out.println(&quot;RMI local IP invalid, ignoring&quot;);
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set the connection option for Client
+&nbsp;     * @param cs
+&nbsp;     */
+&nbsp;    private static void setClientConnection(Client_Settings cs){
+&nbsp;        setServerIp();
+&nbsp;        while(!(Tcp.isSet() || Rmi.isSet())){
+&nbsp;            chooseBetween(Tcp,Rmi);
+&nbsp;        }
+&nbsp;        if (Tcp.isSet()) {
+&nbsp;            System.out.println(messageFormat(&quot;Connecting Client via TCP&quot;));
+&nbsp;            cs.setConnection(TCP);
+&nbsp;            setPort(Tcp);
+&nbsp;
+&nbsp;        } else if (Rmi.isSet()) {
+&nbsp;            setClientRMILocalIP();
+&nbsp;            System.out.println(messageFormat(&quot;Connecting Client via RMI&quot;));
+&nbsp;            cs.setConnection(RMI);
+&nbsp;            setPort(Rmi);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set Ip and Ports for Server
+&nbsp;     */
+&nbsp;    private static void setServerConnection(){
+&nbsp;        setServerIp();
+&nbsp;        setPort(Tcp);
+&nbsp;        setPort(Rmi);
+&nbsp;
+&nbsp;        System.getProperties().setProperty(&quot;java.rmi.server.hostname&quot;, NetworkSettings.serverIp.toString());
+&nbsp;        System.out.println(&quot;RMI local IP set to &quot; + System.getProperties().get(&quot;java.rmi.server.hostname&quot;));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Check if the integer is a valid port
+&nbsp;     * @param port
+&nbsp;     * @return true is a valid port
+&nbsp;     */
+&nbsp;    private static boolean isValidPort(int port){
+&nbsp;        return port &lt; 65535 &amp;&amp; port &gt; 1024;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask the user for a port
+&nbsp;     * @param opt
+&nbsp;     * @return the port int
+&nbsp;     */
+&nbsp;    private static int askPort(OptionsParameters opt){
+&nbsp;        boolean isValid = false;
+&nbsp;        int port = 0;
+&nbsp;        while(!isValid){
+&nbsp;            System.out.println(messageFormat(&quot;Select a port for &quot;+opt.getName()));
+&nbsp;            String resp = scan();
+&nbsp;            try{
+&nbsp;                port = Integer.parseInt(resp);
+&nbsp;                if(isValidPort(port)){
+&nbsp;                    opt.set();
+&nbsp;                    isValid = true;
+&nbsp;                }
+&nbsp;                else{
+&nbsp;                    System.out.println(errorFormat(&quot;Insert a valid port&quot;));
+&nbsp;                }
+&nbsp;            }
+&nbsp;            catch (Exception e){
+&nbsp;                System.out.println(errorFormat(&quot;Insert a valid port&quot;));
+&nbsp;            }
+&nbsp;        }
+&nbsp;        return port;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set a port option
+&nbsp;     * @param opt
+&nbsp;     */
+&nbsp;    private static void setPort(OptionsParameters opt){
+&nbsp;        int port = 0;
+&nbsp;        if(commandLine.hasOption(opt.getName())){
+&nbsp;            try{
+&nbsp;                port = Integer.parseInt(commandLine.getOptionValue(opt.getName()));
+&nbsp;                if(!isValidPort(port)){
+&nbsp;                    port = askPort(opt);
+&nbsp;                    opt.set();
+&nbsp;                }
+&nbsp;                else{
+&nbsp;                    opt.set();
+&nbsp;                }
+&nbsp;            }
+&nbsp;            catch (Exception e){
+&nbsp;                opt.reset();
+&nbsp;            }
+&nbsp;        }
+&nbsp;        else{
+&nbsp;            port = askPort(opt);
+&nbsp;            opt.set();
+&nbsp;        }
+&nbsp;
+&nbsp;        System.out.println(messageFormat(opt.getName()+&quot; port set to &quot;+port));
+&nbsp;
+&nbsp;        switch (opt){
+&nbsp;            case Rmi:
+&nbsp;                NetworkSettings.RMIport = port;
+&nbsp;                break;
+&nbsp;            case Tcp:
+&nbsp;                NetworkSettings.TCPport = port;
+&nbsp;                break;
+&nbsp;            default:
+&nbsp;                //do nothing
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set the server ip
+&nbsp;     */
+&nbsp;    private static void setServerIp(){
+&nbsp;        String ipStr = &quot;&quot;;
+&nbsp;        IpAddressV4 ip = null;
+&nbsp;        if(Ip.isSet()){
+&nbsp;            try{
+&nbsp;                ipStr = commandLine.getOptionValue(&quot;ip&quot;);
+&nbsp;                ip = new IpAddressV4(ipStr);
+&nbsp;            } catch (ParseException e) {
+&nbsp;                Ip.reset();
+&nbsp;            }
+&nbsp;        }
+&nbsp;        if(!Ip.isSet()) {
+&nbsp;            ip = askIP();
+&nbsp;        }
+&nbsp;        Ip.set();
+&nbsp;        NetworkSettings.serverIp = ip;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * ask the client for an Ip address
+&nbsp;     * @return the ip address
+&nbsp;     */
+&nbsp;    private static IpAddressV4 askIP(){
+&nbsp;        boolean set = false;
+&nbsp;        IpAddressV4 res = null;
+&nbsp;        while(!set){
+&nbsp;            System.out.println(messageFormat(&quot;Insert the server IP address&quot;));
+&nbsp;            String resp = scan();
+&nbsp;            try{
+&nbsp;                set = true;
+&nbsp;                res = new IpAddressV4(resp);
+&nbsp;            } catch (ParseException e) {
+&nbsp;                set = false;
+&nbsp;                System.out.println(errorFormat(&quot;invalid IP&quot;));
+&nbsp;            }
+&nbsp;        }
+&nbsp;        return res;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * start clint according to settings
+&nbsp;     */
+&nbsp;    private static void startClient(){
+&nbsp;        final ClientController controller;
+&nbsp;        switch (Client_Settings.ui) {
+&nbsp;            case CLI:
+&nbsp;                controller = new ClientControllerCLI();
+&nbsp;                break;
+&nbsp;            case GUI:
+&nbsp;                controller = new ClientControllerGUI();
+&nbsp;                break;
+&nbsp;            default:
+&nbsp;                controller = new ClientControllerDriver();
+&nbsp;                break;
+&nbsp;        }
+&nbsp;        controller.startClient();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * start the server according to settings
+&nbsp;     */
+&nbsp;    private static void startServer(){
+&nbsp;        System.out.println(&quot;Starting server&quot;);
+&nbsp;        ServerMain.startServer();
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public static void main(String[] args) {
+&nbsp;        setSystemProps();
+&nbsp;        initOptions();
+&nbsp;
+&nbsp;        try {
+&nbsp;            commandLine = (new DefaultParser()).parse(options, args);
+&nbsp;            checkParameters(commandLine);
+&nbsp;        } catch (ParseException e) {
+&nbsp;            System.out.println(messageFormat(&quot;Error while parsing CLI, proceed manually&quot;));
+&nbsp;        }
+&nbsp;        while(!Client.isSet() &amp;&amp; !Server.isSet()) {
+&nbsp;                chooseBetween(Client,Server);
+&nbsp;            }
+&nbsp;        if (Server.isSet()) {
+&nbsp;            setServerConnection();
+&nbsp;            startServer();
+&nbsp;            System.exit(0);
+&nbsp;        }
+&nbsp;        else if (Client.isSet()) {
+&nbsp;            Client_Settings cs = new Client_Settings();
+&nbsp;            setClientView(cs);
+&nbsp;            setClientConnection(cs);
+&nbsp;            startClient();
+&nbsp;            System.exit(0);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //UI
+&nbsp;    private static String errorFormat(String s){
+&nbsp;        return &quot;&gt;&quot;+ Color.coloredString(&quot;GAME&quot;,GAMEColor)+&quot;: &quot; + Color.coloredString(s,errorColor);
+&nbsp;    }
+&nbsp;    private static String messageFormat(String s){
+&nbsp;        return &quot;&gt;&quot;+ Color.coloredString(&quot;SETTINGS&quot;,GAMEColor)+&quot;: &quot; + Color.coloredString(s,messageColor);
+&nbsp;    }
+&nbsp;    private static void printPlaceHolder(){
+&nbsp;        System.out.print(&quot;$:&quot;);
+&nbsp;    }
+&nbsp;    private static Scanner scanner = new Scanner(System.in);
+&nbsp;    private static String scan(){
+&nbsp;        printPlaceHolder();
+&nbsp;        String command = scanner.nextLine();
+&nbsp;        return command;
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class SocketFactory extends RMISocketFactory {
+&nbsp;    private final int timeout = NetworkSettings.WaitingTimeMillis;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Socket createSocket(String host, int port) throws IOException {
+&nbsp;        Socket socket = new Socket();
+&nbsp;        socket.connect(new InetSocketAddress(host, port), timeout);
+&nbsp;        return socket;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public ServerSocket createServerSocket(int port) throws IOException {
+&nbsp;        return new ServerSocket(port);
+&nbsp;    }
+&nbsp;
+&nbsp;}
+&nbsp;
+<b class="nc">&nbsp;enum OptionsParameters{</b>
+<b class="nc">&nbsp;    Server(&quot;server&quot;,&quot;If set, the server is started&quot;,false),</b>
+<b class="nc">&nbsp;    Client(&quot;client&quot;,&quot;If set, the client is started&quot;,false),</b>
+<b class="nc">&nbsp;    Cli(&quot;cli&quot;,&quot;If set, the client will be using the CLI&quot;,false),</b>
+<b class="nc">&nbsp;    Gui(&quot;gui&quot;,&quot;If set, the client will be using the GUI&quot;,false),</b>
+<b class="nc">&nbsp;    Rmi(&quot;rmi&quot;,&quot;If set, the client will connect via RMI&quot;,true),</b>
+<b class="nc">&nbsp;    Tcp(&quot;tcp&quot;,&quot;If set, the client will connect via TCP&quot;,true),</b>
+<b class="nc">&nbsp;    Ip(&quot;ip&quot;,&quot;Set the server IP address&quot;,true);</b>
+<b class="nc">&nbsp;    OptionsParameters(String name, String description,boolean hasParam){</b>
+<b class="nc">&nbsp;        this.name = name;</b>
+<b class="nc">&nbsp;        this.description = description;</b>
+<b class="nc">&nbsp;        this.isSet = false;</b>
+<b class="nc">&nbsp;        this.hasParam = hasParam;</b>
+&nbsp;    }
+&nbsp;    private String name;
+&nbsp;    private String description;
+&nbsp;    private boolean isSet;
+&nbsp;    private boolean hasParam;
+&nbsp;
+&nbsp;    public String getName() {
+<b class="nc">&nbsp;        return name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isSet() {
+<b class="nc">&nbsp;        return isSet;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void set(){
+<b class="nc">&nbsp;        isSet = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void reset(){
+<b class="nc">&nbsp;        isSet = false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean hasParam() {
+<b class="nc">&nbsp;        return hasParam;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void checkParameters(CommandLine cl){
+<b class="nc">&nbsp;        Arrays.stream(OptionsParameters.values()).</b>
+<b class="nc">&nbsp;                filter(par -&gt; cl.hasOption(par.getName())).</b>
+<b class="nc">&nbsp;                forEach(par -&gt; par.set());</b>
+&nbsp;
+&nbsp;        //check for mutually exclusive
+<b class="nc">&nbsp;        if(Server.isSet &amp;&amp; Client.isSet){</b>
+<b class="nc">&nbsp;            Server.reset();</b>
+<b class="nc">&nbsp;            Client.reset();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if(Cli.isSet &amp;&amp; Gui.isSet){</b>
+<b class="nc">&nbsp;            Cli.reset();</b>
+<b class="nc">&nbsp;            Gui.reset();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if(!Server.isSet &amp;&amp; Rmi.isSet &amp;&amp; Tcp.isSet){</b>
+<b class="nc">&nbsp;            Rmi.reset();</b>
+<b class="nc">&nbsp;            Tcp.reset();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

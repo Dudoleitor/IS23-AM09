@@ -1,0 +1,235 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Server</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.connection</a>
+</div>
+
+<h1>Coverage Summary for Class: Server (it.polimi.ingsw.client.connection)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Server</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.connection;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.shared.IpAddressV4;
+&nbsp;import it.polimi.ingsw.shared.model.Move;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used to send updates to the server, it resides
+&nbsp; * on the client. ServerRMI and ServerTCP implement methods properly.
+&nbsp; */
+&nbsp;public abstract class Server {
+&nbsp;    IpAddressV4 ip;
+&nbsp;    int port;
+<b class="nc">&nbsp;    public Server(IpAddressV4 ip, int port){</b>
+<b class="nc">&nbsp;        this.ip = ip;</b>
+<b class="nc">&nbsp;        this.port = port;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Login the client
+&nbsp;     * @param client
+&nbsp;     * @return true if login was successful
+&nbsp;     */
+&nbsp;    public abstract boolean login(Client client) throws ServerException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Join the first available Lobby
+&nbsp;     * @param client
+&nbsp;     */
+&nbsp;    public abstract void joinRandomLobby(Client client) throws ServerException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Create a lobby on server
+&nbsp;     * @param client
+&nbsp;     */
+&nbsp;    public abstract void createLobby(Client client) throws ServerException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get all the lobbies in which the player can log
+&nbsp;     * @return a map of LobbyID - Number of Players in lobby
+&nbsp;     */
+&nbsp;    public abstract Map&lt;Integer,Integer&gt; getAvailableLobbies() throws ServerException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get all lobbies in which the client is present
+&nbsp;     *
+&nbsp;     * @param playerName playerName of client
+&nbsp;     * @return the lobbies that the player has joined
+&nbsp;     */
+&nbsp;    public abstract int getJoinedLobby(String playerName) throws ServerException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Join a specific lobby
+&nbsp;     * @param client
+&nbsp;     * @param id
+&nbsp;     */
+&nbsp;    public abstract void joinSelectedLobby(Client client, int id) throws ServerException;
+&nbsp;    /**
+&nbsp;     * Posts message to LiveChat
+&nbsp;     * @param playerName
+&nbsp;     * @param message
+&nbsp;     */
+&nbsp;    public abstract void postToLiveChat(String playerName, String message) throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Post to private chat
+&nbsp;     * @param sender
+&nbsp;     * @param receiver
+&nbsp;     * @param message
+&nbsp;     */
+&nbsp;    abstract public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Disconnect the player
+&nbsp;     * @param player
+&nbsp;     */
+&nbsp;    abstract public void quitGame(String player) throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask the server if the match has started
+&nbsp;     * @return true if started
+&nbsp;     */
+&nbsp;    abstract public boolean matchHasStarted() throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Post Move to Server
+&nbsp;     * @param player
+&nbsp;     * @param move
+&nbsp;     */
+&nbsp;    abstract public void postMove(String player, Move move) throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Start the game on Server
+&nbsp;     * @param player is the player who asked to start the game
+&nbsp;     * @param erasePreviousMatches if true, the previous match with the same players will be erased
+&nbsp;     *                             if false, the previous match with the same players will be loaded
+&nbsp;     * @return true if match has actually started (the player is the admin)
+&nbsp;     */
+&nbsp;    abstract public boolean startGame(String player, boolean erasePreviousMatches) throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ask Server if player is admin. Admin can Change if old admin disconnects
+&nbsp;     * @param player
+&nbsp;     * @return true if admin
+&nbsp;     */
+&nbsp;    abstract public boolean isLobbyAdmin(String player) throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Obtain lobby ID from server
+&nbsp;     * @return lobby id
+&nbsp;     */
+&nbsp;    abstract public int getLobbyID() throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to observe the player supposed
+&nbsp;     * to play in the current turn.
+&nbsp;     * @return String name of the player
+&nbsp;     */
+&nbsp;    abstract public String getCurrentPlayer() throws LobbyException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to check if the client was already connected to
+&nbsp;     * a lobby and was previously disconnected.
+&nbsp;     *
+&nbsp;     * @param playerName String name of the player
+&nbsp;     * @return Int id of the lobby if the player was previously connected,
+&nbsp;     * -1 if not.
+&nbsp;     */
+&nbsp;    abstract public int disconnectedFromLobby(String playerName) throws ServerException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

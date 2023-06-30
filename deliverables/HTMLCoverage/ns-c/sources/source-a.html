@@ -1,0 +1,304 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MessageTcp</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared</a>
+</div>
+
+<h1>Coverage Summary for Class: MessageTcp (it.polimi.ingsw.shared)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MessageTcp</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MessageTcp$MessageCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/37)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MessageTcp$MessageCommand$TypeMessage</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/75)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;import org.json.simple.parser.ParseException;
+&nbsp;
+&nbsp;import java.security.SecureRandom;
+&nbsp;import java.util.Base64;
+&nbsp;import java.util.Random;
+&nbsp;import javax.management.remote.JMXServerErrorException;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;
+&nbsp;public class MessageTcp {
+&nbsp;    private MessageCommand messageCommand;
+&nbsp;    private JSONObject content;
+&nbsp;    private String requestID;
+&nbsp;
+&nbsp;    public MessageTcp(){
+<b class="nc">&nbsp;        super();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates an object that parse a String corresponding to a JsonObject and expose get methods to see the command and the content of message
+&nbsp;     * @param message is the message to parse
+&nbsp;     */
+<b class="nc">&nbsp;    public MessageTcp(String message) throws ParseException {</b>
+<b class="nc">&nbsp;        JSONObject jsonMessage = Jsonable.parseString(message);</b>
+<b class="nc">&nbsp;        MessageCommand command = MessageCommand.valueOfLabel(jsonMessage.get(&quot;command&quot;).toString());</b>
+<b class="nc">&nbsp;        JSONObject content = (JSONObject) jsonMessage.get(&quot;content&quot;);</b>
+<b class="nc">&nbsp;        String requestID =  (String) jsonMessage.get(&quot;ID&quot;);</b>
+<b class="nc">&nbsp;        this.messageCommand = command;</b>
+<b class="nc">&nbsp;        this.requestID = requestID;</b>
+<b class="nc">&nbsp;        if(content != null) {</b>
+<b class="nc">&nbsp;            this.content = Jsonable.parseString(content.toString());</b>
+&nbsp;        }
+&nbsp;    }
+<b class="nc">&nbsp;    public enum MessageCommand { //this is a public enumeration of all possible commands sent over TCP</b>
+<b class="nc">&nbsp;        Login(&quot;login&quot;,TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        GetJoinedLobby(&quot;getJoined&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        JoinRandomLobby(&quot;joinRandom&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        CreateLobby(&quot;createLobby&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        GetAvailableLobbies(&quot;availableLobbies&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        JoinSelectedLobby(&quot;joinSelected&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        PostToLiveChat(&quot;postChat&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        PostSecretToLiveChat(&quot;postSecret&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        Quit(&quot;quit&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        MatchHasStarted(&quot;matchStarted&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        PostMove(&quot;move&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        StartGame(&quot;start&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        IsLobbyAdmin(&quot;isAdmin&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        GetCurrentPlayer(&quot;currentPlayer&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        DisconnectedFromLobby(&quot;disconnectedFromLobby&quot;, TypeMessage.ReplyWait),</b>
+<b class="nc">&nbsp;        PickedFromBoard(&quot;pickedTile&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        RefreshBoard(&quot;refreshBoard&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        PutIntoShelf(&quot;putShelf&quot;,TypeMessage.Update),</b>
+<b class="nc">&nbsp;        RefreshShelf(&quot;refreshShelf&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        ChatMessageUpdate(&quot;chatUpdate&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        RefreshChat(&quot;refreshChat&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        NotifyStart(&quot;notifyStart&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        UpdateTurn(&quot;updateTurn&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        RefreshCommonGoals(&quot;refreshGoals&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        SetPlayerGoal(&quot;setGoal&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        Ping(&quot;ping&quot;, TypeMessage.Update),</b>
+<b class="nc">&nbsp;        EndGame(&quot;endgame&quot;, TypeMessage.Update),</b>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;        ;
+<b class="nc">&nbsp;        public enum TypeMessage{</b>
+<b class="nc">&nbsp;            ReplyWait,</b>
+<b class="nc">&nbsp;            Update</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private final String label;
+&nbsp;        private final TypeMessage type;
+<b class="nc">&nbsp;        MessageCommand(String tag, TypeMessage type){</b>
+<b class="nc">&nbsp;            this.label = tag;</b>
+<b class="nc">&nbsp;            this.type = type;</b>
+&nbsp;        }
+&nbsp;        public static MessageCommand valueOfLabel(String label) {
+<b class="nc">&nbsp;            for (MessageCommand e : values()) {</b>
+<b class="nc">&nbsp;                if (e.label.equals(label)) {</b>
+<b class="nc">&nbsp;                    return e;</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;command not found&quot;);</b>
+&nbsp;        }
+&nbsp;        public TypeMessage typeOfCommand(){
+<b class="nc">&nbsp;            return type;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        @Override
+<b class="nc">&nbsp;        public String toString() {return label;}</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public void setRequestID(String id){
+<b class="nc">&nbsp;        this.requestID = id;</b>
+&nbsp;    }
+&nbsp;    public void setCommand(MessageCommand messageCommand){
+<b class="nc">&nbsp;        this.messageCommand = messageCommand;</b>
+&nbsp;    }
+&nbsp;    public void setContent(JSONObject content) {
+<b class="nc">&nbsp;        this.content = content;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void generateRequestID(){
+<b class="nc">&nbsp;        Random random = new SecureRandom();</b>
+<b class="nc">&nbsp;        byte[] sessionIDByte = new byte[8];</b>
+<b class="nc">&nbsp;        random.nextBytes(sessionIDByte);</b>
+<b class="nc">&nbsp;        this.requestID = Base64.getEncoder().encodeToString(sessionIDByte);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    public boolean isReplyMessage(){
+&nbsp;        boolean result;
+<b class="nc">&nbsp;        if(messageCommand == null){</b>
+<b class="nc">&nbsp;            result = false;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            result = messageCommand.typeOfCommand().equals(MessageCommand.TypeMessage.ReplyWait);</b>
+&nbsp;
+&nbsp;        }
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;    public boolean isUpdateMessage(){
+&nbsp;        boolean result;
+<b class="nc">&nbsp;        if(messageCommand == null){</b>
+<b class="nc">&nbsp;            result = false;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            result = messageCommand.typeOfCommand().equals(MessageCommand.TypeMessage.Update);</b>
+&nbsp;
+&nbsp;        }
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        JSONObject message = new JSONObject();</b>
+<b class="nc">&nbsp;        message.put(&quot;ID&quot;, requestID);</b>
+<b class="nc">&nbsp;        message.put(&quot;command&quot;, this.messageCommand.toString());</b>
+<b class="nc">&nbsp;        message.put(&quot;content&quot;, this.content);</b>
+<b class="nc">&nbsp;        return message.toJSONString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public MessageCommand getCommand(){
+<b class="nc">&nbsp;        return messageCommand;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public JSONObject getContent(){
+<b class="nc">&nbsp;        if (content != null)</b>
+<b class="nc">&nbsp;            return content;</b>
+&nbsp;        else
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;
+&nbsp;    }
+<b class="nc">&nbsp;    public String getRequestID() {return requestID; }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

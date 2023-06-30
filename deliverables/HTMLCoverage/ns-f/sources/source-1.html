@@ -1,0 +1,92 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerLobbyInterface</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared.RemoteInterfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerLobbyInterface (it.polimi.ingsw.shared.RemoteInterfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ServerLobbyInterface</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared.RemoteInterfaces;
+&nbsp;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.rmi.Remote;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;
+&nbsp;/**
+&nbsp; * This object is used to expose methods related to
+&nbsp; * after-lobby-join operations and is used during the play,
+&nbsp; * it resides on the server.
+&nbsp; * Methods are invoked using RMI by RMI clients,
+&nbsp; * proper adapters invoke methods when using TCP.
+&nbsp; */
+&nbsp;public interface ServerLobbyInterface extends Remote {
+&nbsp;    void postToLiveChat(String playerName, String message) throws RemoteException;
+&nbsp;    public void postSecretToLiveChat(String sender, String receiver, String message) throws RemoteException;
+&nbsp;    void quitGame(String player) throws RemoteException;
+&nbsp;    boolean matchHasStarted() throws RemoteException;
+&nbsp;    void postMove(String player, JSONObject move) throws RemoteException;
+&nbsp;    boolean startGame(String player, boolean erasePreviousMatches) throws RemoteException;
+&nbsp;    boolean isLobbyAdmin(String player) throws RemoteException;
+&nbsp;    int getID() throws RemoteException;
+&nbsp;    String getCurrentPlayer() throws RemoteException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

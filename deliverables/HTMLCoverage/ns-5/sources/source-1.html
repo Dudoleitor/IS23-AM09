@@ -1,0 +1,296 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ClientController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientController (it.polimi.ingsw.client.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/55)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ClientController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/56)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.Client_Settings;
+&nbsp;import it.polimi.ingsw.client.connection.*;
+&nbsp;import it.polimi.ingsw.client.model.ClientModel;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientRMI;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientSocket;
+&nbsp;import it.polimi.ingsw.shared.NetworkSettings;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;
+&nbsp;import static java.lang.Thread.sleep;
+&nbsp;
+&nbsp;public interface ClientController {
+&nbsp;    void startClient();
+&nbsp;    Server getServer();
+&nbsp;    void setServer(Server server);
+&nbsp;    Client getClient();
+&nbsp;    void setClient(Client client);
+&nbsp;    void errorMessage(String msg);
+&nbsp;    ClientModel getModel();
+&nbsp;    boolean gameIsStarted();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initiate all the objects that will handle the connection to serer
+&nbsp;     */
+&nbsp;    static void initConnectionInterface(ClientController controller, ClientModel model) throws ServerException {
+<b class="nc">&nbsp;        switch (Client_Settings.connection){</b>
+&nbsp;            case RMI:
+<b class="nc">&nbsp;                controller.setServer(new ServerRMI(NetworkSettings.serverIp, NetworkSettings.RMIport));</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    controller.setClient(new ClientRMI(model));</b>
+<b class="nc">&nbsp;                } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                    throw new ServerException(&quot;Impossible to create RMI client object&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;                break;
+&nbsp;            case TCP:
+<b class="nc">&nbsp;                controller.setServer(new ServerTCP(NetworkSettings.serverIp, NetworkSettings.TCPport, model));</b>
+<b class="nc">&nbsp;                final ClientSocket client = new ClientSocket();</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    client.setName(model.getPlayerName());</b>
+<b class="nc">&nbsp;                } catch (RemoteException ignored) {</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                controller.setClient(client);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case STUB:
+<b class="nc">&nbsp;                controller.setServer(new ConnectionStub());</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    controller.setClient(new ClientRMI(model));</b>
+<b class="nc">&nbsp;                } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                    throw new ServerException(&quot;Impossible to create RMI client object&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Try login tries times
+&nbsp;     * @param tries available to connect
+&nbsp;     * @param seconds to wait in case of failure
+&nbsp;     */
+&nbsp;    static void tryConnect(int tries, int seconds, ClientController controller, ClientModel model) throws ServerException {
+&nbsp;        try {
+<b class="nc">&nbsp;            ClientController.initConnectionInterface(controller, model);</b>
+<b class="nc">&nbsp;        } catch (ServerException e) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                sleep(seconds * 1000);</b>
+<b class="nc">&nbsp;            } catch (InterruptedException i) {</b>
+&nbsp;                return;
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            if (tries &gt; 1)</b>
+<b class="nc">&nbsp;                ClientController.tryConnect(tries - 1, seconds, controller, model);</b>
+<b class="nc">&nbsp;            else throw new ServerException(&quot;Can&#39;t connect to the server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Try login
+&nbsp;     * @return true if successful
+&nbsp;     */
+&nbsp;    static boolean tryLogin(ClientController controller) throws ServerException {
+&nbsp;        final boolean logged;
+<b class="nc">&nbsp;        logged = controller.getServer().login(controller.getClient()); //get previous sessions if present</b>
+&nbsp;
+<b class="nc">&nbsp;        if(!logged){</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;Login error, username already taken&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return logged;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Initiate the connection interface and attempt a login
+&nbsp;     * @return true if login was successful
+&nbsp;     */
+&nbsp;    static boolean connect(ClientController controller, ClientModel model) {
+&nbsp;        try{
+&nbsp;            //Initiate the server connection interfaces according to settings
+<b class="nc">&nbsp;            ClientController.tryConnect(5,1, controller, model);</b>
+&nbsp;            //login
+<b class="nc">&nbsp;            return ClientController.tryLogin(controller);</b>
+<b class="nc">&nbsp;        } catch (ServerException e) {</b>
+<b class="nc">&nbsp;            controller.errorMessage(e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    static void start(ClientController controller,boolean erasePreviousMatches){
+<b class="nc">&nbsp;        boolean admin = false;</b>
+<b class="nc">&nbsp;        boolean started = false;</b>
+&nbsp;
+<b class="nc">&nbsp;        if (controller.gameIsStarted()) {</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;Game already started&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        final Server server = controller.getServer();</b>
+<b class="nc">&nbsp;        String playerName = &quot;&quot;;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            playerName = controller.getModel().getPlayerName();</b>
+<b class="nc">&nbsp;        } catch (RemoteException ignored) {</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            admin = server.isLobbyAdmin(playerName);</b>
+<b class="nc">&nbsp;            if(!admin){</b>
+<b class="nc">&nbsp;                controller.errorMessage(&quot;You are not lobby admin&quot;);</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;            started = server.startGame(playerName, erasePreviousMatches);</b>
+<b class="nc">&nbsp;        } catch (LobbyException e) {</b>
+<b class="nc">&nbsp;            started = false;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if(!started){</b>
+<b class="nc">&nbsp;            controller.errorMessage(&quot;You can not start lobby now&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    static Thread getThread(Object pingLock) {
+<b class="nc">&nbsp;        return new PingRunnable(pingLock);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class PingRunnable extends Thread {
+&nbsp;    private final Object pingLock;
+&nbsp;    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;
+&nbsp;    protected PingRunnable(Object pingLock){
+&nbsp;        this.pingLock = pingLock;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        long waitStart;
+&nbsp;        synchronized (pingLock) {
+&nbsp;            while (true) {
+&nbsp;                waitStart = System.currentTimeMillis();
+&nbsp;                try {
+&nbsp;                    pingLock.wait(waitTime);
+&nbsp;                } catch (InterruptedException e) {
+&nbsp;                    return;
+&nbsp;                }
+&nbsp;                if (System.currentTimeMillis() &gt;=
+&nbsp;                        waitStart + waitTime) {
+&nbsp;                    System.err.println(&quot;Server not responding, closing&quot;);
+&nbsp;                    System.exit(1);
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,581 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ClientAlive</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientAlive (it.polimi.ingsw.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientAlive</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientSocket;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public class ServerTcpThread extends Thread{
+&nbsp;    private final ClientSocket client;
+&nbsp;    private final ServerMain server;
+&nbsp;    private Lobby lobby;
+&nbsp;    private boolean lobbyAssigned;
+&nbsp;    private boolean exit;
+&nbsp;    private final Object pingLock;
+&nbsp;    private final ClientAlive clientAlive;
+&nbsp;
+&nbsp;    public ServerTcpThread(ServerMain server, ClientSocket client){
+&nbsp;        this.server = server;
+&nbsp;        this.client= client;
+&nbsp;        client.setThreadReference(this);
+&nbsp;        this.lobbyAssigned = false;
+&nbsp;        this.exit = false;
+&nbsp;        this.pingLock = new Object();
+&nbsp;        this.clientAlive = new ClientAlive(pingLock, client);
+&nbsp;        clientAlive.start();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method wait for user input and send the message to the correct server method
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        while(!exit) {
+&nbsp;            MessageTcp message = client.in();
+&nbsp;            MessageTcp.MessageCommand command = message.getCommand(); //header of message
+&nbsp;            if (command==null) {
+&nbsp;                System.err.println(&quot;Client &quot; + client.getPlayerName() + &quot; sent a null command&quot;);
+&nbsp;                continue;
+&nbsp;            }
+&nbsp;            String ID = message.getRequestID();
+&nbsp;            JSONObject content = message.getContent(); //content in JSON
+&nbsp;
+&nbsp;            if (command == MessageTcp.MessageCommand.Ping) {
+&nbsp;                synchronized (pingLock) {
+&nbsp;                    pingLock.notifyAll();
+&nbsp;                }
+&nbsp;            }
+&nbsp;            else if(!lobbyAssigned)
+&nbsp;                exectuteServerCommand(command,content,ID); //execute if still searching for a lobby
+&nbsp;            else
+&nbsp;                executeLobbyCommnad(command,content,ID); //execute if lobby was assigned
+&nbsp;        }
+&nbsp;        clientAlive.interrupt();
+&nbsp;
+&nbsp;    }
+&nbsp;    private void exectuteServerCommand(MessageTcp.MessageCommand command, JSONObject content, String ID){
+&nbsp;        switch (command){
+&nbsp;            case Login:
+&nbsp;                login(content,ID);
+&nbsp;                break;
+&nbsp;            case GetJoinedLobby:
+&nbsp;                getJoinedLobbies(content,ID);
+&nbsp;                break;
+&nbsp;            case JoinRandomLobby:
+&nbsp;                joinRandomLobby(ID);
+&nbsp;                break;
+&nbsp;            case CreateLobby:
+&nbsp;                createLobby(ID);
+&nbsp;                break;
+&nbsp;            case GetAvailableLobbies:
+&nbsp;                getAvailableLobbies(ID);
+&nbsp;                break;
+&nbsp;            case JoinSelectedLobby:
+&nbsp;                joinSelectedLobby(content,ID);
+&nbsp;                break;
+&nbsp;            case DisconnectedFromLobby:
+&nbsp;                disconnectedFromLobby(content, ID);
+&nbsp;                break;
+&nbsp;            case Quit:
+&nbsp;                quitServer();
+&nbsp;                break;
+&nbsp;            default:
+&nbsp;                break;
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;    private void executeLobbyCommnad(MessageTcp.MessageCommand command, JSONObject content,String ID){
+&nbsp;        switch (command){
+&nbsp;            case PostToLiveChat:
+&nbsp;                postToLiveChat(content,ID);
+&nbsp;                break;
+&nbsp;            case PostSecretToLiveChat:
+&nbsp;                postSecretToLiveChat(content,ID);
+&nbsp;                break;
+&nbsp;            case Quit:
+&nbsp;                quitLobby();
+&nbsp;                break;
+&nbsp;            case MatchHasStarted:
+&nbsp;                matchHasStarted(ID);
+&nbsp;                break;
+&nbsp;            case PostMove:
+&nbsp;                postMove(content,ID);
+&nbsp;                break;
+&nbsp;            case StartGame:
+&nbsp;                startGame(content,ID);
+&nbsp;                break;
+&nbsp;            case IsLobbyAdmin:
+&nbsp;                isLobbyAdmin(ID);
+&nbsp;                break;
+&nbsp;            case GetCurrentPlayer:
+&nbsp;                getCurrentPlayer(ID);
+&nbsp;                break;
+&nbsp;            default:
+&nbsp;                break;
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    //SERVER METHODS
+&nbsp;
+&nbsp;    private void login(JSONObject message, String ID){
+&nbsp;        client.setName(message.get(&quot;player&quot;).toString());
+&nbsp;        boolean logged;
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                logged = server.login(client);
+&nbsp;            } catch (RemoteException e) {
+&nbsp;                logged = false;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;result&quot;, logged);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.Login); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;    private void getJoinedLobbies(JSONObject message, String ID){
+&nbsp;        int lobby;
+&nbsp;        String username = message.get(&quot;player&quot;).toString();
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                lobby = server.getJoinedLobby(username);
+&nbsp;            } catch (NullPointerException e) {
+&nbsp;                lobby = -1;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;lobby&quot;, lobby);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.GetJoinedLobby); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;    private void getAvailableLobbies(String ID){
+&nbsp;        Map&lt;Integer,Integer&gt; lobbies;
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                lobbies = server.showAvailableLobbies();
+&nbsp;            } catch (NullPointerException | RemoteException e) {
+&nbsp;                lobbies = new HashMap&lt;&gt;();
+&nbsp;            }
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;lobbies&quot;, Jsonable.map2json(lobbies));
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.GetAvailableLobbies); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;
+&nbsp;    private void joinRandomLobby(String ID){
+&nbsp;        int lobbyID;
+&nbsp;        ServerLobbyInterface lobbyInterface;
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                lobbyInterface = server.joinRandomLobby(client);
+&nbsp;            } catch (NullPointerException | RemoteException  e) {
+&nbsp;                lobbyInterface = null;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        lobbyID = LobbyIni(lobbyInterface);
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;lobbyID&quot;, lobbyID);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.JoinRandomLobby); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;
+&nbsp;    private void createLobby(String ID){
+&nbsp;        int lobbyID;
+&nbsp;        ServerLobbyInterface lobbyInterface;
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                lobbyInterface = server.createLobby(client);
+&nbsp;            } catch (NullPointerException | RemoteException e) {
+&nbsp;                lobbyInterface = null;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        lobbyID = LobbyIni(lobbyInterface);
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;lobbyID&quot;, lobbyID);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.CreateLobby); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;    private void joinSelectedLobby(JSONObject message, String ID){
+&nbsp;        long lobbyID = Long.parseLong(message.get(&quot;lobbyID&quot;).toString());
+&nbsp;        ServerLobbyInterface lobbyInterface;
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                lobbyInterface = server.joinSelectedLobby(client,(int) lobbyID);
+&nbsp;            } catch (NullPointerException | RemoteException e) {
+&nbsp;                lobbyInterface = null;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        lobbyID = LobbyIni(lobbyInterface);
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;lobbyID&quot;, lobbyID);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.JoinSelectedLobby); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;    private void disconnectedFromLobby(JSONObject messaage, String ID){
+&nbsp;        String user = messaage.get(&quot;player&quot;).toString();
+&nbsp;        int lobby;
+&nbsp;        synchronized (server){
+&nbsp;            try {
+&nbsp;                lobby = server.disconnectedFromLobby(user);
+&nbsp;            } catch (NullPointerException e) {
+&nbsp;                lobby = -1;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;lobby&quot;, lobby);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.DisconnectedFromLobby); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;
+&nbsp;    private void quitServer(){
+&nbsp;        synchronized (server) {
+&nbsp;            try {
+&nbsp;                server.disconnectClient(client);
+&nbsp;            } catch (RuntimeException ignored) {  // This should never happen, as the remote object is used locally{
+&nbsp;            } finally {
+&nbsp;                terminate();
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    private int LobbyIni(ServerLobbyInterface lobbyInterface){
+&nbsp;        if(lobbyInterface != null) {
+&nbsp;            this.lobbyAssigned = true;
+&nbsp;            this.lobby = (Lobby) lobbyInterface;
+&nbsp;
+&nbsp;            return lobby.getID();
+&nbsp;        } else {
+&nbsp;            return 0;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //LOBBY METHODS
+&nbsp;
+&nbsp;    private void postToLiveChat(JSONObject message, String ID) {
+&nbsp;        boolean foundErrors = false;
+&nbsp;        ChatMessage chatMessage = new ChatMessage((JSONObject) message.get(&quot;chat&quot;));
+&nbsp;        String sender = chatMessage.getSender();
+&nbsp;        String content = chatMessage.getMessage();
+&nbsp;        if (client.getPlayerName().equals(sender)) {
+&nbsp;            synchronized (lobby) {
+&nbsp;                try {
+&nbsp;                    lobby.postToLiveChat(sender, content);
+&nbsp;                } catch (RuntimeException e) {
+&nbsp;                    foundErrors = true;
+&nbsp;                }
+&nbsp;            }
+&nbsp;        } else {
+&nbsp;            foundErrors = true;
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;errors&quot;, foundErrors);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.PostToLiveChat); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;
+&nbsp;    }
+&nbsp;    private void postSecretToLiveChat(JSONObject message, String ID) {
+&nbsp;        boolean foundErrors = false;
+&nbsp;        PrivateChatMessage chatMessage = new PrivateChatMessage((JSONObject) message.get(&quot;chat&quot;));
+&nbsp;        String sender = chatMessage.getSender();
+&nbsp;        String content = chatMessage.getMessage();
+&nbsp;        String receiver = chatMessage.getReciever();
+&nbsp;        if (client.getPlayerName().equals(sender)) {
+&nbsp;            synchronized (lobby) {
+&nbsp;                try {
+&nbsp;                    lobby.postSecretToLiveChat(sender, receiver, content);
+&nbsp;                } catch (RuntimeException e) {
+&nbsp;                    foundErrors = true;
+&nbsp;                }
+&nbsp;            }
+&nbsp;        } else {
+&nbsp;            foundErrors = true;
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;errors&quot;, foundErrors);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.PostSecretToLiveChat); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;
+&nbsp;
+&nbsp;    }
+&nbsp;    private void quitLobby(){
+&nbsp;        synchronized (lobby) {
+&nbsp;            try {
+&nbsp;                lobby.quitGame(client.getPlayerName());
+&nbsp;            } catch (RuntimeException ignored) {
+&nbsp;            } finally {
+&nbsp;                terminate();
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;    private void matchHasStarted(String ID){
+&nbsp;        boolean hasStarted;
+&nbsp;        synchronized (lobby) {
+&nbsp;            hasStarted = lobby.matchHasStarted();
+&nbsp;            JSONObject result = new JSONObject();
+&nbsp;            result.put(&quot;started&quot;, hasStarted);
+&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.MatchHasStarted); //set message command
+&nbsp;            feedback.setContent(result); //set message content
+&nbsp;            feedback.setRequestID(ID);
+&nbsp;            client.out(feedback.toString()); //send object to client
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;    private void postMove(JSONObject message, String ID){
+&nbsp;        boolean foundErrors = false;
+&nbsp;        JSONObject move = (JSONObject) message.get(&quot;move&quot;);
+&nbsp;        synchronized (lobby) {
+&nbsp;            try {
+&nbsp;                lobby.postMove(client.getPlayerName(),move);
+&nbsp;            } catch (ControllerGenericException e) {
+&nbsp;                foundErrors = true;
+&nbsp;            }
+&nbsp;            JSONObject result = new JSONObject();
+&nbsp;            result.put(&quot;errors&quot;, foundErrors);
+&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.PostMove); //set message command
+&nbsp;            feedback.setContent(result); //set message content
+&nbsp;            feedback.setRequestID(ID);
+&nbsp;            client.out(feedback.toString()); //send object to client
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private void startGame(JSONObject content, String ID){
+&nbsp;        boolean hasStarted;
+&nbsp;        final boolean erasePreviousMatches = content.get(&quot;erasePreviousMatches&quot;).toString().equals(&quot;true&quot;);
+&nbsp;        synchronized (lobby) {
+&nbsp;            hasStarted = lobby.startGame(client.getPlayerName(), erasePreviousMatches);
+&nbsp;            JSONObject result = new JSONObject();
+&nbsp;            result.put(&quot;start&quot;, hasStarted);
+&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.StartGame); //set message command
+&nbsp;            feedback.setContent(result); //set message content
+&nbsp;            feedback.setRequestID(ID);
+&nbsp;            client.out(feedback.toString()); //send object to client
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private void isLobbyAdmin(String ID){
+&nbsp;        boolean isAdmin;
+&nbsp;        synchronized (lobby) {
+&nbsp;            try {
+&nbsp;                isAdmin = lobby.isLobbyAdmin(client.getPlayerName());
+&nbsp;            } catch (RuntimeException e) {
+&nbsp;                isAdmin = false;
+&nbsp;            }
+&nbsp;            JSONObject result = new JSONObject();
+&nbsp;            result.put(&quot;admin&quot;, isAdmin);
+&nbsp;            MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;            feedback.setCommand(MessageTcp.MessageCommand.IsLobbyAdmin); //set message command
+&nbsp;            feedback.setContent(result); //set message content
+&nbsp;            feedback.setRequestID(ID);
+&nbsp;            client.out(feedback.toString()); //send object to client
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public void terminate(){
+&nbsp;        this.exit = true;
+&nbsp;        clientAlive.interrupt();
+&nbsp;        Thread.currentThread().interrupt();
+&nbsp;    }
+&nbsp;
+&nbsp;    private void getCurrentPlayer(String ID){
+&nbsp;        String player;
+&nbsp;        synchronized (lobby){
+&nbsp;            try {
+&nbsp;                player = lobby.getCurrentPlayer();
+&nbsp;            } catch (NullPointerException e) {
+&nbsp;                player = null;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        JSONObject result = new JSONObject();
+&nbsp;        result.put(&quot;player&quot;, player);
+&nbsp;        MessageTcp feedback = new MessageTcp(); //message to send back
+&nbsp;        feedback.setCommand(MessageTcp.MessageCommand.GetCurrentPlayer); //set message command
+&nbsp;        feedback.setContent(result); //set message content
+&nbsp;        feedback.setRequestID(ID);
+&nbsp;        client.out(feedback.toString()); //send object to client
+&nbsp;    }
+&nbsp;
+&nbsp;}
+&nbsp;
+&nbsp;class ClientAlive extends Thread {
+&nbsp;    private final Object pingLock;
+&nbsp;    private final ClientSocket client;
+<b class="nc">&nbsp;    private final int waitTime = ((int) NetworkSettings.serverPingIntervalSeconds) * 2000;</b>
+<b class="nc">&nbsp;    protected ClientAlive(Object pingLock, ClientSocket client){</b>
+<b class="nc">&nbsp;        this.pingLock = pingLock;</b>
+<b class="nc">&nbsp;        this.client = client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        long waitStart;
+<b class="nc">&nbsp;        synchronized (pingLock) {</b>
+&nbsp;            while (true) {
+<b class="nc">&nbsp;                waitStart = System.currentTimeMillis();</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    pingLock.wait(waitTime);</b>
+<b class="nc">&nbsp;                } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                    return;</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                if (System.currentTimeMillis() &gt;=</b>
+&nbsp;                        waitStart + waitTime) {
+<b class="nc">&nbsp;                    synchronized (client) {</b>
+<b class="nc">&nbsp;                        System.err.println(&quot;Client &quot; + client.getPlayerName() + &quot; has timed out.&quot;);</b>
+<b class="nc">&nbsp;                        NetworkExceptionHandler handler = client.getNetworkExceptionHandler();</b>
+<b class="nc">&nbsp;                        if (handler == null) {</b>
+<b class="nc">&nbsp;                            client.disconnect();</b>
+&nbsp;                        } else {
+<b class="nc">&nbsp;                            handler.handleNetworkException(</b>
+&nbsp;                                    client,
+&nbsp;                                    new RemoteException(&quot;Client has timed out.&quot;));
+&nbsp;                        }
+<b class="nc">&nbsp;                    }</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

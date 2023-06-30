@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > InputSanitizer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.shared</a>
+</div>
+
+<h1>Coverage Summary for Class: InputSanitizer (it.polimi.ingsw.shared)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InputSanitizer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (38/38)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.shared;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;public class InputSanitizer {</b>
+&nbsp;
+<b class="fc">&nbsp;    private static final List&lt;Character&gt; punctuation = Arrays.asList(&#39;.&#39;,&#39;,&#39;,&#39;;&#39;,&#39;)&#39;,&#39;(&#39;,&#39; &#39;,&#39;!&#39;,&#39;?&#39;);</b>
+<b class="fc">&nbsp;    private static final List&lt;Character&gt; specialLetters = Arrays.asList(&#39;à&#39;,&#39;è&#39;,&#39;é&#39;,&#39;ì&#39;,&#39;ò&#39;,&#39;ù&#39;);</b>
+<b class="fc">&nbsp;    private static final List&lt;String&gt; invalidUsernames = Arrays.asList(&quot;server&quot;, &quot;private&quot;, &quot;everybody&quot;);</b>
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Check if the sting is a valid player name
+&nbsp;     * @param name the string to test
+&nbsp;     * @return true if valid
+&nbsp;     */
+&nbsp;    public static boolean isValidName(String name){
+<b class="fc">&nbsp;        return  name!= null &amp;&amp;</b>
+<b class="fc">&nbsp;                !invalidUsernames.contains(name.toLowerCase()) &amp;&amp;</b>
+<b class="fc">&nbsp;                !name.isEmpty() &amp;&amp;</b>
+<b class="fc">&nbsp;                !name.isBlank() &amp;&amp;</b>
+<b class="fc">&nbsp;                name.length() &lt;= GameSettings.maxNameLength &amp;&amp;</b>
+<b class="fc">&nbsp;                name.chars().</b>
+<b class="fc">&nbsp;                        allMatch(c -&gt;</b>
+<b class="fc">&nbsp;                                isValidSymbol((char) c) ||</b>
+<b class="fc">&nbsp;                                        isInteger((char) c) ||</b>
+<b class="fc">&nbsp;                                        isLowerCaseLetter((char) c) ||</b>
+<b class="fc">&nbsp;                                        isUpperCaseLetter((char) c));</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Check if the sting is a valid integer
+&nbsp;     * @param id the string to test
+&nbsp;     * @return true if valid
+&nbsp;     */
+&nbsp;    public static boolean isInteger(String id){
+<b class="fc">&nbsp;        return  id != null &amp;&amp;</b>
+<b class="fc">&nbsp;                !id.isBlank() &amp;&amp;</b>
+<b class="fc">&nbsp;                !id.isEmpty() &amp;&amp;</b>
+<b class="fc">&nbsp;                id.length() &lt; 6 &amp;&amp;</b>
+<b class="fc">&nbsp;                id.chars().allMatch(c -&gt;</b>
+<b class="fc">&nbsp;                        isInteger((char) c)</b>
+&nbsp;                );
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Check if the sting is a valid message or command
+&nbsp;     * @param mes the string to test
+&nbsp;     * @return true if valid
+&nbsp;     */
+&nbsp;    public static boolean isValidMessage(String mes){
+<b class="fc">&nbsp;        return  mes!= null &amp;&amp;</b>
+<b class="fc">&nbsp;                !mes.isEmpty() &amp;&amp;</b>
+<b class="fc">&nbsp;                !mes.isBlank() &amp;&amp;</b>
+<b class="fc">&nbsp;                mes.length() &lt; GameSettings.maxMessageLength &amp;&amp;</b>
+<b class="fc">&nbsp;                mes.chars().</b>
+<b class="fc">&nbsp;                        allMatch(c -&gt; isValidSymbol((char) c) ||</b>
+<b class="fc">&nbsp;                                isInteger((char) c) ||</b>
+<b class="fc">&nbsp;                                isLowerCaseLetter((char) c) ||</b>
+<b class="fc">&nbsp;                                isUpperCaseLetter((char) c) ||</b>
+<b class="fc">&nbsp;                                isPunctuation((char) c) ||</b>
+<b class="fc">&nbsp;                                isSpecialLetter((char) c));</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Check if the char is a lowercase letter
+&nbsp;     * @param c the char to test
+&nbsp;     * @return true if lowercase letter
+&nbsp;     */
+&nbsp;    public static boolean isLowerCaseLetter(Character c){
+<b class="fc">&nbsp;        return (c.compareTo(&#39;a&#39;) &gt;= 0 &amp;&amp; c.compareTo(&#39;z&#39;) &lt;= 0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Check if the char is a special letter
+&nbsp;     * @param c the char to test
+&nbsp;     * @return true if special letter
+&nbsp;     */
+&nbsp;    public static boolean isSpecialLetter(Character c){
+<b class="fc">&nbsp;        return specialLetters.contains(c);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Check if the char is an uppercase letter
+&nbsp;     * @param c the char to test
+&nbsp;     * @return true if uppercase letter
+&nbsp;     */
+&nbsp;    public static boolean isUpperCaseLetter(Character c){
+<b class="fc">&nbsp;        return c.compareTo(&#39;A&#39;) &gt;= 0 &amp;&amp; c.compareTo(&#39;Z&#39;) &lt;= 0;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Check if the char is an integer
+&nbsp;     * @param c the char to test
+&nbsp;     * @return true if c is an integer
+&nbsp;     */
+&nbsp;    public static boolean isInteger(Character c){
+<b class="fc">&nbsp;        return c.compareTo(&#39;0&#39;) &gt;= 0 &amp;&amp; c.compareTo(&#39;9&#39;) &lt;= 0;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Check if the char is a symbol
+&nbsp;     * @param c the char to test
+&nbsp;     * @return true if is _ or -
+&nbsp;     */
+&nbsp;    public static boolean isValidSymbol(Character c){
+<b class="fc">&nbsp;        return c.compareTo(&#39;_&#39;) == 0 || c.compareTo(&#39;-&#39;) == 0;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Check if the char is a punctuation mark
+&nbsp;     * @param c the char to test
+&nbsp;     * @return true if punctuation mark
+&nbsp;     */
+&nbsp;    public static boolean isPunctuation(Character c){
+<b class="fc">&nbsp;        return punctuation.contains(c);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

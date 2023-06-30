@@ -1,0 +1,311 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerRMI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.connection</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerRMI (it.polimi.ingsw.client.connection)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerRMI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/79)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.connection;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.server.clientonserver.ClientRMI;
+&nbsp;import it.polimi.ingsw.shared.IpAddressV4;
+&nbsp;import it.polimi.ingsw.shared.model.Move;
+&nbsp;import it.polimi.ingsw.shared.NetworkSettings;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerLobbyInterface;
+&nbsp;import it.polimi.ingsw.shared.RemoteInterfaces.ServerInterface;
+&nbsp;
+&nbsp;import java.rmi.NotBoundException;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.registry.LocateRegistry;
+&nbsp;import java.rmi.registry.Registry;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public class ServerRMI extends Server {
+&nbsp;    private ServerInterface server;
+&nbsp;    public ServerRMI(IpAddressV4 ip, int port){
+<b class="nc">&nbsp;        super(ip,port);</b>
+&nbsp;    }
+&nbsp;    private ServerLobbyInterface lobby;
+&nbsp;    public void initLobby(ServerLobbyInterface lobby){
+<b class="nc">&nbsp;        this.lobby = lobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean login(Client client) throws ServerException {
+&nbsp;        try {
+<b class="nc">&nbsp;            if(server == null){</b>
+&nbsp;                //get remote registry that points to 127.0.0.1:port
+<b class="nc">&nbsp;                Registry registry = LocateRegistry.getRegistry(NetworkSettings.serverIp.toString(), NetworkSettings.RMIport);</b>
+&nbsp;                //get interface from remote registry
+<b class="nc">&nbsp;                server = (ServerInterface) registry.lookup(&quot;interface&quot;);</b>
+&nbsp;                //try to log in
+&nbsp;            }
+<b class="nc">&nbsp;            return server.login((ClientRMI) client);</b>
+<b class="nc">&nbsp;        } catch (NotBoundException | RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error while connecting to server, &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getJoinedLobby(String playerName) throws ServerException{
+&nbsp;        int lobbyId;
+&nbsp;        try {
+<b class="nc">&nbsp;            lobbyId = server.getJoinedLobby(playerName);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error in Server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return lobbyId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void joinRandomLobby(Client client) throws ServerException{
+&nbsp;        try{
+<b class="nc">&nbsp;            lobby = server.joinRandomLobby(client);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error in Server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void joinSelectedLobby(Client client, int id) throws ServerException{
+&nbsp;        try{
+<b class="nc">&nbsp;            lobby = server.joinSelectedLobby(client,id);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error in Server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void createLobby(Client client) throws ServerException{
+&nbsp;        try{
+<b class="nc">&nbsp;            lobby = server.createLobby(client);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error in Server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Map&lt;Integer, Integer&gt; getAvailableLobbies() throws ServerException{
+&nbsp;        Map&lt;Integer, Integer&gt; availableLobbies;
+&nbsp;        try{
+<b class="nc">&nbsp;            availableLobbies = server.showAvailableLobbies();</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(&quot;Error in Server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (availableLobbies!=null)</b>
+<b class="nc">&nbsp;            return availableLobbies;</b>
+<b class="nc">&nbsp;        return new HashMap&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void postToLiveChat(String playerName, String message) throws LobbyException {
+&nbsp;        try {
+<b class="nc">&nbsp;            lobby.postToLiveChat(playerName,message);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException{
+&nbsp;        try{
+<b class="nc">&nbsp;            lobby.postSecretToLiveChat(sender,receiver,message);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        catch (RemoteException e){</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void quitGame(String player){
+&nbsp;        try{
+<b class="nc">&nbsp;            if(lobby != null) {</b>
+<b class="nc">&nbsp;                lobby.quitGame(player);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (RemoteException ignored) {</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean matchHasStarted() throws LobbyException{
+<b class="nc">&nbsp;        boolean started = false;</b>
+&nbsp;        try{
+<b class="nc">&nbsp;            started=  lobby.matchHasStarted();</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return started;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postMove(String player, Move move) throws LobbyException{
+&nbsp;        try {
+<b class="nc">&nbsp;            lobby.postMove(player,move.toJson());</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean startGame(String player, boolean erasePreviousMatches) throws LobbyException{
+<b class="nc">&nbsp;        boolean hasStarted = false;</b>
+&nbsp;        try{
+<b class="nc">&nbsp;            hasStarted = lobby.startGame(player, erasePreviousMatches);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return hasStarted;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean isLobbyAdmin(String player) throws LobbyException{
+<b class="nc">&nbsp;        boolean result = false;</b>
+&nbsp;        try{
+<b class="nc">&nbsp;            result = lobby.isLobbyAdmin(player);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getLobbyID() throws LobbyException{
+<b class="nc">&nbsp;        int id = 0;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            id = lobby.getID();</b>
+<b class="nc">&nbsp;        } catch (RemoteException | NullPointerException e) {</b>
+<b class="nc">&nbsp;            throw new LobbyException(&quot;Error in Lobby&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to observe the player supposed
+&nbsp;     * to play in the current turn.
+&nbsp;     *
+&nbsp;     * @return String name of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getCurrentPlayer() throws LobbyException {
+&nbsp;        try {
+<b class="nc">&nbsp;            return lobby.getCurrentPlayer();</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new LobbyException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to check if the client was already connected to
+&nbsp;     * a lobby and was previously disconnected.
+&nbsp;     *
+&nbsp;     * @param playerName String name of the player
+&nbsp;     * @return Int id of the lobby if the player was previously connected,
+&nbsp;     * -1 if not.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public int disconnectedFromLobby(String playerName) throws ServerException {
+&nbsp;        try {
+<b class="nc">&nbsp;            return server.disconnectedFromLobby(playerName);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            throw new ServerException(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,340 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerTCPViewUpdater</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.connection.TCPThread</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerTCPViewUpdater (it.polimi.ingsw.client.connection.TCPThread)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerTCPViewUpdater</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/107)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ServerTCPViewUpdater$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/108)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.connection.TCPThread;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.model.ClientModel;
+&nbsp;import it.polimi.ingsw.shared.Chat;
+&nbsp;import it.polimi.ingsw.shared.Jsonable;
+&nbsp;import it.polimi.ingsw.shared.MessageTcp;
+&nbsp;import it.polimi.ingsw.shared.PlayerWithPoints;
+&nbsp;import it.polimi.ingsw.shared.model.Tile;
+&nbsp;import it.polimi.ingsw.shared.model.TileGenericException;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.io.PrintWriter;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public class ServerTCPViewUpdater extends Thread{
+<b class="nc">&nbsp;    private boolean exit = false;</b>
+&nbsp;    private ClientModel clientModel;
+&nbsp;    private final ArrayList&lt;MessageTcp&gt; update;
+&nbsp;    private final PrintWriter serverOut;
+&nbsp;
+<b class="nc">&nbsp;    ServerTCPViewUpdater(ClientModel clientModel, ArrayList&lt;MessageTcp&gt; update, PrintWriter serverOut){</b>
+<b class="nc">&nbsp;        this.clientModel = clientModel;</b>
+<b class="nc">&nbsp;        this.update = update;</b>
+<b class="nc">&nbsp;        this.serverOut = serverOut;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;        MessageTcp updateMessage;
+<b class="nc">&nbsp;        while (!exit) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                while (update.isEmpty()) {</b>
+<b class="nc">&nbsp;                    synchronized (update) {</b>
+<b class="nc">&nbsp;                        update.wait();</b>
+<b class="nc">&nbsp;                    }</b>
+&nbsp;                }
+<b class="nc">&nbsp;            } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            synchronized (update){</b>
+<b class="nc">&nbsp;                updateMessage = update.get(0);</b>
+<b class="nc">&nbsp;                update.remove(0);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            synchronized (clientModel){</b>
+<b class="nc">&nbsp;                executeViewUpdate(updateMessage.getCommand(), updateMessage.getContent());</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void executeViewUpdate(MessageTcp.MessageCommand command, JSONObject content){
+<b class="nc">&nbsp;        switch(command){</b>
+&nbsp;            case PickedFromBoard:
+<b class="nc">&nbsp;                pickedFromBoard(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case RefreshBoard:
+<b class="nc">&nbsp;                refreshBoard(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case PutIntoShelf:
+<b class="nc">&nbsp;                putIntoShelf(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case RefreshShelf:
+<b class="nc">&nbsp;                refreshShelf(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case ChatMessageUpdate:
+<b class="nc">&nbsp;                postChatMessage(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case RefreshChat:
+<b class="nc">&nbsp;                refreshChat(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case NotifyStart:
+<b class="nc">&nbsp;                gameStarted(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case UpdateTurn:
+<b class="nc">&nbsp;                updateTurn(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case RefreshCommonGoals:
+<b class="nc">&nbsp;                refreshCommonGoal(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case SetPlayerGoal:
+<b class="nc">&nbsp;                setPlayerGoal(content);</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case Ping:
+<b class="nc">&nbsp;                ping();</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;            case EndGame:
+<b class="nc">&nbsp;                endgame(content);</b>
+&nbsp;                break;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void changeView(ClientModel clientModel){
+<b class="nc">&nbsp;        this.clientModel = clientModel;</b>
+&nbsp;    }
+&nbsp;    private void pickedFromBoard(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.pickedFromBoard((JSONObject) content.get(&quot;position&quot;));</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void refreshBoard(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.refreshBoard((JSONObject) content.get(&quot;board&quot;));</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void putIntoShelf(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String player = content.get(&quot;player&quot;).toString();</b>
+<b class="nc">&nbsp;            int column = Integer.parseInt(content.get(&quot;column&quot;).toString());</b>
+<b class="nc">&nbsp;            Tile tile = Tile.valueOfLabel(content.get(&quot;tile&quot;).toString());</b>
+&nbsp;
+<b class="nc">&nbsp;            clientModel.putIntoShelf(player,column,tile);</b>
+<b class="nc">&nbsp;        } catch (TileGenericException | RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void refreshShelf(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.refreshShelf(content.get(&quot;player&quot;).toString(),(JSONObject) content.get(&quot;shelf&quot;));</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void postChatMessage(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.postChatMessage(content.get(&quot;sender&quot;).toString(), content.get(&quot;message&quot;).toString());</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void refreshChat(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.refreshChat(new Chat((JSONObject) content.get(&quot;chat&quot;)));</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void gameStarted(JSONObject content) {
+<b class="nc">&nbsp;        final boolean newMatch = Boolean.parseBoolean(content.get(&quot;newMatch&quot;).toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.gameStarted(newMatch);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    private void updateTurn(JSONObject content) {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.nextTurn(content.get(&quot;player&quot;).toString());</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void refreshCommonGoal(JSONObject content) {
+<b class="nc">&nbsp;        int id = Integer.parseInt(content.get(&quot;id&quot;).toString());</b>
+<b class="nc">&nbsp;        List list = Jsonable.json2listInt((JSONArray) content.get(&quot;points&quot;));</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.refreshCommonGoal(id,list);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void setPlayerGoal(JSONObject content) {
+<b class="nc">&nbsp;        int id = Integer.parseInt(content.get(&quot;id&quot;).toString());</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.setPlayerGoal(id);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public void terminate() {
+<b class="nc">&nbsp;        this.exit = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void ping() {
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.ping();</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        MessageTcp pongMessage = new MessageTcp();</b>
+<b class="nc">&nbsp;        pongMessage.setCommand(MessageTcp.MessageCommand.Ping); //set command</b>
+<b class="nc">&nbsp;        synchronized (serverOut) {</b>
+<b class="nc">&nbsp;            serverOut.println(pongMessage);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;    private void endgame (JSONObject content){
+<b class="nc">&nbsp;        final List&lt;PlayerWithPoints&gt; leaderboard = Jsonable.json2Leaderboard((JSONArray) content.get(&quot;leaderboard&quot;));</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            clientModel.endGame(leaderboard);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {  // This should never happen, as the remote object is local</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

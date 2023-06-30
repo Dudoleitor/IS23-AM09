@@ -1,0 +1,734 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Controller</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.server</a>
+</div>
+
+<h1>Coverage Summary for Class: Controller (it.polimi.ingsw.server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Controller</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.6%
+  </span>
+  <span class="absValue">
+    (31/35)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    74.1%
+  </span>
+  <span class="absValue">
+    (197/266)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.server;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.shared.Jsonable;
+&nbsp;import it.polimi.ingsw.shared.*;
+&nbsp;import it.polimi.ingsw.shared.model.*;
+&nbsp;import it.polimi.ingsw.shared.virtualview.VirtualView;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.ThreadLocalRandom;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import static it.polimi.ingsw.shared.JSONFilePath.PlayerGoals;
+&nbsp;
+&nbsp;
+&nbsp;public class Controller implements Jsonable {
+&nbsp;    private final Board board;
+&nbsp;
+&nbsp;    // This list MUST always have the same size
+&nbsp;    // When a player disconnects it&#39;s marked as inactive
+&nbsp;    private final List&lt;Player&gt; players;
+&nbsp;    private final List&lt;Client&gt; clients;
+&nbsp;    private final List&lt;VirtualView&gt; virtualViews;
+&nbsp;    private int turn;
+&nbsp;    private boolean handledGameTermination;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to randomly generate a list
+&nbsp;     * of PlayerGoal objects.
+&nbsp;     * @return List of PlayerGoal objects
+&nbsp;     */
+&nbsp;    private List&lt;PlayerGoal&gt; initPlayersGoals() throws JsonBadParsingException {
+<b class="fc">&nbsp;        List&lt;PlayerGoal&gt; playerGoals = new ArrayList&lt;&gt;();</b>
+&nbsp;        PlayerGoal playerGoal;
+&nbsp;
+&nbsp;        // Generating players&#39; goals
+<b class="fc">&nbsp;        if (PlayerGoal.playerGoalsAmount(PlayerGoals) &lt; clients.size()) {</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;Unable to generate players goals: not enough goals in file!&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        for (int goalToGen = 0; goalToGen &lt; clients.size(); goalToGen++) {</b>
+<b class="fc">&nbsp;            playerGoal = new PlayerGoal(PlayerGoals);</b>
+<b class="fc">&nbsp;            while (playerGoals.contains(playerGoal)) {</b>
+<b class="nc">&nbsp;                playerGoal = new PlayerGoal(PlayerGoals);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            playerGoals.add(playerGoal);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return playerGoals;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * This method is used to init the list of players,
+&nbsp;     * it creates the player, assigns him a shelf and a goal,
+&nbsp;     * update the list of virtual views.
+&nbsp;     * @param playerGoals List of PlayerGoal objects
+&nbsp;     */
+&nbsp;    private List&lt;Player&gt; initPlayers(List&lt;PlayerGoal&gt; playerGoals) {
+<b class="fc">&nbsp;        List&lt;Player&gt; players = new ArrayList&lt;&gt;();</b>
+&nbsp;        PlayerGoal playerGoal;
+&nbsp;        Player player;
+<b class="fc">&nbsp;        for (Client client : clients) {</b>
+<b class="fc">&nbsp;            playerGoal = playerGoals.get(0);</b>
+<b class="fc">&nbsp;            playerGoals.remove(playerGoal);</b>
+&nbsp;
+<b class="fc">&nbsp;            player = new Player(client.getPlayerName(),</b>
+&nbsp;                    new Shelf(GameSettings.shelfRows, GameSettings.shelfColumns),
+&nbsp;                    playerGoal);
+&nbsp;
+<b class="fc">&nbsp;            players.add(player);</b>
+<b class="fc">&nbsp;            virtualViews.add(player.getVirtualShelf());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        final int shift = ThreadLocalRandom.current().nextInt(0, clients.size());</b>
+<b class="fc">&nbsp;        Collections.rotate(players, shift);</b>
+<b class="fc">&nbsp;        return players;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to init the board.
+&nbsp;     * @return Board object
+&nbsp;     */
+&nbsp;    private Board initBoard() throws JsonBadParsingException {
+&nbsp;        final Board board;
+<b class="fc">&nbsp;        board = new Board(clients.size());</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            board.fill();</b>
+<b class="nc">&nbsp;        } catch (OutOfTilesException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;A new board should never be out of tiles&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        virtualViews.add(board.getVirtualBoard());</b>
+<b class="fc">&nbsp;        virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));</b>
+<b class="fc">&nbsp;        return board;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Constructor used to initialize the controller
+&nbsp;     * @param clients is a List of Client objects
+&nbsp;     */
+<b class="fc">&nbsp;    public Controller(List&lt;Client&gt; clients){</b>
+<b class="fc">&nbsp;        handledGameTermination = false;</b>
+<b class="fc">&nbsp;        if(clients == null){</b>
+<b class="fc">&nbsp;            throw new ControllerGenericException(&quot;Error while creating the Controller: clients list was null&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        this.virtualViews = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.clients = clients;</b>
+<b class="fc">&nbsp;        this.turn = 0;</b>
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            this.board = initBoard();</b>
+<b class="fc">&nbsp;            this.players = initPlayers(initPlayersGoals());</b>
+<b class="nc">&nbsp;        } catch (NullPointerException e) {</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;Error while creating the Controller : Json file doesn&#39;t exists&quot;);</b>
+<b class="nc">&nbsp;        } catch (ClassCastException | JsonBadParsingException e) {</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;Error while creating the Controller : bad Json parsing&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);</b>
+&nbsp;        // Sending all data to clients
+<b class="fc">&nbsp;        for (Client client : clients) {</b>
+<b class="fc">&nbsp;            refreshClient(client);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean gameFinished(){
+<b class="fc">&nbsp;        return getShelves()</b>
+<b class="fc">&nbsp;                .values()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .anyMatch(s -&gt; s.isFull());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to check if the
+&nbsp;     * game termination has been handled.
+&nbsp;     * In that case, the lobby can be deleted.
+&nbsp;     * @return boolean, True if the game is terminated
+&nbsp;     */
+&nbsp;    public boolean gameTerminated() {
+<b class="nc">&nbsp;        return handledGameTermination;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to load a list of players
+&nbsp;     * from a JSONArray.
+&nbsp;     * @param playersJson JSONArray with the players
+&nbsp;     * @return List of Player objects
+&nbsp;     */
+&nbsp;    private List&lt;Player&gt; loadPlayers(JSONArray playersJson) throws JsonBadParsingException {
+<b class="fc">&nbsp;        List&lt;Player&gt; players = new ArrayList&lt;&gt;();</b>
+&nbsp;        JSONObject jsonPlayer;
+&nbsp;        Player player;
+<b class="fc">&nbsp;        for (Object objPlayer : playersJson) {</b>
+<b class="fc">&nbsp;            jsonPlayer = (JSONObject) objPlayer;</b>
+<b class="fc">&nbsp;            player = new Player(jsonPlayer);</b>
+<b class="fc">&nbsp;            players.add(player);</b>
+<b class="fc">&nbsp;            virtualViews.add(player.getVirtualShelf());</b>
+&nbsp;
+<b class="fc">&nbsp;            if (nameAbsentInClients(player.getName(), clients)) {</b>
+<b class="nc">&nbsp;                throw new JsonBadParsingException(&quot;No client with playername &quot; + player.getName() + &quot; provided&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return players;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor is used to load the state of the game from a jsonfile.
+&nbsp;     * @param gameStatus JSONObject with the status
+&nbsp;     * @throws JsonBadParsingException when a parsing error happens
+&nbsp;     */
+<b class="fc">&nbsp;    public Controller(JSONObject gameStatus, List&lt;Client&gt; clients) throws JsonBadParsingException {</b>
+<b class="fc">&nbsp;        handledGameTermination = false;</b>
+<b class="fc">&nbsp;        virtualViews = new ArrayList&lt;&gt;();</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            this.clients = clients;</b>
+<b class="fc">&nbsp;            JSONArray commonGoalsJson = (JSONArray) gameStatus.get(&quot;commonGoals&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;            this.board = new Board((JSONObject) gameStatus.get(&quot;board&quot;), new ArrayList&lt;&gt;(commonGoalsJson));</b>
+&nbsp;
+<b class="fc">&nbsp;            virtualViews.add(board.getVirtualBoard());</b>
+<b class="fc">&nbsp;            virtualViews.addAll(board.getCommonGoals().stream().map(CommonGoal::getVirtualCommonGoal).collect(Collectors.toList()));</b>
+&nbsp;
+<b class="fc">&nbsp;            this.turn = Math.toIntExact((Long) gameStatus.get(&quot;turn&quot;));</b>
+&nbsp;
+&nbsp;            // Loading players
+<b class="fc">&nbsp;            JSONArray playersJson = (JSONArray) gameStatus.get(&quot;players&quot;);</b>
+<b class="fc">&nbsp;            if (playersJson==null) {throw new JsonBadParsingException(&quot;Error while loading game status from json: players field not found&quot;);}</b>
+<b class="fc">&nbsp;            this.players = loadPlayers(playersJson);</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (ClassCastException | JsonBadParsingException e) {</b>
+<b class="nc">&nbsp;            throw new JsonBadParsingException(&quot;Error while loading game status from json: &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        for (VirtualView virtualView : virtualViews) virtualView.setClientList(clients);</b>
+&nbsp;        // Sending all data to clients
+<b class="fc">&nbsp;        for (Client client : clients) {</b>
+<b class="fc">&nbsp;            refreshClient(client);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used when there is the need to completely
+&nbsp;     * refresh a client.
+&nbsp;     * It is used on game loading.
+&nbsp;     * @param client Client object to update
+&nbsp;     */
+&nbsp;    public void refreshClient(Client client) {
+<b class="fc">&nbsp;        final Player player = players.stream()</b>
+<b class="fc">&nbsp;                .filter(x -&gt;</b>
+<b class="fc">&nbsp;                        x.getName().equals(client.getPlayerName())</b>
+&nbsp;                )
+<b class="fc">&nbsp;                .findFirst()</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;No player found with specified client name in refreshClient&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;        client.refreshBoard(this.board.toJson());</b>
+&nbsp;
+<b class="fc">&nbsp;        for(CommonGoal commonGoal : this.board.getCommonGoals()) {</b>
+<b class="fc">&nbsp;            client.refreshCommonGoal(commonGoal.getID(), commonGoal.showPointsStack());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        for (Player pl : players) {</b>
+<b class="fc">&nbsp;            client.refreshShelf(pl.getName(), pl.getShelf().toJson());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        client.setPlayerGoal(player.getPersonalGoalId());</b>
+<b class="fc">&nbsp;        client.updateTurn(getCurrentPlayerName());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checking if there is a client with the given player name.
+&nbsp;     * @param name String, name to search for.
+&nbsp;     * @param clients List of Client objects
+&nbsp;     * @return True if the name is NOT present in the list.
+&nbsp;     */
+&nbsp;    private boolean nameAbsentInClients(String name, List&lt;Client&gt; clients) {
+<b class="fc">&nbsp;        return clients.stream().map(Client::getPlayerName).filter(x -&gt; x.equals(name)).findAny().isEmpty();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the board
+&nbsp;     */
+&nbsp;    public Board getBoard() throws JsonBadParsingException {
+<b class="fc">&nbsp;        return new Board(board);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the commonGoals we instantiated in the constructor
+&nbsp;     */
+&nbsp;    public List&lt;CommonGoal&gt; getCommonGoals() {
+<b class="fc">&nbsp;        List&lt;CommonGoal&gt; commonGoals = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        commonGoals.addAll(board.getCommonGoals());</b>
+<b class="fc">&nbsp;        return commonGoals;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the players of the match
+&nbsp;     */
+&nbsp;    public List&lt;Player&gt; getPlayers() {
+<b class="fc">&nbsp;        return players.stream().</b>
+<b class="fc">&nbsp;                map(p-&gt; {</b>
+&nbsp;                    try {
+<b class="fc">&nbsp;                        return new Player(p);</b>
+<b class="nc">&nbsp;                    } catch (JsonBadParsingException e) {</b>
+<b class="nc">&nbsp;                        throw new RuntimeException(e);  // Invalid player in the list</b>
+&nbsp;                    }
+&nbsp;                }).
+<b class="fc">&nbsp;                collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected void setActivity(String playerName, boolean value) throws ControllerGenericException{
+<b class="fc">&nbsp;        if(playerName == null){</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;No player found with that name&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Optional&lt;Player&gt; target =  players.stream().</b>
+<b class="fc">&nbsp;                filter(p -&gt; p.getName().equals(playerName)).</b>
+<b class="fc">&nbsp;                findFirst();</b>
+<b class="fc">&nbsp;        if(target.isEmpty()){</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;No player found with that name&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        target.get().setActive(value);</b>
+<b class="fc">&nbsp;        final boolean atLeastOneActive = players.stream().anyMatch(p -&gt; p.isActive);</b>
+<b class="fc">&nbsp;        if (playerName.equals(getCurrentPlayerName()) &amp;&amp; atLeastOneActive) {  // We need to increment the turn and notify clients</b>
+<b class="nc">&nbsp;            nextTurn();</b>
+<b class="nc">&nbsp;            for (Client client : clients)</b>
+<b class="nc">&nbsp;                client.updateTurn(getCurrentPlayerName());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * increments the turn, if the current player is not active goes on
+&nbsp;     */
+&nbsp;    public void nextTurn() {
+<b class="fc">&nbsp;        turn++;</b>
+<b class="fc">&nbsp;        if(!players.get( getTurn() % players.size() ) .isActive()) {</b>
+<b class="fc">&nbsp;            nextTurn();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the current player
+&nbsp;     */
+&nbsp;    public String getCurrentPlayerName() {
+&nbsp;
+<b class="fc">&nbsp;        return players.get(getTurn() % players.size()).getName();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the current turn
+&nbsp;     */
+&nbsp;    public int getTurn(){
+<b class="fc">&nbsp;        return turn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return a map that contains the shelf of each player
+&nbsp;     */
+&nbsp;    public Map&lt;String, Shelf&gt; getShelves() {
+<b class="fc">&nbsp;        Map&lt;String,Shelf&gt; shelves = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        for(Player p : getPlayers()) {</b>
+<b class="fc">&nbsp;            shelves.put(p.getName(), p.getShelf());</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return shelves;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function builds the name of the file used to save the game
+&nbsp;     * @param players List of players&#39; names
+&nbsp;     * @return String, name of the file
+&nbsp;     */
+&nbsp;    public static String getFileName(List&lt;String&gt; players) {
+<b class="fc">&nbsp;        return &quot;SavedGame-&quot; + players.stream()</b>
+<b class="fc">&nbsp;                .map(String::toLowerCase)</b>
+<b class="fc">&nbsp;                .sorted()</b>
+<b class="fc">&nbsp;                .reduce(&quot;&quot;, (prev, next) -&gt;</b>
+<b class="fc">&nbsp;                        ( prev.equals(&quot;&quot;) ? next : prev + &quot;_&quot; + next))</b>
+&nbsp;                + &quot;.json&quot;;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to save the status of the game on file
+&nbsp;     */
+&nbsp;    private void saveGame() {
+<b class="nc">&nbsp;        try (</b>
+<b class="fc">&nbsp;                final Writer writer = new BufferedWriter(</b>
+&nbsp;                        new FileWriter(
+<b class="fc">&nbsp;                                &quot;./&quot; +  getFileName(</b>
+<b class="fc">&nbsp;                                        players.stream()</b>
+<b class="fc">&nbsp;                                                .map(Player::getName)</b>
+<b class="fc">&nbsp;                                                .collect(Collectors.toList()))))</b>
+&nbsp;        ) {
+<b class="fc">&nbsp;            this.toJson().writeJSONString(writer);</b>
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Error while saving game: &quot; + e.getMessage());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void deleteSavedGame() {
+&nbsp;        try {
+<b class="nc">&nbsp;            Files.deleteIfExists(Path.of(</b>
+<b class="nc">&nbsp;                    &quot;./&quot; + getFileName(</b>
+<b class="nc">&nbsp;                            players.stream()</b>
+<b class="nc">&nbsp;                                    .map(Player::getName)</b>
+<b class="nc">&nbsp;                                    .collect(Collectors.toList())))</b>
+&nbsp;            );
+<b class="nc">&nbsp;        }catch (IOException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Error while deleting saved game: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method checks if the amount of connected players is lower
+&nbsp;     * that the minSupportedPlayers and if so ends the game
+&nbsp;     */
+&nbsp;    public void endGameNotEnoughConnected() {
+<b class="nc">&nbsp;        if(clients.size()&gt;=GameSettings.minSupportedPlayers)</b>
+&nbsp;            return;
+<b class="nc">&nbsp;        handleGameEnd();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to notify each
+&nbsp;     * client the game has ended.
+&nbsp;     */
+&nbsp;    private void handleGameEnd() {
+<b class="nc">&nbsp;        if (handledGameTermination)</b>
+&nbsp;            return;
+<b class="nc">&nbsp;        List&lt;PlayerWithPoints&gt; leaderBoard = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;        final List&lt;Player&gt; playersToConsider;
+&nbsp;
+<b class="nc">&nbsp;        if(clients.size()&lt;GameSettings.minSupportedPlayers)</b>
+<b class="nc">&nbsp;            playersToConsider = players.stream()</b>
+<b class="nc">&nbsp;                    .filter(x -&gt; !nameAbsentInClients(x.getName(), clients))</b>
+<b class="nc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;        else
+<b class="nc">&nbsp;            playersToConsider = players;</b>
+&nbsp;
+<b class="nc">&nbsp;        for(Player p : playersToConsider){</b>
+<b class="nc">&nbsp;            int points = 0;</b>
+&nbsp;
+&nbsp;            //sum all kinds of points
+<b class="nc">&nbsp;            points += p.getPersonalGoalPoints() + p.getAdjacentPoints() + p.getCommonGoalPoints();</b>
+&nbsp;
+&nbsp;            //assign bonus to first player to end
+<b class="nc">&nbsp;            if(p.getName().equals(getCurrentPlayerName()) &amp;&amp; clients.size()&gt;=GameSettings.minSupportedPlayers) {</b>
+<b class="nc">&nbsp;                points += GameSettings.bonusPointsForLastMove;</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            leaderBoard.add(new PlayerWithPoints(p.getName(),points));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        leaderBoard.sort(Comparator</b>
+<b class="nc">&nbsp;                .comparingInt(PlayerWithPoints::getPoints)</b>
+<b class="nc">&nbsp;                .thenComparingInt(leaderBoard::indexOf)</b>
+<b class="nc">&nbsp;                .reversed());</b>
+<b class="nc">&nbsp;        for (Client client : clients)</b>
+<b class="nc">&nbsp;            client.endGame(leaderBoard);</b>
+<b class="nc">&nbsp;        deleteSavedGame();</b>
+<b class="nc">&nbsp;        handledGameTermination = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to load a Player object
+&nbsp;     * given its name.
+&nbsp;     * @param playerName String, name of the player
+&nbsp;     * @return Player object
+&nbsp;     */
+&nbsp;    private Player getPlayerFromName(String playerName) throws ControllerGenericException {
+<b class="fc">&nbsp;        final Player player = players.stream().</b>
+<b class="fc">&nbsp;                filter(p -&gt; p.getName().equals(playerName)).</b>
+<b class="fc">&nbsp;                findFirst().orElse(null);</b>
+<b class="fc">&nbsp;        if (player == null) {</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;No player found with that name&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return player;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is the core functionality of moveTiles.
+&nbsp;     * It checks if the move is valid and then updates the model.
+&nbsp;     * @param player Player object
+&nbsp;     * @param move Move object
+&nbsp;     */
+&nbsp;    private void doMoveTiles(Player player, Move move) throws InvalidMoveException, BadPositionException {
+<b class="fc">&nbsp;        final Shelf playerShelf = player.getShelf();</b>
+<b class="fc">&nbsp;        final int freeSpaceInColumn = (int) playerShelf.</b>
+<b class="fc">&nbsp;                allTilesInColumn(move.getColumn()).stream().</b>
+<b class="fc">&nbsp;                filter(x -&gt; x.equals(Tile.Empty)).</b>
+<b class="fc">&nbsp;                count();</b>
+<b class="fc">&nbsp;        if (move.getBoardPositions().size() &gt; freeSpaceInColumn) { //if the size of the move coordinates is greater than empty cells in the self we throw an exception</b>
+<b class="nc">&nbsp;            throw new InvalidMoveException(&quot;Number of tiles selected greater than empty fields in shelf&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (!checkValidMove(move))</b>
+<b class="fc">&nbsp;            throw new InvalidMoveException(&quot;Tiles selection is not allowed&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        final List&lt;Position&gt; positions = move.getBoardPositions();</b>
+<b class="fc">&nbsp;        for (Position p : positions) { //for all the positions we insert the tile in the playerShelf</b>
+<b class="fc">&nbsp;            player.insertTile(board.pickTile(p), move.getColumn());</b>
+&nbsp;
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        player.checkCommonGoals(board.getCommonGoals());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * insert Tiles in the player shelf according to move coordinates
+&nbsp;     * @param playerName is the current player
+&nbsp;     * @param move is the move that player wants to do
+&nbsp;     * @throws ControllerGenericException if the selected tile is not allowed, if the player is not the current player
+&nbsp;     * or if the shelf hasn&#39;t enough empty cells
+&nbsp;     */
+&nbsp;    public void moveTiles(String playerName, Move move) throws ControllerGenericException {
+<b class="fc">&nbsp;        if (clients.size()&lt;GameSettings.minSupportedPlayers) {</b>
+<b class="nc">&nbsp;            for (Client c : clients) {</b>
+<b class="nc">&nbsp;                c.postChatMessage(&quot;Server&quot;, &quot;You must wait for other players to reconnect before playing&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if(move == null || move.getBoardPositions() == null || move.getBoardPositions().contains(null)){</b>
+<b class="fc">&nbsp;            throw new ControllerGenericException(&quot;Invalid move&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if(playerName == null){</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;No player found with that name&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (!playerName.equals(getCurrentPlayerName())) { //if player is not the current player we throw an exception</b>
+<b class="fc">&nbsp;            throw new ControllerGenericException(&quot;Player is not the current player&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        final Player player = getPlayerFromName(playerName);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            doMoveTiles(player, move);</b>
+&nbsp;
+<b class="fc">&nbsp;            if(gameFinished()){</b>
+<b class="nc">&nbsp;                handleGameEnd();</b>
+&nbsp;            }
+&nbsp;            else{
+<b class="fc">&nbsp;                prepareForNextPlayer(); //Fill if necessary</b>
+<b class="fc">&nbsp;                nextTurn(); //increment turn</b>
+<b class="fc">&nbsp;                for (Client client : clients)</b>
+<b class="fc">&nbsp;                    client.updateTurn(getCurrentPlayerName());</b>
+<b class="fc">&nbsp;                saveGame();</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (InvalidMoveException e) {</b>
+<b class="fc">&nbsp;            throw new ControllerGenericException(&quot;Error invalid move&quot;);</b>
+<b class="nc">&nbsp;        } catch (BadPositionException e) {</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;Error invalid get&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Do all the actions to prepare the board for the next player (Fill the board)
+&nbsp;     * It should be manually called before the first and it is called after every
+&nbsp;     * player&#39;s move.
+&nbsp;     */
+&nbsp;    protected void prepareForNextPlayer(){
+<b class="fc">&nbsp;        if(board.toFill()){</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                board.fill();</b>
+<b class="nc">&nbsp;            } catch (OutOfTilesException e) {</b>
+<b class="nc">&nbsp;                handleGameEnd();</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * check if a given move can be done
+&nbsp;     * @param move is the move the player do
+&nbsp;     * @return true if the move is valid
+&nbsp;     */
+&nbsp;    private boolean checkValidMove(Move move) {
+<b class="fc">&nbsp;        List&lt;Position&gt; positions = move.getBoardPositions();</b>
+&nbsp;
+&nbsp;        //the number of coordinates is greater than the maximum possible ==&gt; false
+<b class="fc">&nbsp;        if (positions.size() &gt; move.getMaxNumMoves() || positions.size() &lt;= 0)</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;
+&nbsp;        //duplicate positions are present ==&gt; false
+<b class="fc">&nbsp;        if(Position.duplicates(positions)){</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        //Position with no free side ==&gt; false
+<b class="fc">&nbsp;        for (Position p : positions) {</b>
+<b class="fc">&nbsp;            if (!board.hasFreeSide(p))</b>
+<b class="fc">&nbsp;                return false;</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        //One tile is always correct if it has a free side ==&gt; true
+<b class="fc">&nbsp;        if (positions.size() == 1)</b>
+<b class="fc">&nbsp;            return true;</b>
+&nbsp;
+&nbsp;        //check if the positions are correctly aligned
+<b class="fc">&nbsp;        return Position.areAligned(positions);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public JSONObject toJson() {
+<b class="fc">&nbsp;        JSONObject gameStatus = new JSONObject();</b>
+<b class="fc">&nbsp;        gameStatus.put(&quot;board&quot;, board.toJson());</b>
+<b class="fc">&nbsp;        gameStatus.put(&quot;turn&quot;, Long.valueOf(turn));</b>
+&nbsp;
+<b class="fc">&nbsp;        JSONArray playersJson = new JSONArray();</b>
+<b class="fc">&nbsp;        playersJson.addAll(</b>
+<b class="fc">&nbsp;                players.stream()</b>
+<b class="fc">&nbsp;                        .map(Player::toJson)</b>
+<b class="fc">&nbsp;                        .collect(Collectors.toList())</b>
+&nbsp;        );
+<b class="fc">&nbsp;        gameStatus.put(&quot;players&quot;, playersJson);</b>
+&nbsp;
+<b class="fc">&nbsp;        JSONArray commonGoalsJson = new JSONArray();</b>
+<b class="fc">&nbsp;        commonGoalsJson.addAll(board.getCommonGoals()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(CommonGoal::toJson)</b>
+<b class="fc">&nbsp;                .collect(Collectors.toList()));</b>
+<b class="fc">&nbsp;        gameStatus.put(&quot;commonGoals&quot;, commonGoalsJson);</b>
+&nbsp;
+<b class="fc">&nbsp;        return gameStatus;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is called by the lobby when a client disconnected.
+&nbsp;     * The function removes the client and sets the corresponding player
+&nbsp;     * as inactive.
+&nbsp;     * @param client Client object
+&nbsp;     * @throws ControllerGenericException when there is no client or
+&nbsp;     *          no player matching the provided object.
+&nbsp;     */
+&nbsp;    public void clientDisconnected(Client client) {
+<b class="fc">&nbsp;        if(!clients.remove(client)){</b>
+<b class="nc">&nbsp;            throw new ControllerGenericException(&quot;Provided client did not exist&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        setActivity(client.getPlayerName(), false);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is called by the lobby when a client connects
+&nbsp;     * after a crash.
+&nbsp;     * The function adds the client and sets the corresponding player
+&nbsp;     * as active.
+&nbsp;     * @param client Client object
+&nbsp;     * @throws ControllerGenericException when there is no player
+&nbsp;     *          with the provided name.
+&nbsp;     */
+&nbsp;    public void clientReconnected(Client client) {
+<b class="fc">&nbsp;        if(</b>
+<b class="fc">&nbsp;                players.stream()</b>
+<b class="fc">&nbsp;                        .map(x-&gt;x.getName().toLowerCase())</b>
+<b class="fc">&nbsp;                        .noneMatch(x-&gt;x.equals(client.getPlayerName()))</b>
+&nbsp;        )
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;No player with the given name found while reconnecting client&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        setActivity(client.getPlayerName(), true);</b>
+&nbsp;
+<b class="fc">&nbsp;        clients.add(client);</b>
+<b class="fc">&nbsp;        refreshClient(client);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * WARNING: this method should be used only for testing purposes.
+&nbsp;     * This method is used to set the player currently playing.
+&nbsp;     * @param playerName name of the player to set as current player
+&nbsp;     */
+&nbsp;    protected void setTurn_testing_only(String playerName){
+<b class="fc">&nbsp;        for(int i=0; i&lt;players.size(); i++){</b>
+<b class="fc">&nbsp;            if(players.get(i).getName().equals(playerName)){</b>
+<b class="fc">&nbsp;                turn = i;</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

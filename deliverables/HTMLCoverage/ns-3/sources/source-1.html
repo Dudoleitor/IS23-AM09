@@ -1,0 +1,251 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ConnectionStub</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.connection</a>
+</div>
+
+<h1>Coverage Summary for Class: ConnectionStub (it.polimi.ingsw.client.connection)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConnectionStub</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/52)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.connection;
+&nbsp;
+&nbsp;import it.polimi.ingsw.server.clientonserver.Client;
+&nbsp;import it.polimi.ingsw.shared.IpAddressV4;
+&nbsp;import it.polimi.ingsw.shared.model.Move;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.LinkedList;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;
+&nbsp;public class ConnectionStub extends Server {
+&nbsp;    static LinkedList&lt;String&gt; callsToStub;
+<b class="nc">&nbsp;    boolean verbous = false;</b>
+&nbsp;    public ConnectionStub(){
+<b class="nc">&nbsp;        super(localHost(),80);</b>
+<b class="nc">&nbsp;        callsToStub = new LinkedList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    //its horrible, but it can only break tests. Prolly delete some day
+&nbsp;    private static IpAddressV4 localHost(){
+&nbsp;        try{
+<b class="nc">&nbsp;            return new IpAddressV4(127,0,0,1);</b>
+<b class="nc">&nbsp;        } catch (Exception ignored) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public boolean login(Client client) {
+<b class="nc">&nbsp;        callsToStub.addLast(client.getPlayerName()+&quot; login&quot;);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName()+&quot; login&quot;);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void joinRandomLobby(Client client) throws ServerException {
+<b class="nc">&nbsp;        callsToStub.addLast(client.getPlayerName()+&quot; random login&quot;);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName()+&quot; random login&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void createLobby(Client client) throws ServerException {
+<b class="nc">&nbsp;        callsToStub.addLast(client.getPlayerName()+&quot; create lobby&quot;);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName()+&quot; create lobby&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Map&lt;Integer, Integer&gt; getAvailableLobbies() throws ServerException {
+<b class="nc">&nbsp;        callsToStub.addLast(&quot;available lobbies&quot;);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(&quot;available lobbies&quot;);</b>
+<b class="nc">&nbsp;        return new HashMap&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getJoinedLobby(String playerName) throws ServerException {
+<b class="nc">&nbsp;        callsToStub.addLast(&quot;joined lobbies&quot;);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(&quot;joined lobbies&quot;);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void joinSelectedLobby(Client client, int id) throws ServerException {
+<b class="nc">&nbsp;        callsToStub.addLast(client.getPlayerName()+&quot; specific lobby &quot;+id);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(client.getPlayerName()+&quot; specific lobby &quot;+id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postToLiveChat(String playerName, String message) throws LobbyException {
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(playerName+&quot; posted &quot;+message);</b>
+<b class="nc">&nbsp;        callsToStub.addLast(playerName+&quot; posted &quot;+message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postSecretToLiveChat(String sender, String receiver, String message) throws LobbyException {
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(sender+&quot; posted secret &quot;+message+ &quot; for &quot;+receiver);</b>
+<b class="nc">&nbsp;        callsToStub.addLast(sender+&quot; posted secret &quot;+message+ &quot; for &quot;+receiver);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void quitGame(String player) throws LobbyException {
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(player + &quot; quit&quot;);</b>
+<b class="nc">&nbsp;        callsToStub.addLast(player + &quot; quit&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean matchHasStarted() throws LobbyException {
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void postMove(String player, Move move) throws LobbyException {
+<b class="nc">&nbsp;        callsToStub.addLast(player + &quot; posted move &quot; + move);</b>
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(player + &quot; posted move &quot; + move);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean startGame(String player, boolean erasePreviousMatches) throws LobbyException {
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(player + &quot; started game&quot;);</b>
+<b class="nc">&nbsp;        callsToStub.addLast(player + &quot; started game&quot;);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean isLobbyAdmin(String player) throws LobbyException {
+<b class="nc">&nbsp;        if(verbous)</b>
+<b class="nc">&nbsp;            System.out.println(player + &quot; asked lobby admin&quot;);</b>
+<b class="nc">&nbsp;        callsToStub.addLast(player + &quot; asked lobby admin&quot;);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getLobbyID() throws LobbyException {
+<b class="nc">&nbsp;        return 1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to observe the player supposed
+&nbsp;     * to play in the current turn.
+&nbsp;     *
+&nbsp;     * @return String name of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getCurrentPlayer() throws LobbyException {
+<b class="nc">&nbsp;        return &quot;&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int disconnectedFromLobby(String playerName) throws ServerException {
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public LinkedList&lt;String&gt; getCallsToStub() {
+<b class="nc">&nbsp;        return new LinkedList&lt;&gt;(callsToStub);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

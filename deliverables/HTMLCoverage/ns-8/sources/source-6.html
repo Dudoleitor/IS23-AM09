@@ -1,0 +1,244 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PlayerShelvesController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.gui.sceneControlles</a>
+</div>
+
+<h1>Coverage Summary for Class: PlayerShelvesController (it.polimi.ingsw.client.controller.gui.sceneControlles)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PlayerShelvesController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.gui.sceneControlles;
+&nbsp;
+&nbsp;import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+&nbsp;import it.polimi.ingsw.client.controller.gui.GridHandler;
+&nbsp;import it.polimi.ingsw.client.controller.gui.SceneEnum;
+&nbsp;import it.polimi.ingsw.client.model.ClientModelGUI;
+&nbsp;import it.polimi.ingsw.shared.GameSettings;
+&nbsp;import it.polimi.ingsw.shared.model.*;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.Node;
+&nbsp;import javafx.scene.canvas.Canvas;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.image.ImageView;
+&nbsp;import javafx.scene.layout.AnchorPane;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.loadImage;
+&nbsp;
+&nbsp;public class PlayerShelvesController extends SceneController implements Initializable {
+&nbsp;    private final ClientModelGUI model;
+<b class="nc">&nbsp;    private Map&lt;String,GridHandler&gt; shelvesHandlers = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    private Map&lt;String,ImageView&gt; shelfImages = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Text username1;
+&nbsp;    @FXML
+&nbsp;    Text username2;
+&nbsp;    @FXML
+&nbsp;    Text username3;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Canvas canvasShelf1;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Canvas canvasShelf2;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Canvas canvasShelf3;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    AnchorPane anchor;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView shelf1;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView shelf2;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView shelf3;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Button readChatButton;
+&nbsp;
+&nbsp;    public PlayerShelvesController(ClientControllerGUI controller) {
+<b class="nc">&nbsp;        super(controller);</b>
+<b class="nc">&nbsp;        this.model = controller.getModel();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param newMessage, if true there is a new message and the chat button gets blue
+&nbsp;     */
+&nbsp;    public void setNewMessage(boolean newMessage) {
+<b class="nc">&nbsp;        if(newMessage) {</b>
+<b class="nc">&nbsp;            readChatButton.setStyle(&quot;-fx-background-color: blue;&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            readChatButton.setStyle(&quot;-fx-background-color: #49be25;&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void showTurnPopup() {
+<b class="nc">&nbsp;        ClientControllerGUI.showInfo(&quot;It&#39;s your turn.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Refreshes the shelf of the player with the given name
+&nbsp;     * @param playerName the name of the player whose shelf
+&nbsp;     *                   has to be refreshed
+&nbsp;     */
+&nbsp;    public void refreshShelf(String playerName, Shelf shelf) {
+<b class="nc">&nbsp;        shelvesHandlers.get(playerName).resetGrid(shelf);</b>
+<b class="nc">&nbsp;        shelvesHandlers.get(playerName).displayGrid();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void putIntoShelf(String playerName, Position position, Tile tile) {
+<b class="nc">&nbsp;        shelvesHandlers.get(playerName).putTileBehind(shelfImages.get(playerName),position,tile);</b>
+&nbsp;    }
+&nbsp;    private void displayAll(){
+<b class="nc">&nbsp;        shelvesHandlers.values().forEach(GridHandler::displayGrid);</b>
+<b class="nc">&nbsp;        Arrays.stream(new ImageView[]{shelf1,shelf2,shelf3}).forEach(Node::toFront);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    protected void getHome() {
+<b class="nc">&nbsp;        controller.loadScene(SceneEnum.home);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    protected void readChat() {
+<b class="nc">&nbsp;        controller.loadScene(SceneEnum.chat);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void initialize(URL url, ResourceBundle resourceBundle) {
+&nbsp;
+<b class="nc">&nbsp;        Text[] userNames = new Text[]{username1,username2,username3};</b>
+<b class="nc">&nbsp;        ImageView[] shelves = new ImageView[]{shelf1,shelf2,shelf3};</b>
+<b class="nc">&nbsp;        Canvas[] shelvesCanvas = new Canvas[]{canvasShelf1,canvasShelf2,canvasShelf3};</b>
+&nbsp;
+<b class="nc">&nbsp;        int i = 0;</b>
+&nbsp;        //for all the players but the user
+<b class="nc">&nbsp;        for(String playerName : model.getPlayers()){</b>
+<b class="nc">&nbsp;            if(!playerName.equals(model.getPlayerName())){</b>
+<b class="nc">&nbsp;                userNames[i].setText(playerName); //set a username</b>
+&nbsp;
+&nbsp;                //map the shelf png to the username
+<b class="nc">&nbsp;                shelfImages.put(playerName,</b>
+&nbsp;                        shelves[i]);
+&nbsp;
+&nbsp;                //map the grid handler to the username
+<b class="nc">&nbsp;                shelvesHandlers.put(playerName,</b>
+&nbsp;                        new GridHandler(
+&nbsp;                                anchor,
+&nbsp;                                shelvesCanvas[i],
+<b class="nc">&nbsp;                                model.getPlayersShelves().get(playerName)));</b>
+<b class="nc">&nbsp;                i++;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;        //hide all the shelves and text fields with no username
+<b class="nc">&nbsp;        for(;i &lt; shelves.length &amp;&amp; i&lt;userNames.length;i++){</b>
+<b class="nc">&nbsp;            userNames[i].setOpacity(0.0);</b>
+<b class="nc">&nbsp;            shelves[i].setOpacity(0.0);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        displayAll();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,545 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MoveBuilder</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">it.polimi.ingsw.client.controller.gui.sceneControlles</a>
+</div>
+
+<h1>Coverage Summary for Class: MoveBuilder (it.polimi.ingsw.client.controller.gui.sceneControlles)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MoveBuilder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package it.polimi.ingsw.client.controller.gui.sceneControlles;
+&nbsp;import it.polimi.ingsw.client.connection.LobbyException;
+&nbsp;import it.polimi.ingsw.client.controller.gui.ClientControllerGUI;
+&nbsp;import it.polimi.ingsw.client.controller.gui.GridHandler;
+&nbsp;import it.polimi.ingsw.client.controller.gui.SceneEnum;
+&nbsp;import it.polimi.ingsw.client.model.ClientModelGUI;
+&nbsp;import it.polimi.ingsw.shared.model.*;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.canvas.Canvas;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.image.Image;
+&nbsp;import javafx.scene.image.ImageView;
+&nbsp;import javafx.scene.input.MouseEvent;
+&nbsp;import javafx.scene.layout.AnchorPane;
+&nbsp;import javafx.scene.layout.VBox;
+&nbsp;import javafx.scene.shape.Circle;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;import static it.polimi.ingsw.client.controller.gui.ClientControllerGUI.*;
+&nbsp;
+&nbsp;public class HomeScreenController extends SceneController implements Initializable {
+&nbsp;    boolean clicked = false;
+&nbsp;    private GridHandler shelfHandler;
+&nbsp;    private GridHandler boardHandler;
+&nbsp;    private MoveBuilder moveBuilder;
+&nbsp;    private final ClientModelGUI model;
+&nbsp;
+&nbsp;    public HomeScreenController(ClientControllerGUI controller) {
+&nbsp;        super(controller);
+&nbsp;        this.model = controller.getModel();
+&nbsp;    }
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    VBox vbox;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    AnchorPane anchor;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView board;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView chair;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView imgPersGoal;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Canvas canvasBoard;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Canvas canvasShelf;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;   ImageView commonGoal1;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView commonGoal2;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView imageScoring1;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView imageScoring2;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    javafx.scene.shape.Polygon turnFlag;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Button readChatButton;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    Circle notificationCircle;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    ImageView shelfImage;
+&nbsp;    @FXML
+&nbsp;    ImageView Tile1;
+&nbsp;    @FXML
+&nbsp;    ImageView Tile2;
+&nbsp;    @FXML
+&nbsp;    ImageView Tile3;
+&nbsp;    @FXML
+&nbsp;    Button Arrows1;
+&nbsp;    @FXML
+&nbsp;    Button Arrows2;
+&nbsp;    @FXML
+&nbsp;    Button Arrows3;
+&nbsp;    private ImageView[] tileImages;
+&nbsp;    private Button[] buttons;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Obtain personal goal from model and set image accordingly
+&nbsp;     */
+&nbsp;    protected void getPersonalGoal() {
+&nbsp;        int number = model.getPlayerGoal().getGoalId() + 1;
+&nbsp;        imgPersGoal.setImage(loadImage(&quot;personal_goal_cards/Personal_Goals&quot; + number + &quot;.png&quot;));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set common goal UI according to game status
+&nbsp;     * @param cg1 the first common goal
+&nbsp;     * @param cg2 the second common goal
+&nbsp;     */
+&nbsp;    public void updateCommonGoals(CommonGoal cg1, CommonGoal cg2) {
+&nbsp;        commonGoal1.setImage(loadImage( &quot;common_goal_cards/&quot; + cg1.getID() + &quot;.jpg&quot;));
+&nbsp;        commonGoal2.setImage(loadImage(&quot;common_goal_cards/&quot; + cg2.getID() + &quot;.jpg&quot;));
+&nbsp;
+&nbsp;        imageScoring1.setImage(loadImage(&quot;scoring_tokens/scoring_&quot; + cg1.peekTopOfPointsStack() + &quot;.jpg&quot;));
+&nbsp;        imageScoring2.setImage(loadImage(&quot;scoring_tokens/scoring_&quot; + cg2.peekTopOfPointsStack() + &quot;.jpg&quot;));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set indicator of turn
+&nbsp;     * @param isMyTurn: if turn == true, then it is my turn
+&nbsp;     */
+&nbsp;    public void setMyTurn(boolean isMyTurn) {
+&nbsp;        if(isMyTurn) {
+&nbsp;            turnFlag.setStyle(&quot;-fx-fill: yellow;&quot;);
+&nbsp;        } else {
+&nbsp;            turnFlag.setStyle(&quot;-fx-fill: grey;&quot;);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param newMessage, if true there is a new message and the chat button gets blue
+&nbsp;     */
+&nbsp;    public void setNewMessage(boolean newMessage) {
+&nbsp;        if(newMessage) {
+&nbsp;            readChatButton.setStyle(&quot;-fx-background-color: #456938;&quot;);
+&nbsp;            notificationCircle.setOpacity(1.0);
+&nbsp;        } else {
+&nbsp;            readChatButton.setStyle(&quot;-fx-background-color: #49be25;&quot;);
+&nbsp;            notificationCircle.setOpacity(0.0);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * button that redirects to chat screen
+&nbsp;     * @throws IOException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void readChat() throws IOException {
+&nbsp;        clicked = false;
+&nbsp;        controller.loadScene(SceneEnum.chat);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to completely refresh the board
+&nbsp;     * @param board new Board object
+&nbsp;     */
+&nbsp;    public void setBoard(Board board) {
+&nbsp;        boardHandler.resetGrid(board);
+&nbsp;        boardHandler.displayGrid();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * creates a position based on mouseEvent and adds it to move builder
+&nbsp;     * in order to create the partialMove
+&nbsp;     * @param mouseEvent
+&nbsp;     * @throws InvalidMoveException
+&nbsp;     * @throws BadPositionException
+&nbsp;     */
+&nbsp;    public void clickedMouseBoard(MouseEvent mouseEvent) throws InvalidMoveException, BadPositionException {
+&nbsp;        //check if it is player&#39;s turn
+&nbsp;        if(!model.isItMyTurn()) {
+&nbsp;            controller.errorMessage(&quot;Wait your turn&quot;);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        pickTile(boardHandler.getPosition(mouseEvent));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Remove tile from board and put it in the
+&nbsp;     * @param pos
+&nbsp;     */
+&nbsp;    private void pickTile(Position pos){
+&nbsp;        //check if move is valid
+&nbsp;        if(!moveBuilder.validPositions(model.getBoard()).contains(pos)) {
+&nbsp;            controller.errorMessage(&quot;Please enter a valid position&quot;);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        //check if position fits in partial move
+&nbsp;        try {
+&nbsp;            moveBuilder.addPosition(pos);
+&nbsp;        } catch (Exception e) {
+&nbsp;            showError(e.getMessage());
+&nbsp;        }
+&nbsp;
+&nbsp;        int n = moveBuilder.getSize();
+&nbsp;
+&nbsp;        Image image = boardHandler.removeTile(pos);
+&nbsp;        tileImages[n-1].setImage(image);
+&nbsp;
+&nbsp;        setSwitchButtons(n);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set buttons to change position of tiles in move
+&nbsp;     * @param n
+&nbsp;     */
+&nbsp;    private void setSwitchButtons(int n){
+&nbsp;        if(n == 2){
+&nbsp;            buttons[1].setOpacity(1.0);
+&nbsp;        }
+&nbsp;        if(n &gt;2){
+&nbsp;            buttons[0].setOpacity(1.0);
+&nbsp;            buttons[2].setOpacity(1.0);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * by clicking on the shelf, the user can choose the column
+&nbsp;     * @param mouseEvent
+&nbsp;     * @throws InvalidMoveException
+&nbsp;     */
+&nbsp;    public void clickedMouseShelf(MouseEvent mouseEvent) throws InvalidMoveException {
+&nbsp;        int column = shelfHandler.getPosition(mouseEvent).getColumn();
+&nbsp;        moveBuilder.setColumn(column);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * button that resets the move
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void deleteMove() {
+&nbsp;        moveBuilder.resetMove();
+&nbsp;        boardHandler.resetGrid(model.getBoard());
+&nbsp;        boardHandler.displayGrid();
+&nbsp;        Arrays.stream(tileImages).forEach(img -&gt; img.setImage(null));
+&nbsp;        Arrays.stream(buttons).forEach(but -&gt; but.setOpacity(0.0));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * button that confirms the move
+&nbsp;     * if the user confirms: the controller posts the move to the server
+&nbsp;     * and the shelf is updated
+&nbsp;     * @throws LobbyException
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void confirmMove() throws LobbyException{
+&nbsp;        try {
+&nbsp;            controller.getServer().postMove(model.getPlayerName(), moveBuilder.getMove());
+&nbsp;        } catch (Exception e) {
+&nbsp;            deleteMove();
+&nbsp;            showError(e.getMessage());
+&nbsp;        }
+&nbsp;        finally {
+&nbsp;            moveBuilder.resetMove();
+&nbsp;            Arrays.stream(tileImages).forEach(img -&gt; img.setImage(null));
+&nbsp;            for (int i = 0; i &lt; buttons.length; i++) {
+&nbsp;                buttons[i].setOpacity(0.0);
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * it redirects to the shelves page where the user can see opponents shelves
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    protected void gameStatus(){
+&nbsp;        controller.loadScene(SceneEnum.playerShelves);
+&nbsp;    }
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    protected void switchTiles02(){
+&nbsp;        switchTiles(0,2);
+&nbsp;    }
+&nbsp;    @FXML
+&nbsp;    protected void switchTiles01(){
+&nbsp;        switchTiles(0,1);
+&nbsp;    }
+&nbsp;    @FXML
+&nbsp;    protected void switchTiles12(){
+&nbsp;        switchTiles(1,2);
+&nbsp;    }
+&nbsp;
+&nbsp;    public void updateShelf(Shelf shelf) {
+&nbsp;        shelfHandler.resetGrid(shelf);
+&nbsp;        shelfHandler.displayGridBehind(shelfImage);
+&nbsp;    }
+&nbsp;
+&nbsp;    private void switchTiles(int a, int b){
+&nbsp;        try{
+&nbsp;            moveBuilder.switchPlace(a,b);
+&nbsp;        }
+&nbsp;        catch (InvalidMoveException e){
+&nbsp;            return;
+&nbsp;        }
+&nbsp;        Image img1 = tileImages[a].getImage();
+&nbsp;        Image img2 = tileImages[b].getImage();
+&nbsp;        tileImages[a].setImage(img2);
+&nbsp;        tileImages[b].setImage(img1);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is invoked from the server when the current
+&nbsp;     * player puts a tile into his shelf.
+&nbsp;     * @param pos destination in the shelf
+&nbsp;     * @param tile   Tile to insert
+&nbsp;     */
+&nbsp;    public void putIntoShelf(Position pos, Tile tile) {
+&nbsp;        shelfHandler.putTileBehind(shelfImage,pos,tile);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is invoked when a player makes a move, it picks
+&nbsp;     * a single tile from the board.
+&nbsp;     * @param position the position of the tile to be removed
+&nbsp;     */
+&nbsp;    public void removeFromBoard(Position position) {
+&nbsp;        boardHandler.removeTile(position);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * sets the turn, prepares the board and the shelf, prepares personal and common goals
+&nbsp;     * if the user is the first player, the first player token it is shown
+&nbsp;     * @param url
+&nbsp;     * @param resourceBundle
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void initialize(URL url, ResourceBundle resourceBundle) {
+&nbsp;        boolean turn = model.isItMyTurn();
+&nbsp;        if(!turn) {
+&nbsp;            turnFlag.setStyle(&quot;-fx-fill: grey;&quot;);
+&nbsp;        }
+&nbsp;        boardHandler = new GridHandler(anchor,canvasBoard,model.getBoard());
+&nbsp;        boardHandler.displayGrid();
+&nbsp;        shelfHandler = new GridHandler(anchor,canvasShelf,model.getPlayersShelves().get(model.getPlayerName()));
+&nbsp;        shelfHandler.displayGridBehind(shelfImage);
+&nbsp;
+&nbsp;        getPersonalGoal();
+&nbsp;        updateCommonGoals(model.getCommonGoalList().get(0), model.getCommonGoalList().get(1));
+&nbsp;
+&nbsp;        if(!model.amIFirstPlayer()){
+&nbsp;            chair.setOpacity(0);
+&nbsp;        }
+&nbsp;
+&nbsp;        if(controller.isNewMatch()) {
+&nbsp;            showInfo(&quot;You are playing a new match!&quot;);
+&nbsp;        } else {
+&nbsp;            showInfo(&quot;You are playing a loaded match!&quot;);
+&nbsp;        }
+&nbsp;        moveBuilder = new MoveBuilder();
+&nbsp;
+&nbsp;        tileImages = new ImageView[]{Tile1,Tile2,Tile3};
+&nbsp;        buttons = new Button[]{Arrows1,Arrows2,Arrows3};
+&nbsp;        Arrays.stream(buttons).forEach(button -&gt; button.setOpacity(0.0));
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;class MoveBuilder{
+&nbsp;    private PartialMove  pm;
+&nbsp;    private Move move;
+&nbsp;    private int column;
+<b class="nc">&nbsp;    public MoveBuilder(){</b>
+<b class="nc">&nbsp;        pm = new PartialMove();</b>
+<b class="nc">&nbsp;        move = null;</b>
+<b class="nc">&nbsp;        column = -1;</b>
+&nbsp;    }
+&nbsp;    public void addPosition(Position pos) throws Exception {
+<b class="nc">&nbsp;        if(pm.size() &gt;= 3){</b>
+<b class="nc">&nbsp;            throw new Exception(&quot;Max number of positions selected&quot;);</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            pm.addPosition(pos);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    public List&lt;Position&gt; validPositions(Board board){
+&nbsp;        try {
+<b class="nc">&nbsp;            return board.getValidPositions(pm);</b>
+<b class="nc">&nbsp;        } catch (InvalidMoveException e) {</b>
+<b class="nc">&nbsp;            return new ArrayList&lt;&gt;();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    public void setColumn(int column){
+<b class="nc">&nbsp;        this.column = column;</b>
+&nbsp;    }
+&nbsp;    public Move getMove() throws Exception{
+<b class="nc">&nbsp;        if(column == -1){</b>
+<b class="nc">&nbsp;            throw new Exception(&quot;Please select a column&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if(pm.size() == 0){</b>
+<b class="nc">&nbsp;            throw new Exception(&quot;Please select at least one tile&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return new Move(pm,column);</b>
+&nbsp;    }
+&nbsp;    public PartialMove getPartialMove() {
+<b class="nc">&nbsp;        return pm;</b>
+&nbsp;    }
+&nbsp;    public int getColumn(){
+<b class="nc">&nbsp;        return column;</b>
+&nbsp;    }
+&nbsp;    public void resetMove(){
+<b class="nc">&nbsp;        pm = new PartialMove();</b>
+<b class="nc">&nbsp;        move = null;</b>
+<b class="nc">&nbsp;        column = -1;</b>
+&nbsp;    }
+&nbsp;    public void switchPlace(int a, int b) throws InvalidMoveException{
+<b class="nc">&nbsp;        List&lt;Position&gt; positions = pm.getBoardPositions();</b>
+<b class="nc">&nbsp;        if(a &lt; 0 || b &lt; 0 || a&gt;= positions.size() || b &gt;= positions.size()){</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Non valid positions to switch&quot;);</b>
+<b class="nc">&nbsp;            throw new InvalidMoveException(&quot;Non valid positions selected&quot;);</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            Position pos1 = positions.get(a);</b>
+<b class="nc">&nbsp;            Position pos2 = positions.get(b);</b>
+<b class="nc">&nbsp;            positions.set(a,pos2);</b>
+<b class="nc">&nbsp;            positions.set(b,pos1);</b>
+&nbsp;
+<b class="nc">&nbsp;            pm = new PartialMove();</b>
+&nbsp;            try{
+<b class="nc">&nbsp;                positions.forEach(pos -&gt; {</b>
+&nbsp;                    try {
+<b class="nc">&nbsp;                        pm.addPosition(pos);</b>
+<b class="nc">&nbsp;                    } catch (InvalidMoveException e) {</b>
+<b class="nc">&nbsp;                        throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;                    }</b>
+&nbsp;                });
+&nbsp;            }
+<b class="nc">&nbsp;            catch (RuntimeException e){</b>
+<b class="nc">&nbsp;                throw new InvalidMoveException(&quot;Error in move&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getSize(){
+<b class="nc">&nbsp;        return pm.getBoardPositions().size();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-30 07:29</div>
+</div>
+</body>
+</html>
