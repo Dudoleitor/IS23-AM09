@@ -20,7 +20,7 @@ Clients can interact with the server both via CLI and GUI.
 | Chat | :green_circle: |
 
 ## How to run
-Download the jar archive _AM09-MyShelfie_ from assets related to the [latest release](https://github.com/Dudoleitor/IS23-AM09/releases), the application has to be started in a terminal with the following command, an interactive cli menu will guide you through the configuration process:
+Download the jar archive _AM09-MyShelfie_ from assets related to the [latest release](https://github.com/Dudoleitor/IS23-AM09/releases), you need to have java 11 installed (or newer). The application has to be started in a terminal with the following command, an interactive cli menu will guide you through the configuration process:
 ```
 java -jar AM09-MyShelfie.jar
 ```
